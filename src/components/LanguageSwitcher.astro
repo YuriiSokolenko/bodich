@@ -1,0 +1,36 @@
+---
+import { hrefFor, otherLocale, translations, type Locale, type PageKey } from '../i18n';
+
+interface Props {
+  locale: Locale;
+  page: PageKey;
+}
+
+const { locale, page } = Astro.props;
+const targetLocale = otherLocale(locale);
+const t = translations[locale];
+---
+
+<div
+  role="group"
+  aria-label={t.languageLabel}
+  class="inline-flex h-12 shrink-0 items-center gap-1 rounded-control border border-bodich-control-border/70 bg-bodich-panel px-1.5 text-xs font-bold tracking-wider"
+>
+  <span
+    class="inline-flex min-h-10 min-w-10 items-center justify-center rounded bg-bodich-panel-raised px-1 text-bodich-accent"
+  >
+    <span class="sr-only">{t.currentLanguageLabel}: {t.languageNames[locale]}</span>
+    <span aria-hidden="true">{locale.toUpperCase()}</span>
+  </span>
+
+  <span aria-hidden="true" class="text-bodich-dim">/</span>
+
+  <a
+    href={hrefFor(targetLocale, page)}
+    hreflang={targetLocale}
+    aria-label={`${targetLocale.toUpperCase()} — ${t.switchLanguageLabel} ${t.languageNames[targetLocale]}`}
+    class="inline-flex min-h-10 min-w-10 items-center justify-center rounded px-1 text-bodich-muted transition-colors hover:bg-bodich-panel-raised hover:text-bodich-ink"
+  >
+    {targetLocale.toUpperCase()}
+  </a>
+</div>

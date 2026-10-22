@@ -29,6 +29,11 @@ type Translations = {
   navigationLabel: string;
   menuLabel: string;
   languageLabel: string;
+  brandDescriptor: string;
+  currentLanguageLabel: string;
+  switchLanguageLabel: string;
+  languageNames: Record<Locale, string>;
+  skipContentLabel: string;
   previewLabel: string;
   intro: string;
   placeholder: string;
@@ -43,6 +48,11 @@ export const translations: Record<Locale, Translations> = {
     navigationLabel: 'Main navigation',
     menuLabel: 'Menu',
     languageLabel: 'Language',
+    brandDescriptor: 'Turbine engines',
+    currentLanguageLabel: 'Current language',
+    switchLanguageLabel: 'Switch language to',
+    languageNames: { en: 'English', ro: 'Romanian' },
+    skipContentLabel: 'Skip to content',
     previewLabel: 'Website preview',
     intro: 'A new BODICH website is taking shape.',
     placeholder: 'Content for this section is being prepared. Product specifications and company contact details will be published when confirmed.',
@@ -86,6 +96,11 @@ export const translations: Record<Locale, Translations> = {
     navigationLabel: 'Navigare principală',
     menuLabel: 'Meniu',
     languageLabel: 'Limbă',
+    brandDescriptor: 'Motoare cu turbină',
+    currentLanguageLabel: 'Limba curentă',
+    switchLanguageLabel: 'Schimbă limba în',
+    languageNames: { en: 'engleză', ro: 'română' },
+    skipContentLabel: 'Sari la conținut',
     previewLabel: 'Previzualizarea site-ului',
     intro: 'Noul site BODICH este în curs de pregătire.',
     placeholder: 'Conținutul acestei secțiuni este în curs de pregătire. Specificațiile produselor și datele de contact ale companiei vor fi publicate după confirmare.',
