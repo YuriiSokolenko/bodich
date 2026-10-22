@@ -1,0 +1,100 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1440 560" role="img" aria-labelledby="title desc">
+<title id="title">BODICH — turbine engines website concept</title>
+<desc id="desc">Original dark industrial graphic showing a stylized BODICH-branded turbine. Concept illustration, not a product photograph.</desc>
+<defs>
+  <linearGradient id="back" x1="0" y1="0" x2="1" y2="1">
+    <stop stop-color="#080d15"/><stop offset=".65" stop-color="#17202c"/><stop offset="1" stop-color="#090c12"/>
+  </linearGradient>
+  <radialGradient id="glow"><stop stop-color="#dd2d39" stop-opacity=".24"/><stop offset="1" stop-color="#dd2d39" stop-opacity="0"/></radialGradient>
+  <linearGradient id="steel" x1="0" x2="0" y1="0" y2="1">
+    <stop stop-color="#252b34"/><stop offset=".12" stop-color="#f1f3f5"/><stop offset=".3" stop-color="#747d8b"/><stop offset=".47" stop-color="#e5e8ec"/><stop offset=".72" stop-color="#606c79"/><stop offset="1" stop-color="#1a2029"/>
+  </linearGradient>
+  <radialGradient id="intake" cx=".45" cy=".52" r=".57">
+    <stop stop-color="#101923"/><stop offset=".62" stop-color="#070b12"/><stop offset=".89" stop-color="#27313e"/><stop offset="1" stop-color="#0d1118"/>
+  </radialGradient>
+  <linearGradient id="ring" x1="0" y1="0" x2="1" y2="1">
+    <stop stop-color="#f7f8fa"/><stop offset=".27" stop-color="#647180"/><stop offset=".55" stop-color="#f8fafc"/><stop offset=".75" stop-color="#8995a4"/><stop offset="1" stop-color="#222b37"/>
+  </linearGradient>
+  <linearGradient id="fin" x1="0" y1="0" x2="1" y2="1">
+    <stop stop-color="#bfc7d2"/><stop offset=".5" stop-color="#424c5a"/><stop offset="1" stop-color="#e8edf3"/>
+  </linearGradient>
+  <filter id="shadow"><feGaussianBlur stdDeviation="27"/></filter>
+  <clipPath id="mouth"><circle cx="915" cy="298" r="116"/></clipPath>
+</defs>
+<rect width="1440" height="560" fill="url(#back)"/>
+<circle cx="1155" cy="275" r="465" fill="url(#glow)"/>
+<g><path d="M0 110 H1440" stroke="#9ca9bc" stroke-opacity=".045"/>
+<path d="M0 147 H1440" stroke="#9ca9bc" stroke-opacity=".045"/>
+<path d="M0 184 H1440" stroke="#9ca9bc" stroke-opacity=".045"/>
+<path d="M0 221 H1440" stroke="#9ca9bc" stroke-opacity=".045"/>
+<path d="M0 258 H1440" stroke="#9ca9bc" stroke-opacity=".045"/>
+<path d="M0 295 H1440" stroke="#9ca9bc" stroke-opacity=".045"/>
+<path d="M0 332 H1440" stroke="#9ca9bc" stroke-opacity=".045"/>
+<path d="M0 369 H1440" stroke="#9ca9bc" stroke-opacity=".045"/>
+<path d="M0 406 H1440" stroke="#9ca9bc" stroke-opacity=".045"/>
+<path d="M0 443 H1440" stroke="#9ca9bc" stroke-opacity=".045"/>
+<path d="M0 480 H1440" stroke="#9ca9bc" stroke-opacity=".045"/>
+<path d="M0 517 H1440" stroke="#9ca9bc" stroke-opacity=".045"/>
+<path d="M0 554 H1440" stroke="#9ca9bc" stroke-opacity=".045"/></g>
+<path d="M0 506 H1440" stroke="#f43f4f" stroke-opacity=".36"/>
+<path d="M690 490 1250 490 M680 517 1380 517" stroke="#cdd4dc" stroke-opacity=".17"/>
+<g opacity=".5"><path d="M670 0V560 M810 0V560 M950 0V560 M1090 0V560 M1230 0V560" stroke="#8291a5" stroke-opacity=".1"/></g>
+<ellipse cx="1090" cy="464" rx="360" ry="33" fill="#000" opacity=".55" filter="url(#shadow)"/>
+<g transform="rotate(-5 1100 296)">
+<path d="M925 174 Q1198 164 1323 195 Q1388 253 1364 343 Q1339 412 1170 418 L925 421 Q1000 310 925 174Z" fill="url(#steel)" stroke="#d0d6df" stroke-width="2"/>
+<path d="M1190 179 L1250 180 1298 412 1230 416Z" fill="#0c131c" opacity=".38"/>
+<path d="M1236 185 Q1325 190 1363 242 L1368 362 Q1327 403 1269 414 L1250 179Z" fill="#3b4654" opacity=".8"/>
+<path d="M1270 189 L1291 187 1324 412 1300 416Z" fill="url(#steel)" opacity=".74"/>
+<path d="M1310 190 Q1402 216 1381 342 Q1371 392 1317 408Z" fill="#131b26" stroke="#a0acb8" stroke-width="2"/>
+<path d="M1040 177 L1057 420 M1090 173 L1106 420 M1160 170 L1175 420" stroke="#15212f" stroke-width="6" opacity=".5"/>
+<path d="M1025 210 H1248" stroke="#fff" stroke-opacity=".36" stroke-width="4"/>
+<rect x="1124" y="266" width="147" height="51" rx="4" fill="#111923" opacity=".88"/>
+<text x="1198" y="301" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="25" font-style="italic" font-weight="900" fill="#fff" letter-spacing="-1">BODICH</text>
+<path d="M1134 313 H1257" stroke="#f02941" stroke-width="5"/>
+<ellipse cx="919" cy="297" rx="157" ry="156" fill="url(#steel)" stroke="#d6dce4" stroke-width="3"/>
+<circle cx="915" cy="298" r="146" fill="url(#ring)" stroke="#1c2531" stroke-width="7"/>
+<circle cx="915" cy="298" r="122" fill="url(#intake)" stroke="#131d2a" stroke-width="7"/>
+<g clip-path="url(#mouth)" transform="translate(915 298)"><path d="M-18 -22 Q-52 -72 -12 -118 Q23 -112 35 -90 L22 -24 Z" transform="rotate(0)" fill="#d8dfe8" stroke="#18212d" stroke-width="2"/>
+<path d="M-18 -22 Q-52 -72 -12 -118 Q23 -112 35 -90 L22 -24 Z" transform="rotate(24)" fill="#a9b3bf" stroke="#18212d" stroke-width="2"/>
+<path d="M-18 -22 Q-52 -72 -12 -118 Q23 -112 35 -90 L22 -24 Z" transform="rotate(48)" fill="#d8dfe8" stroke="#18212d" stroke-width="2"/>
+<path d="M-18 -22 Q-52 -72 -12 -118 Q23 -112 35 -90 L22 -24 Z" transform="rotate(72)" fill="#a9b3bf" stroke="#18212d" stroke-width="2"/>
+<path d="M-18 -22 Q-52 -72 -12 -118 Q23 -112 35 -90 L22 -24 Z" transform="rotate(96)" fill="#d8dfe8" stroke="#18212d" stroke-width="2"/>
+<path d="M-18 -22 Q-52 -72 -12 -118 Q23 -112 35 -90 L22 -24 Z" transform="rotate(120)" fill="#a9b3bf" stroke="#18212d" stroke-width="2"/>
+<path d="M-18 -22 Q-52 -72 -12 -118 Q23 -112 35 -90 L22 -24 Z" transform="rotate(144)" fill="#d8dfe8" stroke="#18212d" stroke-width="2"/>
+<path d="M-18 -22 Q-52 -72 -12 -118 Q23 -112 35 -90 L22 -24 Z" transform="rotate(168)" fill="#a9b3bf" stroke="#18212d" stroke-width="2"/>
+<path d="M-18 -22 Q-52 -72 -12 -118 Q23 -112 35 -90 L22 -24 Z" transform="rotate(192)" fill="#d8dfe8" stroke="#18212d" stroke-width="2"/>
+<path d="M-18 -22 Q-52 -72 -12 -118 Q23 -112 35 -90 L22 -24 Z" transform="rotate(216)" fill="#a9b3bf" stroke="#18212d" stroke-width="2"/>
+<path d="M-18 -22 Q-52 -72 -12 -118 Q23 -112 35 -90 L22 -24 Z" transform="rotate(240)" fill="#d8dfe8" stroke="#18212d" stroke-width="2"/>
+<path d="M-18 -22 Q-52 -72 -12 -118 Q23 -112 35 -90 L22 -24 Z" transform="rotate(264)" fill="#a9b3bf" stroke="#18212d" stroke-width="2"/>
+<path d="M-18 -22 Q-52 -72 -12 -118 Q23 -112 35 -90 L22 -24 Z" transform="rotate(288)" fill="#d8dfe8" stroke="#18212d" stroke-width="2"/>
+<path d="M-18 -22 Q-52 -72 -12 -118 Q23 -112 35 -90 L22 -24 Z" transform="rotate(312)" fill="#a9b3bf" stroke="#18212d" stroke-width="2"/>
+<path d="M-18 -22 Q-52 -72 -12 -118 Q23 -112 35 -90 L22 -24 Z" transform="rotate(336)" fill="#d8dfe8" stroke="#18212d" stroke-width="2"/></g>
+<circle cx="915" cy="298" r="37" fill="#17222f" stroke="#d5dce4" stroke-width="5"/>
+<circle cx="915" cy="298" r="20" fill="url(#ring)" stroke="#182331" stroke-width="2"/>
+<circle cx="1052.0" cy="298.0" r="5.3" fill="#171c25" stroke="#aab7c6" stroke-width="2"/>
+<circle cx="1038.4" cy="357.4" r="5.3" fill="#171c25" stroke="#aab7c6" stroke-width="2"/>
+<circle cx="1000.4" cy="405.1" r="5.3" fill="#171c25" stroke="#aab7c6" stroke-width="2"/>
+<circle cx="945.5" cy="431.6" r="5.3" fill="#171c25" stroke="#aab7c6" stroke-width="2"/>
+<circle cx="884.5" cy="431.6" r="5.3" fill="#171c25" stroke="#aab7c6" stroke-width="2"/>
+<circle cx="829.6" cy="405.1" r="5.3" fill="#171c25" stroke="#aab7c6" stroke-width="2"/>
+<circle cx="791.6" cy="357.4" r="5.3" fill="#171c25" stroke="#aab7c6" stroke-width="2"/>
+<circle cx="778.0" cy="298.0" r="5.3" fill="#171c25" stroke="#aab7c6" stroke-width="2"/>
+<circle cx="791.6" cy="238.6" r="5.3" fill="#171c25" stroke="#aab7c6" stroke-width="2"/>
+<circle cx="829.6" cy="190.9" r="5.3" fill="#171c25" stroke="#aab7c6" stroke-width="2"/>
+<circle cx="884.5" cy="164.4" r="5.3" fill="#171c25" stroke="#aab7c6" stroke-width="2"/>
+<circle cx="945.5" cy="164.4" r="5.3" fill="#171c25" stroke="#aab7c6" stroke-width="2"/>
+<circle cx="1000.4" cy="190.9" r="5.3" fill="#171c25" stroke="#aab7c6" stroke-width="2"/>
+<circle cx="1038.4" cy="238.6" r="5.3" fill="#171c25" stroke="#aab7c6" stroke-width="2"/>
+<path d="M853 410 V445 H918 V424 M1158 411 V452 H1229 V407" fill="none" stroke="#677483" stroke-width="14" stroke-linejoin="round"/>
+</g>
+<g font-family="Arial,Helvetica,sans-serif">
+<path d="M72 110 H260" stroke="#f12c40" stroke-width="9"/>
+<path d="M68 125 H180" stroke="#f12c40" stroke-width="4"/>
+<text x="69" y="236" font-size="114" font-weight="900" font-style="italic" letter-spacing="-8" fill="#f7f8fb">BODICH</text>
+<path d="M71 250 H557" stroke="#f12c40" stroke-width="7"/>
+<text x="75" y="293" font-size="27" letter-spacing="11" font-weight="600" fill="#d6dce5">TURBINE ENGINES</text>
+<text x="74" y="383" font-size="34" fill="#f4f6f9" font-weight="600">WEBSITE &amp; PRODUCT CATALOG</text>
+<text x="75" y="425" font-size="20" letter-spacing="3.5" fill="#aab7c5">ENGLISH  /  ROMÂNĂ</text>
+<text x="74" y="514" font-size="14" letter-spacing="2" fill="#d1d8e1">CONCEPT VISUALIZATION  •  PREVIEW</text>
+</g>
+</svg>
