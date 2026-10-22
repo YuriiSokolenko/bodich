@@ -38,7 +38,7 @@ const t = translations[locale];
         </span>
       </a>
 
-      <nav aria-label={t.navigationLabel} class="ml-auto hidden items-center gap-0.5 lg:flex xl:gap-1">
+      <nav data-primary-navigation aria-label={t.navigationLabel} class="ml-auto hidden items-center gap-0.5 lg:flex xl:gap-1">
         {pageKeys.map((key) => (
           <a
             href={hrefFor(locale, key)}
@@ -127,7 +127,7 @@ const t = translations[locale];
   for (const menu of document.querySelectorAll<HTMLDetailsElement>('[data-mobile-navigation]')) {
     const summary = menu.querySelector('summary');
 
-    menu.addEventListener('keydown', (event) => {
+    document.addEventListener('keydown', (event) => {
       if (event.key === 'Escape' && menu.open) {
         menu.open = false;
         summary?.focus();
