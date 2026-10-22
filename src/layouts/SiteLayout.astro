@@ -43,7 +43,7 @@ const canonical = site ? new URL(hrefFor(locale, page), site).toString() : undef
       <main id="main-content" class="flex-1">
         <slot />
       </main>
-      <SiteFooter locale={locale} />
+      <SiteFooter locale={locale} page={page} />
     </div>
   </body>
 </html>
