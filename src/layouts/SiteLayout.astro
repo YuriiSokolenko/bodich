@@ -34,11 +34,11 @@ const canonical = site ? new URL(hrefFor(locale, page), site).toString() : undef
     ))}
     {site && <link rel="alternate" hreflang="x-default" href={new URL(hrefFor('en', page), site).toString()} />}
   </head>
-  <body class="min-h-screen bg-[#080d15] text-slate-50 antialiased">
-    <a href="#main-content" class="sr-only rounded bg-amber-400 px-3 py-2 text-slate-950 focus:not-sr-only focus:absolute focus:left-3 focus:top-3 focus:z-50">
+  <body class="min-h-dvh bg-bodich-canvas text-bodich-ink antialiased">
+    <a href="#main-content" class="sr-only rounded-control bg-bodich-accent px-3 py-2 text-bodich-accent-ink focus:not-sr-only focus:absolute focus:left-3 focus:top-3 focus:z-50">
       {locale === 'ro' ? 'Sari la conținut' : 'Skip to content'}
     </a>
-    <div class="flex min-h-screen flex-col">
+    <div class="flex min-h-dvh flex-col">
       <SiteHeader locale={locale} page={page} />
       <main id="main-content" class="flex-1">
         <slot />

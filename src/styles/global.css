@@ -1,27 +1,52 @@
 @import "tailwindcss";
 
+/* Tailwind v4 BODICH design tokens generate reusable color, font,
+   spacing, and radius utilities for both English and Romanian pages. */
+@theme {
+  --color-bodich-canvas: #080d15;
+  --color-bodich-panel: #111b27;
+  --color-bodich-panel-raised: #172332;
+  --color-bodich-ink: #f4f6fa;
+  --color-bodich-muted: #b9c4d2;
+  --color-bodich-dim: #8d9aa9;
+  --color-bodich-border: #334052;
+  /* Accessible contrast for interactive control boundaries. */
+  --color-bodich-control-border: #77879a;
+  --color-bodich-accent: #ff5264;
+  --color-bodich-accent-hover: #ff7685;
+  --color-bodich-accent-ink: #10131a;
+
+  /* Local system font fallbacks; no font assets or network dependencies. */
+  --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-display: "Arial Black", Arial, ui-sans-serif, system-ui, sans-serif;
+
+  --spacing-site-gutter: 1.25rem;
+  --spacing-site-gutter-lg: 2rem;
+  --spacing-site-section: 7rem;
+  --radius-control: 0.5rem;
+  --radius-pill: 9999px;
+}
+
 :root {
   color-scheme: dark;
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  background: #080d15;
-  color: #f3f6fa;
+  font-family: var(--font-sans);
+  background: var(--color-bodich-canvas);
+  color: var(--color-bodich-ink);
 }
 
-html {
-  scroll-behavior: smooth;
-}
-
-body {
-  margin: 0;
-  min-width: 320px;
-}
+html { scroll-behavior: smooth; }
+body { margin: 0; min-width: 320px; }
 
 :focus-visible {
-  outline: 3px solid #f9a84d;
+  outline: 3px solid var(--color-bodich-accent-hover);
   outline-offset: 4px;
 }
 
 ::selection {
-  background: #d78c36;
-  color: #07111e;
+  background: var(--color-bodich-accent);
+  color: var(--color-bodich-accent-ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
 }
