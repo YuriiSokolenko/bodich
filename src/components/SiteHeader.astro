@@ -22,7 +22,6 @@ const t = translations[locale];
     <div class="flex min-h-20 items-center gap-2 sm:gap-4">
       <a
         href={hrefFor(locale, 'home')}
-        aria-label={t.brandHomeLabel}
         class="group inline-flex shrink-0 items-center gap-2 sm:gap-3"
       >
         <span aria-hidden="true" class="hidden flex-col gap-1.5 sm:flex">
@@ -33,7 +32,7 @@ const t = translations[locale];
           <span class="font-display text-xl font-black italic leading-none tracking-[.08em] text-bodich-ink transition-colors group-hover:text-bodich-accent-hover sm:text-[1.65rem]">
             BODICH
           </span>
-          <span class="mt-1 hidden whitespace-nowrap text-[.55rem] font-semibold uppercase tracking-[.19em] text-bodich-dim sm:block">
+          <span class="mt-1 hidden whitespace-nowrap text-[.6875rem] font-semibold uppercase tracking-[.19em] text-bodich-dim sm:block">
             {t.brandDescriptor}
           </span>
         </span>
@@ -45,7 +44,7 @@ const t = translations[locale];
             href={hrefFor(locale, key)}
             aria-current={key === page ? 'page' : undefined}
             class:list={[
-              'whitespace-nowrap rounded-control px-2.5 py-3 text-[.78rem] font-semibold transition-colors xl:px-3',
+              'whitespace-nowrap rounded-control px-2.5 py-3 text-sm font-semibold transition-colors xl:px-3',
               key === page
                 ? 'bg-bodich-panel-raised text-bodich-accent'
                 : 'text-bodich-muted hover:bg-bodich-panel hover:text-bodich-ink',
