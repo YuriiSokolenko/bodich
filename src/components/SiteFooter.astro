@@ -1,0 +1,17 @@
+---
+import { hrefFor, translations, type Locale } from '../i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+---
+
+<footer class="border-t border-white/10 bg-[#070b12] py-8">
+  <div class="mx-auto flex max-w-6xl flex-col justify-between gap-4 px-5 text-sm text-slate-400 sm:flex-row sm:px-8">
+    <p>© {new Date().getFullYear()} BODICH</p>
+    <p>{translations[locale].footerNote}</p>
+    <a href={hrefFor(locale, 'contact')} class="text-slate-300 underline hover:text-white">{translations[locale].pages.contact.label}</a>
+  </div>
+</footer>

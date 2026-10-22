@@ -1,0 +1,60 @@
+name: Website CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main, feature/project-foundation]
+
+jobs:
+  # The first push of this new repository has no npm lockfile. Generate it
+  # once, commit it to the implementation branch, then use npm ci everywhere.
+  create-lockfile:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/feature/project-foundation'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+      - name: Produce committed dependency lockfile
+        run: |
+          if [ ! -f package-lock.json ]; then
+            npm install --package-lock-only --ignore-scripts
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add package-lock.json
+            git commit -m "chore: lock npm dependencies"
+            git push
+          fi
+
+  checks:
+    needs: [create-lockfile]
+    if: always() && (needs.create-lockfile.result == 'success' || needs.create-lockfile.result == 'skipped')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'push' && github.ref == 'refs/heads/feature/project-foundation' && 'feature/project-foundation' || github.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Validate Astro and TypeScript
+        run: npm run check
+      - name: Build static website
+        run: npm run build
+      - name: Check generated localized routes
+        run: |
+          test -f dist/index.html
+          for lang in en ro; do
+            for page in "" products accessories support about contact; do
+              test -f "dist/$lang/${page:+$page/}index.html"
+            done
+          done
