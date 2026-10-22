@@ -75,7 +75,7 @@ The website uses a **dark aerospace palette with steel neutrals and a red brand 
 
 Use semantic utilities like `bg-bodich-panel`, `text-bodich-muted`, `hover:text-bodich-accent-hover`, `font-display`, `px-site-gutter`, `sm:px-site-gutter-lg` and `rounded-control` rather than scattering raw hex values across Astro components. The accent foreground/background pairing provides approximately 5.9:1 contrast (WCAG AA). The control outline token provides over 3:1 contrast against the canvas. Keyboard focus uses the shared accent-hover token, and scrolling respects reduced-motion preferences. The shared layout uses `min-h-dvh` to handle mobile browser viewports.
 
-This step establishes the **tokens**, not the final component designs. Navigation, footer polish, card components and visual QA are separate items in [Phase 2](https://github.com/YuriiSokolenko/bodich/issues/4).
+Phase 2B established the **tokens**. Subsequent PRs delivered navigation and shared components in phases 2C–2D; browser-based visual QA remains in [Phase 2E](https://github.com/YuriiSokolenko/bodich/issues/4).
 
 ## Shared UI components
 
@@ -87,7 +87,7 @@ The shared presentation layer now includes a responsive footer and three small, 
 | [`ActionLink.astro`](src/components/ui/ActionLink.astro) | Semantic navigational link with primary/secondary treatments |
 | [`SurfaceCard.astro`](src/components/ui/SurfaceCard.astro) | Neutral bordered surface for content sections |
 
-The [site footer](src/components/SiteFooter.astro) has localized **Explore** and **Company** navigation groups, uses the same real EN/RO placeholder routes as the header, and marks the active page with `aria-current="page"`. It intentionally does not display unconfirmed phone numbers, email addresses, social accounts, dealers, payments or warranty information.
+The [site footer](src/components/SiteFooter.astro) has localized **Explore** and **Company** navigation groups, uses the same real EN/RO placeholder routes as the header, and marks the active page with `aria-current="page"`. Footer navigation uses `aria-labelledby` with localized screen-reader suffixes and touch-friendly link heights. Global `:focus-visible` styling in `src/styles/global.css` applies to these links and to `ActionLink`. The shared section page now presents its placeholder introduction inside a `SurfaceCard`, a deliberate visual change awaiting mobile QA. It intentionally does not display unconfirmed phone numbers, email addresses, social accounts, dealers, payments or warranty information.
 
 All visible footer strings are centralized in `src/i18n/index.ts`. Components are intentionally minimal; the upcoming visual QA stage will validate actual responsive rendering and accessibility.
 
