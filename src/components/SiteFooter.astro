@@ -1,17 +1,63 @@
 ---
-import { hrefFor, translations, type Locale } from '../i18n';
+import SiteContainer from './ui/SiteContainer.astro';
+import { hrefFor, translations, type Locale, type PageKey } from '../i18n';
 
 interface Props {
   locale: Locale;
+  page: PageKey;
 }
 
-const { locale } = Astro.props;
+const { locale, page } = Astro.props;
+const t = translations[locale];
+const footerGroups: { id: string; title: string; pages: PageKey[] }[] = [
+  { id: 'footer-explore-title', title: t.footerExploreTitle, pages: ['products', 'accessories', 'support'] },
+  { id: 'footer-company-title', title: t.footerCompanyTitle, pages: ['about', 'contact'] },
+];
 ---
 
-<footer class="border-t border-bodich-border/70 bg-bodich-panel/60 py-8">
-  <div class="mx-auto flex max-w-6xl flex-col justify-between gap-4 px-site-gutter text-sm text-bodich-dim sm:flex-row sm:px-site-gutter-lg">
-    <p>© {new Date().getFullYear()} BODICH</p>
-    <p>{translations[locale].footerNote}</p>
-    <a href={hrefFor(locale, 'contact')} class="text-bodich-muted underline hover:text-bodich-ink">{translations[locale].pages.contact.label}</a>
-  </div>
+<footer class="border-t border-bodich-border bg-bodich-panel/60">
+  <SiteContainer>
+    <div class="grid gap-10 py-12 sm:py-14 md:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)_minmax(0,1fr)]">
+      <div class="max-w-sm">
+        <a
+          href={hrefFor(locale, 'home')}
+          class="font-display text-2xl font-black italic tracking-[.08em] text-bodich-ink transition-colors hover:text-bodich-accent-hover"
+        >BODICH</a>
+        <p class="mt-4 text-sm leading-7 text-bodich-muted">{t.footerIntro}</p>
+        <span class="mt-5 inline-flex rounded-pill border border-bodich-border bg-bodich-panel-raised px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-bodich-muted">
+          {t.previewLabel}
+        </span>
+      </div>
+
+      {footerGroups.map((group) => (
+        <nav aria-labelledby={group.id}>
+          <h2 id={group.id} class="text-sm font-bold uppercase tracking-[.12em] text-bodich-ink">
+            {group.title}
+            <span class="sr-only"> — {t.footerNavigationSuffix}</span>
+          </h2>
+          <ul class="mt-5 flex flex-col gap-1.5">
+            {group.pages.map((key) => (
+              <li>
+                <a
+                  href={hrefFor(locale, key)}
+                  aria-current={page === key ? 'page' : undefined}
+                  class:list={[
+                    'inline-flex min-h-11 items-center rounded-control px-1 text-sm transition-colors hover:text-bodich-accent-hover',
+                    page === key ? 'font-semibold text-bodich-accent' : 'text-bodich-muted',
+                  ]}
+                >
+                  {t.pages[key].label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      ))}
+    </div>
+
+    <div class="flex flex-col gap-3 border-t border-bodich-border/70 py-6 text-xs leading-relaxed text-bodich-muted sm:flex-row sm:items-center sm:justify-between sm:gap-6">
+      <small>© {new Date().getFullYear()} BODICH</small>
+      <small>{t.footerNote}</small>
+    </div>
+  </SiteContainer>
 </footer>

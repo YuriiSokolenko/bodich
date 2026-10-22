@@ -40,6 +40,10 @@ type Translations = {
   browseProducts: string;
   backHome: string;
   footerNote: string;
+  footerIntro: string;
+  footerExploreTitle: string;
+  footerCompanyTitle: string;
+  footerNavigationSuffix: string;
   pages: Record<PageKey, PageText>;
 };
 
@@ -59,6 +63,10 @@ export const translations: Record<Locale, Translations> = {
     browseProducts: 'Explore products',
     backHome: 'Back to home',
     footerNote: 'Website in preparation. No online purchases are available yet.',
+    footerIntro: 'The bilingual BODICH product catalog is in development. Models and technical details will be published when confirmed.',
+    footerExploreTitle: 'Explore',
+    footerCompanyTitle: 'Company',
+    footerNavigationSuffix: 'footer navigation',
     pages: {
       home: {
         label: 'Home',
@@ -107,6 +115,10 @@ export const translations: Record<Locale, Translations> = {
     browseProducts: 'Explorează produsele',
     backHome: 'Înapoi la pagina principală',
     footerNote: 'Site în pregătire. Cumpărăturile online nu sunt încă disponibile.',
+    footerIntro: 'Catalogul bilingv de produse BODICH este în pregătire. Modelele și detaliile tehnice vor fi publicate după confirmare.',
+    footerExploreTitle: 'Explorează',
+    footerCompanyTitle: 'Companie',
+    footerNavigationSuffix: 'navigare în subsol',
     pages: {
       home: {
         label: 'Acasă',
