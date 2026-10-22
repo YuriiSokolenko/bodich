@@ -10,6 +10,8 @@
   --color-bodich-muted: #b9c4d2;
   --color-bodich-dim: #8d9aa9;
   --color-bodich-border: #334052;
+  /* Accessible contrast for interactive control boundaries. */
+  --color-bodich-control-border: #77879a;
   --color-bodich-accent: #ff5264;
   --color-bodich-accent-hover: #ff7685;
   --color-bodich-accent-ink: #10131a;
@@ -19,6 +21,7 @@
   --font-display: "Arial Black", Arial, ui-sans-serif, system-ui, sans-serif;
 
   --spacing-site-gutter: 1.25rem;
+  --spacing-site-gutter-lg: 2rem;
   --spacing-site-section: 7rem;
   --radius-control: 0.5rem;
   --radius-pill: 9999px;
