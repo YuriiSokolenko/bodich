@@ -145,7 +145,7 @@ try {
             assert.equal(await mobileMenu.getAttribute('open'), null, 'Escape should dismiss menu');
             await summary.press('Enter');
             assert.equal(await mobileMenu.getAttribute('open'), '', 'Enter should reopen menu');
-            await page.locator('main').click({ position: { x: 30, y: 20 } });
+            await page.mouse.click(5, 700); // Click well below the open menu overlay
             assert.equal(await mobileMenu.getAttribute('open'), null, 'Outside click should dismiss menu');
           }
 
