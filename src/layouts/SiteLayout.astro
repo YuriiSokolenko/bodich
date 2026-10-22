@@ -1,0 +1,49 @@
+---
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import '../styles/global.css';
+import { hrefFor, locales, translations, type Locale, type PageKey } from '../i18n';
+
+interface Props {
+  locale: Locale;
+  page: PageKey;
+}
+
+const { locale, page } = Astro.props;
+const pageText = translations[locale].pages[page];
+const site = Astro.site;
+const canonical = site ? new URL(hrefFor(locale, page), site).toString() : undefined;
+---
+
+<!doctype html>
+<html lang={locale}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="description" content={pageText.description} />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={pageText.title} />
+    <meta property="og:description" content={pageText.description} />
+    <title>{pageText.title} | BODICH</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    {canonical && <link rel="canonical" href={canonical} />}
+    {site && locales.map((lang) => (
+      <link rel="alternate" hreflang={lang} href={new URL(hrefFor(lang, page), site).toString()} />
+    ))}
+    {site && <link rel="alternate" hreflang="x-default" href={new URL(hrefFor('en', page), site).toString()} />}
+  </head>
+  <body class="min-h-screen bg-[#080d15] text-slate-50 antialiased">
+    <a href="#main-content" class="sr-only rounded bg-amber-400 px-3 py-2 text-slate-950 focus:not-sr-only focus:absolute focus:left-3 focus:top-3 focus:z-50">
+      {locale === 'ro' ? 'Sari la conținut' : 'Skip to content'}
+    </a>
+    <div class="flex min-h-screen flex-col">
+      <SiteHeader locale={locale} page={page} />
+      <main id="main-content" class="flex-1">
+        <slot />
+      </main>
+      <SiteFooter locale={locale} />
+    </div>
+  </body>
+</html>
