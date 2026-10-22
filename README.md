@@ -34,7 +34,8 @@
 | Responsive shared page layout | ✅ Basic layout; navigation and footer redesign planned in Phase 2 |
 | Product, Accessories, Support, About and Contact routes | ✅ Placeholder pages |
 | BODICH brand and README illustration | 🎨 Concept |
-| Design system and polished storefront UI | 🚧 Phase 2 |
+| Shared colors, typography, spacing and radius tokens | ✅ Phase 2B |
+| Polished storefront UI and responsive component redesign | 🚧 Phases 2C–2E |
 | Real product catalog, images and verified specifications | 📋 Planned |
 | Contact information and functioning inquiry forms | 📋 Awaiting company details |
 | Shopping cart, checkout, payment and order management | 🔒 Not enabled |
@@ -54,6 +55,28 @@
 | Future commerce | Separate integration after provider and requirements are chosen |
 
 The architecture intentionally avoids a database, backend and checkout integration until real requirements make them necessary.
+
+## BODICH design tokens
+
+The website uses a **dark aerospace palette with steel neutrals and a red brand accent**, matching the direction of the original README concept banner. All styling tokens live in [`src/styles/global.css`](src/styles/global.css) using Tailwind CSS v4's `@theme` directive; no separate Tailwind configuration file is needed.
+
+| Token / utility | Purpose | Value |
+| --- | --- | --- |
+| `bodich-canvas` | Base page background | `#080d15` |
+| `bodich-panel`, `bodich-panel-raised` | Surface layers | `#111b27`, `#172332` |
+| `bodich-ink`, `bodich-muted`, `bodich-dim` | Text hierarchy | `#f4f6fa`, `#b9c4d2`, `#8d9aa9` |
+| `bodich-border` | Separators and control outlines | `#334052` |
+| `bodich-accent`, `bodich-accent-hover` | Primary actions and emphasis | `#ff5264`, `#ff7685` |
+| `bodich-accent-ink` | Text on filled accent backgrounds | `#10131a` |
+| `font-sans`, `font-display` | Body and headline font stacks | System fonts; no remote loading |
+| `site-gutter`, `site-section` | Horizontal gutter / section spacing | `1.25rem`, `7rem` |
+| `control`, `pill` | Control / pill border radius | `0.5rem`, `9999px` |
+
+Use semantic utilities like `bg-bodich-panel`, `text-bodich-muted`, `hover:text-bodich-accent-hover`, `font-display`, `px-site-gutter` and `rounded-control` rather than scattering raw hex values across Astro components. The accent foreground/background pairing is selected for readable contrast. Keyboard focus uses the shared accent-hover token, and scrolling respects reduced-motion preferences.
+
+This step establishes the **tokens**, not the final component designs. Navigation, footer polish, card components and visual QA are separate items in [Phase 2](https://github.com/YuriiSokolenko/bodich/issues/4).
+
+
 
 ## Getting started
 
