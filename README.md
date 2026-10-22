@@ -31,7 +31,7 @@
 | --- | --- |
 | Astro + TypeScript + Tailwind CSS foundation | ✅ Implemented |
 | English and Romanian navigation | ✅ Implemented |
-| Responsive shared page layout | ✅ Initial implementation |
+| Responsive shared page layout | ✅ Basic layout; navigation and footer redesign planned in Phase 2 |
 | Product, Accessories, Support, About and Contact routes | ✅ Placeholder pages |
 | BODICH brand and README illustration | 🎨 Concept |
 | Design system and polished storefront UI | 🚧 Phase 2 |
@@ -78,11 +78,11 @@ Astro prints the development URL (typically `http://localhost:4321`). Browse `/e
 | `npm run build` | Generate the static website into `dist/` |
 | `npm run preview` | Preview generated pages locally |
 
-Use `npm ci` for reproducible installation from the committed lockfile. GitHub Actions runs installation, type checking, production build and route checks on pull requests.
+Use `npm ci` for reproducible installation from the committed lockfile. GitHub Actions runs installation, type checking, production build and route checks on pull requests to `main` and pushes to `main` (plus a temporary bootstrap feature-branch trigger, pending CI cleanup).
 
 ## Pages and localization
 
-The English locale is the default, and Romanian is available through an equivalent route. The root `/` redirects to `/en/`.
+The English locale is the default, and Romanian is available through an equivalent route. The root `/` redirects to `/en/`. Both locale versions are preliminary: Romanian copy needs native-speaker review before public launch.
 
 | Section | English | Română |
 | --- | --- | --- |
