@@ -29,7 +29,6 @@ type Translations = {
   navigationLabel: string;
   menuLabel: string;
   languageLabel: string;
-  brandHomeLabel: string;
   brandDescriptor: string;
   currentLanguageLabel: string;
   switchLanguageLabel: string;
@@ -49,7 +48,6 @@ export const translations: Record<Locale, Translations> = {
     navigationLabel: 'Main navigation',
     menuLabel: 'Menu',
     languageLabel: 'Language',
-    brandHomeLabel: 'BODICH — home page',
     brandDescriptor: 'Turbine engines',
     currentLanguageLabel: 'Current language',
     switchLanguageLabel: 'Switch language to',
@@ -98,7 +96,6 @@ export const translations: Record<Locale, Translations> = {
     navigationLabel: 'Navigare principală',
     menuLabel: 'Meniu',
     languageLabel: 'Limbă',
-    brandHomeLabel: 'BODICH — pagina principală',
     brandDescriptor: 'Motoare cu turbină',
     currentLanguageLabel: 'Limba curentă',
     switchLanguageLabel: 'Schimbă limba în',
