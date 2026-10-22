@@ -250,10 +250,11 @@ try {
         const summary = mobileMenu.locator('summary');
         await summary.click();
         assert.equal(await mobileMenu.getAttribute('open'), '', 'Native disclosure must open without JS');
-        await mobileMenu.getByRole('link', { name: expectedLabels[locale].products }).click();
-        assert.equal(new URL(page.url()).pathname, pathFor(locale, 'products'));
         await summary.click();
         assert.equal(await mobileMenu.getAttribute('open'), null, 'Native disclosure must close without JS');
+        await summary.click();
+        await mobileMenu.getByRole('link', { name: locale === 'en' ? 'Support' : 'Asistență' }).click();
+        assert.equal(new URL(page.url()).pathname, pathFor(locale, 'support'));
       } finally {
         await context.close();
       }
