@@ -91,6 +91,16 @@ The [site footer](src/components/SiteFooter.astro) has localized **Explore** and
 
 All visible footer strings are centralized in `src/i18n/index.ts`. Components are intentionally minimal; the upcoming visual QA stage will validate actual responsive rendering and accessibility.
 
+## Responsive browser QA
+
+The project includes a dedicated [Browser Visual QA GitHub Actions workflow](.github/workflows/visual-qa.yml) that serves a real production build in **headless Chromium** and checks English and Romanian layouts at **320px, 390px, 768px, 1024px, and 1440px**.
+
+It validates navigation and language switching, active footer links, mobile menu keyboard and pointer dismissal, accessible labels, horizontal overflow, the keyboard skip link and color contrast. Each run attaches a ZIP artifact with full-page screenshots, mobile open-menu screenshots, `report.md`, and `report.json`.
+
+The browser tests are implemented in [`scripts/visual-qa.mjs`](scripts/visual-qa.mjs). To run them locally, install the pinned Playwright browser library, build the website, run `npm run preview` in another terminal, then run `node scripts/visual-qa.mjs`. The GitHub workflow handles installation and serving automatically.
+
+**Automated browser passes are not a substitute for human visual inspection**, usability testing, native-speaker review of Romanian or real-device testing. Before public launch, review the captured EN/RO screenshots and mobile interactions.
+
 ## Getting started
 
 Prerequisites: Node.js 24 and npm. `.nvmrc` contains the expected Node.js major version.
