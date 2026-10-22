@@ -6,6 +6,11 @@ on:
     paths:
       - 'src/**'
       - 'astro.config.mjs'
+      - 'public/**'
+      - '.nvmrc'
+      - 'tsconfig.json'
+      - 'tailwind.config.*'
+      - 'vite.config.*'
       - 'scripts/visual-qa.mjs'
       - '.github/workflows/visual-qa.yml'
       - 'package.json'
@@ -14,6 +19,10 @@ on:
 
 permissions:
   contents: read
+
+concurrency:
+  group: visual-qa-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   browser-qa:
@@ -32,18 +41,18 @@ jobs:
       - name: Install locked app dependencies
         run: npm ci
 
-      # Keep browser QA self-contained. It doesn't rewrite package-lock.json
-      # or add a production dependency to the Astro website.
-      - name: Install pinned browser test library
-        run: npm install --no-save --package-lock=false playwright@1.64.1
-
-      - name: Install headless Chromium (runner already provides Linux system libraries)
-        run: npx playwright install --only-shell chromium
-
-      - name: Build actual static website
+      - name: Check Astro/TypeScript and build locked dependencies
         run: |
           npm run check
           npm run build
+
+      # Browser tooling is added only after the production build is created:
+      # no post-install changes can affect the tested Astro output.
+      - name: Install pinned browser test library (after build)
+        run: npm install --no-save --package-lock=false playwright@1.64.1
+
+      - name: Install headless Chromium (runner provides Linux system libraries)
+        run: npx playwright install --only-shell chromium
 
       - name: Launch production preview
         shell: bash
