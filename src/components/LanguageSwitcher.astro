@@ -14,11 +14,10 @@ const t = translations[locale];
 <div
   role="group"
   aria-label={t.languageLabel}
-  class="inline-flex h-10 shrink-0 items-center gap-1 rounded-control border border-bodich-control-border/70 bg-bodich-panel px-1.5 text-xs font-bold tracking-wider"
+  class="inline-flex h-12 shrink-0 items-center gap-1 rounded-control border border-bodich-control-border/70 bg-bodich-panel px-1.5 text-xs font-bold tracking-wider"
 >
   <span
-    lang={locale}
-    class="inline-flex h-7 min-w-7 items-center justify-center rounded bg-bodich-panel-raised px-1 text-bodich-accent"
+    class="inline-flex min-h-10 min-w-10 items-center justify-center rounded bg-bodich-panel-raised px-1 text-bodich-accent"
   >
     <span class="sr-only">{t.currentLanguageLabel}: {t.languageNames[locale]}</span>
     <span aria-hidden="true">{locale.toUpperCase()}</span>
@@ -29,9 +28,8 @@ const t = translations[locale];
   <a
     href={hrefFor(targetLocale, page)}
     hreflang={targetLocale}
-    lang={targetLocale}
-    aria-label={`${t.switchLanguageLabel} ${t.languageNames[targetLocale]}`}
-    class="inline-flex h-7 min-w-7 items-center justify-center rounded px-1 text-bodich-muted transition-colors hover:bg-bodich-panel-raised hover:text-bodich-ink"
+    aria-label={`${targetLocale.toUpperCase()} — ${t.switchLanguageLabel} ${t.languageNames[targetLocale]}`}
+    class="inline-flex min-h-10 min-w-10 items-center justify-center rounded px-1 text-bodich-muted transition-colors hover:bg-bodich-panel-raised hover:text-bodich-ink"
   >
     {targetLocale.toUpperCase()}
   </a>
