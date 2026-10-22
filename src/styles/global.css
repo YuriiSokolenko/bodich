@@ -34,7 +34,11 @@
   color: var(--color-bodich-ink);
 }
 
-html { scroll-behavior: smooth; }
+html {
+  scroll-behavior: smooth;
+  /* Keep in-page anchors and focused content visible below the sticky header. */
+  scroll-padding-top: 6rem;
+}
 body { margin: 0; min-width: 320px; }
 
 :focus-visible {
