@@ -40,6 +40,9 @@ type Translations = {
   browseProducts: string;
   backHome: string;
   footerNote: string;
+  footerIntro: string;
+  footerExploreTitle: string;
+  footerCompanyTitle: string;
   pages: Record<PageKey, PageText>;
 };
 
@@ -59,6 +62,9 @@ export const translations: Record<Locale, Translations> = {
     browseProducts: 'Explore products',
     backHome: 'Back to home',
     footerNote: 'Website in preparation. No online purchases are available yet.',
+    footerIntro: 'A bilingual turbine catalog in development. Models and technical details will be published when confirmed.',
+    footerExploreTitle: 'Explore',
+    footerCompanyTitle: 'Company',
     pages: {
       home: {
         label: 'Home',
@@ -107,6 +113,9 @@ export const translations: Record<Locale, Translations> = {
     browseProducts: 'Explorează produsele',
     backHome: 'Înapoi la pagina principală',
     footerNote: 'Site în pregătire. Cumpărăturile online nu sunt încă disponibile.',
+    footerIntro: 'Catalog bilingv de turbine în pregătire. Modelele și detaliile tehnice vor fi publicate după confirmare.',
+    footerExploreTitle: 'Explorează',
+    footerCompanyTitle: 'Companie',
     pages: {
       home: {
         label: 'Acasă',
