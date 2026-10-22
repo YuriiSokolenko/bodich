@@ -64,7 +64,21 @@ try {
         reducedMotion: 'reduce',
       });
       const browserErrors = [];
-      page.on('pageerror', (error) => browserErrors.push(error.message));
+      page.on('pageerror', (error) => browserErrors.push(`pageerror: ${error.message}`));
+      page.on('console', (message) => {
+        if (message.type() === 'error') browserErrors.push(`console.error: ${message.text()}`);
+      });
+      page.on('requestfailed', (request) => {
+        // Browser navigation may intentionally cancel an old document request.
+        if (request.failure()?.errorText !== 'net::ERR_ABORTED') {
+          browserErrors.push(`requestfailed: ${request.url()} - ${request.failure()?.errorText}`);
+        }
+      });
+      page.on('response', (response) => {
+        if (response.status() >= 400 && response.url().startsWith(baseUrl)) {
+          browserErrors.push(`HTTP ${response.status()}: ${response.url()}`);
+        }
+      });
 
       try {
         await verify(`${name}: localized product page and accessible shell`, async () => {
@@ -107,8 +121,8 @@ try {
         });
 
         await verify(`${name}: responsive navigation and language switch`, async () => {
-          const desktopNavigation = page.locator('header > div nav');
-          const mobileMenu = page.locator('header details');
+          const desktopNavigation = page.locator('header [data-primary-navigation]');
+          const mobileMenu = page.locator('header [data-mobile-navigation]');
           const mobileVisible = width < 1024;
 
           assert.equal(await mobileMenu.isVisible(), mobileVisible);
@@ -141,11 +155,22 @@ try {
               screenshots.push(shot);
             }
 
-            await summary.press('Escape');
-            assert.equal(await mobileMenu.getAttribute('open'), null, 'Escape should dismiss menu');
+            // Escape must dismiss the menu even when keyboard focus has moved
+            // outside <details>, and must restore focus to the toggle.
+            await page.locator('footer a').first().focus();
+            await page.keyboard.press('Escape');
+            assert.equal(await mobileMenu.getAttribute('open'), null, 'Document Escape should dismiss menu');
+            assert.equal(
+              await page.evaluate(() => document.activeElement?.tagName),
+              'SUMMARY',
+              'Escape should return focus to the menu summary',
+            );
             await summary.press('Enter');
             assert.equal(await mobileMenu.getAttribute('open'), '', 'Enter should reopen menu');
-            await page.mouse.click(5, 700); // Click well below the open menu overlay
+
+            // Click a stable, explicit element outside the overlay, not a
+            // viewport coordinate that may land on different content.
+            await page.locator('footer small').first().click();
             assert.equal(await mobileMenu.getAttribute('open'), null, 'Outside click should dismiss menu');
           }
 
@@ -164,10 +189,20 @@ try {
               ink: s.getPropertyValue('--color-bodich-accent-ink').trim(),
               canvas: s.getPropertyValue('--color-bodich-canvas').trim(),
               border: s.getPropertyValue('--color-bodich-control-border').trim(),
+              text: s.getPropertyValue('--color-bodich-ink').trim(),
+              muted: s.getPropertyValue('--color-bodich-muted').trim(),
+              dim: s.getPropertyValue('--color-bodich-dim').trim(),
+              panel: s.getPropertyValue('--color-bodich-panel').trim(),
+              focus: s.getPropertyValue('--color-bodich-accent-hover').trim(),
             };
           });
           assert(contrastRatio(colors.accent, colors.ink) >= 4.5, 'CTA text contrast below WCAG AA');
           assert(contrastRatio(colors.border, colors.canvas) >= 3, 'Control border contrast below WCAG nontext threshold');
+          assert(contrastRatio(colors.text, colors.canvas) >= 4.5, 'Body text contrast below WCAG AA');
+          assert(contrastRatio(colors.muted, colors.panel) >= 4.5, 'Muted text on panel contrast below WCAG AA');
+          assert(contrastRatio(colors.dim, colors.canvas) >= 4.5, 'Dim labels contrast below WCAG AA');
+          assert(contrastRatio(colors.accent, colors.canvas) >= 4.5, 'Accent text contrast below WCAG AA');
+          assert(contrastRatio(colors.focus, colors.canvas) >= 3, 'Focus outline contrast below WCAG nontext threshold');
 
           const filename = `${output}/screenshots/${name}-home.png`;
           const shot = await page.screenshot({ path: filename, fullPage: true });
@@ -195,12 +230,34 @@ try {
             assert.equal(new URL(page.url()).pathname, pathFor(target, 'support'));
           });
         }
-      } catch (error) {
-        record(`${name}: unexpected test error`, error);
       } finally {
         await page.close();
       }
     }
+  }
+
+  for (const locale of locales) {
+    await verify(`${locale}: menu works without JavaScript`, async () => {
+      const context = await browser.newContext({
+        javaScriptEnabled: false,
+        viewport: { width: 320, height: 900 },
+      });
+      try {
+        const page = await context.newPage();
+        const response = await page.goto(`${baseUrl}${pathFor(locale, 'products')}`, { waitUntil: 'load' });
+        assert.equal(response?.status(), 200);
+        const mobileMenu = page.locator('[data-mobile-navigation]');
+        const summary = mobileMenu.locator('summary');
+        await summary.click();
+        assert.equal(await mobileMenu.getAttribute('open'), '', 'Native disclosure must open without JS');
+        await mobileMenu.getByRole('link', { name: expectedLabels[locale].products }).click();
+        assert.equal(new URL(page.url()).pathname, pathFor(locale, 'products'));
+        await summary.click();
+        assert.equal(await mobileMenu.getAttribute('open'), null, 'Native disclosure must close without JS');
+      } finally {
+        await context.close();
+      }
+    });
   }
 
   await verify('All six localized sections resolve in both languages', async () => {
@@ -241,8 +298,8 @@ const markdown = [
   '',
   'Test matrix: English and Romanian at ' + widths.map((width) => `${width}px`).join(', ') + '.',
   '',
-  'Checks cover responsive navigation, menu dismissal, accessible labels, horizontal overflow,',
-  'language switching across page types, focus navigation, color contrast, and rendered screenshots.',
+  'Checks cover responsive navigation, document Escape and outside-click dismissal, native no-JS menu behavior,',
+  'accessible labels, horizontal overflow, language switching, focus return, sampled contrast, console/network errors, and screenshots.',
   '',
   'These tests are browser-based layout and interaction checks, **not** expert visual or',
   'native Romanian language approval. Screenshots should also be reviewed manually.',
