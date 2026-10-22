@@ -9,8 +9,10 @@ interface Props {
 
 const { locale, page } = Astro.props;
 const t = translations[locale];
-const catalogPages: PageKey[] = ['products', 'accessories', 'support'];
-const companyPages: PageKey[] = ['about', 'contact'];
+const footerGroups: { id: string; title: string; pages: PageKey[] }[] = [
+  { id: 'footer-explore-title', title: t.footerExploreTitle, pages: ['products', 'accessories', 'support'] },
+  { id: 'footer-company-title', title: t.footerCompanyTitle, pages: ['about', 'contact'] },
+];
 ---
 
 <footer class="border-t border-bodich-border bg-bodich-panel/60">
@@ -27,45 +29,30 @@ const companyPages: PageKey[] = ['about', 'contact'];
         </span>
       </div>
 
-      <nav aria-label={t.footerExploreTitle}>
-        <h2 class="text-sm font-bold uppercase tracking-[.12em] text-bodich-ink">{t.footerExploreTitle}</h2>
-        <ul class="mt-5 flex flex-col gap-3">
-          {catalogPages.map((key) => (
-            <li>
-              <a
-                href={hrefFor(locale, key)}
-                aria-current={page === key ? 'page' : undefined}
-                class:list={[
-                  'inline-flex min-h-8 items-center text-sm transition-colors hover:text-bodich-accent-hover',
-                  page === key ? 'font-semibold text-bodich-accent' : 'text-bodich-muted',
-                ]}
-              >
-                {t.pages[key].label}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </nav>
-
-      <nav aria-label={t.footerCompanyTitle}>
-        <h2 class="text-sm font-bold uppercase tracking-[.12em] text-bodich-ink">{t.footerCompanyTitle}</h2>
-        <ul class="mt-5 flex flex-col gap-3">
-          {companyPages.map((key) => (
-            <li>
-              <a
-                href={hrefFor(locale, key)}
-                aria-current={page === key ? 'page' : undefined}
-                class:list={[
-                  'inline-flex min-h-8 items-center text-sm transition-colors hover:text-bodich-accent-hover',
-                  page === key ? 'font-semibold text-bodich-accent' : 'text-bodich-muted',
-                ]}
-              >
-                {t.pages[key].label}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </nav>
+      {footerGroups.map((group) => (
+        <nav aria-labelledby={group.id}>
+          <h2 id={group.id} class="text-sm font-bold uppercase tracking-[.12em] text-bodich-ink">
+            {group.title}
+            <span class="sr-only"> — {t.footerNavigationSuffix}</span>
+          </h2>
+          <ul class="mt-5 flex flex-col gap-1.5">
+            {group.pages.map((key) => (
+              <li>
+                <a
+                  href={hrefFor(locale, key)}
+                  aria-current={page === key ? 'page' : undefined}
+                  class:list={[
+                    'inline-flex min-h-11 items-center rounded-control px-1 text-sm transition-colors hover:text-bodich-accent-hover',
+                    page === key ? 'font-semibold text-bodich-accent' : 'text-bodich-muted',
+                  ]}
+                >
+                  {t.pages[key].label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      ))}
     </div>
 
     <div class="flex flex-col gap-3 border-t border-bodich-border/70 py-6 text-xs leading-relaxed text-bodich-muted sm:flex-row sm:items-center sm:justify-between sm:gap-6">
