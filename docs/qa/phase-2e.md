@@ -4,14 +4,14 @@
 
 ## Verified run
 
-- [Browser Visual QA — run 39865430256](https://github.com/YuriiSokolenko/bodich/actions/runs/39865430256)
-- [Website CI — run 39865430293](https://github.com/YuriiSokolenko/bodich/actions/runs/39865430293)
-- Tested PR head: `4e2c583e8eba8c49d00e3ef9bd5b0ac2b2b6488e`
+- [Browser Visual QA — run 39866697953](https://github.com/YuriiSokolenko/bodich/actions/runs/39866697953)
+- [Website CI — run 39866698048](https://github.com/YuriiSokolenko/bodich/actions/runs/39866698048)
+- Tested source revision: `2b5d1bee8c2f95250b9e00cf525eb48bd84a51c9` (website and browser tests); this document update does not change the tested source.
 - Browser: Playwright 1.64.1, Chromium headless
-- **47 / 47 browser checks passed**
+- **49 / 49 browser checks passed**
 - **10** language/viewport combinations, **14** screenshots captured
 
-The screenshot ZIP, `report.json` and `report.md` are attached as **bodich-visual-qa-39865430256** to the successful workflow run, subject to GitHub's 14-day retention period.
+The screenshot ZIP, `report.json` and `report.md` are attached as **bodich-visual-qa-39866697953** to the successful workflow run, subject to GitHub's 14-day retention period.
 
 ## Test matrix
 
@@ -23,7 +23,7 @@ The screenshot ZIP, `report.json` and `report.md` are attached as **bodich-visua
 | 1024px | PASS | PASS | Desktop navigation |
 | 1440px | PASS | PASS | Desktop navigation |
 
-Browser assertions cover: language and routes, one accessible main heading, landmark and footer navigation labels, active route, lack of horizontal overflow, Header inside viewport, menu opening and dismissal (Escape and outside pointer), switching EN/RO while preserving section, language switch tap-target size, keyboard skip link, sampled CTA/outline contrast, and no page-script exceptions. All twelve localized pages resolve successfully.
+Browser assertions cover: language and routes, one accessible main heading, landmark and footer navigation labels, active route, no horizontal overflow, Header inside viewport, mobile menu dismissal via document-level Escape and outside pointer, focus return to the summary button, no-JavaScript native menu functionality, switching EN/RO while preserving section, switcher target size, keyboard skip link, sampled body/muted/accent/focus/control contrast, console errors, failed requests, HTTP 4xx/5xx resources and browser page-script exceptions. All twelve localized pages resolve successfully.
 
 ## Screenshot inspection
 
@@ -43,4 +43,4 @@ Automated checks and captured images are not a pixel-perfect baseline comparison
 - Final SEO/accessibility review once a real domain, product copy, and legal/contact details exist.
 - Confirm production indexing strategy, product images, data, and all commerce flows in later roadmap stages.
 
-**Conclusion:** Phase 2E automated Chromium responsive QA is green, and representative screenshots have been reviewed. Final merging of [PR #9](https://github.com/YuriiSokolenko/bodich/pull/9) still requires the normal PR review.
+**Conclusion:** Phase 2E automated Chromium responsive QA is green at the pinned source revision, and representative screenshots have been reviewed. Final merging of [PR #9](https://github.com/YuriiSokolenko/bodich/pull/9) still requires the normal PR review.
