@@ -97,7 +97,24 @@ The project includes a dedicated [Browser Visual QA GitHub Actions workflow](.gi
 
 It validates navigation and language switching, active footer links, mobile menu keyboard and pointer dismissal, accessible labels, horizontal overflow, the keyboard skip link and color contrast. Each run attaches a ZIP artifact with full-page screenshots, mobile open-menu screenshots, `report.md`, and `report.json`.
 
-The browser tests are implemented in [`scripts/visual-qa.mjs`](scripts/visual-qa.mjs). To run them locally, install the pinned Playwright browser library, build the website, run `npm run preview` in another terminal, then run `node scripts/visual-qa.mjs`. The GitHub workflow handles installation and serving automatically.
+The browser tests are implemented in [`scripts/visual-qa.mjs`](scripts/visual-qa.mjs). To run them locally, use Node.js 24 with the pinned Astro lockfile:
+
+```bash
+npm ci
+npm run check
+npm run build
+npm install --no-save --package-lock=false playwright@1.64.1
+npx playwright install --only-shell chromium
+npm run preview -- --host 127.0.0.1 --port 4321
+```
+
+In a **second terminal** run:
+
+```bash
+VISUAL_BASE_URL=http://127.0.0.1:4321 node scripts/visual-qa.mjs
+```
+
+`VISUAL_BASE_URL` is optional and defaults to `http://127.0.0.1:4321`. The GitHub workflow handles these steps automatically: it builds from locked dependencies **before** installing transient browser tooling, and uploads screenshot artifacts for 14 days. Browser assertions cover additional text and focus-ring contrast, console/network failures, Escape focus return and the native no-JavaScript menu fallback.
 
 **Automated browser passes are not a substitute for human visual inspection**, usability testing, native-speaker review of Romanian or real-device testing. Before public launch, review the captured EN/RO screenshots and mobile interactions.
 
