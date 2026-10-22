@@ -65,18 +65,17 @@ The website uses a **dark aerospace palette with steel neutrals and a red brand 
 | `bodich-canvas` | Base page background | `#080d15` |
 | `bodich-panel`, `bodich-panel-raised` | Surface layers | `#111b27`, `#172332` |
 | `bodich-ink`, `bodich-muted`, `bodich-dim` | Text hierarchy | `#f4f6fa`, `#b9c4d2`, `#8d9aa9` |
-| `bodich-border` | Separators and control outlines | `#334052` |
+| `bodich-border` | Subtle structural separators | `#334052` |
+| `bodich-control-border` | Higher contrast interactive outlines | `#77879a` |
 | `bodich-accent`, `bodich-accent-hover` | Primary actions and emphasis | `#ff5264`, `#ff7685` |
 | `bodich-accent-ink` | Text on filled accent backgrounds | `#10131a` |
-| `font-sans`, `font-display` | Body and headline font stacks | System fonts; no remote loading |
-| `site-gutter`, `site-section` | Horizontal gutter / section spacing | `1.25rem`, `7rem` |
+| `font-sans`, `font-display` | Body and headline font stacks | System fonts; no remote loading (Arial fallback when Arial Black is unavailable) |
+| `site-gutter`, `site-gutter-lg`, `site-section` | Small/large gutters and section spacing | `1.25rem`, `2rem`, `7rem` |
 | `control`, `pill` | Control / pill border radius | `0.5rem`, `9999px` |
 
-Use semantic utilities like `bg-bodich-panel`, `text-bodich-muted`, `hover:text-bodich-accent-hover`, `font-display`, `px-site-gutter` and `rounded-control` rather than scattering raw hex values across Astro components. The accent foreground/background pairing is selected for readable contrast. Keyboard focus uses the shared accent-hover token, and scrolling respects reduced-motion preferences.
+Use semantic utilities like `bg-bodich-panel`, `text-bodich-muted`, `hover:text-bodich-accent-hover`, `font-display`, `px-site-gutter`, `sm:px-site-gutter-lg` and `rounded-control` rather than scattering raw hex values across Astro components. The accent foreground/background pairing provides approximately 5.9:1 contrast (WCAG AA). The control outline token provides over 3:1 contrast against the canvas. Keyboard focus uses the shared accent-hover token, and scrolling respects reduced-motion preferences. The shared layout uses `min-h-dvh` to handle mobile browser viewports.
 
 This step establishes the **tokens**, not the final component designs. Navigation, footer polish, card components and visual QA are separate items in [Phase 2](https://github.com/YuriiSokolenko/bodich/issues/4).
-
-
 
 ## Getting started
 
