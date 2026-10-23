@@ -19,6 +19,49 @@ function validIsoDate(value) {
     && value <= new Date().toISOString().slice(0, 10);
 }
 
+/** Check actual raster dimensions without native dependencies. */
+function rasterDimensions(bytes, extension) {
+  if (extension === 'png') {
+    if (bytes.length < 24 || !bytes.subarray(0, 8).equals(Buffer.from('89504e470d0a1a0a', 'hex'))) return null;
+    return { width: bytes.readUInt32BE(16), height: bytes.readUInt32BE(20) };
+  }
+  if (extension === 'webp') {
+    if (bytes.length < 30 || bytes.toString('ascii', 0, 4) !== 'RIFF' || bytes.toString('ascii', 8, 12) !== 'WEBP') return null;
+    const format = bytes.toString('ascii', 12, 16);
+    if (format === 'VP8X') return { width: bytes.readUIntLE(24, 3) + 1, height: bytes.readUIntLE(27, 3) + 1 };
+    if (format === 'VP8L' && bytes[20] === 0x2f) {
+      return {
+        width: 1 + (bytes[21] | ((bytes[22] & 0x3f) << 8)),
+        height: 1 + (((bytes[22] & 0xc0) >> 6) | (bytes[23] << 2) | ((bytes[24] & 0x0f) << 10)),
+      };
+    }
+    if (format === 'VP8 ' && bytes[23] === 0x9d && bytes[24] === 0x01 && bytes[25] === 0x2a) {
+      return { width: bytes.readUInt16LE(26) & 0x3fff, height: bytes.readUInt16LE(28) & 0x3fff };
+    }
+    return null;
+  }
+  if (extension === 'jpg' || extension === 'jpeg') {
+    if (bytes.length < 4 || bytes[0] !== 0xff || bytes[1] !== 0xd8) return null;
+    let offset = 2;
+    while (offset + 4 < bytes.length) {
+      if (bytes[offset] !== 0xff) return null;
+      while (bytes[offset] === 0xff) offset++;
+      const marker = bytes[offset++];
+      if (marker === 0xda || marker === 0xd9) break;
+      if (marker === 0x01 || (marker >= 0xd0 && marker <= 0xd7)) continue;
+      if (offset + 2 > bytes.length) return null;
+      const length = bytes.readUInt16BE(offset);
+      if (length < 2 || offset + length > bytes.length) return null;
+      if ([0xc0, 0xc1, 0xc2, 0xc3, 0xc5, 0xc6, 0xc7, 0xc9, 0xca, 0xcb, 0xcd, 0xce, 0xcf].includes(marker)) {
+        if (length < 7) return null;
+        return { width: bytes.readUInt16BE(offset + 5), height: bytes.readUInt16BE(offset + 3) };
+      }
+      offset += length;
+    }
+  }
+  return null;
+}
+
 function validateImage(image, label, report = fail, publicRoot = resolve('public')) {
   if (!image || typeof image !== 'object' || Array.isArray(image)) {
     report(`Product "${label}" has an invalid image object`);
@@ -47,6 +90,14 @@ function validateImage(image, label, report = fail, publicRoot = resolve('public
   if (!relativeFile || relativeFile.startsWith('..') || isAbsolute(relativeFile)
       || !existsSync(destination) || !statSync(destination).isFile()) {
     report(`Product "${label}" image.src is not an existing file under public/: ${src}`);
+    return;
+  }
+  const extension = src.slice(src.lastIndexOf('.') + 1).toLowerCase();
+  const actual = rasterDimensions(readFileSync(destination), extension);
+  if (!actual || !actual.width || !actual.height) {
+    report(`Product "${label}" image has an invalid raster header: ${src}`);
+  } else if (actual.width !== image.width || actual.height !== image.height) {
+    report(`Product "${label}" image metadata differs from actual ${actual.width}x${actual.height}: ${src}`);
   }
 }
 
@@ -136,6 +187,7 @@ if (mode === '--self-test') {
       { name: 'negative width', image: { ...valid, width: -5 } },
       { name: 'zero height', image: { ...valid, height: 0 } },
       { name: 'fractional width', image: { ...valid, width: 1.5 } },
+      { name: 'file size mismatch', image: { ...valid, width: 2 } },
     ];
     const validErrors = [];
     validateImage(valid, 'self-test', message => validErrors.push(message), folder);
