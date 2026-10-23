@@ -76,35 +76,82 @@ function inspectWebp(bytes) {
     ? { width, height, privateMetadata } : null;
 }
 
+/**
+ * Scan JPEG markers, including all entropy-coded scan segments.
+ *
+ * Marker bytes inside compressed data can be escaped as FF 00; restart
+ * markers (FF D0...D7) are part of that stream. An actual marker after SOS
+ * can begin another scan, a metadata/comment segment, or terminate in EOI.
+ * Reject missing EOI, trailing bytes, and truncated marker segments.
+ *
+ * This inspects structure + common metadata but is not a pixel decoder.
+ */
 function inspectJpeg(bytes) {
   if (bytes.length < 8 || bytes[0] !== 0xff || bytes[1] !== 0xd8) return null;
-  let offset = 2, width = 0, height = 0, privateMetadata = false;
-  while (offset + 3 < bytes.length) {
-    if (bytes[offset] !== 0xff) return null;
-    while (bytes[offset] === 0xff) offset++;
+  let offset = 2;
+  let width = 0, height = 0, privateMetadata = false, scans = 0;
+
+  while (offset < bytes.length) {
+    if (bytes[offset++] !== 0xff) return null;
+    while (offset < bytes.length && bytes[offset] === 0xff) offset++;
+    if (offset >= bytes.length) return null;
     const marker = bytes[offset++];
-    if (marker === 0xd9) break;
-    if (marker === 0x01 || (marker >= 0xd0 && marker <= 0xd7)) continue;
+
+    if (marker === 0xd9) {
+      // Reject appended payloads as well as headers that never reached a scan.
+      return offset === bytes.length && width > 0 && height > 0 && scans > 0
+        ? { width, height, privateMetadata } : null;
+    }
+    // SOI, stuffed zero, and restart markers are never stand-alone headers.
+    if (marker === 0xd8 || marker === 0x00 || (marker >= 0xd0 && marker <= 0xd7)) return null;
+    if (marker === 0x01) continue;
     if (offset + 2 > bytes.length) return null;
     const length = bytes.readUInt16BE(offset);
     if (length < 2 || length > bytes.length - offset) return null;
-    if (marker === 0xe1 || marker === 0xed) privateMetadata = true;
+
+    // APP1 (EXIF/XMP), APP13 (IPTC) and COM can contain private information.
+    if (marker === 0xe1 || marker === 0xed || marker === 0xfe) privateMetadata = true;
     if ([0xc0, 0xc1, 0xc2, 0xc3, 0xc5, 0xc6, 0xc7,
          0xc9, 0xca, 0xcb, 0xcd, 0xce, 0xcf].includes(marker)) {
       if (length < 7) return null;
-      height = bytes.readUInt16BE(offset + 3);
-      width = bytes.readUInt16BE(offset + 5);
+      const nextHeight = bytes.readUInt16BE(offset + 3);
+      const nextWidth = bytes.readUInt16BE(offset + 5);
+      if (!nextWidth || !nextHeight || (width && (width !== nextWidth || height !== nextHeight))) return null;
+      width = nextWidth;
+      height = nextHeight;
     }
-    // SOS marks the start of compressed pixels. Metadata in APP segments
-    // has already been inspected; no need to decode entropy-coded data.
-    if (marker === 0xda) return width && height ? { width, height, privateMetadata } : null;
+
     offset += length;
+    if (marker !== 0xda) continue;
+
+    // Continue beyond SOS through the entropy-coded bytes instead of
+    // stopping at the first scan (progressive JPEG may use several).
+    scans++;
+    let nextMarker = false;
+    while (offset < bytes.length) {
+      if (bytes[offset++] !== 0xff) continue;
+      const markerStart = offset - 1;
+      while (offset < bytes.length && bytes[offset] === 0xff) offset++;
+      if (offset >= bytes.length) return null;
+      const escaped = bytes[offset];
+      if (escaped === 0x00 || (escaped >= 0xd0 && escaped <= 0xd7)) {
+        offset++;
+        continue;
+      }
+      offset = markerStart;
+      nextMarker = true;
+      break;
+    }
+    if (!nextMarker) return null;
   }
   return null;
 }
 
 export function inspectRaster(bytes, extension) {
   if (!Buffer.isBuffer(bytes) || bytes.length > MAX_CATALOG_IMAGE_BYTES) return null;
+  // The production path convention is lowercase, but the reusable inspector
+  // accepts case-insensitive extensions.
+  extension = typeof extension === 'string' ? extension.toLowerCase() : '';
   if (extension === 'png') return inspectPng(bytes);
   if (extension === 'webp') return inspectWebp(bytes);
   if (extension === 'jpg' || extension === 'jpeg') return inspectJpeg(bytes);

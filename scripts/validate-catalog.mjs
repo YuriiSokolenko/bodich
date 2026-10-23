@@ -80,7 +80,11 @@ function checkUnapprovedFiles(publicRoot, allowedPaths, report = fail) {
         report('Catalog directory contains an unsafe non-file entry: ' + segment);
       } else {
         const url = '/images/catalog/' + segment;
-        if (!allowedPaths.has(url)) report('Catalog contains unreferenced public photo/file: ' + url);
+        if (entry.name.startsWith('.')) {
+          report('Remove hidden local file ' + url + ' before running catalog checks (Finder .DS_Store and other dotfiles are copied from public/ by Astro).');
+        } else if (!allowedPaths.has(url)) {
+          report('Catalog contains unreferenced public photo/file: ' + url);
+        }
       }
     }
   };
