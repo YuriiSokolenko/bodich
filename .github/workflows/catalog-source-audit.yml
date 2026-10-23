@@ -1,0 +1,50 @@
+name: KingTech source inventory audit
+
+on:
+  push:
+    branches: [feature/issue-25-kingtech-source-inventory]
+    paths:
+      - .github/workflows/catalog-source-audit.yml
+      - scripts/audit-kingtech-source.mjs
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: kingtech-reference-audit-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  refresh-reference:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Audit public KingTech source listings (review only)
+        run: node scripts/audit-kingtech-source.mjs --write
+      - name: Validate inventory provenance and category counts
+        run: |
+          node scripts/validate-source-inventory.mjs
+          node scripts/validate-source-inventory.mjs --self-test
+      - name: Commit only a complete audited reference inventory
+        run: |
+          if ! git diff --quiet -- docs/catalog/source-inventory.json; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add docs/catalog/source-inventory.json
+            git commit -m "docs(catalog): refresh verified source inventory [skip ci]"
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi
+      - name: Save incomplete audit for review
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: incomplete-kingtech-source-audit
+          path: docs/catalog/source-inventory.json
+          if-no-files-found: ignore
+          retention-days: 7
