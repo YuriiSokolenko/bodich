@@ -14,6 +14,10 @@ const expectedLabels = {
   en: { products: 'Products', footer: ['Explore', 'Company'] },
   ro: { products: 'Produse', footer: ['Explorează', 'Companie'] },
 };
+const heroExpectations = {
+  en: { caption: 'Concept rendering', altFragment: 'miniature jet turbine' },
+  ro: { caption: 'Vizualizare conceptuală', altFragment: 'turboreactor miniatural' },
+};
 const failures = [];
 const checks = [];
 const screenshots = [];
@@ -177,6 +181,57 @@ try {
           await link.click();
           assert.equal(new URL(page.url()).pathname, pathFor(target, 'products'));
           assert.equal(await page.locator('html').getAttribute('lang'), target);
+        });
+
+        await verify(`${name}: localized turbine hero loads without crop or overflow`, async () => {
+          const response = await page.goto(`${baseUrl}${pathFor(locale, 'home')}`, { waitUntil: 'load' });
+          assert.equal(response?.status(), 200);
+
+          const figure = page.locator('main figure');
+          assert.equal(await figure.count(), 1, 'Home must render one turbine hero figure');
+          const image = figure.locator('img');
+          assert.equal(await image.getAttribute('src'), '/images/turbines/bodich-hero-concept.webp');
+          assert((await image.getAttribute('alt'))?.includes(heroExpectations[locale].altFragment),
+            'The hero image must have meaningful localized alt text');
+          assert.equal((await figure.locator('figcaption').innerText()).trim(),
+            heroExpectations[locale].caption, 'Concept disclosure must be localized and visible');
+          assert.equal(await figure.locator('figcaption').isVisible(), true);
+          assert.equal(await image.getAttribute('width'), '1672');
+          assert.equal(await image.getAttribute('height'), '941');
+          assert.equal(await image.getAttribute('loading'), 'eager', 'Hero must not lazy-load');
+          assert.equal(await image.getAttribute('fetchpriority'), 'high', 'Hero is LCP-priority');
+
+          const dimensions = await image.evaluate((img) => ({
+            complete: img.complete,
+            naturalWidth: img.naturalWidth,
+            naturalHeight: img.naturalHeight,
+          }));
+          assert.equal(dimensions.complete, true, 'Hero image request must complete');
+          assert.equal(dimensions.naturalWidth, 1672, 'Hero image must decode at source width');
+          assert.equal(dimensions.naturalHeight, 941, 'Hero image must decode at source height');
+
+          const box = await image.boundingBox();
+          const heading = await page.locator('main h1').boundingBox();
+          const caption = await figure.locator('figcaption').boundingBox();
+          assert(box && heading && caption, 'Hero, heading and disclosure must be rendered');
+          assert(box.x >= -1 && box.x + box.width <= width + 1, 'Hero extends outside viewport');
+          assert(box.height > 0 && Math.abs(box.width / box.height - 1672 / 941) < 0.03,
+            'Hero must preserve the full uncropped image aspect ratio');
+          assert(caption.y >= box.y + box.height - 1, 'Concept disclosure must appear below the image');
+
+          if (width < 1024) {
+            assert(heading.y + heading.height <= box.y + 1,
+              'Mobile and tablet hero heading must be above, not over, the image');
+          } else {
+            assert(heading.y >= box.y - 1 && heading.y + heading.height <= box.y + box.height + 1,
+              'Desktop hero heading must remain inside the image area');
+            assert(heading.x + heading.width <= box.x + box.width * 0.72,
+              'Desktop hero headline must stay in the photo’s left negative-space area');
+          }
+
+          const productLink = page.locator(`main a[href="${pathFor(locale, 'products')}"]`);
+          assert.equal(await productLink.count(), 1, 'Hero must link to the localized products page');
+          assert.equal(await productLink.isVisible(), true);
         });
 
         await verify(`${name}: headings, contrast, screenshot and browser errors`, async () => {
