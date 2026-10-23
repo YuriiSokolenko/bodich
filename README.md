@@ -176,6 +176,10 @@ The source of truth is [`src/catalog/data.ts`](src/catalog/data.ts): category ID
 
 Category pages include localized breadcrumbs and metadata; the shared `hrefFor` helper keeps their URLs, language switching, canonical tags and hreflang links consistent (including nested deployment bases). CI additionally builds with `ASTRO_BASE=/bodich-preview` and verifies generated navigation, metadata, static image assets and redirects. When company-verified records are added to `confirmedProducts`, Astro generates linked product cards and localized model pages at `/{locale}/{section}/{category}/{slug}/`. These pages contain only verified bilingual names/summaries and optional company-provided photographs, with accessible image fallbacks, breadcrumbs, localized metadata and links to the matching category. No empty or invented product-detail routes are emitted: while the collection remains empty there are **zero public model pages**. The catalog validator also checks that generated model routes exist after build. Product prices, specifications, inventory, cart and checkout remain outside this phase. The existing AI-generated concept artwork stays labeled and separate from confirmed product photographs.
 
+### Add a verified product
+
+Follow [the verified catalog intake guide](docs/catalog/README.md). Complete the [intake JSON template](docs/catalog/intake-template.json) from authoritative BODICH materials, then run `npm run catalog:intake -- path/to/candidate.json`. The command checks the candidate without writing to the public catalog. Only after human review of sources, image rights and translations should the approved record be added to the marked `confirmedProducts` array; CI then validates the resulting localized model pages.
+
 ## Project organization
 
 ```text
