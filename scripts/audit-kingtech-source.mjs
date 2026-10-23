@@ -93,7 +93,7 @@ async function fetchHtml(url) {
       const isListing = new URL(url).pathname.startsWith('/shop/');
       await browserPage.waitForFunction((listing) => {
         const text = document.body?.innerText || '';
-        return listing ? /[0-9]+\\s+results?|items aren't available|no items available/i.test(text)
+        return listing ? /results?|items aren't available|no items available/i.test(text)
           : [...document.querySelectorAll('h1')].some((element) => (element.textContent || '').trim().length > 0);
       }, isListing, { timeout: 16000 }).catch(() => {});
       await browserPage.waitForTimeout(350);
