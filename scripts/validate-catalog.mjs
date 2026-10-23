@@ -1,4 +1,5 @@
-import { existsSync, statSync, readFileSync } from 'node:fs';
+import { existsSync, statSync, readFileSync, writeFileSync, mkdirSync, mkdtempSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { resolve, join, relative, isAbsolute } from 'node:path';
 import { catalogCategories, confirmedProducts } from '../src/catalog/data.ts';
 import { locales } from '../src/i18n/index.ts';
@@ -18,7 +19,7 @@ function validIsoDate(value) {
     && value <= new Date().toISOString().slice(0, 10);
 }
 
-function validateImage(image, label, report = fail) {
+function validateImage(image, label, report = fail, publicRoot = resolve('public')) {
   if (!image || typeof image !== 'object' || Array.isArray(image)) {
     report(`Product "${label}" has an invalid image object`);
     return;
@@ -40,7 +41,7 @@ function validateImage(image, label, report = fail) {
     report(`Product "${label}" image.src must be a PNG, JPEG or WebP asset under public/images/catalog/`);
     return;
   }
-  const root = resolve('public');
+  const root = resolve(publicRoot);
   const destination = resolve(root, '.' + src);
   const relativeFile = relative(root, destination);
   if (!relativeFile || relativeFile.startsWith('..') || isAbsolute(relativeFile)
@@ -117,26 +118,38 @@ if (mode && !['--routes', '--self-test', '--intake'].includes(mode)) fail(`Unkno
 
 // Regression coverage even while confirmedProducts is intentionally empty.
 if (mode === '--self-test') {
-  const valid = { src: '/favicon.svg', width: 16, height: 16, alt: { en: 'Test', ro: 'Test' } };
-  const scenarios = [
-    { name: 'missing image file', image: { ...valid, src: '/not-a-real-image.png' } },
-    { name: 'unsafe image path', image: { ...valid, src: '/../README.md' } },
-    { name: 'missing EN alt', image: { ...valid, alt: { en: '', ro: 'Test' } } },
-    { name: 'missing RO alt', image: { ...valid, alt: { en: 'Test', ro: ' ' } } },
-    { name: 'negative width', image: { ...valid, width: -5 } },
-    { name: 'zero height', image: { ...valid, height: 0 } },
-    { name: 'fractional width', image: { ...valid, width: 1.5 } },
-  ];
-  const validIssues = [];
-  validateImage(valid, 'self-test', (message) => validIssues.push(message));
-  if (validIssues.length) fail(`Validator rejects valid image fixture: ${validIssues.join('; ')}`);
-  for (const scenario of scenarios) {
-    const issues = [];
-    validateImage(scenario.image, 'self-test', (message) => issues.push(message));
-    if (issues.length === 0) fail(`Validator accepted invalid fixture: ${scenario.name}`);
+  // Disposable test raster; no demo images are copied to production public/.
+  const folder = mkdtempSync(join(tmpdir(), 'bodich-photo-validation-'));
+  try {
+    mkdirSync(join(folder, 'images', 'catalog'), { recursive: true });
+    writeFileSync(join(folder, 'images', 'catalog', 'fixture.png'), Buffer.from(
+      'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Y9qLGkAAAAASUVORK5CYII=',
+      'base64',
+    ));
+    const valid = { src: '/images/catalog/fixture.png', width: 1, height: 1, alt: { en: 'Test', ro: 'Test' } };
+    const scenarios = [
+      { name: 'missing photo', image: { ...valid, src: '/images/catalog/does-not-exist.png' } },
+      { name: 'concept art path', image: { ...valid, src: '/images/turbines/concept.webp' } },
+      { name: 'unsafe path', image: { ...valid, src: '/../README.md' } },
+      { name: 'missing EN alt', image: { ...valid, alt: { en: '', ro: 'Test' } } },
+      { name: 'missing RO alt', image: { ...valid, alt: { en: 'Test', ro: '' } } },
+      { name: 'negative width', image: { ...valid, width: -5 } },
+      { name: 'zero height', image: { ...valid, height: 0 } },
+      { name: 'fractional width', image: { ...valid, width: 1.5 } },
+    ];
+    const validErrors = [];
+    validateImage(valid, 'self-test', message => validErrors.push(message), folder);
+    if (validErrors.length) fail('Validator rejects good photo fixture: ' + validErrors.join('; '));
+    for (const scenario of scenarios) {
+      const errors = [];
+      validateImage(scenario.image, 'self-test', message => errors.push(message), folder);
+      if (!errors.length) fail('Validator accepted bad photo fixture: ' + scenario.name);
+    }
+  } finally {
+    rmSync(folder, { recursive: true, force: true });
   }
   for (const date of ['2099-01-01', '2026-02-30', '2026-1-01']) {
-    if (validIsoDate(date)) fail(`Validator accepted invalid or future date: ${date}`);
+    if (validIsoDate(date)) fail('Validator accepted invalid or future date: ' + date);
   }
   if (!validIsoDate('2020-01-01')) fail('Validator rejected valid historical date');
 }

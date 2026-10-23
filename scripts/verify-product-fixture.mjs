@@ -27,6 +27,12 @@ try {
   }
   assert(existsSync(join(root, 'node_modules')), 'Run npm ci before the fixture smoke test');
   symlinkSync(join(root, 'node_modules'), join(temp, 'node_modules'), 'dir');
+  const photoFolder = join(temp, 'public', 'images', 'catalog');
+  mkdirSync(photoFolder, { recursive: true });
+  writeFileSync(join(photoFolder, 'ci-fixture.png'), Buffer.from(
+    'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Y9qLGkAAAAASUVORK5CYII=',
+    'base64',
+  ));
 
   const dataPath = join(temp, 'src/catalog/data.ts');
   const original = readFileSync(dataPath, 'utf8');
@@ -55,10 +61,10 @@ try {
         ro: { name: 'Turbină de test CI', summary: 'Conținut de test, nepublicabil.' },
       },
       image: {
-        src: '/favicon.svg',
+        src: '/images/catalog/ci-fixture.png',
         alt: { en: 'CI test graphic', ro: 'Grafic de test CI' },
-        width: 32,
-        height: 32,
+        width: 1,
+        height: 1,
       },
       verification: { sourceReference: 'TEST-FIXTURE-NOT-A-REAL-PRODUCT', confirmedOn: '2020-01-01' },
     },
@@ -110,7 +116,7 @@ try {
   assertContains(engineEn, 'data-product-detail="ci-fixture-engine"', 'EN product detail');
   assertContains(engineEn, 'CI fixture turbine', 'EN product detail');
   assertContains(engineEn, 'alt="CI test graphic"', 'EN product photo alt');
-  assertContains(engineEn, 'src="/bodich-preview/favicon.svg"', 'EN product photo URL');
+  assertContains(engineEn, 'src="/bodich-preview/images/catalog/ci-fixture.png"', 'EN product photo URL');
   assertContains(engineEn, 'href="/bodich-preview/ro/products/turbine-engines/ci-fixture-engine/"', 'EN language switch');
   assertContains(engineEn, 'href="https://example.invalid/bodich-preview/en/products/turbine-engines/ci-fixture-engine/"', 'EN canonical');
   assertContains(engineRo, 'Turbină de test CI', 'RO product detail');
