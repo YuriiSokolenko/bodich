@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/assets/bodich-banner.svg" alt="BODICH turbine engines — original concept artwork for the bilingual website" width="100%" />
+  <img src="public/images/turbines/bodich-hero-concept.webp" alt="AI-generated concept rendering of a BODICH miniature jet turbine" width="100%" />
 </p>
 
 <h1 align="center">BODICH — Turbine Website</h1>
@@ -17,7 +17,7 @@
 </p>
 
 > [!IMPORTANT]
-> **Development preview — not a live store.** BODICH products, specifications, contact details, pricing, stock, legal policies and production domain are not confirmed or published. No orders or payments can be placed. The turbine artwork above is an **original conceptual illustration**, not a photograph of an existing BODICH product.
+> **Development preview — not a live store.** BODICH products, specifications, contact details, pricing, stock, legal policies and production domain are not confirmed or published. No orders or payments can be placed. The turbine artwork above is an **AI-generated concept rendering**, not a photograph of an existing BODICH product.
 
 ## About
 
@@ -33,7 +33,7 @@
 | English and Romanian navigation | ✅ Implemented |
 | Responsive shared page layout | ✅ Header implemented (2C); footer and shared UI components implemented (2D) |
 | Product, Accessories, Support, About and Contact routes | ✅ Placeholder pages |
-| BODICH brand and README illustration | 🎨 Concept |
+| BODICH brand and README hero image | 🎨 AI-generated concept |
 | Shared colors, typography, spacing and radius tokens | ✅ Phase 2B |
 | Final visual QA on mobile and desktop | 🚧 Phase 2E — not yet verified |
 | Real product catalog, images and verified specifications | 📋 Planned |
@@ -58,7 +58,7 @@ The architecture intentionally avoids a database, backend and checkout integrati
 
 ## BODICH design tokens
 
-The website uses a **dark aerospace palette with steel neutrals and a red brand accent**, matching the direction of the original README concept banner. All styling tokens live in [`src/styles/global.css`](src/styles/global.css) using Tailwind CSS v4's `@theme` directive; no separate Tailwind configuration file is needed.
+The website uses a **dark aerospace palette with steel neutrals and a red brand accent**, matching the direction of the BODICH turbine concept hero image. All styling tokens live in [`src/styles/global.css`](src/styles/global.css) using Tailwind CSS v4's `@theme` directive; no separate Tailwind configuration file is needed.
 
 | Token / utility | Purpose | Value |
 | --- | --- | --- |
@@ -162,7 +162,7 @@ Translated UI strings and route helpers live in [`src/i18n/index.ts`](src/i18n/i
 
 ```text
 .github/workflows/ci.yml    # type checking, build and route checks
-docs/assets/                # brand concepts and project illustrations
+docs/assets/                # brand concepts; legacy SVG banner retained for reference
 public/                     # public static assets and crawler policy
 src/
   components/               # localized header, footer and shared page components
