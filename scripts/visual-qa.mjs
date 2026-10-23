@@ -161,6 +161,11 @@ try {
               'Catalog image must not be cropped horizontally');
             assert(Math.abs(rect.width / rect.height - 1) < 0.02, 'Square catalog concept must retain its full ratio');
           }
+          // After scrolling to decode lazy images, reset to the document top.
+          // Otherwise Chromium can paint the sticky header in the middle of
+          // a full-page screenshot even though the page layout is correct.
+          await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
+          await page.waitForFunction(() => window.scrollY === 0);
           const shot = `${output}/screenshots/${name}-products.png`;
           await page.screenshot({ path: shot, fullPage: true });
           screenshots.push(shot);
