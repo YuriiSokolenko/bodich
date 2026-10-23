@@ -154,7 +154,11 @@ function validJpegStructuralSegment(marker, payload) {
       if ((spec >> 4) > 1 || (spec & 0x0f) > 3) return false;
       if (spec >> 4) {
         if (conditioner > 63) return false;
-      } else if ((conditioner >> 4) > (conditioner & 0x0f)) return false;
+      } else {
+        // DAC DC conditioning encodes U in the high nibble and L in the
+        // low nibble. ISO/IEC 10918-1 requires L <= U.
+        if ((conditioner & 0x0f) > (conditioner >> 4)) return false;
+      }
     }
     return true;
   }
@@ -193,13 +197,15 @@ function allowedJpegAppSegment(marker, payload) {
     if (profile.readUInt32BE(0) !== profile.length ||
         profile.toString('ascii', 36, 40) !== 'acsp') return false;
     const tagCount = profile.readUInt32BE(128);
-    if (132 + tagCount * 12 > profile.length) return false;
-    // Reject malformed tag offsets/lengths; do not attempt full ICC decoding.
+    const tagDataStart = 132 + tagCount * 12;
+    if (tagDataStart > profile.length) return false;
+    // Tag bytes must begin AFTER the full tag directory (not inside it).
+    // Reject malformed offsets/lengths; full ICC sanitization is out of scope.
     for (let i = 0; i < tagCount; i++) {
       const table = 132 + i * 12;
       const start = profile.readUInt32BE(table + 4);
       const length = profile.readUInt32BE(table + 8);
-      if (start < 128 || length > profile.length - start) return false;
+      if (start < tagDataStart || length > profile.length - start) return false;
     }
     return true;
   }

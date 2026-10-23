@@ -145,9 +145,39 @@ export function runImageSelfTest({ fail, validateImage, checkUnapprovedFiles, va
   const icc = Buffer.concat([Buffer.from('ICC_PROFILE\0', 'ascii'),
     Buffer.from([1, 1]), iccBody]);
 
+  // One actual tag whose data starts precisely after its directory.
+  // The header and tag table are structural only; the tag contents are
+  // intentionally not interpreted as proof of metadata sanitization.
+  const taggedIccBody = Buffer.alloc(148);
+  taggedIccBody.writeUInt32BE(taggedIccBody.length, 0);
+  taggedIccBody.write('acsp', 36, 'ascii');
+  taggedIccBody.writeUInt32BE(1, 128);
+  taggedIccBody.write('desc', 132, 'ascii');
+  taggedIccBody.writeUInt32BE(144, 136);
+  taggedIccBody.writeUInt32BE(4, 140);
+  taggedIccBody.write('test', 144, 'ascii');
+  const taggedIcc = Buffer.concat([
+    Buffer.from('ICC_PROFILE\0', 'ascii'), Buffer.from([1, 1]), taggedIccBody,
+  ]);
+
+  function paddedIccPayload(profileSize) {
+    const profile = Buffer.alloc(profileSize);
+    profile.writeUInt32BE(profile.length, 0);
+    profile.write('acsp', 36, 'ascii');
+    return Buffer.concat([
+      Buffer.from('ICC_PROFILE\0', 'ascii'), Buffer.from([1, 1]), profile,
+    ]);
+  }
+  // Both profiles have consistent header-declared sizes and tag counts.
+  // Thus only the explicit 32 KiB limit separates their acceptance.
+  const iccAtCap = paddedIccPayload(32 * 1024 - 14);
+  const iccOverCap = paddedIccPayload(32 * 1024 - 14 + 1);
+
   for (const [label, marker, payload] of [
     ['JFIF', 0xe0, jfif],
     ['ICC profile', 0xe2, icc],
+    ['ICC profile with valid tag', 0xe2, taggedIcc],
+    ['ICC profile at 32 KiB limit', 0xe2, iccAtCap],
     ['Adobe', 0xee, adobe],
   ]) {
     // The baseline JPEG already has a JFIF APP0 as its first segment; a
@@ -213,7 +243,12 @@ export function runImageSelfTest({ fail, validateImage, checkUnapprovedFiles, va
       bad[13] = 2;
       return bad;
     })()],
-    ['ICC over 32 KiB', 0xe2, Buffer.concat([icc, Buffer.alloc(32 * 1024)])],
+    ['ICC over 32 KiB (consistent profile size)', 0xe2, iccOverCap],
+    ['ICC tag points inside directory', 0xe2, (() => {
+      const bad = Buffer.from(taggedIcc);
+      bad.writeUInt32BE(140, 14 + 136);
+      return bad;
+    })()],
   ];
   for (const [label, marker, payload] of badAppPayloads) {
     const bytes = Buffer.concat([
@@ -248,10 +283,12 @@ export function runImageSelfTest({ fail, validateImage, checkUnapprovedFiles, va
   const dqtTable = Buffer.from([0, ...Array(64).fill(1)]);
   const dhtTable = Buffer.from([0, 1, ...Array(15).fill(0), 0]);
   const conditioning = Buffer.from([0x00, 0x11]);
+  const standardDcConditioning = Buffer.from([0x00, 0x10]);
   for (const [label, marker, payload] of [
     ['DQT', 0xdb, dqtTable],
     ['DHT', 0xc4, dhtTable],
     ['DAC', 0xcc, conditioning],
+    ['DAC DC L=0 U=1', 0xcc, standardDcConditioning],
     ['DRI', 0xdd, Buffer.from([0, 0])],
     ['DNL', 0xdc, Buffer.from([0, 1])],
   ]) {
@@ -273,7 +310,18 @@ export function runImageSelfTest({ fail, validateImage, checkUnapprovedFiles, va
       fail('JPEG ' + label + ' accepted trailing text after a valid structural table');
     }
   }
-  const originalSosPayload = original.jpeg.subarray(beforeSos + 4, beforeSos + 2 + sosSize);
+  // For DAC DC, the low nibble is L and the high nibble is U.
+  // 0x10 (L=0,U=1) is legal; 0x01 (L=1,U=0) must fail closed.
+  const reversedConditioning = Buffer.from([0x00, 0x01]);
+  const invalidDac = Buffer.concat([
+    original.jpeg.subarray(0, beforeSos),
+    jpegSegment(0xcc, reversedConditioning),
+    original.jpeg.subarray(beforeSos),
+  ]);
+  if (inspectRaster(invalidDac, 'jpg')) {
+    fail('Invalid DAC DC conditioning L>U was accepted');
+  }
+    const originalSosPayload = original.jpeg.subarray(beforeSos + 4, beforeSos + 2 + sosSize);
   const modifiedSos = Buffer.concat([
     original.jpeg.subarray(0, beforeSos),
     jpegSegment(0xda, Buffer.concat([originalSosPayload, injectedText])),
