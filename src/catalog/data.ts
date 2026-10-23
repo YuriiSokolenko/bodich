@@ -110,4 +110,8 @@ export interface ConfirmedCatalogProduct {
   verification: { sourceReference: string; confirmedOn: string };
 }
 
+// BEGIN CONFIRMED PRODUCTS
+// Add only company-verified models between these markers. The isolated CI
+// fixture swaps this region without depending on whether it is empty.
 export const confirmedProducts: readonly ConfirmedCatalogProduct[] = [];
+// END CONFIRMED PRODUCTS

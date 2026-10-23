@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
-import { cpSync, existsSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join, resolve } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 
 /**
  * Verify the first-product workflow without publishing invented models.
@@ -10,21 +10,40 @@ import { join, resolve } from 'node:path';
  */
 const root = resolve('.');
 const temp = mkdtempSync(join(tmpdir(), 'bodich-catalog-fixture-'));
-const copy = (name) => cpSync(join(root, name), join(temp, name), { recursive: true });
 const assertContains = (html, text, label) =>
   assert(html.includes(text), label + ' must contain: ' + text);
 
 try {
-  for (const name of ['src', 'public', 'astro.config.mjs', 'tsconfig.json', 'package.json', 'scripts']) {
-    copy(name);
+  // Copy every git-tracked source/config file, including any future build
+  // config, instead of maintaining a fragile allowlist. This excludes
+  // .git/, node_modules/, dist/, local .env secrets and untracked artifacts.
+  const tracked = execFileSync('git', ['ls-files', '-z'], { cwd: root })
+    .toString('utf8').split('\0').filter(Boolean);
+  assert(tracked.includes('src/catalog/data.ts'), 'Expected catalog data in git-tracked files');
+  for (const path of tracked) {
+    const destination = join(temp, path);
+    mkdirSync(dirname(destination), { recursive: true });
+    cpSync(join(root, path), destination);
   }
   assert(existsSync(join(root, 'node_modules')), 'Run npm ci before the fixture smoke test');
   symlinkSync(join(root, 'node_modules'), join(temp, 'node_modules'), 'dir');
 
   const dataPath = join(temp, 'src/catalog/data.ts');
   const original = readFileSync(dataPath, 'utf8');
-  const empty = 'export const confirmedProducts: readonly ConfirmedCatalogProduct[] = [];';
-  assert.equal(original.split(empty).length, 2, 'Fixture injection must match the empty production catalog');
+  const startMarker = '// BEGIN CONFIRMED PRODUCTS';
+  const endMarker = '// END CONFIRMED PRODUCTS';
+
+  function replaceProductRecords(source, replacement) {
+    const start = source.indexOf(startMarker);
+    const end = source.indexOf(endMarker);
+    assert(start >= 0 && end > start, 'Catalog record markers are missing or out of order');
+    assert.equal(source.indexOf(startMarker, start + startMarker.length), -1, 'Duplicate catalog start marker');
+    assert.equal(source.indexOf(endMarker, end + endMarker.length), -1, 'Duplicate catalog end marker');
+    const bodyStart = start + startMarker.length;
+    // Replace only the marked region, regardless of its original contents.
+    // String slices also preserve replacement text containing dollar signs.
+    return source.slice(0, bodyStart) + '\n' + replacement + '\n' + source.slice(end);
+  }
 
   const products = [
     {
@@ -56,7 +75,12 @@ try {
   ];
   const fixture = 'export const confirmedProducts: readonly ConfirmedCatalogProduct[] = '
     + JSON.stringify(products, null, 2) + ';';
-  writeFileSync(dataPath, original.replace(empty, fixture));
+  // The second assertion simulates a previously populated catalog and proves
+  // this fixture mechanism will not fail when real products are introduced.
+  const simulatedPopulated = replaceProductRecords(original,
+    'export const confirmedProducts: readonly ConfirmedCatalogProduct[] = [{ id: "existing-model" }];');
+  assert.equal(replaceProductRecords(simulatedPopulated, fixture), replaceProductRecords(original, fixture));
+  writeFileSync(dataPath, replaceProductRecords(original, fixture));
 
   const env = { ...process.env, ASTRO_BASE: '/bodich-preview', SITE_URL: 'https://example.invalid' };
   const run = (command, args) => execFileSync(command, args, { cwd: temp, env, stdio: 'pipe', encoding: 'utf8' });
