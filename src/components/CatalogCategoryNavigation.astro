@@ -1,0 +1,31 @@
+---
+import { categoriesFor, categoryHref, type CatalogSection } from '../catalog';
+import { translations, type Locale } from '../i18n';
+
+interface Props {
+  locale: Locale;
+  section: CatalogSection;
+}
+
+const { locale, section } = Astro.props;
+const t = translations[locale];
+const categories = categoriesFor(section);
+---
+
+<section data-catalog-categories={section} class="mt-10" aria-labelledby="catalog-categories-heading">
+  <h2 id="catalog-categories-heading" class="font-display text-2xl font-bold text-bodich-ink sm:text-3xl">{t.catalogCategoriesTitle}</h2>
+  <p class="mt-3 max-w-3xl text-base leading-relaxed text-bodich-muted">{t.catalogCategoriesIntro}</p>
+  <div class="mt-7 grid gap-4 md:grid-cols-2">
+    {categories.map((category) => (
+      <a data-category-link={category.id} href={categoryHref(locale, category)}
+        class="group flex min-h-44 flex-col rounded-control border border-bodich-border bg-bodich-panel/80 p-6 transition-colors hover:border-bodich-accent-hover hover:bg-bodich-panel-raised">
+        <h3 class="text-xl font-bold text-bodich-ink group-hover:text-bodich-accent-hover">{category.copy[locale].title}</h3>
+        <p class="mt-3 flex-1 text-sm leading-6 text-bodich-muted">{category.copy[locale].description}</p>
+        <span class="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-bodich-accent-hover">
+          {t.catalogExploreCategory} <span aria-hidden="true">→</span>
+        </span>
+      </a>
+    ))}
+  </div>
+  <p class="mt-5 text-sm leading-relaxed text-bodich-muted">{t.catalogPlanningNotice}</p>
+</section>

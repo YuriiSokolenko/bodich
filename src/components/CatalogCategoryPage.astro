@@ -1,0 +1,43 @@
+---
+import { categorySubpath, productsInCategory, type CatalogCategoryEntry } from '../catalog';
+import { hrefFor, translations, type Locale } from '../i18n';
+import SiteLayout from '../layouts/SiteLayout.astro';
+import SiteContainer from './ui/SiteContainer.astro';
+import SurfaceCard from './ui/SurfaceCard.astro';
+
+interface Props {
+  locale: Locale;
+  category: CatalogCategoryEntry;
+}
+
+const { locale, category } = Astro.props;
+const t = translations[locale];
+const copy = category.copy[locale];
+const confirmed = productsInCategory(category);
+const section = category.section;
+---
+
+<SiteLayout locale={locale} page={section} subpath={categorySubpath(category)} title={copy.title} description={copy.description}>
+  <SiteContainer>
+    <section data-catalog-category={category.id} class="py-16 sm:py-24">
+      <nav aria-label={t.catalogBreadcrumbLabel} class="mb-9 text-sm text-bodich-muted">
+        <ol class="flex flex-wrap items-center gap-2">
+          <li><a class="hover:text-bodich-accent-hover" href={hrefFor(locale, section)}>{t.pages[section].label}</a></li>
+          <li aria-hidden="true">/</li>
+          <li aria-current="page" class="font-semibold text-bodich-ink">{copy.title}</li>
+        </ol>
+      </nav>
+      <p class="mb-5 text-xs font-semibold uppercase tracking-[.18em] text-bodich-accent">{t.previewLabel}</p>
+      <h1 class="max-w-4xl font-display text-4xl font-black text-bodich-ink sm:text-6xl">{copy.title}</h1>
+      <p class="mt-6 max-w-2xl text-lg leading-relaxed text-bodich-muted">{copy.description}</p>
+      {confirmed.length === 0 ? (
+        <div data-catalog-empty-state class="mt-10 max-w-3xl">
+          <SurfaceCard><p class="text-base leading-7 text-bodich-muted">{t.catalogEmptyCategory}</p></SurfaceCard>
+        </div>
+      ) : (
+        <p class="mt-10 text-base text-bodich-muted">{t.catalogVerifiedModelsNotice}</p>
+      )}
+      <p class="mt-6 max-w-3xl text-sm leading-relaxed text-bodich-muted">{t.catalogPlanningNotice}</p>
+    </section>
+  </SiteContainer>
+</SiteLayout>

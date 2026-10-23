@@ -1,0 +1,18 @@
+---
+import CatalogCategoryPage from '../../../../components/CatalogCategoryPage.astro';
+import { catalogCategories } from '../../../../catalog';
+import { locales } from '../../../../i18n';
+
+export function getStaticPaths() {
+  return locales.flatMap((locale) =>
+    catalogCategories.map((category) => ({
+      params: { locale, section: category.section, category: category.id },
+      props: { locale, category },
+    }))
+  );
+}
+
+const { locale, category } = Astro.props;
+---
+
+<CatalogCategoryPage locale={locale} category={category} />
