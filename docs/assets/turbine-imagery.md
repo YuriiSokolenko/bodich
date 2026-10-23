@@ -57,3 +57,23 @@
 This is **asset 1 of a planned 2–4 matching Stage 3B images**. It must not be mistaken for a photograph or specification of an available BODICH engine. Apply the same concept-labeling and rights-review requirements documented above; **commercial-use / third-party IP review has not yet been completed** and is a pre-publication gate, not an implied clearance. The source generation PNG is not committed; the optimized WebP is the versioned site asset.
 
 **Integration follow-up (Stages 3C/3D):** The exhaust nozzle is close to the right image edge. Avoid blind square `object-fit: cover` crops, test `object-position` / contained layouts across screen sizes, and expose a visible localized **Concept rendering / Vizualizare conceptuală** caption adjacent to the image (not burned into the raster). Provide a smaller approximately 600 px card variant or `srcset` to reduce catalog-grid transfer size. Further cards, variants and on-page integration are separate stages.
+
+## Intake-detail concept 02 — Issue #10, Stage 3B (second asset)
+
+| Property | Value |
+| --- | --- |
+| Asset | `public/images/turbines/bodich-intake-detail-concept-02.webp` |
+| Format | WebP, 950 × 950 pixels (1:1 square) |
+| Optimized size | 130,848 bytes (approximately 128 KiB) |
+| SHA-256 | `bb7a5a098df5a1552b96a6af908c3c2f6044336ac92543deb722458a9aeab1e3` |
+| Purpose | Close-up detail card emphasizing the intake, protective mesh, spinner, red inlet housing and BODICH mark |
+| Status | **Concept rendering / Vizualizare conceptuală**, not a real product photograph |
+| Origin | AI-generated concept image with OpenAI ChatGPT image generation, October 23, 2026 (Europe/Bucharest); newly generated square studio scene, cropped to a different product-detail composition. |
+
+**Art-direction brief:** Maintain the same BODICH red-and-charcoal industrial look as Stage 3A and card 01; show an enlarged front-intake three-quarter detail view of a fictional small model-aircraft turbine, with readable BODICH lettering on the red housing, protective inlet mesh, black central cone, machined fittings and dark metallic casing. The source image was 1,254 × 1,254 pixels; this 950 × 950 detail was cropped from source coordinates `(32, 204, 982, 1154)` and encoded as optimized WebP. The unoptimized PNG is retained only in the image-generation conversation, not in the Git repository.
+
+**EN alt:** AI-generated concept close-up of a BODICH-branded miniature jet turbine's red intake housing, protective grille, black spinner and metal fittings.
+
+**RO alt:** Detaliu conceptual generat cu IA al admisiei roșii a unui turboreactor miniatural BODICH, cu grilaj de protecție, con central negru și racorduri metalice.
+
+**Integration guidance:** The crop deliberately concentrates on the intake, so the exhaust nozzle is not visible; don't present it as the complete engine or as a real product photograph. Add a nearby visible **Concept rendering / Vizualizare conceptuală** caption when displayed on the site. Avoid secondary cropping that cuts off the intake or the BODICH mark. Responsive derivatives and visual QA belong to Stages 3C/3D. The rights and representation caveats above apply equally to this image, and commercial publication still requires review.
