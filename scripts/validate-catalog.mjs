@@ -1,4 +1,6 @@
-import { existsSync, statSync } from 'node:fs';
+import { existsSync, lstatSync, readFileSync, readdirSync } from 'node:fs';
+import { inspectRaster, MAX_CATALOG_IMAGE_BYTES } from './catalog-image.mjs';
+import { runImageSelfTest } from './catalog-image-test.mjs';
 import { resolve, join, relative, isAbsolute } from 'node:path';
 import { catalogCategories, confirmedProducts } from '../src/catalog/data.ts';
 import { locales } from '../src/i18n/index.ts';
@@ -18,34 +20,77 @@ function validIsoDate(value) {
     && value <= new Date().toISOString().slice(0, 10);
 }
 
-function validateImage(image, label, report = fail) {
+const IMAGE_PATH = /^\/images\/catalog\/[a-z0-9_-]+(?:\/[a-z0-9_-]+)*\.(?:webp|png|jpe?g)$/;
+
+function validateImage(image, label, report = fail, publicRoot = resolve('public')) {
   if (!image || typeof image !== 'object' || Array.isArray(image)) {
-    report(`Product "${label}" has an invalid image object`);
+    report('Product "' + label + '" has an invalid image object');
     return;
   }
   for (const locale of locales) {
-    if (!nonempty(image.alt?.[locale])) report(`Product "${label}" requires a non-empty ${locale} image alt`);
+    if (!nonempty(image.alt?.[locale]))
+      report('Product "' + label + '" requires a non-empty ' + locale + ' image alt');
   }
   for (const dimension of ['width', 'height']) {
-    if (!Number.isSafeInteger(image[dimension]) || image[dimension] <= 0) {
-      report(`Product "${label}" image ${dimension} must be a positive integer`);
-    }
+    if (!Number.isSafeInteger(image[dimension]) || image[dimension] <= 0)
+      report('Product "' + label + '" image ' + dimension + ' must be a positive integer');
   }
-
-  // Require a local, unambiguous public asset. Reject parent traversal,
-  // query/hash fragments, protocol-relative paths and backslashes.
   const src = image.src;
-  if (!nonempty(src) || !src.startsWith('/') || src.startsWith('//')
-      || /[?#\\]/.test(src) || src.split('/').some((part) => part === '..' || part === '.')) {
-    report(`Product "${label}" image.src must be a safe absolute path under public/`);
+  if (!nonempty(src) || !IMAGE_PATH.test(src)) {
+    report('Product "' + label + '" image.src must use a lowercase PNG/JPEG/WebP path under public/images/catalog/ (no dots in names or repeated slashes)');
     return;
   }
-  const root = resolve('public');
+  const root = resolve(publicRoot);
   const destination = resolve(root, '.' + src);
   const relativeFile = relative(root, destination);
   if (!relativeFile || relativeFile.startsWith('..') || isAbsolute(relativeFile)
-      || !existsSync(destination) || !statSync(destination).isFile()) {
-    report(`Product "${label}" image.src is not an existing file under public/: ${src}`);
+      || !existsSync(destination) || !lstatSync(destination).isFile()) {
+    report('Product "' + label + '" image.src is not an existing regular file under public/: ' + src);
+    return;
+  }
+  const info = lstatSync(destination);
+  if (info.size > MAX_CATALOG_IMAGE_BYTES) {
+    report('Product "' + label + '" photo exceeds 5 MiB: ' + src);
+    return;
+  }
+  const extension = src.slice(src.lastIndexOf('.') + 1);
+  const actual = inspectRaster(readFileSync(destination), extension);
+  if (!actual || !actual.width || !actual.height) {
+    report('Product "' + label + '" image has an invalid PNG/JPEG/WebP header: ' + src);
+  } else {
+    if (actual.privateMetadata) report('Product "' + label + '" image contains EXIF/GPS or text metadata: ' + src);
+    if (actual.width !== image.width || actual.height !== image.height)
+      report('Product "' + label + '" dimensions do not match actual ' + actual.width + 'x' + actual.height + ': ' + src);
+  }
+}
+
+/**
+ * Astro copies every public/ asset whether referenced by pages or not.
+ * Fail a preview build if any catalog file lacks an approved product record.
+ */
+function checkUnapprovedFiles(publicRoot, allowedPaths, report = fail) {
+  const root = resolve(publicRoot, 'images', 'catalog');
+  if (!existsSync(root)) return;
+  const visit = (directory, relativePath = '') => {
+    for (const entry of readdirSync(directory, { withFileTypes: true })) {
+      const segment = relativePath ? relativePath + '/' + entry.name : entry.name;
+      const file = join(directory, entry.name);
+      if (entry.isDirectory()) visit(file, segment);
+      else if (!entry.isFile()) {
+        report('Catalog directory contains an unsafe non-file entry: ' + segment);
+      } else {
+        const url = '/images/catalog/' + segment;
+        if (!allowedPaths.has(url)) report('Catalog contains unreferenced public photo/file: ' + url);
+      }
+    }
+  };
+  visit(root);
+}
+
+function checkExtraKeys(object, permitted, path) {
+  if (!object || typeof object !== 'object' || Array.isArray(object)) return;
+  for (const key of Object.keys(object)) {
+    if (!permitted.includes(key)) fail('Unknown intake field: ' + path + '.' + key);
   }
 }
 
@@ -64,9 +109,41 @@ for (const category of catalogCategories) {
   }
 }
 
+const mode = process.argv[2];
+let intakeCandidate;
+if (mode === '--intake') {
+  const path = process.argv[3];
+  if (!path || process.argv[4]) {
+    fail('Usage: npm run catalog:intake -- path/to/verified-product.json');
+  } else {
+    try {
+      intakeCandidate = JSON.parse(readFileSync(resolve(path), 'utf8'));
+      if (!intakeCandidate || typeof intakeCandidate !== 'object' || Array.isArray(intakeCandidate)) {
+        fail('Intake file must contain a single JSON product object');
+        intakeCandidate = undefined;
+      }
+    } catch (error) {
+      fail('Cannot read catalog intake JSON: ' + error.message);
+    }
+  }
+}
+
+if (intakeCandidate) {
+  checkExtraKeys(intakeCandidate, ['id', 'slug', 'categoryId', 'copy', 'image', 'verification'], 'product');
+  checkExtraKeys(intakeCandidate.copy, ['en', 'ro'], 'product.copy');
+  for (const locale of locales) {
+    checkExtraKeys(intakeCandidate.copy?.[locale], ['name', 'summary'], 'product.copy.' + locale);
+  }
+  checkExtraKeys(intakeCandidate.verification, ['sourceReference', 'confirmedOn'], 'product.verification');
+  if (intakeCandidate.image !== undefined) {
+    checkExtraKeys(intakeCandidate.image, ['src', 'alt', 'width', 'height'], 'product.image');
+    checkExtraKeys(intakeCandidate.image?.alt, ['en', 'ro'], 'product.image.alt');
+  }
+}
+
 const ids = new Set();
 const slugs = new Set();
-for (const product of confirmedProducts) {
+for (const product of [...confirmedProducts, ...(intakeCandidate ? [intakeCandidate] : [])]) {
   const label = nonempty(product.id) ? product.id : '(missing id)';
   if (!nonempty(product.id)) fail('A confirmed product has no ID');
   if (ids.has(product.id)) fail(`Duplicate product ID: ${label}`);
@@ -93,34 +170,16 @@ for (const product of confirmedProducts) {
   }
 }
 
-const mode = process.argv[2];
-if (mode && !['--routes', '--self-test'].includes(mode)) fail(`Unknown argument: ${mode}`);
+// Intake allows inspection of an uncommitted candidate photo, but ordinary
+// check/build must reject the same file until included in confirmedProducts.
+const allowedPhotos = new Set(confirmedProducts.map((product) => product.image?.src).filter(Boolean));
+if (mode === '--intake' && intakeCandidate?.image?.src) allowedPhotos.add(intakeCandidate.image.src);
+checkUnapprovedFiles(resolve('public'), allowedPhotos);
+
+if (mode && !['--routes', '--self-test', '--intake'].includes(mode)) fail(`Unknown argument: ${mode}`);
 
 // Regression coverage even while confirmedProducts is intentionally empty.
-if (mode === '--self-test') {
-  const valid = { src: '/favicon.svg', width: 16, height: 16, alt: { en: 'Test', ro: 'Test' } };
-  const scenarios = [
-    { name: 'missing image file', image: { ...valid, src: '/not-a-real-image.png' } },
-    { name: 'unsafe image path', image: { ...valid, src: '/../README.md' } },
-    { name: 'missing EN alt', image: { ...valid, alt: { en: '', ro: 'Test' } } },
-    { name: 'missing RO alt', image: { ...valid, alt: { en: 'Test', ro: ' ' } } },
-    { name: 'negative width', image: { ...valid, width: -5 } },
-    { name: 'zero height', image: { ...valid, height: 0 } },
-    { name: 'fractional width', image: { ...valid, width: 1.5 } },
-  ];
-  const validIssues = [];
-  validateImage(valid, 'self-test', (message) => validIssues.push(message));
-  if (validIssues.length) fail(`Validator rejects valid image fixture: ${validIssues.join('; ')}`);
-  for (const scenario of scenarios) {
-    const issues = [];
-    validateImage(scenario.image, 'self-test', (message) => issues.push(message));
-    if (issues.length === 0) fail(`Validator accepted invalid fixture: ${scenario.name}`);
-  }
-  for (const date of ['2099-01-01', '2026-02-30', '2026-1-01']) {
-    if (validIsoDate(date)) fail(`Validator accepted invalid or future date: ${date}`);
-  }
-  if (!validIsoDate('2020-01-01')) fail('Validator rejected valid historical date');
-}
+if (mode === '--self-test') runImageSelfTest({ fail, validateImage, checkUnapprovedFiles, validIsoDate });
 if (mode === '--routes') {
   const dist = resolve(process.argv[3] ?? 'dist');
   let categoryPages = 0;
@@ -149,5 +208,5 @@ if (problems.length) {
   for (const problem of problems) console.error(`Catalog validation: ${problem}`);
   process.exitCode = 1;
 } else {
-  console.log(`Catalog validation passed: ${catalogCategories.length} categories, ${confirmedProducts.length} confirmed products${mode === '--routes' ? ', all localized routes present' : mode === '--self-test' ? ', regression fixtures passed' : ''}.`);
+  console.log(`Catalog validation passed: ${catalogCategories.length} categories, ${confirmedProducts.length} confirmed products${mode === '--routes' ? ', all localized routes present' : mode === '--self-test' ? ', regression fixtures passed' : mode === '--intake' ? ', candidate structurally valid; company approval is still required' : ''}.`);
 }

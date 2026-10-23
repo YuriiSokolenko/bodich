@@ -95,6 +95,7 @@ export type CatalogCategoryId = CatalogCategoryEntry['id'];
  * Keep this collection empty until product information is company-verified.
  * Run npm run check before proposing additions: it validates verification
  * references, dates, unique identifiers, translations and category membership.
+ * See docs/catalog/README.md for manual evidence and image-rights review.
  */
 export interface ConfirmedCatalogProduct {
   id: string;

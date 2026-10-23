@@ -1,8 +1,9 @@
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
-import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync, unlinkSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
+import { CI_PNG_BASE64 } from './catalog-fixtures.mjs';
 
 /**
  * Verify the first-product workflow without publishing invented models.
@@ -27,6 +28,9 @@ try {
   }
   assert(existsSync(join(root, 'node_modules')), 'Run npm ci before the fixture smoke test');
   symlinkSync(join(root, 'node_modules'), join(temp, 'node_modules'), 'dir');
+  const photoFolder = join(temp, 'public', 'images', 'catalog');
+  mkdirSync(photoFolder, { recursive: true });
+  writeFileSync(join(photoFolder, 'ci-fixture.png'), Buffer.from(CI_PNG_BASE64, 'base64'));
 
   const dataPath = join(temp, 'src/catalog/data.ts');
   const original = readFileSync(dataPath, 'utf8');
@@ -55,10 +59,10 @@ try {
         ro: { name: 'Turbină de test CI', summary: 'Conținut de test, nepublicabil.' },
       },
       image: {
-        src: '/favicon.svg',
+        src: '/images/catalog/ci-fixture.png',
         alt: { en: 'CI test graphic', ro: 'Grafic de test CI' },
-        width: 32,
-        height: 32,
+        width: 1,
+        height: 1,
       },
       verification: { sourceReference: 'TEST-FIXTURE-NOT-A-REAL-PRODUCT', confirmedOn: '2020-01-01' },
     },
@@ -82,8 +86,32 @@ try {
   assert.equal(replaceProductRecords(simulatedPopulated, fixture), replaceProductRecords(original, fixture));
   writeFileSync(dataPath, replaceProductRecords(original, fixture));
 
+  const intakeFile = join(temp, 'ci-product-intake.json');
+  const candidate = { ...products[1], id: 'ci-candidate-intake', slug: 'ci-candidate-intake' };
+  writeFileSync(intakeFile, JSON.stringify(candidate, null, 2));
   const env = { ...process.env, ASTRO_BASE: '/bodich-preview', SITE_URL: 'https://example.invalid' };
   const run = (command, args) => execFileSync(command, args, { cwd: temp, env, stdio: 'pipe', encoding: 'utf8' });
+  console.log(run('npm', ['run', 'catalog:intake', '--', intakeFile]));
+  writeFileSync(intakeFile, JSON.stringify({ ...candidate, slug: products[0].slug }, null, 2));
+  assert.throws(
+    () => run('npm', ['run', 'catalog:intake', '--', intakeFile]),
+    (error) => /Duplicate product slug/.test(String(error.stderr)),
+    'Intake must fail specifically on the duplicate product slug',
+  );
+  writeFileSync(intakeFile, JSON.stringify({ ...candidate, imagee: { src: 'typo' } }, null, 2));
+  assert.throws(
+    () => run('npm', ['run', 'catalog:intake', '--', intakeFile]),
+    (error) => /Unknown intake field: product\.imagee/.test(String(error.stderr)),
+    'Unknown top-level intake fields should not silently pass',
+  );
+  const unreferenced = join(photoFolder, 'not-reviewed.png');
+  writeFileSync(unreferenced, Buffer.from(CI_PNG_BASE64, 'base64'));
+  assert.throws(
+    () => run('node', ['scripts/validate-catalog.mjs']),
+    (error) => /unreferenced public photo/.test(String(error.stderr)),
+    'Unreferenced public photo should fail the normal publishing gate',
+  );
+  unlinkSync(unreferenced);
   console.log(run('npm', ['run', 'check']));
   console.log(run('npm', ['run', 'build']));
   console.log(run('node', ['scripts/validate-catalog.mjs', '--routes', 'dist']));
@@ -103,7 +131,7 @@ try {
   assertContains(engineEn, 'data-product-detail="ci-fixture-engine"', 'EN product detail');
   assertContains(engineEn, 'CI fixture turbine', 'EN product detail');
   assertContains(engineEn, 'alt="CI test graphic"', 'EN product photo alt');
-  assertContains(engineEn, 'src="/bodich-preview/favicon.svg"', 'EN product photo URL');
+  assertContains(engineEn, 'src="/bodich-preview/images/catalog/ci-fixture.png"', 'EN product photo URL');
   assertContains(engineEn, 'href="/bodich-preview/ro/products/turbine-engines/ci-fixture-engine/"', 'EN language switch');
   assertContains(engineEn, 'href="https://example.invalid/bodich-preview/en/products/turbine-engines/ci-fixture-engine/"', 'EN canonical');
   assertContains(engineRo, 'Turbină de test CI', 'RO product detail');
