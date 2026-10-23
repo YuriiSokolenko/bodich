@@ -23,8 +23,9 @@ const section = category.section;
       <nav aria-label={t.catalogBreadcrumbLabel} class="mb-9 text-sm text-bodich-muted">
         <ol class="flex flex-wrap items-center gap-2">
           <li><a class="hover:text-bodich-accent-hover" href={hrefFor(locale, section)}>{t.pages[section].label}</a></li>
-          <li aria-hidden="true">/</li>
-          <li><span aria-current="page" class="font-semibold text-bodich-ink">{copy.title}</span></li>
+          <li class="before:mr-2 before:text-bodich-dim before:content-['/']">
+            <span aria-current="page" class="font-semibold text-bodich-ink">{copy.title}</span>
+          </li>
         </ol>
       </nav>
       <p class="mb-5 text-xs font-semibold uppercase tracking-[.18em] text-bodich-accent">{t.previewLabel}</p>

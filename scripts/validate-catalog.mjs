@@ -1,5 +1,5 @@
-import { existsSync } from 'node:fs';
-import { resolve, join } from 'node:path';
+import { existsSync, statSync } from 'node:fs';
+import { resolve, join, relative, isAbsolute } from 'node:path';
 import { catalogCategories, confirmedProducts } from '../src/catalog/data.ts';
 import { locales } from '../src/i18n/index.ts';
 
@@ -12,7 +12,41 @@ const validSlug = (value) => nonempty(value) && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.tes
 function validIsoDate(value) {
   if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
   const date = new Date(`${value}T00:00:00.000Z`);
-  return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
+  // Reject impossible dates and future claims (UTC date, independent of runner TZ).
+  return !Number.isNaN(date.getTime())
+    && date.toISOString().slice(0, 10) === value
+    && value <= new Date().toISOString().slice(0, 10);
+}
+
+function validateImage(image, label, report = fail) {
+  if (!image || typeof image !== 'object' || Array.isArray(image)) {
+    report(`Product "${label}" has an invalid image object`);
+    return;
+  }
+  for (const locale of locales) {
+    if (!nonempty(image.alt?.[locale])) report(`Product "${label}" requires a non-empty ${locale} image alt`);
+  }
+  for (const dimension of ['width', 'height']) {
+    if (!Number.isSafeInteger(image[dimension]) || image[dimension] <= 0) {
+      report(`Product "${label}" image ${dimension} must be a positive integer`);
+    }
+  }
+
+  // Require a local, unambiguous public asset. Reject parent traversal,
+  // query/hash fragments, protocol-relative paths and backslashes.
+  const src = image.src;
+  if (!nonempty(src) || !src.startsWith('/') || src.startsWith('//')
+      || /[?#\\]/.test(src) || src.split('/').some((part) => part === '..' || part === '.')) {
+    report(`Product "${label}" image.src must be a safe absolute path under public/`);
+    return;
+  }
+  const root = resolve('public');
+  const destination = resolve(root, '.' + src);
+  const relativeFile = relative(root, destination);
+  if (!relativeFile || relativeFile.startsWith('..') || isAbsolute(relativeFile)
+      || !existsSync(destination) || !statSync(destination).isFile()) {
+    report(`Product "${label}" image.src is not an existing file under public/: ${src}`);
+  }
 }
 
 const categories = new Set();
@@ -49,8 +83,9 @@ for (const product of confirmedProducts) {
     fail(`Product "${label}" requires a non-empty verification sourceReference`);
   }
   if (!validIsoDate(product.verification?.confirmedOn)) {
-    fail(`Product "${label}" requires a real ISO date in YYYY-MM-DD format`);
+    fail(`Product "${label}" requires a real, non-future ISO date in YYYY-MM-DD format`);
   }
+  if (product.image !== undefined) validateImage(product.image, label);
   for (const locale of locales) {
     if (!nonempty(product.copy?.[locale]?.name) || !nonempty(product.copy?.[locale]?.summary)) {
       fail(`Product "${label}" requires a ${locale} name and summary`);
@@ -59,7 +94,33 @@ for (const product of confirmedProducts) {
 }
 
 const mode = process.argv[2];
-if (mode && mode !== '--routes') fail(`Unknown argument: ${mode}`);
+if (mode && !['--routes', '--self-test'].includes(mode)) fail(`Unknown argument: ${mode}`);
+
+// Regression coverage even while confirmedProducts is intentionally empty.
+if (mode === '--self-test') {
+  const valid = { src: '/favicon.svg', width: 16, height: 16, alt: { en: 'Test', ro: 'Test' } };
+  const scenarios = [
+    { name: 'missing image file', image: { ...valid, src: '/not-a-real-image.png' } },
+    { name: 'unsafe image path', image: { ...valid, src: '/../README.md' } },
+    { name: 'missing EN alt', image: { ...valid, alt: { en: '', ro: 'Test' } } },
+    { name: 'missing RO alt', image: { ...valid, alt: { en: 'Test', ro: ' ' } } },
+    { name: 'negative width', image: { ...valid, width: -5 } },
+    { name: 'zero height', image: { ...valid, height: 0 } },
+    { name: 'fractional width', image: { ...valid, width: 1.5 } },
+  ];
+  const validIssues = [];
+  validateImage(valid, 'self-test', (message) => validIssues.push(message));
+  if (validIssues.length) fail(`Validator rejects valid image fixture: ${validIssues.join('; ')}`);
+  for (const scenario of scenarios) {
+    const issues = [];
+    validateImage(scenario.image, 'self-test', (message) => issues.push(message));
+    if (issues.length === 0) fail(`Validator accepted invalid fixture: ${scenario.name}`);
+  }
+  for (const date of ['2099-01-01', '2026-02-30', '2026-1-01']) {
+    if (validIsoDate(date)) fail(`Validator accepted invalid or future date: ${date}`);
+  }
+  if (!validIsoDate('2020-01-01')) fail('Validator rejected valid historical date');
+}
 if (mode === '--routes') {
   const dist = resolve(process.argv[3] ?? 'dist');
   let checked = 0;
@@ -79,5 +140,5 @@ if (problems.length) {
   for (const problem of problems) console.error(`Catalog validation: ${problem}`);
   process.exitCode = 1;
 } else {
-  console.log(`Catalog validation passed: ${catalogCategories.length} categories, ${confirmedProducts.length} confirmed products${mode === '--routes' ? ', all localized routes present' : ''}.`);
+  console.log(`Catalog validation passed: ${catalogCategories.length} categories, ${confirmedProducts.length} confirmed products${mode === '--routes' ? ', all localized routes present' : mode === '--self-test' ? ', regression fixtures passed' : ''}.`);
 }

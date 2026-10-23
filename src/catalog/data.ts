@@ -8,6 +8,12 @@ export type CatalogCategory = {
   copy: Record<Locale, CategoryCopy>;
 };
 
+/**
+ * Node 24 imports this file directly for CI via TypeScript type stripping.
+ * Keep it data-only: erasable TS types/type-only imports are supported;
+ * enums, runtime TS transforms, and imports of Vite/Astro runtime helpers
+ * (such as hrefFor using import.meta.env.BASE_URL) are not.
+ */
 /** Provisional taxonomy; category names do not imply confirmed products or stock. */
 export const catalogCategories = [
   {
