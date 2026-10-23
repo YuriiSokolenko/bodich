@@ -117,6 +117,11 @@ export function runImageSelfTest({ fail, validateImage, checkUnapprovedFiles, va
     ['APP2 unexpected payload', 0xe2, 'Camera serial'],
     ['APP14 unexpected payload', 0xee, 'User name'],
   ];
+  applicationSegments.push(
+    ['JFXX thumbnail', 0xe0, 'JFXX\0embedded-thumbnails'],
+    ['JPEG reserved JPG extension', 0xc8, 'Owner note'],
+    ['JPEG JPGn extension', 0xf1, 'Serial number'],
+  );
   for (const [label, marker, payload] of applicationSegments) {
     const bytes = Buffer.concat([
       original.jpeg.subarray(0, beforeSos),
@@ -125,18 +130,156 @@ export function runImageSelfTest({ fail, validateImage, checkUnapprovedFiles, va
     ]);
     if (!inspectRaster(bytes, 'jpg')?.privateMetadata) fail(label + ' was not flagged as private metadata');
   }
+  // JFIF's 14-byte payload has no thumbnail; Adobe's is 12 bytes.
+  // ICC is a complete single-chunk profile with 132-byte header/table and
+  // recognized 'acsp' signature. The gate is not an ICC metadata scrubber.
+  const jfif = Buffer.from([
+    ...Buffer.from('JFIF\0', 'ascii'), 1, 1, 0, 0, 1, 0, 1, 0, 0,
+  ]);
+  const adobe = Buffer.from([
+    ...Buffer.from('Adobe', 'ascii'), 0, 100, 0, 0, 0, 0, 1,
+  ]);
+  const iccBody = Buffer.alloc(132);
+  iccBody.writeUInt32BE(132, 0);
+  iccBody.write('acsp', 36, 'ascii');
+  const icc = Buffer.concat([Buffer.from('ICC_PROFILE\0', 'ascii'),
+    Buffer.from([1, 1]), iccBody]);
+
   for (const [label, marker, payload] of [
-    ['JFIF', 0xe0, Buffer.from('JFIF\0', 'ascii')],
-    ['ICC profile', 0xe2, Buffer.from('ICC_PROFILE\0', 'ascii')],
-    ['Adobe', 0xee, Buffer.from('Adobe', 'ascii')],
+    ['JFIF', 0xe0, jfif],
+    ['ICC profile', 0xe2, icc],
+    ['Adobe', 0xee, adobe],
+  ]) {
+    // The baseline JPEG already has a JFIF APP0 as its first segment; a
+    // second JFIF is intentionally rejected, so test its existing instance.
+    const bytes = marker === 0xe0 ? original.jpeg : Buffer.concat([
+      original.jpeg.subarray(0, beforeSos),
+      jpegSegment(marker, payload),
+      original.jpeg.subarray(beforeSos),
+    ]);
+    const result = inspectRaster(bytes, 'jpg');
+    if (!result || result.privateMetadata) fail('Allowed ' + label + ' APP segment was rejected');
+  }
+
+  for (const [label, marker, payload] of [
+    ['second JFIF', 0xe0, jfif],
+    ['duplicate Adobe', 0xee, adobe],
+    ['duplicate ICC', 0xe2, icc],
+  ]) {
+    const segments = marker === 0xe0 ? [jpegSegment(marker, payload)] :
+      [jpegSegment(marker, payload), jpegSegment(marker, payload)];
+    const bytes = Buffer.concat([
+      original.jpeg.subarray(0, beforeSos),
+      ...segments,
+      original.jpeg.subarray(beforeSos),
+    ]);
+    if (!inspectRaster(bytes, 'jpg')?.privateMetadata) {
+      fail('Repeated JPEG APP segment bypassed metadata gate: ' + label);
+    }
+  }
+
+  // An otherwise valid JFIF APP0 cannot be moved after quantization tables.
+  if (original.jpeg[2] !== 0xff || original.jpeg[3] !== 0xe0) fail('Expected leading JFIF APP0');
+  const firstAppEnd = 4 + original.jpeg.readUInt16BE(4);
+  const withoutApp0 = Buffer.concat([
+    original.jpeg.subarray(0, 2), original.jpeg.subarray(firstAppEnd),
+  ]);
+  const laterSos = withoutApp0.indexOf(Buffer.from([0xff, 0xda]));
+  if (laterSos < 0) fail('Cannot locate SOS in JFIF-free test image');
+  const misplacedJfif = Buffer.concat([
+    withoutApp0.subarray(0, laterSos),
+    jpegSegment(0xe0, jfif),
+    withoutApp0.subarray(laterSos),
+  ]);
+  if (!inspectRaster(misplacedJfif, 'jpg')?.privateMetadata) {
+    fail('Out-of-order JFIF should be flagged');
+  }
+
+  // A valid prefix by itself must not exempt arbitrary trailing content.
+  const badAppPayloads = [
+    ['JFIF with appended text', 0xe0, Buffer.concat([jfif, Buffer.from('Owner: Alice')])],
+    ['JFIF thumbnail', 0xe0, Buffer.from([...jfif.subarray(0, 12), 1, 1])],
+    ['JFIF short segment', 0xe0, jfif.subarray(0, 12)],
+    ['Adobe with appended text', 0xee, Buffer.concat([adobe, Buffer.from('GPS')])],
+    ['Adobe short segment', 0xee, adobe.subarray(0, 10)],
+    ['ICC with trailing note', 0xe2, Buffer.concat([icc, Buffer.from('Owner')])],
+    ['ICC missing acsp signature', 0xe2, (() => {
+      const bad = Buffer.from(icc);
+      bad.fill(0, 14 + 36, 14 + 40);
+      return bad;
+    })()],
+    ['ICC multi-chunk profile', 0xe2, (() => {
+      const bad = Buffer.from(icc);
+      bad[13] = 2;
+      return bad;
+    })()],
+    ['ICC over 32 KiB', 0xe2, Buffer.concat([icc, Buffer.alloc(32 * 1024)])],
+  ];
+  for (const [label, marker, payload] of badAppPayloads) {
+    const bytes = Buffer.concat([
+      original.jpeg.subarray(0, beforeSos),
+      jpegSegment(marker, payload),
+      original.jpeg.subarray(beforeSos),
+    ]);
+    if (!inspectRaster(bytes, 'jpg')?.privateMetadata) {
+      fail('Potential JPEG metadata bypass: ' + label);
+    }
+  }
+
+  // Known structural markers must follow their internal layouts. A standalone
+  // length-prefixed segment containing text must never look like an innocent
+  // quantization, Huffman, arithmetic-conditioning, restart or scan segment.
+  const injectedText = Buffer.from('Owner: Alice, serial 12345');
+  for (const [label, marker] of [
+    ['DQT', 0xdb], ['DHT', 0xc4], ['DAC', 0xcc],
+    ['DRI', 0xdd], ['DNL', 0xdc], ['SOS', 0xda],
+  ]) {
+    const bytes = Buffer.concat([
+      original.jpeg.subarray(0, beforeSos),
+      jpegSegment(marker, injectedText),
+      original.jpeg.subarray(beforeSos),
+    ]);
+    const result = inspectRaster(bytes, 'jpg');
+    if (result && !result.privateMetadata) fail('JPEG ' + label + ' accepted private text payload');
+  }
+
+  // Positive structural cases ensure the hardening does not simply block all
+  // legal segments. The existing JPEGs also cover real DQT/DHT/SOS tables.
+  const dqtTable = Buffer.from([0, ...Array(64).fill(1)]);
+  const dhtTable = Buffer.from([0, 1, ...Array(15).fill(0), 0]);
+  const conditioning = Buffer.from([0x00, 0x11]);
+  for (const [label, marker, payload] of [
+    ['DQT', 0xdb, dqtTable],
+    ['DHT', 0xc4, dhtTable],
+    ['DAC', 0xcc, conditioning],
+    ['DRI', 0xdd, Buffer.from([0, 0])],
+    ['DNL', 0xdc, Buffer.from([0, 1])],
   ]) {
     const bytes = Buffer.concat([
       original.jpeg.subarray(0, beforeSos),
       jpegSegment(marker, payload),
       original.jpeg.subarray(beforeSos),
     ]);
-    if (inspectRaster(bytes, 'jpg')?.privateMetadata) fail('Allowed ' + label + ' APP segment was flagged');
+    const result = inspectRaster(bytes, 'jpg');
+    if (!result || result.privateMetadata) fail('Valid JPEG ' + label + ' structural segment was rejected');
+
+    const smuggled = Buffer.concat([
+      original.jpeg.subarray(0, beforeSos),
+      jpegSegment(marker, Buffer.concat([payload, injectedText])),
+      original.jpeg.subarray(beforeSos),
+    ]);
+    const badResult = inspectRaster(smuggled, 'jpg');
+    if (badResult && !badResult.privateMetadata) {
+      fail('JPEG ' + label + ' accepted trailing text after a valid structural table');
+    }
   }
+  const originalSosPayload = original.jpeg.subarray(beforeSos + 4, beforeSos + 2 + sosSize);
+  const modifiedSos = Buffer.concat([
+    original.jpeg.subarray(0, beforeSos),
+    jpegSegment(0xda, Buffer.concat([originalSosPayload, injectedText])),
+    original.jpeg.subarray(beforeSos + 2 + sosSize),
+  ]);
+  if (inspectRaster(modifiedSos, 'jpg')) fail('SOS accepted appended free-form data');
 
   // A JPEG frame must have consistent dimensions across multiple SOF
   // segments, and a frame without SOS must not pass as a real image.
@@ -167,7 +310,12 @@ export function runImageSelfTest({ fail, validateImage, checkUnapprovedFiles, va
   if (!inspectRaster(filledHeader, 'jpg') || !inspectRaster(filledEntropy, 'jpg')) {
     fail('JPEG marker fill bytes were rejected');
   }
+  // Count complete SOS segments in the JPEG marker walker, not raw FF DA
+  // byte pairs, to keep the fixture regression tied to parser semantics.
   const realProgressive = inspectRaster(original.progressive, 'jpg');
+  if (realProgressive?.scans !== 10) {
+    fail('Progressive JPEG fixture must contain ten parsed scans, got ' + realProgressive?.scans);
+  }
   if (!realProgressive || realProgressive.privateMetadata ||
       realProgressive.width !== 1 || realProgressive.height !== 1) {
     fail('Real multi-scan progressive JPEG fixture was rejected');

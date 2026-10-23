@@ -56,9 +56,17 @@ function validateImage(image, label, report = fail, publicRoot = resolve('public
   const extension = src.slice(src.lastIndexOf('.') + 1);
   const actual = inspectRaster(readFileSync(destination), extension);
   if (!actual || !actual.width || !actual.height) {
-    report('Product "' + label + '" has an invalid or malformed PNG/JPEG/WebP image (JPEG: missing EOI, trailing bytes, truncated segment or inconsistent frame dimensions): ' + src);
+    const reason = extension === 'jpg' || extension === 'jpeg'
+      ? 'invalid or malformed JPEG (missing EOI, trailing bytes, truncated segment or inconsistent frame dimensions)'
+      : 'invalid or malformed ' + extension.toUpperCase() + ' image';
+    report('Product "' + label + '" has an ' + reason + ': ' + src);
   } else {
-    if (actual.privateMetadata) report('Product "' + label + '" image contains EXIF/GPS or text metadata: ' + src);
+    if (actual.privateMetadata) {
+      const reason = extension === 'jpg' || extension === 'jpeg'
+        ? 'EXIF/GPS, text, or non-allowlisted JPEG metadata segments'
+        : 'EXIF/GPS or text metadata';
+      report('Product "' + label + '" image contains ' + reason + ': ' + src);
+    }
     if (actual.width !== image.width || actual.height !== image.height)
       report('Product "' + label + '" dimensions do not match actual ' + actual.width + 'x' + actual.height + ': ' + src);
   }

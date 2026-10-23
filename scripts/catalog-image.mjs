@@ -76,6 +76,137 @@ function inspectWebp(bytes) {
     ? { width, height, privateMetadata } : null;
 }
 
+const JPEG_SOF_MARKERS = new Set([
+  0xc0, 0xc1, 0xc2, 0xc3, 0xc5, 0xc6, 0xc7,
+  0xc9, 0xca, 0xcb, 0xcd, 0xce, 0xcf,
+]);
+const JPEG_STRUCTURAL_MARKERS = new Set([
+  0xc4, // DHT
+  0xcc, // DAC
+  0xda, // SOS
+  0xdb, // DQT
+  0xdc, // DNL
+  0xdd, // DRI
+]);
+
+/**
+ * Validate entire JPEG structural payloads, not only their marker IDs.
+ * A free-form text segment must not be laundered through DHT/DQT/DAC/etc.
+ * Pixel/entropy correctness remains the image exporter's responsibility.
+ */
+function validJpegStructuralSegment(marker, payload) {
+  if (marker === 0xdd) return payload.length === 2; // DRI, 16-bit interval.
+  if (marker === 0xdc) return payload.length === 2 && payload.readUInt16BE(0) !== 0; // DNL.
+
+  if (marker === 0xda) { // SOS: Ns + 2*Ns selectors + Ss/Se/AhAl.
+    if (payload.length < 6) return false;
+    const components = payload[0];
+    if (components < 1 || components > 4 || payload.length !== 1 + components * 2 + 3) return false;
+    for (let i = 0; i < components; i++) {
+      const tables = payload[2 + i * 2];
+      if ((tables >> 4) > 3 || (tables & 0x0f) > 3) return false;
+    }
+    const ss = payload[1 + components * 2];
+    const se = payload[2 + components * 2];
+    const ahAl = payload[3 + components * 2];
+    return ss <= se && se <= 63 && (ahAl >> 4) <= 13 && (ahAl & 0x0f) <= 13;
+  }
+
+  let offset = 0;
+  if (!payload.length) return false;
+
+  if (marker === 0xdb) { // DQT: Pq/Tq followed by 64 quantizers.
+    while (offset < payload.length) {
+      const spec = payload[offset++];
+      const precision = spec >> 4;
+      if (precision > 1 || (spec & 0x0f) > 3) return false;
+      const size = precision ? 128 : 64;
+      if (size > payload.length - offset) return false;
+      offset += size;
+    }
+    return offset === payload.length;
+  }
+
+  if (marker === 0xc4) { // DHT: Tc/Th, 16 code-length counts, then symbols.
+    while (offset < payload.length) {
+      if (payload.length - offset < 17) return false;
+      const spec = payload[offset++];
+      if ((spec >> 4) > 1 || (spec & 0x0f) > 3) return false;
+      let symbols = 0;
+      let availableCodes = 1;
+      for (let i = 0; i < 16; i++) {
+        const count = payload[offset++];
+        symbols += count;
+        availableCodes = availableCodes * 2 - count;
+        if (availableCodes < 0) return false;
+      }
+      if (symbols < 1 || symbols > 256 || symbols > payload.length - offset) return false;
+      offset += symbols;
+    }
+    return offset === payload.length;
+  }
+
+  if (marker === 0xcc) { // DAC: one or more two-byte Tc/Th, conditioning pairs.
+    if (payload.length % 2 !== 0) return false;
+    for (let i = 0; i < payload.length; i += 2) {
+      const spec = payload[i];
+      const conditioner = payload[i + 1];
+      if ((spec >> 4) > 1 || (spec & 0x0f) > 3) return false;
+      if (spec >> 4) {
+        if (conditioner > 63) return false;
+      } else if ((conditioner >> 4) > (conditioner & 0x0f)) return false;
+    }
+    return true;
+  }
+
+  return false;
+}
+const MAX_ICC_JPEG_SEGMENT_BYTES = 32 * 1024;
+
+/**
+ * Only bounded, recognizable exchange/profile blocks bypass the metadata
+ * warning. Prefix-only acceptance is unsafe: APP0/JFXX may include a
+ * thumbnail, and APPn blocks can embed arbitrary text or serial numbers.
+ *
+ * This is defense-in-depth, not a proof that an ICC profile is free of
+ * identifying content. All public images still require manual approval.
+ */
+function allowedJpegAppSegment(marker, payload) {
+  if (marker === 0xe0) {
+    const isJfif = payload.subarray(0, 5).equals(Buffer.from('JFIF\0', 'ascii'));
+    // JPEG length field = 16, payload = 14 bytes. Last two are thumbnail
+    // width and height: both must be zero.
+    return isJfif && payload.length === 14 && payload[12] === 0 && payload[13] === 0;
+  }
+  if (marker === 0xee) {
+    // Adobe APP14: marker length field = 14, payload = 12 bytes.
+    return payload.length === 12 && payload.subarray(0, 5).equals(Buffer.from('Adobe', 'ascii'));
+  }
+  if (marker === 0xe2) {
+    const prefix = Buffer.from('ICC_PROFILE\0', 'ascii');
+    if (payload.length < 14 + 132 || payload.length > MAX_ICC_JPEG_SEGMENT_BYTES
+        || !payload.subarray(0, prefix.length).equals(prefix)) return false;
+    // One complete, plausibly structured ICC profile. Multi-part profiles
+    // must be re-exported as a clean sRGB image before publication.
+    if (payload[12] !== 1 || payload[13] !== 1) return false;
+    const profile = payload.subarray(14);
+    if (profile.readUInt32BE(0) !== profile.length ||
+        profile.toString('ascii', 36, 40) !== 'acsp') return false;
+    const tagCount = profile.readUInt32BE(128);
+    if (132 + tagCount * 12 > profile.length) return false;
+    // Reject malformed tag offsets/lengths; do not attempt full ICC decoding.
+    for (let i = 0; i < tagCount; i++) {
+      const table = 132 + i * 12;
+      const start = profile.readUInt32BE(table + 4);
+      const length = profile.readUInt32BE(table + 8);
+      if (start < 128 || length > profile.length - start) return false;
+    }
+    return true;
+  }
+  // JFXX and all other APPn blocks may contain embedded photos or metadata.
+  return false;
+}
+
 /**
  * Scan JPEG markers, including all entropy-coded scan segments.
  *
@@ -90,6 +221,8 @@ function inspectJpeg(bytes) {
   if (bytes.length < 8 || bytes[0] !== 0xff || bytes[1] !== 0xd8) return null;
   let offset = 2;
   let width = 0, height = 0, privateMetadata = false, scans = 0;
+  const seenAppMarkers = new Set();
+  let seenHeaderMarker = false;
 
   while (offset < bytes.length) {
     if (bytes[offset++] !== 0xff) return null;
@@ -100,7 +233,7 @@ function inspectJpeg(bytes) {
     if (marker === 0xd9) {
       // Reject appended payloads as well as headers that never reached a scan.
       return offset === bytes.length && width > 0 && height > 0 && scans > 0
-        ? { width, height, privateMetadata } : null;
+        ? { width, height, privateMetadata, scans } : null;
     }
     // SOI, stuffed zero, and restart markers are never stand-alone headers.
     if (marker === 0xd8 || marker === 0x00 || (marker >= 0xd0 && marker <= 0xd7)) return null;
@@ -109,19 +242,23 @@ function inspectJpeg(bytes) {
     const length = bytes.readUInt16BE(offset);
     if (length < 2 || length > bytes.length - offset) return null;
 
-    // Treat unknown APPn payloads as potentially private. Only recognized
-    // JFIF/JFXX, ICC and Adobe markers are permitted without a warning.
+    const payload = bytes.subarray(offset + 2, offset + length);
     if (marker === 0xfe) privateMetadata = true; // JPEG COM text.
-    if (marker >= 0xe0 && marker <= 0xef) {
-      const payload = bytes.subarray(offset + 2, offset + length);
-      const startsWith = (prefix) => payload.subarray(0, prefix.length).equals(Buffer.from(prefix, 'ascii'));
-      const allowed = (marker === 0xe0 && (startsWith('JFIF\0') || startsWith('JFXX\0')))
-        || (marker === 0xe2 && startsWith('ICC_PROFILE\0'))
-        || (marker === 0xee && startsWith('Adobe'));
-      if (!allowed) privateMetadata = true;
+    else if (marker >= 0xe0 && marker <= 0xef) {
+      // Only one JFIF, Adobe or complete ICC profile of each type.
+      // JFIF is conventionally the first marker following SOI.
+      if (seenAppMarkers.has(marker) || (marker === 0xe0 && seenHeaderMarker) ||
+          !allowedJpegAppSegment(marker, payload)) privateMetadata = true;
+      seenAppMarkers.add(marker);
+    } else if (JPEG_STRUCTURAL_MARKERS.has(marker)) {
+      if (!validJpegStructuralSegment(marker, payload)) return null;
+    } else if (!JPEG_SOF_MARKERS.has(marker)) {
+      // Reserved JPG/JPGn and otherwise unknown length-prefixed segments
+      // can also carry free-form text or identifiers.
+      privateMetadata = true;
     }
-    if ([0xc0, 0xc1, 0xc2, 0xc3, 0xc5, 0xc6, 0xc7,
-         0xc9, 0xca, 0xcb, 0xcd, 0xce, 0xcf].includes(marker)) {
+    seenHeaderMarker = true;
+    if (JPEG_SOF_MARKERS.has(marker)) {
       if (length < 7) return null;
       const nextHeight = bytes.readUInt16BE(offset + 3);
       const nextWidth = bytes.readUInt16BE(offset + 5);
