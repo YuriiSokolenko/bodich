@@ -20,6 +20,14 @@ const ROOTS = [
   ['accessories', 'Turbine Accessories', '/shop/turbine-accessories/6', null],
   ['gift-card', 'Gift Card', null, null],
 ];
+// Source-proven digital service and valid product pages absent from the current shop listings.
+const GIFT_CARD_DESTINATION = 'https://app.squareup.com/gift/CA5XP82NMZYB7/order';
+const DIRECT_ONLY_REFERENCES = [
+  { url: ORIGIN + '/product/power-cable/32', sectionId: 'accessories' },
+  { url: ORIGIN + '/product/g4-g4-data-cable/33', sectionId: 'accessories' },
+  { url: ORIGIN + '/product/fuel-solenoid-valve/107', sectionId: 'accessories' },
+  { url: ORIGIN + '/product/temp-probe-k30-45g/138', sectionId: 'accessories' },
+];
 const RESERVED = new Set(ROOTS.map((r) => r[2]).filter(Boolean).map((url) => url.split('/').pop()));
 const delay = (ms) => new Promise((done) => setTimeout(done, ms));
 const decode = (s) => String(s || '').replace(/&(?:amp|quot|apos|lt|gt|nbsp);|&#(?:x[0-9a-f]+|[0-9]+);/gi, (e) => {
@@ -48,9 +56,16 @@ function anchors(html) {
   return found;
 }
 function itemRef(url) {
-  const path = new URL(url).pathname;
-  const m = path.match(/^\/product\/([^/]+)\/([0-9]+)\/?$/);
-  return m ? { id: 'kt-' + m[2], numericId: m[2], url: ORIGIN + path.replace(/\/$/, '') } : null;
+  const parsed = new URL(url);
+  if (parsed.origin !== ORIGIN) return null;
+  const path = parsed.pathname;
+  // Square emits older numeric IDs and newer opaque IDs (e.g. 24-character base32).
+  const m = path.match(/^\/product\/([^/]+)\/([0-9]+|[A-Z0-9]{16,40})\/?$/i);
+  if (!m) return null;
+  const numeric = /^[0-9]+$/.test(m[2]);
+  return { id: (numeric ? 'kt-' : 'kt-sq-') + m[2],
+    numericId: numeric ? m[2] : null, opaqueId: numeric ? null : m[2],
+    url: ORIGIN + path.replace(/\/$/, '') };
 }
 function categoryRef(url) {
   const path = new URL(url).pathname;
@@ -69,7 +84,7 @@ function meta(html, property) {
 function productTitle(html, fallback) {
   for (const m of html.matchAll(/<h1\b[^>]*>([\s\S]*?)<\/h1>/gi)) {
     const name = plain(m[1]);
-    if (name && !/^KingTech Turbines$/i.test(name)) return name;
+    if (name && !/^(KingTech Turbines|Shopping Cart|Cart)$/i.test(name)) return name;
   }
   const og = meta(html, 'og:title');
   if (og && !/^KingTech Turbines$/i.test(og)) return og.replace(/\s+\|\s+KingTech Turbines$/i, '');
@@ -204,8 +219,8 @@ async function run() {
   const crossListings = {};
   const exclusions = [
     {
-      sectionId: 'gift-card', reason: 'The Gift Card navigation entry is a separate digital checkout flow, not a verified /shop product URL; requires manual verification.',
-      evidenceUrl: ORIGIN + '/', count: null,
+      sectionId: 'gift-card', reason: 'Gift Card links from the KingTech navigation directly to a separate Square checkout, not a source /shop or /product entry (verified 2026-10-23).',
+      evidenceUrl: ORIGIN + '/', externalDestinationUrl: GIFT_CARD_DESTINATION, count: null,
     },
     {
       sectionId: 'promotional-items', reason: 'Not one of the nine requested source sections; excluded pending scope approval.',
@@ -215,7 +230,7 @@ async function run() {
   for (const root of sectionRoots.values()) {
     if (!root.url) {
       sections.push({ id: root.id, title: root.title, url: ORIGIN + '/', reportedCount: null,
-        discoveredCount: 0, crossListedCount: 0, status: 'manual_review_required', subcategories: [] });
+        discoveredCount: 0, crossListedCount: 0, status: 'external_service_documented', externalDestinationUrl: GIFT_CARD_DESTINATION, subcategories: [] });
       continue;
     }
     const queue = [root.url];
@@ -246,7 +261,7 @@ async function run() {
           if (categoryUrl !== root.url && !prior.subcategoryUrls.includes(categoryUrl)) prior.subcategoryUrls.push(categoryUrl);
           prior.evidenceUrls = [...new Set([...prior.evidenceUrls, categoryUrl])];
         } else {
-          products.set(p.id, { id: p.id, sourceNumericId: p.numericId, sourceTitle: p.fallbackTitle || null,
+          products.set(p.id, { id: p.id, sourceNumericId: p.numericId, ...(p.opaqueId ? { sourceOpaqueId: p.opaqueId } : {}), sourceDiscovery: 'category_listing', sourceTitle: p.fallbackTitle || null,
             canonicalUrl: p.url, sourceCategoryIds: [root.id], subcategoryUrls: categoryUrl === root.url ? [] : [categoryUrl],
             manufacturer: null, sourceStatus: 'unknown', possibleVariants: null,
             mappedCategoryId: root.mappedCategoryId, mappingStatus: root.mappedCategoryId ? 'provisional' : 'unmapped',
@@ -260,6 +275,32 @@ async function run() {
       discoveredCount: sectionIds.size, crossListedCount: 0,
       status: completed ? 'matched' : 'incomplete',
       subcategories: subcategories.sort((a,b)=>a.url.localeCompare(b.url)) });
+  }
+  // Four product pages independently verified by product title and canonical URL,
+  // but not currently enumerated by the Square category tiles.
+  for (const direct of DIRECT_ONLY_REFERENCES) {
+    const ref = itemRef(direct.url);
+    if (!ref || products.has(ref.id)) continue;
+    const response = await fetchHtml(ref.url);
+    const title = response.status === 200 ? productTitle(response.html, null) : null;
+    if (response.status !== 200 || !title || /^(404|page not found)$/i.test(title)) {
+      warnings.push('Direct-only source page no longer renders a product: ' + ref.url);
+      continue;
+    }
+    products.set(ref.id, {
+      id: ref.id, sourceNumericId: ref.numericId, sourceDiscovery: 'direct_verified_unlisted',
+      sourceTitle: title, canonicalUrl: ref.url, sourceCategoryIds: [direct.sectionId],
+      subcategoryUrls: [], manufacturer: /KingTech/i.test(title) ? 'KingTech' : null,
+      sourceStatus: sourceStatus(title, response.html), possibleVariants: null,
+      mappedCategoryId: null, mappingStatus: 'unmapped', confidence: 'medium',
+      reviewStatus: 'needs_human_review', capturedAt, urlCheck: 'http_200',
+      evidenceUrls: [ref.url],
+    });
+    const section = sections.find((s) => s.id === direct.sectionId);
+    if (section) {
+      section.discoveredCount++;
+      section.directOnlyCount = (section.directOnlyCount || 0) + 1;
+    }
   }
   // Keep an evidence-backed exclusion when a previously indexed candidate
   // disappears from all current category listings. Never silently erase it.
@@ -278,12 +319,13 @@ async function run() {
     // Preserve manual review/exclusion evidence even when the current source
     // storefront no longer links to the item.
     for (const legacy of previous.exclusions || []) {
-      if (!exclusions.some((entry) => entry.evidenceUrl === legacy.evidenceUrl)) {
+      if (!products.has(itemRef(legacy.evidenceUrl)?.id) && !exclusions.some((entry) => entry.evidenceUrl === legacy.evidenceUrl)) {
         exclusions.push(legacy);
       }
     }
   } catch { /* no previously committed snapshot */ }
   for (const p of products.values()) {
+    if (p.sourceDiscovery === 'direct_verified_unlisted' && p.urlCheck === 'http_200') continue;
     const response = await fetchHtml(p.canonicalUrl);
     await delay(220);
     if (response.status === 0 || response.status >= 500 || response.status === 429) {
@@ -296,8 +338,16 @@ async function run() {
       warnings.push('Product ' + p.id + ' returned HTTP ' + response.status + ': ' + p.canonicalUrl);
       continue;
     }
+    const verifiedTitle = productTitle(response.html, p.sourceTitle);
+    if (!verifiedTitle || /^(404|page not found)$/i.test(verifiedTitle)) {
+      p.urlCheck = 'http_404';
+      p.sourceStatus = 'archived_or_missing';
+      p.confidence = 'low';
+      warnings.push('Product URL renders an application-level 404: ' + p.canonicalUrl);
+      continue;
+    }
     p.urlCheck = 'http_200';
-    p.sourceTitle = productTitle(response.html, p.sourceTitle);
+    p.sourceTitle = verifiedTitle;
     p.sourceStatus = sourceStatus(p.sourceTitle, response.html);
     p.manufacturer = /KingTech/i.test(p.sourceTitle || '') ? 'KingTech' : null;
     p.confidence = p.sourceTitle ? 'high' : 'medium';
@@ -321,7 +371,11 @@ async function run() {
   }
   const result = { schemaVersion: 1, sourceSite: ORIGIN, capturedAt,
     purpose: 'public_repo_reference_not_site_product', companyStockClaim: false,
-    sections, products: [...products.values()].sort((a,b)=>Number(a.sourceNumericId)-Number(b.sourceNumericId)),
+    sections, products: [...products.values()].sort((a,b) => {
+      const aRank = a.sourceNumericId === null ? Infinity : Number(a.sourceNumericId);
+      const bRank = b.sourceNumericId === null ? Infinity : Number(b.sourceNumericId);
+      return aRank - bRank || a.id.localeCompare(b.id);
+    }),
     exclusions, warnings: [...new Set(warnings)] };
   const destination = resolve('docs/catalog/source-inventory.json');
   mkdirSync(dirname(destination), { recursive: true });

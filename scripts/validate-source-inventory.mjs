@@ -38,16 +38,22 @@ function validate(doc) {
   for (const [idx, p] of doc.products.entries()) {
     const here = 'products[' + idx + ']';
     if (!p || typeof p !== 'object' || Array.isArray(p)) { fail(here + ' must be object'); continue; }
-    if (!/^kt-[0-9]+$/.test(p.id || '') || p.id !== 'kt-' + p.sourceNumericId) fail(here + ' stable source ID is invalid');
+    const numeric = typeof p.sourceNumericId === 'string' && /^[0-9]+$/.test(p.sourceNumericId);
+    const opaque = p.sourceNumericId === null && typeof p.sourceOpaqueId === 'string' && /^[A-Z0-9]{16,40}$/.test(p.sourceOpaqueId);
+    const idPart = numeric ? p.sourceNumericId : p.sourceOpaqueId;
+    if ((!numeric && !opaque) ||
+        (numeric && p.sourceOpaqueId != null) ||
+        p.id !== (numeric ? 'kt-' : 'kt-sq-') + idPart) fail(here + ' stable source ID is invalid');
     if (ids.has(p.id)) fail('Duplicate source ID ' + p.id);
     ids.add(p.id);
     if (!validSourceUrl(p.canonicalUrl, '/product/')) fail(here + ' has invalid canonical source URL');
-    const match = (p.canonicalUrl || '').match(/\/product\/[^/]+\/([0-9]+)$/);
-    if (!match || match[1] !== p.sourceNumericId) fail(here + ' canonical numeric ID mismatch');
+    const match = (p.canonicalUrl || '').match(/\/product\/[^/]+\/([A-Za-z0-9]+)$/);
+    if (!match || match[1] !== idPart) fail(here + ' canonical source ID mismatch');
     if (urls.has(p.canonicalUrl)) fail('Duplicate canonical URL ' + p.canonicalUrl);
     urls.add(p.canonicalUrl);
-    if (numerics.has(p.sourceNumericId)) fail('Duplicate source product numeric ID ' + p.sourceNumericId);
-    numerics.add(p.sourceNumericId);
+    if (numerics.has(idPart)) fail('Duplicate source product identifier ' + idPart);
+    numerics.add(idPart);
+    if (!['category_listing', 'direct_verified_unlisted'].includes(p.sourceDiscovery)) fail(here + ' invalid discovery provenance');
     if (p.sourceTitle !== null && (typeof p.sourceTitle !== 'string' || !p.sourceTitle.trim())) fail(here + ' title invalid');
     if (p.manufacturer !== null && (typeof p.manufacturer !== 'string' || !p.manufacturer.trim())) fail(here + ' manufacturer invalid');
     if (!allowedStatuses.has(p.sourceStatus)) fail(here + ' unknown status');
@@ -67,12 +73,14 @@ function validate(doc) {
       fail(here + ' evidence URLs are missing/invalid');
     if (!Array.isArray(p.subcategoryUrls) || p.subcategoryUrls.some((u) => !validSourceUrl(u, '/shop/')))
       fail(here + ' invalid subcategories');
+    if (p.sourceDiscovery === 'direct_verified_unlisted' && p.subcategoryUrls?.length)
+      fail(here + ' unlisted direct product cannot claim a category listing');
     if (Object.keys(p).some((k) => noCommerce.has(k.toLowerCase()))) fail(here + ' contains public commerce fields');
   }
   for (const section of doc.sections) {
     if (!KNOWN_SECTIONS.includes(section.id)) fail('Unexpected section ' + section.id);
     if (!validSourceUrl(section.url)) fail('Invalid section URL ' + section.id);
-    if (!['matched', 'incomplete', 'manual_review_required'].includes(section.status)) fail('Invalid section status ' + section.id);
+    if (!['matched', 'incomplete', 'manual_review_required', 'external_service_documented'].includes(section.status)) fail('Invalid section status ' + section.id);
     if (section.reportedCount !== null && (!Number.isSafeInteger(section.reportedCount) || section.reportedCount < 0))
       fail('Invalid measured source count ' + section.id);
     const actual = doc.products.filter((p) => p.sourceCategoryIds?.includes(section.id));
@@ -81,10 +89,22 @@ function validate(doc) {
     if (cross !== section.crossListedCount) fail('Category cross-listed count mismatch: ' + section.id);
     if (!Array.isArray(section.subcategories)) fail('Missing subcategories for ' + section.id);
     if (section.status === 'matched' && section.reportedCount === null) fail('Cannot call an unmeasured section matched: ' + section.id);
+    if (section.id === 'gift-card' &&
+        (section.status !== 'external_service_documented' || section.reportedCount !== null ||
+          section.discoveredCount !== 0 || section.externalDestinationUrl !== 'https://app.squareup.com/gift/CA5XP82NMZYB7/order'))
+      fail('Gift Card must be documented as a separate external digital checkout');
+    if (section.id === 'accessories' &&
+        section.subcategories?.reduce((n, sub) => n + sub.discoveredCount, 0) + (section.directOnlyCount || 0) !== section.discoveredCount)
+      fail('Accessory listing plus direct-only reference counts disagree');
+    if (section.id === 'accessories' && section.status === 'matched' &&
+        section.subcategories?.some((sub) => sub.status !== 'matched' || sub.reportedCount !== sub.discoveredCount))
+      fail('Incomplete child-category listings cannot be marked matched');
     if (section.status === 'matched' && section.id !== 'accessories' && section.reportedCount !== section.discoveredCount)
       fail('Section count does not match source: ' + section.id);
   }
   for (const exclusion of doc.exclusions) {
+    if (exclusion.sectionId === 'gift-card' && exclusion.externalDestinationUrl !== 'https://app.squareup.com/gift/CA5XP82NMZYB7/order')
+      fail('Gift card exclusion must name the observed Square checkout');
     if (!validSourceUrl(exclusion.evidenceUrl) || typeof exclusion.reason !== 'string' || !exclusion.reason.trim())
       fail('Exclusion must have source evidence and reason');
   }
@@ -98,8 +118,9 @@ function continuityProblems(previous, current) {
   const newIds = new Set((current.products || []).map((p) => p.id));
   const previouslyExcluded = new Set((previous.exclusions || []).flatMap((entry) => {
     if (!validSourceUrl(entry.evidenceUrl, '/product/')) return [];
-    const match = entry.evidenceUrl.match(/\/product\/[^/]+\/([0-9]+)$/);
-    return match && entry.reason?.trim() ? ['kt-' + match[1]] : [];
+    const match = entry.evidenceUrl.match(/\/product\/[^/]+\/([A-Za-z0-9]+)$/);
+    if (!match || !entry.reason?.trim()) return [];
+    return [( /^[0-9]+$/.test(match[1]) ? 'kt-' : 'kt-sq-') + match[1]];
   }));
   const lost = [...oldIds].filter((id) => !newIds.has(id) && !previouslyExcluded.has(id));
   return lost.length ? ['Previously catalogued source IDs disappeared without a pre-existing documented exclusion: ' + lost.join(', ')] : [];
@@ -130,6 +151,8 @@ if (process.argv.includes('--self-test')) {
       (d) => d.products[0].mappedCategoryId = 'not-a-BODICH-category',
       (d) => d.sections[0].discoveredCount++,
       (d) => d.products[0].price = 500,
+      (d) => { const p = d.products.find((p) => p.sourceOpaqueId); if (p) p.sourceOpaqueId = 'INVALID'; },
+      (d) => { const p = d.products.find((p) => p.sourceDiscovery === 'direct_verified_unlisted'); if (p) p.subcategoryUrls.push('https://www.kingtechturbines.com/shop/pump/12'); },
     ];
     for (const test of cases) {
       const copy = clone();

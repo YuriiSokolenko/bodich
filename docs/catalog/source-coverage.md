@@ -1,60 +1,72 @@
-# KingTech source inventory (public repository research, not BODICH products)
+# KingTech source inventory — publicly available research, not BODICH stock
 
-**This inventory is publicly visible in this GitHub repository, but it is NOT a BODICH website product feed.** No KingTech product is authorized for publication as a BODICH product. Nothing in `docs/catalog/source-inventory.json` is imported by Astro or added to `confirmedProducts`. Product titles, manufacturer and URLs are source provenance, not BODICH branding. No source product images, prices, stock, technical claims, or proprietary descriptions are copied into BODICH public product records.
+**Captured and reconciled 23 October 2026.** This source-reference JSON is publicly visible in GitHub, but is **not loaded into the BODICH website product catalog**. No KingTech artwork, copied descriptions, prices, inventory quantities or resale rights are claimed. The public `confirmedProducts` list remains unchanged.
 
-## Browser-rendered source coverage — 23 October 2026
+## Source section coverage
 
-The source site renders its store client-side. This table compares **source-reported counts** from the rendered pages with the number of unique product URLs actually inventoried. The latest snapshot contains **123 distinct product references, all individually loaded with HTTP 200**, not a claim that the source inventory is complete.
+The KingTech Square storefront is client-rendered. Counts below are from the rendered shop pages, including their nested accessory categories. A separately verified product page may exist even when it is absent from the current listing.
 
-| Section | Source-reported count | Inventory | Review result |
+| Section | Source-reported shop results | Captured product references | Coverage |
 |---|---:|---:|---|
 | [Turbine G5](https://www.kingtechturbines.com/shop/turbine-g5/29) | 11 | 11 | Matched |
-| [Turbines G4+](https://www.kingtechturbines.com/shop/turbines-g4/2) | 17 | 17 | Matched, includes discontinued and industry-only |
+| [Turbines G4+](https://www.kingtechturbines.com/shop/turbines-g4/2) | 17 | 17 | Matched, includes discontinued / industrial-only |
 | [Turbines TP](https://www.kingtechturbines.com/shop/turbines-tp/3) | 4 | 4 | Matched |
-| [Discounted Turbines](https://www.kingtechturbines.com/shop/discounted-turbines/4) | 0 | 0 | **Matched**; rendered shop reports zero results |
-| [Warranty Purchase](https://www.kingtechturbines.com/shop/warranty-purchase/10) | 1 | 1 | Matched; service, not an engine |
+| [Discounted Turbines](https://www.kingtechturbines.com/shop/discounted-turbines/4) | 0 | 0 | Verified empty |
+| [Warranty Purchase](https://www.kingtechturbines.com/shop/warranty-purchase/10) | 1 | 1 | Matched; service rather than engine |
 | [Engine Oil](https://www.kingtechturbines.com/shop/engine-oil/8) | 4 | 4 | Matched |
-| [Batteries](https://www.kingtechturbines.com/shop/batteries/7) | 2 | 2 | Matched currently visible; one older indexed item requires archive review |
-| [Turbine Accessories](https://www.kingtechturbines.com/shop/turbine-accessories/6) | 0 direct listings; 89 across 14 child-category results | 84 | **Incomplete**: bracket 13 vs 10, pumps 28 vs 26 |
-| [Gift Card](https://www.kingtechturbines.com/) | Not measured | 0 | Separate digital checkout, manual review required |
+| [Batteries](https://www.kingtechturbines.com/shop/batteries/7) | 2 | 2 | Matched current listing; ID 27 excluded separately |
+| [Turbine Accessories](https://www.kingtechturbines.com/shop/turbine-accessories/6) | 0 direct; 89 across 14 nested categories | 93 (89 listed + 4 direct-only) | All nested counts matched |
+| [Gift Card](https://www.kingtechturbines.com/) | Not a shop category (external checkout) | 0 | External digital service documented |
+| **Total unique verified source products** | **128 listed items** | **132** | **128 category-linked + 4 direct-only** |
 
-Only **38 of the 123 references** have a provisional BODICH category mapping; 85 remain explicitly unmapped (84 accessories and one warranty-service record). The `confidence` field currently measures evidence quality for exact source-title/URL capture (HTTP 200), **not** approval to publish or proof of manufacturer. Every `reviewStatus` deliberately remains `needs_human_review`, and `possibleVariants: null` means unverified, not "no variants". Uniform values are intentional safety gates pending manual review.
+### Reconciliation of the five previously invisible category items
 
-A fresh, read-only browser audit on 23 October 2026 (GitHub Actions run [39985717812](https://github.com/YuriiSokolenko/bodich/actions/runs/39985717812)) independently reproduced **exactly the same 123 product IDs**: zero missing, zero added. It also confirmed **0** products on Discounted Turbines and **0 direct** products in the Accessories hub, reducing active source-count warnings from four to two. The two accessory-subcategory shortfalls remain unresolved. The resulting snapshot is manually reconciled; no audit job pushed changes to the repository.
+**Cause:** Square's catalog uses both numeric URL IDs and newer opaque alphanumeric item IDs. The initial crawler regex matched only digits. A browser comparison confirmed that the rendered **Engine Bracket category contains 13 links**, of which **3 have opaque IDs**; the **Pump category contains 28 links**, of which **2 have opaque IDs**. All five product pages were separately opened and their canonical URLs and titles checked.
 
-The initial non-rendered seed contained 53 URL candidates; the browser audit expanded the current verified set to 123. Two old indexed references (battery ID 27 and temperature probe ID 138) are retained as **documented pending exclusions**, not silently dropped or represented as available stock. They require direct-URL/archive verification. Cross-listed counts are computed from source numeric IDs; current snapshot found no cross-section duplicates.
+| Original category | Source title | Verified canonical product page |
+|---|---|---|
+| Engine Bracket | Stainless Steel Bracket for K102 | [Opaque ID VCEY…](https://www.kingtechturbines.com/product/stainless-steel-bracket-for-k102/VCEYUYCU5FJF2GZQMXDNZXJO) |
+| Engine Bracket | Stainless Steel Bracket for K130 | [Opaque ID ECX6…](https://www.kingtechturbines.com/product/stainless-steel-bracket-for-k130/ECX6KXRCBWRIZ2YGLCIVQAWT) |
+| Engine Bracket | Engine Bracket K450 | [Opaque ID PYRA…](https://www.kingtechturbines.com/product/engine-bracket-k450/PYRA6D5K64KITYJCJGXLZCQU) |
+| Pump | KingTech KP500V+ | [Opaque ID LRO5…](https://www.kingtechturbines.com/product/kingtech-kp500v-/LRO5A4V3ZOBXOVEKU4F3PPC3) |
+| Pump | PISCO One-Way Valve | [Opaque ID B6UE…](https://www.kingtechturbines.com/product/pisco-one-way-valve/B6UE3Q5GGAWUC57XIETALASF) |
 
-## Repeatable maintenance process
+The inventory uses `kt-N` for numeric source IDs and `kt-sq-OPAQUE_ID` for Square opaque IDs. This permits safe deduplication without inventing product numbers or collapsing two distinct source records. These five items have `sourceDiscovery: "category_listing"`.
 
-1. Review the source site's robots.txt and access rules. Only use publicly visible product/category links and avoid automated access if disallowed. Do not copy third-party descriptions, product media or prices.
-2. With Node 24, install the optional browser audit tooling with `npm install --no-save --package-lock=false playwright@1.64.1` and `npx playwright install --only-shell chromium`, then run `npm run catalog:source:refresh`. This traverses the nine starting sections, follows paginated results and accessories subcategories, deduplicates by immutable numeric source product ID, requests each individual product URL and records URL check status, current source title, provenance and unresolved variants. The command rewrites only the review inventory. It exits **1 on fatal network/browser errors**, **2 when the crawl is valid but coverage gaps remain**, and **0 when no gaps were detected**. The manual GitHub Actions workflow has read-only permissions: it uploads a proposed JSON artifact, never commits or pushes to `main` or any other branch. A regression guard compares all previous source IDs, not just counts, and permits a missing ID only with an exclusion that was documented in the previous manifest. **Do not silently overwrite a previously better verified inventory with an incomplete crawl.**
-3. Run `npm run catalog:source:check`. Offline validation enforces unique numeric IDs, exact canonical URLs with the same source ID, supported nine-section taxonomy, valid BODICH provisional category links, coverage totals, exclusion evidence and absence of price/media/stock payloads. Negative regression fixtures cover malformed sources, duplicates, category IDs and counts.
-4. Manually compare every source section and pagination with the recorded counts. Check cross-listed/discounted items, discontinued/out-of-stock/industrial-only entries, services, gift-card digital offers and possible item variations. Resolve `unmapped`, `needs_human_review`, `unknown`, `not_checked` and every listed warning with evidence. A passing shape test **does not** prove all pages were discovered.
-5. Review the diff against the previous capture. Require human approval before updating any public-facing BODICH product records, translations or artwork. New entries stay off the BODICH website; add no company stock claims or SKU specifications based on the reference alone.
+### Four valid direct-only product pages
 
-The live refresh is an inventory maintenance aid, not permission to publish or a substitute for source/manual QA. The initial manifest intentionally marks gaps; issue #25 must **not** be marked complete until the full online and manual coverage checks succeed. Gift cards and categories with no individual product URL require a documented reason for exclusion or a verified digital/service reference. The site may change after the capture date.
+Four additional numeric-ID pages were independently verified by their product titles and canonical URL metadata, despite being absent from current category tiles. They are retained as **research references**, with `sourceDiscovery: "direct_verified_unlisted"`, `confidence: "medium"` and `needs_human_review`. They do **not** increase the current shop's reported category result counts.
 
-### Source identity and cross-listings
+- [ID 32 — Power Cable](https://www.kingtechturbines.com/product/power-cable/32)
+- [ID 33 — G4/G4+ Data Cable](https://www.kingtechturbines.com/product/g4-g4-data-cable/33)
+- [ID 107 — Fuel Solenoid Valve](https://www.kingtechturbines.com/product/fuel-solenoid-valve/107) (its source page displays an out-of-stock notice)
+- [ID 138 — Temp Probe - K30/45G](https://www.kingtechturbines.com/product/temp-probe-k30-45g/138)
 
-Source records use `kt-<source numeric product ID>`, not inferred SKUs, so a product appearing in multiple sections remains a single record with several `sourceCategoryIds`. Its origin is recorded in `evidenceUrls`, and nested paths in `subcategoryUrls`. `mappedCategoryId` is an explicit **provisional** link to the current BODICH taxonomy, or `null` with `mappingStatus: "unmapped"` when no safe mapping exists. This does not imply authorized manufacture, distribution or resale.
+All four are provisionally classified under Accessories with **no invented subcategory listing**. Their canonical URLs and titles were confirmed in a browser probe on 2026-10-23.
 
-### Checklist before completing issue #25
+### Explicit service and missing-item exclusions
 
-- [ ] Nine source sections fully crawled and counts measured, not estimated
-- [ ] Accessories subcategories and pagination reconciled; no missing links
-- [ ] Product URLs open; title and source status verified without guessing
-- [ ] Cross-listings and discontinued/archived records reconciled
-- [ ] Warranty/digital services and gift cards included or excluded with exact source evidence
-- [ ] Every unknown/ambiguous field explicitly marked for review
-- [ ] Unique ID/URL/category-link validator and CI pass
-- [ ] Review confirms reference JSON cannot publish as BODICH stock
+- **Gift Card:** the KingTech homepage navigation goes directly to [Square's digital Gift Card checkout](https://app.squareup.com/gift/CA5XP82NMZYB7/order), not to a `/shop` or `/product` listing. It is a documented **external digital service**, not a product ID; section product count is 0.
+- **Battery ID 27:** [850mAh-9.9V LIFE Battery](https://www.kingtechturbines.com/product/850mah-9-9v-life-battery/27) now renders the site's own **404 / Page not found** screen even though its HTTP transport response is 200. Preserve this exact source evidence as an exclusion, not a verified live product.
+- **Promotional Items:** [separate source section](https://www.kingtechturbines.com/shop/promotional-items/9) is outside the nine specified sections and remains explicitly excluded pending a separate scope decision.
 
+There were **no detected cross-listings between the nine shop sections** in the captured current source snapshot. Source status labels are evidence-only; `unknown` is not a stock or availability assertion.
 
-## Remaining discrepancies
+## Repeatable audit and acceptance guards
 
-- Engine Bracket reports 13 source results, but only 10 unique links were extracted.
-- Pump reports 28 source results, but only 26 unique links were extracted.
-- Discounted Turbines was confirmed empty (0 results), and the Accessories hub has 0 direct listings; 14 child categories contain the 84 inventoried items (89 reported before reconciling five gaps).
-- Gift Card and two previously indexed but now-unlisted item URLs still require human verification.
+1. Use Node 24. For the optional on-demand live browser audit: `npm install --no-save --package-lock=false playwright@1.64.1`, `npx playwright install --only-shell chromium`, then `npm run catalog:source:refresh`. The crawler traverses the nine shop sections, all accessory subcategories, numeric **and opaque** product links, plus the four independently verified direct-only URLs. It verifies actual product content in addition to HTTP status, and never edits the published BODICH catalog.
+2. Run `npm run catalog:source:check` or `npm run check`. The offline validator checks unique stable IDs, canonical URLs, all nine sections, source/category counts including direct-only references, exclusion evidence, noncommercial fields and negative fixtures. The comparison guard rejects lost IDs even when a new crawl has the same number of items.
+3. The GitHub workflow is **manual-dispatch only** and read-only. It uploads proposed candidate JSON instead of pushing commits. Audit exit statuses: **0** when counts match, **2** when valid but incomplete, **1** for fatal crawler/browser/network errors. A valid incomplete crawl is shown as a warning, not permission to delete previously verified IDs.
+4. Human verification of variants, provisional manufacturing attribution, exact statuses and final Romanian product copy belongs to later content-intake/launch tasks. Unverified values deliberately remain `null`, `unknown`, `unmapped` or `needs_human_review`; no source record is automatically published or asserted as BODICH stock.
 
-Do not close issue #25 or merge the PR until these coverage gaps are resolved or explicitly reviewed with source evidence.
+## Issue #25 source-inventory acceptance
+
+- [x] Nine source sections captured or explicitly documented as non-product service
+- [x] All counted source shop results matched after fixing opaque Square IDs
+- [x] Each of 132 referenced product URLs verified for actual product content
+- [x] Archived/unlisted direct references and the inaccessible ID 27 handled explicitly
+- [x] Gift Card checkout documented separately without inventing a product ID
+- [x] Stable IDs, canonical URLs, category mapping and regression guards validated
+- [x] Public website stock remains untouched; future local artwork and Romanian descriptions are deferred to their own issues
+
+Re-run a live audit before merging or promoting any reference into public BODICH products. Source pages can change after the captured date.

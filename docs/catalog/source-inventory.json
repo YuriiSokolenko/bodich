@@ -80,9 +80,9 @@
       "title": "Turbine Accessories",
       "url": "https://www.kingtechturbines.com/shop/turbine-accessories/6",
       "reportedCount": 0,
-      "discoveredCount": 84,
+      "discoveredCount": 93,
       "crossListedCount": 0,
-      "status": "incomplete",
+      "status": "matched",
       "subcategories": [
         {
           "url": "https://www.kingtechturbines.com/shop/ecu-and-gsu/13",
@@ -99,8 +99,8 @@
         {
           "url": "https://www.kingtechturbines.com/shop/engine-bracket/24",
           "reportedCount": 13,
-          "discoveredCount": 10,
-          "status": "incomplete"
+          "discoveredCount": 13,
+          "status": "matched"
         },
         {
           "url": "https://www.kingtechturbines.com/shop/fod-screen/11",
@@ -135,8 +135,8 @@
         {
           "url": "https://www.kingtechturbines.com/shop/pump/12",
           "reportedCount": 28,
-          "discoveredCount": 26,
-          "status": "incomplete"
+          "discoveredCount": 28,
+          "status": "matched"
         },
         {
           "url": "https://www.kingtechturbines.com/shop/starter-motor/15",
@@ -168,7 +168,8 @@
           "discoveredCount": 1,
           "status": "matched"
         }
-      ]
+      ],
+      "directOnlyCount": 4
     },
     {
       "id": "gift-card",
@@ -177,8 +178,9 @@
       "reportedCount": null,
       "discoveredCount": 0,
       "crossListedCount": 0,
-      "status": "manual_review_required",
-      "subcategories": []
+      "status": "external_service_documented",
+      "subcategories": [],
+      "externalDestinationUrl": "https://app.squareup.com/gift/CA5XP82NMZYB7/order"
     }
   ],
   "products": [
@@ -203,7 +205,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/kingtech-k-30g4-discontinued/1",
         "https://www.kingtechturbines.com/shop/turbines-g4/2"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-2",
@@ -226,7 +229,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/kingtech-k-45g4-discontinued/2",
         "https://www.kingtechturbines.com/shop/turbines-g4/2"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-3",
@@ -249,7 +253,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/kingtech-k-55g4-discontinued/3",
         "https://www.kingtechturbines.com/shop/turbines-g4/2"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-4",
@@ -272,7 +277,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/kingtech-k-65g4-discontinued/4",
         "https://www.kingtechturbines.com/shop/turbines-g4/2"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-5",
@@ -295,7 +301,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/kingtech-k-70g4-discontinued/5",
         "https://www.kingtechturbines.com/shop/turbines-g4/2"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-6",
@@ -318,7 +325,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/kingtech-k-85g4-discontinued/6",
         "https://www.kingtechturbines.com/shop/turbines-g4/2"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-7",
@@ -341,7 +349,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/kingtech-k-102g4-/7",
         "https://www.kingtechturbines.com/shop/turbines-g4/2"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-8",
@@ -364,7 +373,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/kingtech-k-130g4-/8",
         "https://www.kingtechturbines.com/shop/turbines-g4/2"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-9",
@@ -387,7 +397,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/kingtech-k-142g4-/9",
         "https://www.kingtechturbines.com/shop/turbines-g4/2"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-10",
@@ -410,7 +421,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/kingtech-k-160g4-/10",
         "https://www.kingtechturbines.com/shop/turbines-g4/2"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-11",
@@ -433,7 +445,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/kingtech-k-180g4-/11",
         "https://www.kingtechturbines.com/shop/turbines-g4/2"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-12",
@@ -456,7 +469,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/kingtech-k-210g4-/12",
         "https://www.kingtechturbines.com/shop/turbines-g4/2"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-13",
@@ -479,7 +493,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/kingtech-k-235g4-/13",
         "https://www.kingtechturbines.com/shop/turbines-g4/2"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-14",
@@ -502,7 +517,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/kingtech-k-260g4-/14",
         "https://www.kingtechturbines.com/shop/turbines-g4/2"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-15",
@@ -525,7 +541,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/kingtech-k-320g4-/15",
         "https://www.kingtechturbines.com/shop/turbines-g4/2"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-16",
@@ -548,7 +565,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/kingtech-k-450g4-industrial-purchases-only-please-inquire-/16",
         "https://www.kingtechturbines.com/shop/turbines-g4/2"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-17",
@@ -571,7 +589,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/kingtech-k-30tpg4-/17",
         "https://www.kingtechturbines.com/shop/turbines-tp/3"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-18",
@@ -594,7 +613,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/kingtech-k-45tpg4-/18",
         "https://www.kingtechturbines.com/shop/turbines-tp/3"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-19",
@@ -617,7 +637,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/kingtech-k-60tpg4-/19",
         "https://www.kingtechturbines.com/shop/turbines-tp/3"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-20",
@@ -640,7 +661,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/kingtech-k-100tpg4-/20",
         "https://www.kingtechturbines.com/shop/turbines-tp/3"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-21",
@@ -663,7 +685,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/kingtech-special-blend-oil-2-gallons/21",
         "https://www.kingtechturbines.com/shop/engine-oil/8"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-22",
@@ -686,7 +709,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/kingtech-special-blend-oil-1-gallon/22",
         "https://www.kingtechturbines.com/shop/engine-oil/8"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-23",
@@ -709,7 +733,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/kingtech-special-blend-oil-32oz/23",
         "https://www.kingtechturbines.com/shop/engine-oil/8"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-24",
@@ -732,7 +757,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/3800mah-9-9v-life-battery/24",
         "https://www.kingtechturbines.com/shop/batteries/7"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-25",
@@ -755,7 +781,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/2100mah-9-9v-life-battery/25",
         "https://www.kingtechturbines.com/shop/batteries/7"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-30",
@@ -780,6 +807,53 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/ecu-comm-cable/30",
         "https://www.kingtechturbines.com/shop/ecu-comm-cable/20"
+      ],
+      "sourceDiscovery": "category_listing"
+    },
+    {
+      "id": "kt-32",
+      "sourceNumericId": "32",
+      "sourceDiscovery": "direct_verified_unlisted",
+      "sourceTitle": "Power Cable",
+      "canonicalUrl": "https://www.kingtechturbines.com/product/power-cable/32",
+      "sourceCategoryIds": [
+        "accessories"
+      ],
+      "subcategoryUrls": [],
+      "manufacturer": null,
+      "sourceStatus": "unknown",
+      "possibleVariants": null,
+      "mappedCategoryId": null,
+      "mappingStatus": "unmapped",
+      "confidence": "medium",
+      "reviewStatus": "needs_human_review",
+      "capturedAt": "2026-10-23",
+      "urlCheck": "http_200",
+      "evidenceUrls": [
+        "https://www.kingtechturbines.com/product/power-cable/32"
+      ]
+    },
+    {
+      "id": "kt-33",
+      "sourceNumericId": "33",
+      "sourceDiscovery": "direct_verified_unlisted",
+      "sourceTitle": "G4/G4+ Data Cable",
+      "canonicalUrl": "https://www.kingtechturbines.com/product/g4-g4-data-cable/33",
+      "sourceCategoryIds": [
+        "accessories"
+      ],
+      "subcategoryUrls": [],
+      "manufacturer": null,
+      "sourceStatus": "unknown",
+      "possibleVariants": null,
+      "mappedCategoryId": null,
+      "mappingStatus": "unmapped",
+      "confidence": "medium",
+      "reviewStatus": "needs_human_review",
+      "capturedAt": "2026-10-23",
+      "urlCheck": "http_200",
+      "evidenceUrls": [
+        "https://www.kingtechturbines.com/product/g4-g4-data-cable/33"
       ]
     },
     {
@@ -805,7 +879,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/ecu-comm-cable-for-e-model-gold-xicoy-ecu-/35",
         "https://www.kingtechturbines.com/shop/ecu-comm-cable/20"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-36",
@@ -830,7 +905,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/ecu-comm-cable-for-e-f-model-black-xicoy-ecu-/36",
         "https://www.kingtechturbines.com/shop/ecu-comm-cable/20"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-39",
@@ -855,7 +931,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/battery-pump-cable-for-kt-pump/39",
         "https://www.kingtechturbines.com/shop/pump-cable/21"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-41",
@@ -880,7 +957,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/battery-pump-cable-for-k30-45g3/41",
         "https://www.kingtechturbines.com/shop/pump-cable/21"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-42",
@@ -905,7 +983,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/pump-cable-for-g4/42",
         "https://www.kingtechturbines.com/shop/pump-cable/21"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-43",
@@ -930,7 +1009,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/pump-cable-for-g4-g5/43",
         "https://www.kingtechturbines.com/shop/pump-cable/21"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-44",
@@ -955,7 +1035,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/turbine-power-cable/44",
         "https://www.kingtechturbines.com/shop/turbine-power-cable/22"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-45",
@@ -980,7 +1061,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/g4-g4-g5-battery-cable/45",
         "https://www.kingtechturbines.com/shop/turbine-power-cable/22"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-46",
@@ -1005,7 +1087,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/fod-screen-small/46",
         "https://www.kingtechturbines.com/shop/fod-screen/11"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-47",
@@ -1030,7 +1113,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/fod-screen-medium/47",
         "https://www.kingtechturbines.com/shop/fod-screen/11"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-48",
@@ -1055,7 +1139,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/fod-screen-large/48",
         "https://www.kingtechturbines.com/shop/fod-screen/11"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-49",
@@ -1080,7 +1165,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/fod-screen-260/49",
         "https://www.kingtechturbines.com/shop/fod-screen/11"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-50",
@@ -1105,7 +1191,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/data-cable-g4-g4-g5/50",
         "https://www.kingtechturbines.com/shop/ecu-comm-cable/20"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-51",
@@ -1130,7 +1217,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/kingtech-ecu-g2/51",
         "https://www.kingtechturbines.com/shop/ecu-and-gsu/13"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-55",
@@ -1155,7 +1243,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/gsu-kingtech/55",
         "https://www.kingtechturbines.com/shop/ecu-and-gsu/13"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-56",
@@ -1180,7 +1269,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/kingtech-gsu-bluetooth-module/56",
         "https://www.kingtechturbines.com/shop/other-accessories/23"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-57",
@@ -1205,7 +1295,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/kingtech-telemetry/57",
         "https://www.kingtechturbines.com/shop/other-accessories/23"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-58",
@@ -1230,7 +1321,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/fuel-filter/58",
         "https://www.kingtechturbines.com/shop/other-accessories/23"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-59",
@@ -1255,7 +1347,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/shut-off-valve/59",
         "https://www.kingtechturbines.com/shop/other-accessories/23"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-60",
@@ -1280,7 +1373,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/90-degree-fuel-festo-fitting/60",
         "https://www.kingtechturbines.com/shop/other-accessories/23"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-62",
@@ -1305,7 +1399,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/engine-bracket-k320/62",
         "https://www.kingtechturbines.com/shop/engine-bracket/24"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-63",
@@ -1330,7 +1425,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/engine-bracket-k260/63",
         "https://www.kingtechturbines.com/shop/engine-bracket/24"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-65",
@@ -1355,7 +1451,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/engine-bracket-k30-45-g3-g4/65",
         "https://www.kingtechturbines.com/shop/engine-bracket/24"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-66",
@@ -1380,7 +1477,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/stainless-steel-bracket-for-k45-55-70-86/66",
         "https://www.kingtechturbines.com/shop/engine-bracket/24"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-67",
@@ -1405,7 +1503,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/stainless-steel-bracket-for-k60-85/67",
         "https://www.kingtechturbines.com/shop/engine-bracket/24"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-68",
@@ -1430,7 +1529,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/stainless-steel-bracket-for-k80-100-120-142/68",
         "https://www.kingtechturbines.com/shop/engine-bracket/24"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-69",
@@ -1455,7 +1555,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/stainless-steel-bracket-for-k140-160-180/69",
         "https://www.kingtechturbines.com/shop/engine-bracket/24"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-70",
@@ -1480,7 +1581,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/stainless-steel-bracket-for-k235/70",
         "https://www.kingtechturbines.com/shop/engine-bracket/24"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-71",
@@ -1505,7 +1607,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/starter-motor-k30-45-g3/71",
         "https://www.kingtechturbines.com/shop/starter-motor/15"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-72",
@@ -1530,7 +1633,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/starter-motor-45-70/72",
         "https://www.kingtechturbines.com/shop/starter-motor/15"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-73",
@@ -1555,7 +1659,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/starter-motor-for-k60-85/73",
         "https://www.kingtechturbines.com/shop/starter-motor/15"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-74",
@@ -1580,7 +1685,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/start-motor-k80-210/74",
         "https://www.kingtechturbines.com/shop/starter-motor/15"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-75",
@@ -1605,7 +1711,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/starter-motor-case-k45-70/75",
         "https://www.kingtechturbines.com/shop/starter-motor/15"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-76",
@@ -1630,7 +1737,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/starter-motor-case-k60-85/76",
         "https://www.kingtechturbines.com/shop/starter-motor/15"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-77",
@@ -1655,7 +1763,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/starter-motor-case-k80-210/77",
         "https://www.kingtechturbines.com/shop/starter-motor/15"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-78",
@@ -1680,7 +1789,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/starter-motor-clutch/78",
         "https://www.kingtechturbines.com/shop/starter-motor/15"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-79",
@@ -1705,7 +1815,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/starter-motor-k260-320/79",
         "https://www.kingtechturbines.com/shop/starter-motor/15"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-80",
@@ -1730,7 +1841,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/starter-motor-case-k235-260-320/80",
         "https://www.kingtechturbines.com/shop/starter-motor/15"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-81",
@@ -1755,7 +1867,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/kingtech-kp200-pump/81",
         "https://www.kingtechturbines.com/shop/pump/12"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-82",
@@ -1780,7 +1893,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/kingtech-kp300-pump/82",
         "https://www.kingtechturbines.com/shop/pump/12"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-83",
@@ -1805,7 +1919,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/kingtech-kp500-pump/83",
         "https://www.kingtechturbines.com/shop/pump/12"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-84",
@@ -1830,7 +1945,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/kingtech-kp600-pump/84",
         "https://www.kingtechturbines.com/shop/pump/12"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-85",
@@ -1855,7 +1971,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/kingtech-kp800-pump/85",
         "https://www.kingtechturbines.com/shop/pump/12"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-86",
@@ -1880,7 +1997,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/kingtech-kp300v-pump/86",
         "https://www.kingtechturbines.com/shop/pump/12"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-87",
@@ -1905,7 +2023,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/kingtech-kp500v/87",
         "https://www.kingtechturbines.com/shop/pump/12"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-88",
@@ -1930,7 +2049,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/kingtech-kp600v-pump/88",
         "https://www.kingtechturbines.com/shop/pump/12"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-89",
@@ -1955,7 +2075,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/kingtech-kp800v-pump/89",
         "https://www.kingtechturbines.com/shop/pump/12"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-90",
@@ -1980,7 +2101,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/kingtech-kp1200v-pump/90",
         "https://www.kingtechturbines.com/shop/pump/12"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-91",
@@ -2005,7 +2127,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/kingtech-kp200bl-pump/91",
         "https://www.kingtechturbines.com/shop/pump/12"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-92",
@@ -2030,7 +2153,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/kingtech-kp300-bl-pump/92",
         "https://www.kingtechturbines.com/shop/pump/12"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-93",
@@ -2055,7 +2179,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/kingtech-kp500bl-pump/93",
         "https://www.kingtechturbines.com/shop/pump/12"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-94",
@@ -2080,7 +2205,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/kingtech-kp600bl-pump/94",
         "https://www.kingtechturbines.com/shop/pump/12"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-95",
@@ -2105,7 +2231,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/kingtech-kp800bl-pump/95",
         "https://www.kingtechturbines.com/shop/pump/12"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-96",
@@ -2130,7 +2257,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/kingtech-kp1000bl/96",
         "https://www.kingtechturbines.com/shop/pump/12"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-97",
@@ -2155,7 +2283,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/kingtech-kp1200bl-pump/97",
         "https://www.kingtechturbines.com/shop/pump/12"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-98",
@@ -2180,7 +2309,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/kingtech-kp1250bl-pump/98",
         "https://www.kingtechturbines.com/shop/pump/12"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-99",
@@ -2205,7 +2335,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/kp-pump-replacement-wire-valve-set/99",
         "https://www.kingtechturbines.com/shop/pump/12"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-100",
@@ -2228,7 +2359,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/warranty-transfer/100",
         "https://www.kingtechturbines.com/shop/warranty-purchase/10"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-103",
@@ -2253,7 +2385,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/tp-propeller-spacer45/103",
         "https://www.kingtechturbines.com/shop/tp-model-accessories/19"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-104",
@@ -2278,7 +2411,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/propeller-bolt-for-k45tp/104",
         "https://www.kingtechturbines.com/shop/tp-model-accessories/19"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-105",
@@ -2303,7 +2437,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/tp-propeller-spacer60-100/105",
         "https://www.kingtechturbines.com/shop/tp-model-accessories/19"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-106",
@@ -2328,6 +2463,30 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/tp-bolt75l60-100/106",
         "https://www.kingtechturbines.com/shop/tp-model-accessories/19"
+      ],
+      "sourceDiscovery": "category_listing"
+    },
+    {
+      "id": "kt-107",
+      "sourceNumericId": "107",
+      "sourceDiscovery": "direct_verified_unlisted",
+      "sourceTitle": "Fuel Solenoid Valve",
+      "canonicalUrl": "https://www.kingtechturbines.com/product/fuel-solenoid-valve/107",
+      "sourceCategoryIds": [
+        "accessories"
+      ],
+      "subcategoryUrls": [],
+      "manufacturer": null,
+      "sourceStatus": "out_of_stock",
+      "possibleVariants": null,
+      "mappedCategoryId": null,
+      "mappingStatus": "unmapped",
+      "confidence": "medium",
+      "reviewStatus": "needs_human_review",
+      "capturedAt": "2026-10-23",
+      "urlCheck": "http_200",
+      "evidenceUrls": [
+        "https://www.kingtechturbines.com/product/fuel-solenoid-valve/107"
       ]
     },
     {
@@ -2353,7 +2512,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/propane-solenoid-valve/108",
         "https://www.kingtechturbines.com/shop/valve/17"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-112",
@@ -2378,7 +2538,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/fuel-tubing-4mm/112",
         "https://www.kingtechturbines.com/shop/fuel-tubing/26"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-113",
@@ -2403,7 +2564,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/fuel-tubing-6mm/113",
         "https://www.kingtechturbines.com/shop/fuel-tubing/26"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-114",
@@ -2428,7 +2590,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/teflon-tubing-4mm/114",
         "https://www.kingtechturbines.com/shop/fuel-tubing/26"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-115",
@@ -2453,7 +2616,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/uat-100/115",
         "https://www.kingtechturbines.com/shop/UAT/27"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-116",
@@ -2478,7 +2642,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/uat-150/116",
         "https://www.kingtechturbines.com/shop/UAT/27"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-117",
@@ -2503,7 +2668,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/uat-250/117",
         "https://www.kingtechturbines.com/shop/UAT/27"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-120",
@@ -2526,7 +2692,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/kingtech-k-86g4-discontinued/120",
         "https://www.kingtechturbines.com/shop/turbines-g4/2"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-121",
@@ -2551,7 +2718,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/stainless-steel-bracket-for-k140-170-180-210/121",
         "https://www.kingtechturbines.com/shop/engine-bracket/24"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-122",
@@ -2574,7 +2742,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/kingtech-red-dyed-special-blend-oil-2-gallons/122",
         "https://www.kingtechturbines.com/shop/engine-oil/8"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-124",
@@ -2599,7 +2768,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/kero-plug-for-k30-45-g3-and-g4/124",
         "https://www.kingtechturbines.com/shop/kero-plug/28"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-125",
@@ -2624,7 +2794,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/starter-motor-clutch-o-rings/125",
         "https://www.kingtechturbines.com/shop/starter-motor/15"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-126",
@@ -2647,7 +2818,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/kingtech-k-86g5-discontinued/126",
         "https://www.kingtechturbines.com/shop/turbine-g5/29"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-127",
@@ -2670,7 +2842,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/kingtech-k-102g5/127",
         "https://www.kingtechturbines.com/shop/turbine-g5/29"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-128",
@@ -2693,7 +2866,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/kingtech-k-130g5/128",
         "https://www.kingtechturbines.com/shop/turbine-g5/29"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-129",
@@ -2716,7 +2890,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/kingtech-k-142g5/129",
         "https://www.kingtechturbines.com/shop/turbine-g5/29"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-130",
@@ -2739,7 +2914,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/kingtech-k-160g5/130",
         "https://www.kingtechturbines.com/shop/turbine-g5/29"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-131",
@@ -2762,7 +2938,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/kingtech-k-180g5/131",
         "https://www.kingtechturbines.com/shop/turbine-g5/29"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-132",
@@ -2785,7 +2962,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/kingtech-k-210g5/132",
         "https://www.kingtechturbines.com/shop/turbine-g5/29"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-133",
@@ -2808,7 +2986,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/kingtech-k-240g5/133",
         "https://www.kingtechturbines.com/shop/turbine-g5/29"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-134",
@@ -2831,7 +3010,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/kingtech-k-260g5/134",
         "https://www.kingtechturbines.com/shop/turbine-g5/29"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-135",
@@ -2854,7 +3034,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/kingtech-k-320g5/135",
         "https://www.kingtechturbines.com/shop/turbine-g5/29"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-136",
@@ -2877,7 +3058,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/kingtech-k-450g5-industrial-purchases-only-please-inquire-/136",
         "https://www.kingtechturbines.com/shop/turbine-g5/29"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-137",
@@ -2902,6 +3084,30 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/fod-screen-320/137",
         "https://www.kingtechturbines.com/shop/fod-screen/11"
+      ],
+      "sourceDiscovery": "category_listing"
+    },
+    {
+      "id": "kt-138",
+      "sourceNumericId": "138",
+      "sourceDiscovery": "direct_verified_unlisted",
+      "sourceTitle": "Temp Probe - K30/45G",
+      "canonicalUrl": "https://www.kingtechturbines.com/product/temp-probe-k30-45g/138",
+      "sourceCategoryIds": [
+        "accessories"
+      ],
+      "subcategoryUrls": [],
+      "manufacturer": null,
+      "sourceStatus": "unknown",
+      "possibleVariants": null,
+      "mappedCategoryId": null,
+      "mappingStatus": "unmapped",
+      "confidence": "medium",
+      "reviewStatus": "needs_human_review",
+      "capturedAt": "2026-10-23",
+      "urlCheck": "http_200",
+      "evidenceUrls": [
+        "https://www.kingtechturbines.com/product/temp-probe-k30-45g/138"
       ]
     },
     {
@@ -2927,7 +3133,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/kingtech-kp300dp-pump/139",
         "https://www.kingtechturbines.com/shop/pump/12"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-140",
@@ -2952,7 +3159,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/kingtech-kp500dp-pump/140",
         "https://www.kingtechturbines.com/shop/pump/12"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-141",
@@ -2977,7 +3185,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/kingtech-kp600dp-pump/141",
         "https://www.kingtechturbines.com/shop/pump/12"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-142",
@@ -3002,7 +3211,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/kingtech-kp800dp-pump/142",
         "https://www.kingtechturbines.com/shop/pump/12"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-143",
@@ -3027,7 +3237,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/kingtech-kp1000dp-pump/143",
         "https://www.kingtechturbines.com/shop/pump/12"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-144",
@@ -3052,7 +3263,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/kingtech-kp1200dp-pump/144",
         "https://www.kingtechturbines.com/shop/pump/12"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-145",
@@ -3077,7 +3289,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/kingtech-kp1250dp-pump/145",
         "https://www.kingtechturbines.com/shop/pump/12"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-146",
@@ -3102,7 +3315,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/kingtech-drm-g5/146",
         "https://www.kingtechturbines.com/shop/ecu-and-gsu/13"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-148",
@@ -3127,7 +3341,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/stainless-steel-bracket-for-k65/148",
         "https://www.kingtechturbines.com/shop/engine-bracket/24"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-149",
@@ -3152,7 +3367,8 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/brushless-starter-motor-assembly/149",
         "https://www.kingtechturbines.com/shop/starter-motor/15"
-      ]
+      ],
+      "sourceDiscovery": "category_listing"
     },
     {
       "id": "kt-151",
@@ -3177,15 +3393,152 @@
       "evidenceUrls": [
         "https://www.kingtechturbines.com/product/fuel-tubing-8mm/151",
         "https://www.kingtechturbines.com/shop/fuel-tubing/26"
+      ],
+      "sourceDiscovery": "category_listing"
+    },
+    {
+      "id": "kt-sq-B6UE3Q5GGAWUC57XIETALASF",
+      "sourceNumericId": null,
+      "sourceOpaqueId": "B6UE3Q5GGAWUC57XIETALASF",
+      "sourceDiscovery": "category_listing",
+      "sourceTitle": "PISCO One-Way Valve",
+      "canonicalUrl": "https://www.kingtechturbines.com/product/pisco-one-way-valve/B6UE3Q5GGAWUC57XIETALASF",
+      "sourceCategoryIds": [
+        "accessories"
+      ],
+      "subcategoryUrls": [
+        "https://www.kingtechturbines.com/shop/pump/12"
+      ],
+      "manufacturer": null,
+      "sourceStatus": "unknown",
+      "possibleVariants": null,
+      "mappedCategoryId": null,
+      "mappingStatus": "unmapped",
+      "confidence": "high",
+      "reviewStatus": "needs_human_review",
+      "capturedAt": "2026-10-23",
+      "urlCheck": "http_200",
+      "evidenceUrls": [
+        "https://www.kingtechturbines.com/product/pisco-one-way-valve/B6UE3Q5GGAWUC57XIETALASF",
+        "https://www.kingtechturbines.com/shop/pump/12"
+      ]
+    },
+    {
+      "id": "kt-sq-ECX6KXRCBWRIZ2YGLCIVQAWT",
+      "sourceNumericId": null,
+      "sourceOpaqueId": "ECX6KXRCBWRIZ2YGLCIVQAWT",
+      "sourceDiscovery": "category_listing",
+      "sourceTitle": "Stainless Steel Bracket for K130",
+      "canonicalUrl": "https://www.kingtechturbines.com/product/stainless-steel-bracket-for-k130/ECX6KXRCBWRIZ2YGLCIVQAWT",
+      "sourceCategoryIds": [
+        "accessories"
+      ],
+      "subcategoryUrls": [
+        "https://www.kingtechturbines.com/shop/engine-bracket/24"
+      ],
+      "manufacturer": null,
+      "sourceStatus": "unknown",
+      "possibleVariants": null,
+      "mappedCategoryId": null,
+      "mappingStatus": "unmapped",
+      "confidence": "high",
+      "reviewStatus": "needs_human_review",
+      "capturedAt": "2026-10-23",
+      "urlCheck": "http_200",
+      "evidenceUrls": [
+        "https://www.kingtechturbines.com/product/stainless-steel-bracket-for-k130/ECX6KXRCBWRIZ2YGLCIVQAWT",
+        "https://www.kingtechturbines.com/shop/engine-bracket/24"
+      ]
+    },
+    {
+      "id": "kt-sq-LRO5A4V3ZOBXOVEKU4F3PPC3",
+      "sourceNumericId": null,
+      "sourceOpaqueId": "LRO5A4V3ZOBXOVEKU4F3PPC3",
+      "sourceDiscovery": "category_listing",
+      "sourceTitle": "KingTech KP500V+",
+      "canonicalUrl": "https://www.kingtechturbines.com/product/kingtech-kp500v-/LRO5A4V3ZOBXOVEKU4F3PPC3",
+      "sourceCategoryIds": [
+        "accessories"
+      ],
+      "subcategoryUrls": [
+        "https://www.kingtechturbines.com/shop/pump/12"
+      ],
+      "manufacturer": "KingTech",
+      "sourceStatus": "unknown",
+      "possibleVariants": null,
+      "mappedCategoryId": null,
+      "mappingStatus": "unmapped",
+      "confidence": "high",
+      "reviewStatus": "needs_human_review",
+      "capturedAt": "2026-10-23",
+      "urlCheck": "http_200",
+      "evidenceUrls": [
+        "https://www.kingtechturbines.com/product/kingtech-kp500v-/LRO5A4V3ZOBXOVEKU4F3PPC3",
+        "https://www.kingtechturbines.com/shop/pump/12"
+      ]
+    },
+    {
+      "id": "kt-sq-PYRA6D5K64KITYJCJGXLZCQU",
+      "sourceNumericId": null,
+      "sourceOpaqueId": "PYRA6D5K64KITYJCJGXLZCQU",
+      "sourceDiscovery": "category_listing",
+      "sourceTitle": "Engine Bracket K450",
+      "canonicalUrl": "https://www.kingtechturbines.com/product/engine-bracket-k450/PYRA6D5K64KITYJCJGXLZCQU",
+      "sourceCategoryIds": [
+        "accessories"
+      ],
+      "subcategoryUrls": [
+        "https://www.kingtechturbines.com/shop/engine-bracket/24"
+      ],
+      "manufacturer": null,
+      "sourceStatus": "unknown",
+      "possibleVariants": null,
+      "mappedCategoryId": null,
+      "mappingStatus": "unmapped",
+      "confidence": "high",
+      "reviewStatus": "needs_human_review",
+      "capturedAt": "2026-10-23",
+      "urlCheck": "http_200",
+      "evidenceUrls": [
+        "https://www.kingtechturbines.com/product/engine-bracket-k450/PYRA6D5K64KITYJCJGXLZCQU",
+        "https://www.kingtechturbines.com/shop/engine-bracket/24"
+      ]
+    },
+    {
+      "id": "kt-sq-VCEYUYCU5FJF2GZQMXDNZXJO",
+      "sourceNumericId": null,
+      "sourceOpaqueId": "VCEYUYCU5FJF2GZQMXDNZXJO",
+      "sourceDiscovery": "category_listing",
+      "sourceTitle": "Stainless Steel Bracket for K102",
+      "canonicalUrl": "https://www.kingtechturbines.com/product/stainless-steel-bracket-for-k102/VCEYUYCU5FJF2GZQMXDNZXJO",
+      "sourceCategoryIds": [
+        "accessories"
+      ],
+      "subcategoryUrls": [
+        "https://www.kingtechturbines.com/shop/engine-bracket/24"
+      ],
+      "manufacturer": null,
+      "sourceStatus": "unknown",
+      "possibleVariants": null,
+      "mappedCategoryId": null,
+      "mappingStatus": "unmapped",
+      "confidence": "high",
+      "reviewStatus": "needs_human_review",
+      "capturedAt": "2026-10-23",
+      "urlCheck": "http_200",
+      "evidenceUrls": [
+        "https://www.kingtechturbines.com/product/stainless-steel-bracket-for-k102/VCEYUYCU5FJF2GZQMXDNZXJO",
+        "https://www.kingtechturbines.com/shop/engine-bracket/24"
       ]
     }
   ],
   "exclusions": [
     {
       "sectionId": "gift-card",
-      "reason": "The Gift Card navigation entry is a separate digital checkout flow, not a verified /shop product URL; requires manual verification.",
+      "reason": "Gift Card is linked from the homepage to a separate Square digital checkout, not a KingTech shop product (verified 2026-10-23).",
       "evidenceUrl": "https://www.kingtechturbines.com/",
-      "count": null
+      "count": null,
+      "externalDestinationUrl": "https://app.squareup.com/gift/CA5XP82NMZYB7/order"
     },
     {
       "sectionId": "promotional-items",
@@ -3195,19 +3548,10 @@
     },
     {
       "sectionId": "batteries",
-      "reason": "Previously indexed 850mAh-9.9V LIFE Battery source candidate; not present in the rendered Batteries listing on 2026-10-23. Direct URL and archive status require manual verification. Not confirmed current BODICH stock.",
+      "reason": "Direct product URL currently renders an application-level 404 / Page not found despite HTTP 200 transport response, verified 2026-10-23; excluded as missing, not claimed in stock.",
       "evidenceUrl": "https://www.kingtechturbines.com/product/850mah-9-9v-life-battery/27",
-      "count": 1
-    },
-    {
-      "sectionId": "accessories",
-      "reason": "Previously indexed Temp Probe K30/45G source candidate; not present in the rendered accessory listings on 2026-10-23. Direct URL and archive status require manual verification. Not confirmed current BODICH stock.",
-      "evidenceUrl": "https://www.kingtechturbines.com/product/temp-probe-k30-45g/138",
       "count": 1
     }
   ],
-  "warnings": [
-    "Count mismatch/unmeasured: https://www.kingtechturbines.com/shop/engine-bracket/24 reported=13, extracted=10",
-    "Count mismatch/unmeasured: https://www.kingtechturbines.com/shop/pump/12 reported=28, extracted=26"
-  ]
+  "warnings": []
 }
