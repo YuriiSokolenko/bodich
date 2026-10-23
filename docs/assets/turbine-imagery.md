@@ -46,12 +46,14 @@
 | SHA-256 | `4bfe319393b64502c6203d1cb731e67729418a572c70190a88216251f673eefd` |
 | Purpose | Turbine category/product discovery card, not a product listing for a verified SKU |
 | Status | **Concept rendering / Vizualizare conceptuală** |
-| Origin | OpenAI ChatGPT image generation, October 23, 2026. New original image following the Stage 3A visual direction, not a crop of the hero asset. |
+| Origin | Original AI-generated concept image created with OpenAI ChatGPT image generation on October 23, 2026 (Bucharest local date). GitHub PR #12 was opened October 22, 2026 UTC; these dates describe the same local calendar night. This is a new generation following Stage 3A, not a crop of the hero asset. |
 
-**Art-direction brief:** Square premium studio rendering of one compact BODICH-branded fictional RC-type jet turbine, front three-quarter intake view; legible BODICH lettering on anodized red inlet housing, fine intake mesh, dark gunmetal center body, machined fittings, red accents, bronze/blue/purple heat-tinted exhaust, charcoal background and subtle floor reflection. No third-party logo, genuine SKU, thrust specification or certification marks.
+**Art-direction brief:** Square premium studio-style AI-generated concept image of one compact BODICH-branded fictional RC-type jet turbine, front three-quarter intake view; legible BODICH lettering on anodized red inlet housing, fine intake mesh, dark gunmetal center body, machined fittings, red accents, bronze/blue/purple heat-tinted exhaust, charcoal background and subtle floor reflection. No third-party logo, genuine SKU, thrust specification or certification marks.
 
 **EN alt:** Concept rendering of a BODICH-branded miniature jet turbine with red front intake, dark metal housing, visible fittings and a heat-tinted exhaust nozzle.
 
 **RO alt:** Vizualizare conceptuală a unui motor turboreactor miniatural marca BODICH, cu admisie frontală roșie, carcasă metalică închisă la culoare, racorduri vizibile și duză de evacuare cu nuanțe termice.
 
-This is **asset 1 of a planned 2–4 matching Stage 3B images**. It must not be mistaken for a photograph or specification of an available BODICH engine. Apply the same concept-labeling and rights-review requirements documented above. The source generation PNG is not committed; the optimized WebP is the versioned site asset. Further cards, variants and on-page integration are separate stages.
+This is **asset 1 of a planned 2–4 matching Stage 3B images**. It must not be mistaken for a photograph or specification of an available BODICH engine. Apply the same concept-labeling and rights-review requirements documented above; **commercial-use / third-party IP review has not yet been completed** and is a pre-publication gate, not an implied clearance. The source generation PNG is not committed; the optimized WebP is the versioned site asset.
+
+**Integration follow-up (Stages 3C/3D):** The exhaust nozzle is close to the right image edge. Avoid blind square `object-fit: cover` crops, test `object-position` / contained layouts across screen sizes, and expose a visible localized **Concept rendering / Vizualizare conceptuală** caption adjacent to the image (not burned into the raster). Provide a smaller approximately 600 px card variant or `srcset` to reduce catalog-grid transfer size. Further cards, variants and on-page integration are separate stages.
