@@ -82,8 +82,15 @@ try {
   assert.equal(replaceProductRecords(simulatedPopulated, fixture), replaceProductRecords(original, fixture));
   writeFileSync(dataPath, replaceProductRecords(original, fixture));
 
+  const intakeFile = join(temp, 'ci-product-intake.json');
+  const candidate = { ...products[1], id: 'ci-candidate-intake', slug: 'ci-candidate-intake' };
+  writeFileSync(intakeFile, JSON.stringify(candidate, null, 2));
   const env = { ...process.env, ASTRO_BASE: '/bodich-preview', SITE_URL: 'https://example.invalid' };
   const run = (command, args) => execFileSync(command, args, { cwd: temp, env, stdio: 'pipe', encoding: 'utf8' });
+  console.log(run('npm', ['run', 'catalog:intake', '--', intakeFile]));
+  writeFileSync(intakeFile, JSON.stringify({ ...candidate, slug: products[0].slug }, null, 2));
+  assert.throws(() => run('npm', ['run', 'catalog:intake', '--', intakeFile]),
+    'Intake must reject duplicate model slugs');
   console.log(run('npm', ['run', 'check']));
   console.log(run('npm', ['run', 'build']));
   console.log(run('node', ['scripts/validate-catalog.mjs', '--routes', 'dist']));

@@ -1,4 +1,4 @@
-import { existsSync, statSync } from 'node:fs';
+import { existsSync, statSync, readFileSync } from 'node:fs';
 import { resolve, join, relative, isAbsolute } from 'node:path';
 import { catalogCategories, confirmedProducts } from '../src/catalog/data.ts';
 import { locales } from '../src/i18n/index.ts';
@@ -35,9 +35,9 @@ function validateImage(image, label, report = fail) {
   // Require a local, unambiguous public asset. Reject parent traversal,
   // query/hash fragments, protocol-relative paths and backslashes.
   const src = image.src;
-  if (!nonempty(src) || !src.startsWith('/') || src.startsWith('//')
+  if (!nonempty(src) || !/^\/images\/catalog\/[a-zA-Z0-9/_-]+\.(?:webp|png|jpe?g)$/.test(src) || src.startsWith('//')
       || /[?#\\]/.test(src) || src.split('/').some((part) => part === '..' || part === '.')) {
-    report(`Product "${label}" image.src must be a safe absolute path under public/`);
+    report(`Product "${label}" image.src must be a PNG, JPEG or WebP asset under public/images/catalog/`);
     return;
   }
   const root = resolve('public');
@@ -64,9 +64,29 @@ for (const category of catalogCategories) {
   }
 }
 
+
+const mode = process.argv[2];
+let intakeCandidate;
+if (mode === '--intake') {
+  const path = process.argv[3];
+  if (!path || process.argv[4]) {
+    fail('Usage: npm run catalog:intake -- path/to/verified-product.json');
+  } else {
+    try {
+      intakeCandidate = JSON.parse(readFileSync(resolve(path), 'utf8'));
+      if (!intakeCandidate || typeof intakeCandidate !== 'object' || Array.isArray(intakeCandidate)) {
+        fail('Intake file must contain a single JSON product object');
+        intakeCandidate = undefined;
+      }
+    } catch (error) {
+      fail('Cannot read catalog intake JSON: ' + error.message);
+    }
+  }
+}
+
 const ids = new Set();
 const slugs = new Set();
-for (const product of confirmedProducts) {
+for (const product of [...confirmedProducts, ...(intakeCandidate ? [intakeCandidate] : [])]) {
   const label = nonempty(product.id) ? product.id : '(missing id)';
   if (!nonempty(product.id)) fail('A confirmed product has no ID');
   if (ids.has(product.id)) fail(`Duplicate product ID: ${label}`);
@@ -93,8 +113,7 @@ for (const product of confirmedProducts) {
   }
 }
 
-const mode = process.argv[2];
-if (mode && !['--routes', '--self-test'].includes(mode)) fail(`Unknown argument: ${mode}`);
+if (mode && !['--routes', '--self-test', '--intake'].includes(mode)) fail(`Unknown argument: ${mode}`);
 
 // Regression coverage even while confirmedProducts is intentionally empty.
 if (mode === '--self-test') {
@@ -149,5 +168,5 @@ if (problems.length) {
   for (const problem of problems) console.error(`Catalog validation: ${problem}`);
   process.exitCode = 1;
 } else {
-  console.log(`Catalog validation passed: ${catalogCategories.length} categories, ${confirmedProducts.length} confirmed products${mode === '--routes' ? ', all localized routes present' : mode === '--self-test' ? ', regression fixtures passed' : ''}.`);
+  console.log(`Catalog validation passed: ${catalogCategories.length} categories, ${confirmedProducts.length} confirmed products${mode === '--routes' ? ', all localized routes present' : mode === '--self-test' ? ', regression fixtures passed' : mode === '--intake' ? ', candidate structurally valid; company approval is still required' : ''}.`);
 }
