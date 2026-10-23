@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { chromium } from 'playwright';
 
@@ -382,6 +383,51 @@ try {
     }
   }
 
+
+  // DPR-2 coverage: on modern phones the browser often selects a larger
+  // srcset file than it does at DPR 1, even at the same CSS viewport.
+  // The primary 5-width matrix intentionally uses DPR 1 for stable geometry.
+  for (const locale of locales) {
+    await verify(`${locale}: DPR-2 responsive WebP selection at 390px`, async () => {
+      const context = await browser.newContext({
+        viewport: { width: 390, height: 900 },
+        deviceScaleFactor: 2,
+        reducedMotion: 'reduce',
+      });
+      try {
+        const page = await context.newPage();
+        await page.goto(`${baseUrl}${pathFor(locale, 'home')}`, { waitUntil: 'load' });
+        const hero = page.locator('[data-hero] img');
+        const heroResource = await hero.evaluate(async (img) => {
+          await img.decode();
+          return new URL(img.currentSrc).pathname.split('/').pop();
+        });
+        assert([
+          'bodich-hero-concept-960.webp',
+          'bodich-hero-concept.webp',
+        ].includes(heroResource),
+        `DPR-2 hero should choose >=960px candidate, got ${heroResource}`);
+
+        await page.goto(`${baseUrl}${pathFor(locale, 'products')}`, { waitUntil: 'load' });
+        for (const { key, medium, full } of [
+          { key: 'turbine', medium: 'bodich-card-concept-01-600.webp', full: 'bodich-card-concept-01.webp' },
+          { key: 'intake', medium: 'bodich-intake-detail-concept-02-600.webp', full: 'bodich-intake-detail-concept-02.webp' },
+        ]) {
+          const img = page.locator(`[data-concept-card="${key}"] img`);
+          await img.scrollIntoViewIfNeeded();
+          const resource = await img.evaluate(async (image) => {
+            await image.decode();
+            return new URL(image.currentSrc).pathname.split('/').pop();
+          });
+          assert([medium, full].includes(resource),
+            `DPR-2 ${key} should not choose the low-DPR 360px asset, got ${resource}`);
+        }
+      } finally {
+        await context.close();
+      }
+    });
+  }
+
   for (const locale of locales) {
     await verify(`${locale}: menu works without JavaScript`, async () => {
       const context = await browser.newContext({
@@ -409,22 +455,25 @@ try {
 
   await verify('All six responsive turbine WebP assets are available and decodable', async () => {
     const variants = [
-      ['bodich-hero-concept-640.webp', 640, 360, 17372],
-      ['bodich-hero-concept-960.webp', 960, 540, 32714],
-      ['bodich-card-concept-01-360.webp', 360, 360, 17698],
-      ['bodich-card-concept-01-600.webp', 600, 600, 41062],
-      ['bodich-intake-detail-concept-02-360.webp', 360, 360, 24738],
-      ['bodich-intake-detail-concept-02-600.webp', 600, 600, 57300],
+      ['bodich-hero-concept-640.webp', 640, 360, 17372, 'eca0c639df9e52b74cb2af0588683355b523b2834e77d0efdb3bb5f388e97ccc'],
+      ['bodich-hero-concept-960.webp', 960, 540, 32714, 'a360256a44699acd6e9767172b49fff63ac491370ca559873d269cc4a3cb677d'],
+      ['bodich-card-concept-01-360.webp', 360, 360, 17698, '63016d46c5ade7dd5a79acb631b83921bf16d11bfbd7d6001a55848fd37303cf'],
+      ['bodich-card-concept-01-600.webp', 600, 600, 41062, '5d3f858c554bef61c56afc45ac3aab51b5a55f40aa8a4a8e03c08da0776daf64'],
+      ['bodich-intake-detail-concept-02-360.webp', 360, 360, 24738, '913506c80767b2db6ba674012d2965bf8aa23541e13de5c025e4f0e831a1a1bb'],
+      ['bodich-intake-detail-concept-02-600.webp', 600, 600, 57300, '29bf4417cf084d00adf0ce8ddce8e18b50eb427a9979c9de58a12c0478d064e3'],
     ];
     const page = await browser.newPage();
     try {
       await page.goto(`${baseUrl}/en/products/`, { waitUntil: 'load' });
-      for (const [file, expectedWidth, expectedHeight, expectedBytes] of variants) {
+      for (const [file, expectedWidth, expectedHeight, expectedBytes, expectedSha256] of variants) {
         const path = `/images/turbines/${file}`;
         const response = await page.request.get(`${baseUrl}${path}`);
         assert.equal(response.status(), 200, `Missing responsive WebP: ${file}`);
         assert.match(response.headers()['content-type'], /^image\/webp/, `Incorrect MIME: ${file}`);
-        assert.equal((await response.body()).length, expectedBytes, `Unexpected asset size: ${file}`);
+        const bytes = await response.body();
+        assert.equal(bytes.length, expectedBytes, `Unexpected asset size: ${file}`);
+        assert.equal(createHash('sha256').update(bytes).digest('hex'), expectedSha256,
+          `SHA-256 mismatch for ${file}; update the asset and documented hash together`);
         const actual = await page.evaluate(async (url) => {
           const bitmap = await createImageBitmap(await (await fetch(url)).blob());
           const dimensions = [bitmap.width, bitmap.height];
