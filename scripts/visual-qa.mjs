@@ -187,8 +187,10 @@ try {
           const response = await page.goto(`${baseUrl}${pathFor(locale, 'home')}`, { waitUntil: 'load' });
           assert.equal(response?.status(), 200);
 
-          const figure = page.locator('main figure');
-          assert.equal(await figure.count(), 1, 'Home must render one turbine hero figure');
+          const hero = page.locator('[data-hero]');
+          assert.equal(await hero.count(), 1, 'Home must contain one turbine hero');
+          const figure = hero.locator('figure');
+          assert.equal(await figure.count(), 1, 'Hero must render one turbine figure');
           const image = figure.locator('img');
           assert.equal(await image.getAttribute('src'), '/images/turbines/bodich-hero-concept.webp');
           assert((await image.getAttribute('alt'))?.includes(heroExpectations[locale].altFragment),
@@ -211,29 +213,46 @@ try {
           assert.equal(dimensions.naturalHeight, 941, 'Hero image must decode at source height');
 
           const box = await image.boundingBox();
-          const heading = await page.locator('main h1').boundingBox();
+          const copy = hero.locator('[data-hero-copy]');
+          const heading = await copy.locator('h1').boundingBox();
+          const intro = await copy.locator('p').boundingBox();
+          const cta = await copy.locator('a').boundingBox();
           const caption = await figure.locator('figcaption').boundingBox();
-          assert(box && heading && caption, 'Hero, heading and disclosure must be rendered');
+          assert(box && heading && intro && cta && caption, 'Hero, copy, CTA and disclosure must be rendered');
           assert(box.x >= -1 && box.x + box.width <= width + 1, 'Hero extends outside viewport');
           assert(box.height > 0 && Math.abs(box.width / box.height - 1672 / 941) < 0.03,
             'Hero must preserve the full uncropped image aspect ratio');
           assert(caption.y >= box.y + box.height - 1, 'Concept disclosure must appear below the image');
 
           if (width < 1024) {
-            assert(heading.y + heading.height <= box.y + 1,
-              'Mobile and tablet hero heading must be above, not over, the image');
+            for (const [label, element] of [['heading', heading], ['supporting copy', intro], ['CTA', cta]]) {
+              assert(element.y + element.height <= box.y + 1,
+                `Mobile/tablet ${label} must appear above the image, never over it`);
+            }
+            assert.equal(await hero.locator('[data-hero-shade]').isVisible(), false);
           } else {
-            assert(heading.y >= box.y - 1 && heading.y + heading.height <= box.y + box.height + 1,
-              'Desktop hero heading must remain inside the image area');
-            assert(heading.x + heading.width <= box.x + box.width * 0.72,
-              'Desktop hero headline must stay in the photo’s left negative-space area');
-            const intro = await page.locator('[data-hero-copy] > p').boundingBox();
-            assert(intro && intro.x + intro.width <= box.x + box.width * 0.33,
-              'Desktop localized hero supporting text must stay clear of the turbine housing');
+            // The turbine intake starts about one-third into the source image.
+            // All copy, including the CTA, must remain inside the same safe area,
+            // not merely the paragraph as before. Include vertical bounds to catch
+            // overflow from long translated strings at the lg breakpoint.
+            const safeRight = box.x + box.width * 0.34;
+            const bounds = [['heading', heading], ['supporting copy', intro], ['CTA', cta]];
+            for (const [label, element] of bounds) {
+              assert(element.x >= box.x - 1 && element.x + element.width <= safeRight + 1,
+                `Desktop ${label} intrudes into the turbine intake region`);
+              assert(element.y >= box.y - 1 && element.y + element.height <= box.y + box.height + 1,
+                `Desktop ${label} overflows the hero image vertically`);
+            }
+            // An actual gradient is part of the text-on-image contrast treatment.
+            // Contrast still needs manual screenshot review against rendered pixels.
+            const shade = hero.locator('[data-hero-shade]');
+            assert.equal(await shade.isVisible(), true, 'Desktop hero shading must be visible');
+            assert((await shade.evaluate((element) => getComputedStyle(element).backgroundImage))
+              .includes('gradient'), 'Desktop hero text needs its contrast gradient');
           }
 
-          const productLink = page.locator(`main a[href="${pathFor(locale, 'products')}"]`);
-          assert.equal(await productLink.count(), 1, 'Hero must link to the localized products page');
+          const productLink = copy.locator(`a[href="${pathFor(locale, 'products')}"]`);
+          assert.equal(await productLink.count(), 1, 'Hero CTA must link to the localized products page');
           assert.equal(await productLink.isVisible(), true);
         });
 
