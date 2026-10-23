@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="public/images/turbines/bodich-hero-concept.webp" alt="AI-generated BODICH jet turbine concept with red intake housing, dark metal body and heat-tinted exhaust nozzle on a charcoal background" width="100%" />
+  <img src="public/images/turbines/bodich-hero-concept.webp" alt="AI-generated concept rendering of a BODICH miniature jet turbine" width="100%" />
 </p>
 
 <h1 align="center">BODICH — Turbine Website</h1>
@@ -58,7 +58,7 @@ The architecture intentionally avoids a database, backend and checkout integrati
 
 ## BODICH design tokens
 
-The website uses a **dark aerospace palette with steel neutrals and a red brand accent**, matching the direction of the original README concept banner. All styling tokens live in [`src/styles/global.css`](src/styles/global.css) using Tailwind CSS v4's `@theme` directive; no separate Tailwind configuration file is needed.
+The website uses a **dark aerospace palette with steel neutrals and a red brand accent**, matching the direction of the BODICH turbine concept hero image. All styling tokens live in [`src/styles/global.css`](src/styles/global.css) using Tailwind CSS v4's `@theme` directive; no separate Tailwind configuration file is needed.
 
 | Token / utility | Purpose | Value |
 | --- | --- | --- |
@@ -162,7 +162,7 @@ Translated UI strings and route helpers live in [`src/i18n/index.ts`](src/i18n/i
 
 ```text
 .github/workflows/ci.yml    # type checking, build and route checks
-docs/assets/                # brand concepts and project illustrations
+docs/assets/                # brand concepts; legacy SVG banner retained for reference
 public/                     # public static assets and crawler policy
 src/
   components/               # localized header, footer and shared page components
