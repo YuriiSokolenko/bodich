@@ -158,6 +158,22 @@ The English locale is the default, and Romanian is available through an equivale
 
 Translated UI strings and route helpers live in [`src/i18n/index.ts`](src/i18n/index.ts). Shared navigation preserves the active section when changing language. Actual localized catalog content will be introduced separately.
 
+### Catalog information architecture
+
+The Products and Accessories landing pages link to a **provisional bilingual taxonomy**:
+
+| Section | English category route (replace `en` with `ro` for Romanian) |
+| --- | --- |
+| Products | `/en/products/turbine-engines/` |
+| Accessories | `/en/accessories/ecu-controls/` |
+| Accessories | `/en/accessories/fuel-systems/` |
+| Accessories | `/en/accessories/electrical-components/` |
+| Accessories | `/en/accessories/mounting-hardware/` |
+
+The source of truth is [`src/catalog/index.ts`](src/catalog/index.ts): category IDs, bilingual labels, route helpers and an intentionally **empty** `confirmedProducts` collection. `ConfirmedCatalogProduct` reserves stable IDs/slugs, localized text, optional confirmed imagery and a mandatory company verification reference/date. **No models, prices, specifications, stock data or purchasing functionality are implied.** Category names are proposed navigation only.
+
+Category pages include localized breadcrumbs and metadata; language switching preserves category URLs. Product detail pages and real product cards belong to a separate next PR. The existing AI-generated concept artwork remains visibly labeled and separate from confirmed product listings.
+
 ## Project organization
 
 ```text
@@ -196,7 +212,8 @@ We develop in small, reviewed pull requests rather than deploying a large unfini
 
 - ✅ [Phase 1 — site foundation and localization](https://github.com/YuriiSokolenko/bodich/issues/2) · [merged PR #3](https://github.com/YuriiSokolenko/bodich/pull/3)
 - 🚧 [Phase 2 — visual identity, design system and responsive UI](https://github.com/YuriiSokolenko/bodich/issues/4)
-- ⏳ Original turbine imagery, product categories, product detail pages, support and accessories
+- ✅ Responsive turbine concept imagery and provisional bilingual catalog categories/routes
+- ⏳ Verified product models, product detail pages, support and accessories data
 - ⏳ Localization review, production metadata, real contacts and deployment
 - 🔒 Commerce backend, prices, inventory, cart, checkout and payment integration — **after website launch approval**
 
