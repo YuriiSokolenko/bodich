@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/assets/bodich-banner.svg" alt="BODICH turbine engines — original concept artwork for the bilingual website" width="100%" />
+  <img src="public/images/turbines/bodich-hero-concept.webp" alt="AI-generated BODICH jet turbine concept with red intake housing, dark metal body and heat-tinted exhaust nozzle on a charcoal background" width="100%" />
 </p>
 
 <h1 align="center">BODICH — Turbine Website</h1>
@@ -17,7 +17,7 @@
 </p>
 
 > [!IMPORTANT]
-> **Development preview — not a live store.** BODICH products, specifications, contact details, pricing, stock, legal policies and production domain are not confirmed or published. No orders or payments can be placed. The turbine artwork above is an **original conceptual illustration**, not a photograph of an existing BODICH product.
+> **Development preview — not a live store.** BODICH products, specifications, contact details, pricing, stock, legal policies and production domain are not confirmed or published. No orders or payments can be placed. The turbine artwork above is an **AI-generated concept rendering**, not a photograph of an existing BODICH product.
 
 ## About
 
@@ -33,7 +33,7 @@
 | English and Romanian navigation | ✅ Implemented |
 | Responsive shared page layout | ✅ Header implemented (2C); footer and shared UI components implemented (2D) |
 | Product, Accessories, Support, About and Contact routes | ✅ Placeholder pages |
-| BODICH brand and README illustration | 🎨 Concept |
+| BODICH brand and README hero image | 🎨 AI-generated concept |
 | Shared colors, typography, spacing and radius tokens | ✅ Phase 2B |
 | Final visual QA on mobile and desktop | 🚧 Phase 2E — not yet verified |
 | Real product catalog, images and verified specifications | 📋 Planned |
