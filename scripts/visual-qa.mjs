@@ -14,6 +14,10 @@ const expectedLabels = {
   en: { products: 'Products', footer: ['Explore', 'Company'] },
   ro: { products: 'Produse', footer: ['Explorează', 'Companie'] },
 };
+const heroExpectations = {
+  en: { caption: 'Concept rendering', altFragment: 'miniature jet turbine' },
+  ro: { caption: 'Vizualizare conceptuală', altFragment: 'turboreactor miniatural' },
+};
 const failures = [];
 const checks = [];
 const screenshots = [];
@@ -177,6 +181,79 @@ try {
           await link.click();
           assert.equal(new URL(page.url()).pathname, pathFor(target, 'products'));
           assert.equal(await page.locator('html').getAttribute('lang'), target);
+        });
+
+        await verify(`${name}: localized turbine hero loads without crop or overflow`, async () => {
+          const response = await page.goto(`${baseUrl}${pathFor(locale, 'home')}`, { waitUntil: 'load' });
+          assert.equal(response?.status(), 200);
+
+          const hero = page.locator('[data-hero]');
+          assert.equal(await hero.count(), 1, 'Home must contain one turbine hero');
+          const figure = hero.locator('figure');
+          assert.equal(await figure.count(), 1, 'Hero must render one turbine figure');
+          const image = figure.locator('img');
+          assert.equal(await image.getAttribute('src'), '/images/turbines/bodich-hero-concept.webp');
+          assert((await image.getAttribute('alt'))?.includes(heroExpectations[locale].altFragment),
+            'The hero image must have meaningful localized alt text');
+          assert.equal((await figure.locator('figcaption').innerText()).trim(),
+            heroExpectations[locale].caption, 'Concept disclosure must be localized and visible');
+          assert.equal(await figure.locator('figcaption').isVisible(), true);
+          assert.equal(await image.getAttribute('width'), '1672');
+          assert.equal(await image.getAttribute('height'), '941');
+          assert.equal(await image.getAttribute('loading'), 'eager', 'Hero must not lazy-load');
+          assert.equal(await image.getAttribute('fetchpriority'), 'high', 'Hero is LCP-priority');
+
+          const dimensions = await image.evaluate((img) => ({
+            complete: img.complete,
+            naturalWidth: img.naturalWidth,
+            naturalHeight: img.naturalHeight,
+          }));
+          assert.equal(dimensions.complete, true, 'Hero image request must complete');
+          assert.equal(dimensions.naturalWidth, 1672, 'Hero image must decode at source width');
+          assert.equal(dimensions.naturalHeight, 941, 'Hero image must decode at source height');
+
+          const box = await image.boundingBox();
+          const copy = hero.locator('[data-hero-copy]');
+          const heading = await copy.locator('h1').boundingBox();
+          const intro = await copy.locator('p').boundingBox();
+          const cta = await copy.locator('a').boundingBox();
+          const caption = await figure.locator('figcaption').boundingBox();
+          assert(box && heading && intro && cta && caption, 'Hero, copy, CTA and disclosure must be rendered');
+          assert(box.x >= -1 && box.x + box.width <= width + 1, 'Hero extends outside viewport');
+          assert(box.height > 0 && Math.abs(box.width / box.height - 1672 / 941) < 0.03,
+            'Hero must preserve the full uncropped image aspect ratio');
+          assert(caption.y >= box.y + box.height - 1, 'Concept disclosure must appear below the image');
+
+          if (width < 1024) {
+            for (const [label, element] of [['heading', heading], ['supporting copy', intro], ['CTA', cta]]) {
+              assert(element.y + element.height <= box.y + 1,
+                `Mobile/tablet ${label} must appear above the image, never over it`);
+            }
+            assert.equal(await hero.locator('[data-hero-shade]').isVisible(), false);
+          } else {
+            // The turbine intake starts about one-third into the source image.
+            // All copy, including the CTA, must remain inside the same safe area,
+            // not merely the paragraph as before. Include vertical bounds to catch
+            // overflow from long translated strings at the lg breakpoint.
+            const safeRight = box.x + box.width * 0.34;
+            const bounds = [['heading', heading], ['supporting copy', intro], ['CTA', cta]];
+            for (const [label, element] of bounds) {
+              assert(element.x >= box.x - 1 && element.x + element.width <= safeRight + 1,
+                `Desktop ${label} intrudes into the turbine intake region`);
+              assert(element.y >= box.y - 1 && element.y + element.height <= box.y + box.height + 1,
+                `Desktop ${label} overflows the hero image vertically`);
+            }
+            // An actual gradient is part of the text-on-image contrast treatment.
+            // Contrast still needs manual screenshot review against rendered pixels.
+            const shade = hero.locator('[data-hero-shade]');
+            assert.equal(await shade.isVisible(), true, 'Desktop hero shading must be visible');
+            assert((await shade.evaluate((element) => getComputedStyle(element).backgroundImage))
+              .includes('gradient'), 'Desktop hero text needs its contrast gradient');
+          }
+
+          const productLink = copy.locator(`a[href="${pathFor(locale, 'products')}"]`);
+          assert.equal(await productLink.count(), 1, 'Hero CTA must link to the localized products page');
+          assert.equal(await productLink.isVisible(), true);
         });
 
         await verify(`${name}: headings, contrast, screenshot and browser errors`, async () => {
