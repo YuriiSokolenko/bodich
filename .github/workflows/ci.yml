@@ -58,9 +58,5 @@ jobs:
               test -f "dist/$lang/${page:+$page/}index.html"
             done
           done
-          for lang in en ro; do
-            test -f "dist/$lang/products/turbine-engines/index.html"
-            for category in ecu-controls fuel-systems electrical-components mounting-hardware; do
-              test -f "dist/$lang/accessories/$category/index.html"
-            done
-          done
+          # Derive expectations from the real typed taxonomy, never a second hard-coded list.
+          node scripts/validate-catalog.mjs --routes dist

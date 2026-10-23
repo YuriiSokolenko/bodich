@@ -16,9 +16,8 @@ const { locale, page, subpath, title, description } = Astro.props;
 const pageText = translations[locale].pages[page];
 const resolvedTitle = title ?? pageText.title;
 const resolvedDescription = description ?? pageText.description;
-const routeFor = (lang: Locale) => subpath ? `/${lang}/${subpath}/` : hrefFor(lang, page);
 const site = Astro.site;
-const canonical = site ? new URL(routeFor(locale), site).toString() : undefined;
+const canonical = site ? new URL(hrefFor(locale, page, subpath), site).toString() : undefined;
 ---
 
 <!doctype html>
@@ -36,9 +35,9 @@ const canonical = site ? new URL(routeFor(locale), site).toString() : undefined;
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     {canonical && <link rel="canonical" href={canonical} />}
     {site && locales.map((lang) => (
-      <link rel="alternate" hreflang={lang} href={new URL(routeFor(lang), site).toString()} />
+      <link rel="alternate" hreflang={lang} href={new URL(hrefFor(lang, page, subpath), site).toString()} />
     ))}
-    {site && <link rel="alternate" hreflang="x-default" href={new URL(routeFor('en'), site).toString()} />}
+    {site && <link rel="alternate" hreflang="x-default" href={new URL(hrefFor('en', page, subpath), site).toString()} />}
   </head>
   <body class="min-h-dvh bg-bodich-canvas text-bodich-ink antialiased">
     <a href="#main-content" class="sr-only rounded-control bg-bodich-accent px-3 py-2 text-bodich-accent-ink focus:not-sr-only focus:absolute focus:left-3 focus:top-3 focus:z-[60]">

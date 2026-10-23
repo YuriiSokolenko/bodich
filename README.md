@@ -170,9 +170,11 @@ The Products and Accessories landing pages link to a **provisional bilingual tax
 | Accessories | `/en/accessories/electrical-components/` |
 | Accessories | `/en/accessories/mounting-hardware/` |
 
-The source of truth is [`src/catalog/index.ts`](src/catalog/index.ts): category IDs, bilingual labels, route helpers and an intentionally **empty** `confirmedProducts` collection. `ConfirmedCatalogProduct` reserves stable IDs/slugs, localized text, optional confirmed imagery and a mandatory company verification reference/date. **No models, prices, specifications, stock data or purchasing functionality are implied.** Category names are proposed navigation only.
+The source of truth is [`src/catalog/data.ts`](src/catalog/data.ts): category IDs, bilingual labels and an intentionally **empty** `confirmedProducts` collection; [`src/catalog/index.ts`](src/catalog/index.ts) exposes shared catalog helpers. `ConfirmedCatalogProduct` reserves stable IDs/slugs, localized text, optional confirmed imagery and a mandatory company verification reference/date. **No models, prices, specifications, stock data or purchasing functionality are implied.** Category names are proposed navigation only.
 
-Category pages include localized breadcrumbs and metadata; language switching preserves category URLs. Product detail pages and real product cards belong to a separate next PR. The existing AI-generated concept artwork remains visibly labeled and separate from confirmed product listings.
+`npm run check` includes [`scripts/validate-catalog.mjs`](scripts/validate-catalog.mjs), which validates non-empty source references, real ISO confirmation dates, unique product IDs and slugs, category membership and bilingual copy. CI also uses the same taxonomy for the generated-route existence checks; it does not maintain a second hard-coded category list. These automated checks validate data shape, **not the authenticity of company source documents**, which must be reviewed separately.
+
+Category pages include localized breadcrumbs and metadata; the shared `hrefFor` helper keeps their URLs, language switching, canonical tags and hreflang links consistent. As soon as verified product records exist, category pages show a minimal list of confirmed names and summaries without links to nonexistent product pages. Full product cards and detail pages belong to a separate PR. The existing AI-generated concept artwork remains visibly labeled and separate from confirmed product listings.
 
 ## Project organization
 

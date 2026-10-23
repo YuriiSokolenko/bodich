@@ -27,7 +27,7 @@ const t = translations[locale];
   <span aria-hidden="true" class="text-bodich-dim">/</span>
 
   <a
-    href={subpath ? `/${targetLocale}/${subpath}/` : hrefFor(targetLocale, page)}
+    href={hrefFor(targetLocale, page, subpath)}
     hreflang={targetLocale}
     aria-label={`${targetLocale.toUpperCase()} — ${t.switchLanguageLabel} ${t.languageNames[targetLocale]}`}
     class="inline-flex min-h-10 min-w-10 items-center justify-center rounded px-1 text-bodich-muted transition-colors hover:bg-bodich-panel-raised hover:text-bodich-ink"

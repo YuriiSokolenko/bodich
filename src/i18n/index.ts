@@ -61,7 +61,7 @@ type Translations = {
   catalogPlanningNotice: string;
   catalogBreadcrumbLabel: string;
   catalogEmptyCategory: string;
-  catalogVerifiedModelsNotice: string;
+  catalogVerifiedModelsTitle: string;
   pages: Record<PageKey, PageText>;
 };
 
@@ -102,7 +102,7 @@ export const translations: Record<Locale, Translations> = {
     catalogPlanningNotice: 'Category names describe the proposed catalog structure, not confirmed stock or available products.',
     catalogBreadcrumbLabel: 'Breadcrumb',
     catalogEmptyCategory: 'No confirmed models have been published in this category yet.',
-    catalogVerifiedModelsNotice: 'Verified models will appear here once their product pages are prepared.',
+    catalogVerifiedModelsTitle: 'Confirmed models',
     pages: {
       home: {
         label: 'Home',
@@ -172,7 +172,7 @@ export const translations: Record<Locale, Translations> = {
     catalogPlanningNotice: 'Denumirile categoriilor descriu structura propusă a catalogului, nu stocuri sau produse disponibile confirmate.',
     catalogBreadcrumbLabel: 'Navigare ierarhică',
     catalogEmptyCategory: 'Nu au fost publicate încă modele confirmate în această categorie.',
-    catalogVerifiedModelsNotice: 'Modelele verificate vor apărea aici după pregătirea paginilor de produs.',
+    catalogVerifiedModelsTitle: 'Modele confirmate',
     pages: {
       home: {
         label: 'Acasă',
@@ -208,8 +208,15 @@ export const translations: Record<Locale, Translations> = {
   },
 };
 
-export function hrefFor(locale: Locale, page: PageKey): string {
-  return page === 'home' ? `/${locale}/` : `/${locale}/${page}/`;
+/**
+ * Single source of truth for locale-aware routes, including nested catalog
+ * pages and an optional Astro base path.
+ */
+export function hrefFor(locale: Locale, page: PageKey, subpath?: string): string {
+  const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
+  const parts = [locale, ...(page === 'home' ? [] : [page])];
+  if (subpath) parts.push(subpath.replace(/^\/+|\/+$/g, ''));
+  return `${base}/${parts.join('/')}/`;
 }
 
 export function otherLocale(locale: Locale): Locale {
