@@ -123,7 +123,10 @@ async function listCategory(categoryUrl, errors) {
       break;
     }
     pages++;
-    if (page === 1) count = reportedCount(response.html);
+    if (page === 1) {
+      console.log('Audit source HTML: ' + categoryUrl + ' HTTP ' + response.status + ' bytes=' + response.html.length + ' product-links=' + (response.html.match(/\\/product\\//g) || []).length + ' sample=' + plain(response.html.slice(0, 600)).slice(0, 220));
+      count = reportedCount(response.html);
+    }
     const list = anchors(response.html);
     for (const a of list) {
       const c = categoryRef(a.url);
