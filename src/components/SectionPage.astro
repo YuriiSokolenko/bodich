@@ -51,6 +51,7 @@ const t = translations[locale];
             <ConceptImage
               src="/images/turbines/bodich-hero-concept.webp"
               srcset="/images/turbines/bodich-hero-concept-640.webp 640w, /images/turbines/bodich-hero-concept-960.webp 960w, /images/turbines/bodich-hero-concept.webp 1672w"
+              <!-- sizes approximates SiteContainer max-w-6xl plus mobile px-site-gutter and desktop px-site-gutter-lg; update if layout widths change. -->
               sizes="(max-width: 640px) calc(100vw - 2.5rem), (max-width: 1023px) calc(100vw - 4rem), 1088px"
               alt={t.heroImageAlt}
               caption={t.conceptRenderingLabel}
