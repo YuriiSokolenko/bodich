@@ -77,7 +77,7 @@ jobs:
                   const meta=await open(url);
                   const snapshot=await scan();
                   output.categories.push({category:name,query:qs,...meta,...snapshot});
-                  console.log('CATEGORY:',name,qs,meta.http,'COUNT',snapshot.itemLinks.length,'IDS',snapshot.itemLinks.map(x=>x.url.match(/\\/(\\d+)$/)?.[1]).join(','),'SNIPPETS',JSON.stringify(snapshot.resultSnippets));
+                  console.log('CATEGORY:',name,qs,meta.http,'COUNT',snapshot.itemLinks.length,'IDS',snapshot.itemLinks.map(x=>x.url.split('/').pop()).join(','),'SNIPPETS',JSON.stringify(snapshot.resultSnippets));
                 } catch(e) {
                   output.categories.push({category:name,query:qs,error:String(e)});
                 }
