@@ -227,6 +227,9 @@ try {
               'Desktop hero heading must remain inside the image area');
             assert(heading.x + heading.width <= box.x + box.width * 0.72,
               'Desktop hero headline must stay in the photo’s left negative-space area');
+            const intro = await page.locator('[data-hero-copy] > p').boundingBox();
+            assert(intro && intro.x + intro.width <= box.x + box.width * 0.33,
+              'Desktop localized hero supporting text must stay clear of the turbine housing');
           }
 
           const productLink = page.locator(`main a[href="${pathFor(locale, 'products')}"]`);
