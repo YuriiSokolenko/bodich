@@ -16,7 +16,7 @@ export const CI_JPEG_BASE64 =
 //   image = BytesIO()
 //   Image.new('RGB', (1, 1), 'white').save(image, format='JPEG', progressive=True, quality=75)
 //   print(b64encode(image.getvalue()).decode('ascii'))
-// Check there are 10 SOS (FF DA) markers and update the fixture as needed.
+// Verify the parser reports ten complete SOS scans (not just raw byte pairs).
 // Keep long repetitive Base64 segments explicit to avoid accidental truncation.
 export const CI_PROGRESSIVE_JPEG_BASE64 = [
   '/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsL',
