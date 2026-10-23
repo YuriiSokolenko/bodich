@@ -158,6 +158,24 @@ The English locale is the default, and Romanian is available through an equivale
 
 Translated UI strings and route helpers live in [`src/i18n/index.ts`](src/i18n/index.ts). Shared navigation preserves the active section when changing language. Actual localized catalog content will be introduced separately.
 
+### Catalog information architecture
+
+The Products and Accessories landing pages link to a **provisional bilingual taxonomy**:
+
+| Section | English category route (replace `en` with `ro` for Romanian) |
+| --- | --- |
+| Products | `/en/products/turbine-engines/` |
+| Accessories | `/en/accessories/ecu-controls/` |
+| Accessories | `/en/accessories/fuel-systems/` |
+| Accessories | `/en/accessories/electrical-components/` |
+| Accessories | `/en/accessories/mounting-hardware/` |
+
+The source of truth is [`src/catalog/data.ts`](src/catalog/data.ts): category IDs, bilingual labels and an intentionally **empty** `confirmedProducts` collection; [`src/catalog/index.ts`](src/catalog/index.ts) exposes shared catalog helpers. `ConfirmedCatalogProduct` reserves stable IDs/slugs, localized text, optional confirmed imagery and a mandatory company verification reference/date. **No models, prices, specifications, stock data or purchasing functionality are implied.** Category names are proposed navigation only.
+
+`npm run check` includes [`scripts/validate-catalog.mjs`](scripts/validate-catalog.mjs), which validates non-empty source references, real non-future ISO confirmation dates, unique product IDs and slugs, category membership, bilingual copy, and optional images (existing public asset, EN/RO alt text, positive integer dimensions). The check also runs in-memory negative regression fixtures to protect these rules when the product collection is empty. CI also uses the same taxonomy for the generated-route existence checks; it does not maintain a second hard-coded category list. These automated checks validate data shape, **not the authenticity of company source documents**, which must be reviewed separately.
+
+Category pages include localized breadcrumbs and metadata; the shared `hrefFor` helper keeps their URLs, language switching, canonical tags and hreflang links consistent (including nested deployment bases). CI additionally builds with `ASTRO_BASE=/bodich-preview` and verifies generated navigation, metadata, static image assets and redirects. As soon as verified product records exist, category pages show a minimal list of confirmed names and summaries without links to nonexistent product pages. Full product cards and detail pages belong to a separate PR. The existing AI-generated concept artwork remains visibly labeled and separate from confirmed product listings.
+
 ## Project organization
 
 ```text
@@ -196,7 +214,8 @@ We develop in small, reviewed pull requests rather than deploying a large unfini
 
 - ✅ [Phase 1 — site foundation and localization](https://github.com/YuriiSokolenko/bodich/issues/2) · [merged PR #3](https://github.com/YuriiSokolenko/bodich/pull/3)
 - 🚧 [Phase 2 — visual identity, design system and responsive UI](https://github.com/YuriiSokolenko/bodich/issues/4)
-- ⏳ Original turbine imagery, product categories, product detail pages, support and accessories
+- ✅ Responsive turbine concept imagery and provisional bilingual catalog categories/routes
+- ⏳ Verified product models, product detail pages, support and accessories data
 - ⏳ Localization review, production metadata, real contacts and deployment
 - 🔒 Commerce backend, prices, inventory, cart, checkout and payment integration — **after website launch approval**
 

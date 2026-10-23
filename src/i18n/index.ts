@@ -55,6 +55,13 @@ type Translations = {
   footerExploreTitle: string;
   footerCompanyTitle: string;
   footerNavigationSuffix: string;
+  catalogCategoriesTitle: string;
+  catalogCategoriesIntro: string;
+  catalogExploreCategory: string;
+  catalogPlanningNotice: string;
+  catalogBreadcrumbLabel: string;
+  catalogEmptyCategory: string;
+  catalogVerifiedModelsTitle: string;
   pages: Record<PageKey, PageText>;
 };
 
@@ -89,6 +96,13 @@ export const translations: Record<Locale, Translations> = {
     footerExploreTitle: 'Explore',
     footerCompanyTitle: 'Company',
     footerNavigationSuffix: 'footer navigation',
+    catalogCategoriesTitle: 'Catalog categories',
+    catalogCategoriesIntro: 'Browse the planned catalog structure. Individual products will be listed only after BODICH confirms them.',
+    catalogExploreCategory: 'Explore category',
+    catalogPlanningNotice: 'Category names describe the proposed catalog structure, not confirmed stock or available products.',
+    catalogBreadcrumbLabel: 'Breadcrumb',
+    catalogEmptyCategory: 'No confirmed models have been published in this category yet.',
+    catalogVerifiedModelsTitle: 'Confirmed models',
     pages: {
       home: {
         label: 'Home',
@@ -152,6 +166,13 @@ export const translations: Record<Locale, Translations> = {
     footerExploreTitle: 'Explorează',
     footerCompanyTitle: 'Companie',
     footerNavigationSuffix: 'navigare în subsol',
+    catalogCategoriesTitle: 'Categorii de catalog',
+    catalogCategoriesIntro: 'Explorează structura planificată a catalogului. Produsele vor fi listate numai după confirmarea lor de către BODICH.',
+    catalogExploreCategory: 'Explorează categoria',
+    catalogPlanningNotice: 'Denumirile categoriilor descriu structura propusă a catalogului, nu stocuri sau produse disponibile confirmate.',
+    catalogBreadcrumbLabel: 'Navigare ierarhică',
+    catalogEmptyCategory: 'Nu au fost publicate încă modele confirmate în această categorie.',
+    catalogVerifiedModelsTitle: 'Modele confirmate',
     pages: {
       home: {
         label: 'Acasă',
@@ -187,8 +208,15 @@ export const translations: Record<Locale, Translations> = {
   },
 };
 
-export function hrefFor(locale: Locale, page: PageKey): string {
-  return page === 'home' ? `/${locale}/` : `/${locale}/${page}/`;
+/**
+ * Single source of truth for locale-aware routes, including nested catalog
+ * pages and an optional Astro base path.
+ */
+export function hrefFor(locale: Locale, page: PageKey, subpath?: string): string {
+  const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
+  const parts: string[] = [locale, ...(page === 'home' ? [] : [page])];
+  if (subpath) parts.push(subpath.replace(/^\/+|\/+$/g, ''));
+  return `${base}/${parts.join('/')}/`;
 }
 
 export function otherLocale(locale: Locale): Locale {

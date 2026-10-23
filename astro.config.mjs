@@ -5,6 +5,8 @@ import tailwindcss from '@tailwindcss/vite';
 // canonical and alternate absolute URLs rather than invent a company domain.
 export default defineConfig({
   site: process.env.SITE_URL || undefined,
+  // Default deployment is at /. ASTRO_BASE is used for nested-path CI previews.
+  base: process.env.ASTRO_BASE || '/',
   output: 'static',
   trailingSlash: 'always',
   i18n: {

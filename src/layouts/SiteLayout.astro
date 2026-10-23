@@ -7,12 +7,18 @@ import { hrefFor, locales, translations, type Locale, type PageKey } from '../i1
 interface Props {
   locale: Locale;
   page: PageKey;
+  subpath?: string;
+  title?: string;
+  description?: string;
 }
 
-const { locale, page } = Astro.props;
+const { locale, page, subpath, title, description } = Astro.props;
 const pageText = translations[locale].pages[page];
+const resolvedTitle = title ?? pageText.title;
+const resolvedDescription = description ?? pageText.description;
 const site = Astro.site;
-const canonical = site ? new URL(hrefFor(locale, page), site).toString() : undefined;
+const canonical = site ? new URL(hrefFor(locale, page, subpath), site).toString() : undefined;
+const faviconHref = `${import.meta.env.BASE_URL.replace(/\/+$/, '')}/favicon.svg`;
 ---
 
 <!doctype html>
@@ -21,25 +27,25 @@ const canonical = site ? new URL(hrefFor(locale, page), site).toString() : undef
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="generator" content={Astro.generator} />
-    <meta name="description" content={pageText.description} />
+    <meta name="description" content={resolvedDescription} />
     <meta name="robots" content="noindex, nofollow" />
     <meta property="og:type" content="website" />
-    <meta property="og:title" content={pageText.title} />
-    <meta property="og:description" content={pageText.description} />
-    <title>{pageText.title} | BODICH</title>
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta property="og:title" content={resolvedTitle} />
+    <meta property="og:description" content={resolvedDescription} />
+    <title>{resolvedTitle} | BODICH</title>
+    <link rel="icon" type="image/svg+xml" href={faviconHref} />
     {canonical && <link rel="canonical" href={canonical} />}
     {site && locales.map((lang) => (
-      <link rel="alternate" hreflang={lang} href={new URL(hrefFor(lang, page), site).toString()} />
+      <link rel="alternate" hreflang={lang} href={new URL(hrefFor(lang, page, subpath), site).toString()} />
     ))}
-    {site && <link rel="alternate" hreflang="x-default" href={new URL(hrefFor('en', page), site).toString()} />}
+    {site && <link rel="alternate" hreflang="x-default" href={new URL(hrefFor('en', page, subpath), site).toString()} />}
   </head>
   <body class="min-h-dvh bg-bodich-canvas text-bodich-ink antialiased">
     <a href="#main-content" class="sr-only rounded-control bg-bodich-accent px-3 py-2 text-bodich-accent-ink focus:not-sr-only focus:absolute focus:left-3 focus:top-3 focus:z-[60]">
       {translations[locale].skipContentLabel}
     </a>
     <div class="flex min-h-dvh flex-col">
-      <SiteHeader locale={locale} page={page} />
+      <SiteHeader locale={locale} page={page} subpath={subpath} />
       <main id="main-content" class="flex-1">
         <slot />
       </main>
