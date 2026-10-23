@@ -55,6 +55,13 @@ type Translations = {
   footerExploreTitle: string;
   footerCompanyTitle: string;
   footerNavigationSuffix: string;
+  catalogCategoriesTitle: string;
+  catalogCategoriesIntro: string;
+  catalogExploreCategory: string;
+  catalogPlanningNotice: string;
+  catalogBreadcrumbLabel: string;
+  catalogEmptyCategory: string;
+  catalogVerifiedModelsNotice: string;
   pages: Record<PageKey, PageText>;
 };
 
@@ -89,6 +96,13 @@ export const translations: Record<Locale, Translations> = {
     footerExploreTitle: 'Explore',
     footerCompanyTitle: 'Company',
     footerNavigationSuffix: 'footer navigation',
+    catalogCategoriesTitle: 'Catalog categories',
+    catalogCategoriesIntro: 'Browse the planned catalog structure. Individual products will be listed only after BODICH confirms them.',
+    catalogExploreCategory: 'Explore category',
+    catalogPlanningNotice: 'Category names describe the proposed catalog structure, not confirmed stock or available products.',
+    catalogBreadcrumbLabel: 'Breadcrumb',
+    catalogEmptyCategory: 'No confirmed models have been published in this category yet.',
+    catalogVerifiedModelsNotice: 'Verified models will appear here once their product pages are prepared.',
     pages: {
       home: {
         label: 'Home',
@@ -152,6 +166,13 @@ export const translations: Record<Locale, Translations> = {
     footerExploreTitle: 'Explorează',
     footerCompanyTitle: 'Companie',
     footerNavigationSuffix: 'navigare în subsol',
+    catalogCategoriesTitle: 'Categorii de catalog',
+    catalogCategoriesIntro: 'Explorează structura planificată a catalogului. Produsele vor fi listate numai după confirmarea lor de către BODICH.',
+    catalogExploreCategory: 'Explorează categoria',
+    catalogPlanningNotice: 'Denumirile categoriilor descriu structura propusă a catalogului, nu stocuri sau produse disponibile confirmate.',
+    catalogBreadcrumbLabel: 'Navigare ierarhică',
+    catalogEmptyCategory: 'Nu au fost publicate încă modele confirmate în această categorie.',
+    catalogVerifiedModelsNotice: 'Modelele verificate vor apărea aici după pregătirea paginilor de produs.',
     pages: {
       home: {
         label: 'Acasă',

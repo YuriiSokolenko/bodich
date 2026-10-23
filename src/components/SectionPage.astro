@@ -1,5 +1,6 @@
 ---
 import SiteLayout from '../layouts/SiteLayout.astro';
+import CatalogCategoryNavigation from './CatalogCategoryNavigation.astro';
 import ActionLink from './ui/ActionLink.astro';
 import ConceptImage from './ui/ConceptImage.astro';
 import SiteContainer from './ui/SiteContainer.astro';
@@ -66,8 +67,11 @@ const t = translations[locale];
             <h1 class="max-w-4xl font-display text-4xl font-black leading-tight tracking-tight text-bodich-ink sm:text-6xl">
               {t.pages[page].title}
             </h1>
-            {page === 'products' ? (
-              <TurbineConceptPreview locale={locale} />
+            {(page === 'products' || page === 'accessories') ? (
+              <>
+                <CatalogCategoryNavigation locale={locale} section={page} />
+                {page === 'products' && <TurbineConceptPreview locale={locale} />}
+              </>
             ) : (
               <div class="mt-7 max-w-2xl">
                 <SurfaceCard>

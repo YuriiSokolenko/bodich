@@ -4,9 +4,10 @@ import { hrefFor, otherLocale, translations, type Locale, type PageKey } from '.
 interface Props {
   locale: Locale;
   page: PageKey;
+  subpath?: string;
 }
 
-const { locale, page } = Astro.props;
+const { locale, page, subpath } = Astro.props;
 const targetLocale = otherLocale(locale);
 const t = translations[locale];
 ---
@@ -26,7 +27,7 @@ const t = translations[locale];
   <span aria-hidden="true" class="text-bodich-dim">/</span>
 
   <a
-    href={hrefFor(targetLocale, page)}
+    href={subpath ? `/${targetLocale}/${subpath}/` : hrefFor(targetLocale, page)}
     hreflang={targetLocale}
     aria-label={`${targetLocale.toUpperCase()} — ${t.switchLanguageLabel} ${t.languageNames[targetLocale]}`}
     class="inline-flex min-h-10 min-w-10 items-center justify-center rounded px-1 text-bodich-muted transition-colors hover:bg-bodich-panel-raised hover:text-bodich-ink"

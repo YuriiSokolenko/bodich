@@ -11,9 +11,10 @@ import {
 interface Props {
   locale: Locale;
   page: PageKey;
+  subpath?: string;
 }
 
-const { locale, page } = Astro.props;
+const { locale, page, subpath } = Astro.props;
 const t = translations[locale];
 ---
 
@@ -56,11 +57,11 @@ const t = translations[locale];
       </nav>
 
       <div class="ml-auto hidden items-center lg:flex lg:ml-2">
-        <LanguageSwitcher locale={locale} page={page} />
+        <LanguageSwitcher locale={locale} page={page} subpath={subpath} />
       </div>
 
       <div class="ml-auto flex items-center gap-2 lg:hidden">
-        <LanguageSwitcher locale={locale} page={page} />
+        <LanguageSwitcher locale={locale} page={page} subpath={subpath} />
 
         <details data-mobile-navigation class="group relative">
           <summary
