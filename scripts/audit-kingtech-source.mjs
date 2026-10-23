@@ -2,7 +2,7 @@
 // Review-only KingTech reference inventory. No data from here is shipped by Astro.
 // Usage: node scripts/audit-kingtech-source.mjs --write
 // Network audit deliberately runs on demand, not during ordinary builds.
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 
 const ORIGIN = 'https://www.kingtechturbines.com';
@@ -133,7 +133,20 @@ async function listCategory(categoryUrl, errors) {
   let pages = 0;
   for (let page = 1; page <= 30; page++) {
     const url = categoryUrl + '?limit=30&page=' + page + '&sort_by=category_order&sort_order=asc';
-    const response = await fetchHtml(url);
+    let response;
+    if (page > 1 && browserPage) {
+      // Square can use a client-side "Load More" / "Next" control and ignore
+      // query-string pagination. Prefer the visible control where present.
+      const next = browserPage.locator('button[aria-label*="next" i], a[aria-label*="next" i], button:has-text("Load More"), button:has-text("Show More"), a:has-text("Next")').first();
+      if (await next.count() && await next.isVisible()) {
+        try {
+          await next.click({ timeout: 5000 });
+          await browserPage.waitForTimeout(900);
+          response = { status: 200, url: browserPage.url(), html: await browserPage.content() };
+        } catch { /* fallback to a navigated page below */ }
+      }
+    }
+    response ??= await fetchHtml(url);
     await delay(220);
     if (response.status !== 200) {
       errors.push('Listing ' + categoryUrl + ' page ' + page + ' returned HTTP ' + response.status);
@@ -154,6 +167,13 @@ async function listCategory(categoryUrl, errors) {
       const p = itemRef(a.url);
       if (!p) continue;
       if (!ids.has(p.id)) { ids.set(p.id, { ...p, fallbackTitle: a.text }); fresh++; }
+    }
+    if (page === 1 && count === null && ids.size === 0) {
+      // A section that only links to child categories has zero *direct*
+      // listings, even though its child categories contain many products.
+      // A separately empty offer category may explicitly say so.
+      const emptyText = /items aren't available|items are not available|no items available|no products available|nothing found/i.test(plain(response.html));
+      if (subcategories.size > 0 || emptyText) count = 0;
     }
     if (!fresh || (count !== null && ids.size >= count)) break;
   }
@@ -239,6 +259,21 @@ async function run() {
       status: completed ? 'matched' : 'incomplete',
       subcategories: subcategories.sort((a,b)=>a.url.localeCompare(b.url)) });
   }
+  // Keep an evidence-backed exclusion when a previously indexed candidate
+  // disappears from all current category listings. Never silently erase it.
+  try {
+    const previous = JSON.parse(readFileSync(resolve('docs/catalog/source-inventory.json'), 'utf8'));
+    for (const old of previous.products || []) {
+      if (products.has(old.id)) continue;
+      exclusions.push({
+        sectionId: old.sourceCategoryIds?.[0] || 'unknown',
+        reason: 'Previously indexed reference not present in the current rendered category listing; requires direct URL and archive-status review.',
+        evidenceUrl: old.canonicalUrl,
+        count: 1,
+      });
+      warnings.push('Previously indexed candidate absent from current listing: ' + old.canonicalUrl);
+    }
+  } catch { /* no previously committed snapshot */ }
   for (const p of products.values()) {
     const response = await fetchHtml(p.canonicalUrl);
     await delay(220);

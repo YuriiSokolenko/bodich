@@ -10,7 +10,7 @@
     "preview": "astro preview",
     "catalog:intake": "node scripts/validate-catalog.mjs --intake",
     "catalog:source:check": "node scripts/validate-source-inventory.mjs && node scripts/validate-source-inventory.mjs --self-test",
-    "catalog:source:refresh": "node scripts/audit-kingtech-source.mjs --write"
+    "catalog:source:refresh": "node scripts/audit-kingtech-source.mjs --write --browser"
   },
   "engines": {
     "node": ">=24 <25"

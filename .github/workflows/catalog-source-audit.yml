@@ -29,21 +29,46 @@ jobs:
         run: |
           npm install --no-save --package-lock=false playwright@1.64.1
           npx playwright install --only-shell chromium
+      - name: Preserve previous reference inventory for regression checking
+        run: cp docs/catalog/source-inventory.json /tmp/kingtech-previous-inventory.json
       - name: Audit public KingTech source listings (review only)
-        run: node scripts/audit-kingtech-source.mjs --write --browser
+        run: |
+          if node scripts/audit-kingtech-source.mjs --write --browser; then
+            echo "AUDIT_INCOMPLETE=0" >> "$GITHUB_ENV"
+          else
+            echo "AUDIT_INCOMPLETE=1" >> "$GITHUB_ENV"
+          fi
       - name: Validate inventory provenance and category counts
         run: |
           node scripts/validate-source-inventory.mjs
           node scripts/validate-source-inventory.mjs --self-test
-      - name: Commit only a complete audited reference inventory
+      - name: Reject inventory regressions or empty reference snapshots
+        run: |
+          node --input-type=module <<'JS'
+          import { readFileSync } from 'node:fs';
+          const prev = JSON.parse(readFileSync('/tmp/kingtech-previous-inventory.json', 'utf8'));
+          const now = JSON.parse(readFileSync('docs/catalog/source-inventory.json', 'utf8'));
+          if (now.products.length < prev.products.length || now.products.length === 0) {
+            throw Error('Source crawl lost previously recorded volume; refusing to overwrite review inventory.');
+          }
+          if (now.products.some((p) => p.urlCheck !== 'http_200')) {
+            throw Error('Unverified source URLs in new reference inventory; refusing to overwrite.');
+          }
+          JS
+      - name: Commit audited unpublished snapshot with explicit gaps
         run: |
           if ! git diff --quiet -- docs/catalog/source-inventory.json; then
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
             git add docs/catalog/source-inventory.json
-            git commit -m "docs(catalog): refresh verified source inventory [skip ci]"
+            git commit -m "docs(catalog): expand source-only inventory with audit gaps [skip ci]"
             git push origin "HEAD:${GITHUB_REF_NAME}"
           fi
+      - name: Fail incomplete catalog coverage without discarding discovered records
+        if: env.AUDIT_INCOMPLETE == '1'
+        run: |
+          echo "::warning::KingTech source audit has unresolved category/archived reference gaps; PR must stay Draft."
+          exit 1
       - name: Save incomplete audit for review
         if: failure()
         uses: actions/upload-artifact@v4
