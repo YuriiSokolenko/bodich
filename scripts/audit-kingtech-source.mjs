@@ -6,6 +6,8 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 
 const ORIGIN = 'https://www.kingtechturbines.com';
+let browser;
+let browserPage;
 const ROOTS = [
   ['g5', 'Turbine G5', '/shop/turbine-g5/29', 'turbine-engines'],
   ['g4', 'Turbines G4+', '/shop/turbines-g4/2', 'turbine-engines'],
@@ -85,6 +87,21 @@ function reportedCount(html) {
   return match ? Number(match[1].replaceAll(',', '')) : null;
 }
 async function fetchHtml(url) {
+  if (browserPage) {
+    try {
+      const response = await browserPage.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
+      const isListing = new URL(url).pathname.startsWith('/shop/');
+      await browserPage.waitForFunction((listing) => {
+        const text = document.body?.innerText || '';
+        return listing ? /[0-9]+\\s+results?|items aren't available|no items available/i.test(text)
+          : [...document.querySelectorAll('h1')].some((element) => (element.textContent || '').trim().length > 0);
+      }, isListing, { timeout: 16000 }).catch(() => {});
+      await browserPage.waitForTimeout(350);
+      return { status: response?.status() ?? 0, url: browserPage.url(), html: await browserPage.content() };
+    } catch (error) {
+      return { status: 0, url, html: '', error: String(error) };
+    }
+  }
   for (let attempt = 0; attempt < 3; attempt++) {
     try {
       const ctl = new AbortController();
@@ -147,10 +164,16 @@ async function listCategory(categoryUrl, errors) {
 const sectionRoots = new Map(ROOTS.map(([id, title, path, mappedCategoryId]) =>
   [id, { id, title, url: path ? ORIGIN + path : null, mappedCategoryId }]));
 async function run() {
-  if (process.argv.length !== 3 || process.argv[2] !== '--write') {
-    console.error('Usage: node scripts/audit-kingtech-source.mjs --write');
+  const useBrowser = process.argv.includes('--browser');
+  if (!process.argv.includes('--write') || process.argv.some((a, i) => i > 1 && !['--write', '--browser'].includes(a))) {
+    console.error('Usage: node scripts/audit-kingtech-source.mjs --write [--browser]');
     process.exitCode = 2;
     return;
+  }
+  if (useBrowser) {
+    const { chromium } = await import('playwright');
+    browser = await chromium.launch({ headless: true });
+    browserPage = await browser.newPage({ viewport: { width: 1280, height: 900 } });
   }
   const capturedAt = new Date().toISOString().slice(0, 10);
   const warnings = [];
@@ -257,6 +280,8 @@ async function run() {
   mkdirSync(dirname(destination), { recursive: true });
   writeFileSync(destination, JSON.stringify(result, null, 2) + '\n');
   console.log('Source audit: ' + result.products.length + ' unique items, ' + result.sections.length + ' sections, ' + result.warnings.length + ' warnings.');
+  await browserPage?.close();
+  await browser?.close();
   if (result.warnings.length) {
     for (const w of result.warnings) console.warn('INCOMPLETE: ' + w);
     process.exitCode = 1;
