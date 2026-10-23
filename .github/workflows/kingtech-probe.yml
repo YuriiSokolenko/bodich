@@ -50,7 +50,7 @@ jobs:
           async function scan(scroll = true) {
             if (scroll) {
               for (let i = 0; i < 5; i++) {
-                await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight * ((i+1)/5)));
+                await page.evaluate((index) => window.scrollTo(0, document.body.scrollHeight * ((index+1)/5)), i);
                 await page.waitForTimeout(500);
               }
             }
@@ -83,11 +83,7 @@ jobs:
                 }
               }
             }
-            for (const [id,path] of [
-              [27,'850mah-9-9v-life-battery'],[138,'temp-probe-k30-45g'],
-              ...[26,28,29,31,32,33,34,37,38,40,52,53,54,61,64,101,102,107,109,110,111,118,119,123,147,150]
-                .map(id=>[id,'probe'])
-            ]) {
+            for (const [id,path] of []) {
               try {
                 const url=base+'/product/'+path+'/'+id;
                 const meta=await open(url);
