@@ -88,6 +88,79 @@ const JPEG_STRUCTURAL_MARKERS = new Set([
   0xdc, // DNL
   0xdd, // DRI
 ]);
+
+/**
+ * Validate entire JPEG structural payloads, not only their marker IDs.
+ * A free-form text segment must not be laundered through DHT/DQT/DAC/etc.
+ * Pixel/entropy correctness remains the image exporter's responsibility.
+ */
+function validJpegStructuralSegment(marker, payload) {
+  if (marker === 0xdd) return payload.length === 2; // DRI, 16-bit interval.
+  if (marker === 0xdc) return payload.length === 2 && payload.readUInt16BE(0) !== 0; // DNL.
+
+  if (marker === 0xda) { // SOS: Ns + 2*Ns selectors + Ss/Se/AhAl.
+    if (payload.length < 6) return false;
+    const components = payload[0];
+    if (components < 1 || components > 4 || payload.length !== 1 + components * 2 + 3) return false;
+    for (let i = 0; i < components; i++) {
+      const tables = payload[2 + i * 2];
+      if ((tables >> 4) > 3 || (tables & 0x0f) > 3) return false;
+    }
+    const ss = payload[1 + components * 2];
+    const se = payload[2 + components * 2];
+    const ahAl = payload[3 + components * 2];
+    return ss <= se && se <= 63 && (ahAl >> 4) <= 13 && (ahAl & 0x0f) <= 13;
+  }
+
+  let offset = 0;
+  if (!payload.length) return false;
+
+  if (marker === 0xdb) { // DQT: Pq/Tq followed by 64 quantizers.
+    while (offset < payload.length) {
+      const spec = payload[offset++];
+      const precision = spec >> 4;
+      if (precision > 1 || (spec & 0x0f) > 3) return false;
+      const size = precision ? 128 : 64;
+      if (size > payload.length - offset) return false;
+      offset += size;
+    }
+    return offset === payload.length;
+  }
+
+  if (marker === 0xc4) { // DHT: Tc/Th, 16 code-length counts, then symbols.
+    while (offset < payload.length) {
+      if (payload.length - offset < 17) return false;
+      const spec = payload[offset++];
+      if ((spec >> 4) > 1 || (spec & 0x0f) > 3) return false;
+      let symbols = 0;
+      let availableCodes = 1;
+      for (let i = 0; i < 16; i++) {
+        const count = payload[offset++];
+        symbols += count;
+        availableCodes = availableCodes * 2 - count;
+        if (availableCodes < 0) return false;
+      }
+      if (symbols < 1 || symbols > 256 || symbols > payload.length - offset) return false;
+      offset += symbols;
+    }
+    return offset === payload.length;
+  }
+
+  if (marker === 0xcc) { // DAC: one or more two-byte Tc/Th, conditioning pairs.
+    if (payload.length % 2 !== 0) return false;
+    for (let i = 0; i < payload.length; i += 2) {
+      const spec = payload[i];
+      const conditioner = payload[i + 1];
+      if ((spec >> 4) > 1 || (spec & 0x0f) > 3) return false;
+      if (spec >> 4) {
+        if (conditioner > 63) return false;
+      } else if ((conditioner >> 4) > (conditioner & 0x0f)) return false;
+    }
+    return true;
+  }
+
+  return false;
+}
 const MAX_ICC_JPEG_SEGMENT_BYTES = 32 * 1024;
 
 /**
@@ -148,6 +221,8 @@ function inspectJpeg(bytes) {
   if (bytes.length < 8 || bytes[0] !== 0xff || bytes[1] !== 0xd8) return null;
   let offset = 2;
   let width = 0, height = 0, privateMetadata = false, scans = 0;
+  const seenAppMarkers = new Set();
+  let seenHeaderMarker = false;
 
   while (offset < bytes.length) {
     if (bytes[offset++] !== 0xff) return null;
@@ -158,7 +233,7 @@ function inspectJpeg(bytes) {
     if (marker === 0xd9) {
       // Reject appended payloads as well as headers that never reached a scan.
       return offset === bytes.length && width > 0 && height > 0 && scans > 0
-        ? { width, height, privateMetadata } : null;
+        ? { width, height, privateMetadata, scans } : null;
     }
     // SOI, stuffed zero, and restart markers are never stand-alone headers.
     if (marker === 0xd8 || marker === 0x00 || (marker >= 0xd0 && marker <= 0xd7)) return null;
@@ -167,15 +242,22 @@ function inspectJpeg(bytes) {
     const length = bytes.readUInt16BE(offset);
     if (length < 2 || length > bytes.length - offset) return null;
 
+    const payload = bytes.subarray(offset + 2, offset + length);
     if (marker === 0xfe) privateMetadata = true; // JPEG COM text.
     else if (marker >= 0xe0 && marker <= 0xef) {
-      const payload = bytes.subarray(offset + 2, offset + length);
-      if (!allowedJpegAppSegment(marker, payload)) privateMetadata = true;
-    } else if (!JPEG_STRUCTURAL_MARKERS.has(marker) && !JPEG_SOF_MARKERS.has(marker)) {
+      // Only one JFIF, Adobe or complete ICC profile of each type.
+      // JFIF is conventionally the first marker following SOI.
+      if (seenAppMarkers.has(marker) || (marker === 0xe0 && seenHeaderMarker) ||
+          !allowedJpegAppSegment(marker, payload)) privateMetadata = true;
+      seenAppMarkers.add(marker);
+    } else if (JPEG_STRUCTURAL_MARKERS.has(marker)) {
+      if (!validJpegStructuralSegment(marker, payload)) return null;
+    } else if (!JPEG_SOF_MARKERS.has(marker)) {
       // Reserved JPG/JPGn and otherwise unknown length-prefixed segments
       // can also carry free-form text or identifiers.
       privateMetadata = true;
     }
+    seenHeaderMarker = true;
     if (JPEG_SOF_MARKERS.has(marker)) {
       if (length < 7) return null;
       const nextHeight = bytes.readUInt16BE(offset + 3);
