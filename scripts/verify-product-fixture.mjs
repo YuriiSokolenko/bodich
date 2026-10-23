@@ -1,8 +1,9 @@
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
-import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync, unlinkSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
+import { CI_PNG_BASE64 } from './catalog-fixtures.mjs';
 
 /**
  * Verify the first-product workflow without publishing invented models.
@@ -29,10 +30,7 @@ try {
   symlinkSync(join(root, 'node_modules'), join(temp, 'node_modules'), 'dir');
   const photoFolder = join(temp, 'public', 'images', 'catalog');
   mkdirSync(photoFolder, { recursive: true });
-  writeFileSync(join(photoFolder, 'ci-fixture.png'), Buffer.from(
-    'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Y9qLGkAAAAASUVORK5CYII=',
-    'base64',
-  ));
+  writeFileSync(join(photoFolder, 'ci-fixture.png'), Buffer.from(CI_PNG_BASE64, 'base64'));
 
   const dataPath = join(temp, 'src/catalog/data.ts');
   const original = readFileSync(dataPath, 'utf8');
@@ -95,8 +93,25 @@ try {
   const run = (command, args) => execFileSync(command, args, { cwd: temp, env, stdio: 'pipe', encoding: 'utf8' });
   console.log(run('npm', ['run', 'catalog:intake', '--', intakeFile]));
   writeFileSync(intakeFile, JSON.stringify({ ...candidate, slug: products[0].slug }, null, 2));
-  assert.throws(() => run('npm', ['run', 'catalog:intake', '--', intakeFile]),
-    'Intake must reject duplicate model slugs');
+  assert.throws(
+    () => run('npm', ['run', 'catalog:intake', '--', intakeFile]),
+    (error) => /Duplicate product slug/.test(String(error.stderr)),
+    'Intake must fail specifically on the duplicate product slug',
+  );
+  writeFileSync(intakeFile, JSON.stringify({ ...candidate, imagee: { src: 'typo' } }, null, 2));
+  assert.throws(
+    () => run('npm', ['run', 'catalog:intake', '--', intakeFile]),
+    (error) => /Unknown intake field: product\.imagee/.test(String(error.stderr)),
+    'Unknown top-level intake fields should not silently pass',
+  );
+  const unreferenced = join(photoFolder, 'not-reviewed.png');
+  writeFileSync(unreferenced, Buffer.from(CI_PNG_BASE64, 'base64'));
+  assert.throws(
+    () => run('node', ['scripts/validate-catalog.mjs']),
+    (error) => /unreferenced public photo/.test(String(error.stderr)),
+    'Unreferenced public photo should fail the normal publishing gate',
+  );
+  unlinkSync(unreferenced);
   console.log(run('npm', ['run', 'check']));
   console.log(run('npm', ['run', 'build']));
   console.log(run('node', ['scripts/validate-catalog.mjs', '--routes', 'dist']));
