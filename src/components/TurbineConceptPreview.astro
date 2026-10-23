@@ -1,0 +1,52 @@
+---
+import ConceptImage from './ui/ConceptImage.astro';
+import { translations, type Locale } from '../i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = translations[locale];
+---
+
+<section data-turbine-concepts class="mt-10" aria-labelledby="turbine-concepts-heading">
+  <h2 id="turbine-concepts-heading" class="font-display text-2xl font-bold text-bodich-ink sm:text-3xl">
+    {t.conceptPreviewTitle}
+  </h2>
+  <p class="mt-3 max-w-3xl text-base leading-relaxed text-bodich-muted">
+    {t.conceptPreviewIntro}
+  </p>
+
+  <div class="mt-8 grid gap-6 lg:grid-cols-2">
+    <article data-concept-card="turbine" class="min-w-0 rounded-control border border-bodich-border bg-bodich-panel/80 p-4 sm:p-6">
+      <h3 class="mb-5 text-xl font-semibold text-bodich-ink">{t.conceptTurbineTitle}</h3>
+      <ConceptImage
+        src="/images/turbines/bodich-card-concept-01.webp"
+        srcset="/images/turbines/bodich-card-concept-01-360.webp 360w, /images/turbines/bodich-card-concept-01-600.webp 600w, /images/turbines/bodich-card-concept-01.webp 1254w"
+        sizes="(min-width: 1024px) 520px, calc(100vw - 2.5rem)"
+        alt={t.conceptTurbineAlt}
+        caption={t.conceptRenderingLabel}
+        width={1254}
+        height={1254}
+      />
+      <p class="mt-5 text-sm leading-relaxed text-bodich-muted">{t.conceptTurbineDescription}</p>
+    </article>
+
+    <article data-concept-card="intake" class="min-w-0 rounded-control border border-bodich-border bg-bodich-panel/80 p-4 sm:p-6">
+      <h3 class="mb-5 text-xl font-semibold text-bodich-ink">{t.conceptIntakeTitle}</h3>
+      <ConceptImage
+        src="/images/turbines/bodich-intake-detail-concept-02.webp"
+        srcset="/images/turbines/bodich-intake-detail-concept-02-360.webp 360w, /images/turbines/bodich-intake-detail-concept-02-600.webp 600w, /images/turbines/bodich-intake-detail-concept-02.webp 950w"
+        sizes="(min-width: 1024px) 520px, calc(100vw - 2.5rem)"
+        alt={t.conceptIntakeAlt}
+        caption={t.conceptRenderingLabel}
+        width={950}
+        height={950}
+      />
+      <p class="mt-5 text-sm leading-relaxed text-bodich-muted">{t.conceptIntakeDescription}</p>
+    </article>
+  </div>
+
+  <p class="mt-6 text-sm leading-relaxed text-bodich-muted">{t.conceptNotice}</p>
+</section>
