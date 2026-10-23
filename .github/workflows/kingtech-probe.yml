@@ -1,0 +1,113 @@
+name: Temporary KingTech source discrepancy probe
+
+on:
+  push:
+    branches: [feature/issue-25-kingtech-source-inventory]
+    paths: [.github/workflows/kingtech-probe.yml]
+
+permissions:
+  contents: read
+
+jobs:
+  inspect-source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '24'
+      - name: Install browser
+        run: |
+          npm install --no-save --package-lock=false playwright@1.64.1
+          npx playwright install --only-shell chromium
+      - name: Investigate source links, gift cards, and numeric ID routes
+        shell: bash
+        run: |
+          cat > ./_kingtech_probe.mjs <<'JS'
+          import { chromium } from 'playwright';
+          import { writeFileSync } from 'node:fs';
+
+          const base = 'https://www.kingtechturbines.com';
+          const browser = await chromium.launch({ headless: true });
+          const page = await browser.newPage({ viewport: { width: 1440, height: 950 } });
+          const output = { date: new Date().toISOString(), homepage: {}, categories: [], probes: [], networkPaths: [] };
+          const network = new Map();
+          page.on('response', response => {
+            const url = new URL(response.url());
+            if (url.origin === base && /json|api|catalog|items|product|category|shop/i.test(url.pathname)) {
+              const key = url.origin + url.pathname;
+              network.set(key, (network.get(key) || 0) + 1);
+            }
+          });
+          async function open(url) {
+            const resp = await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
+            await page.waitForTimeout(1500);
+            return { http: resp?.status() ?? 0, landed: page.url() };
+          }
+          async function scan(scroll = true) {
+            if (scroll) {
+              for (let i = 0; i < 5; i++) {
+                await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight * ((i+1)/5)));
+                await page.waitForTimeout(500);
+              }
+            }
+            return page.evaluate(() => ({
+              title: document.title,
+              headings: [...document.querySelectorAll('h1, h2, h3')].map(x => x.innerText.trim()).filter(Boolean).slice(0,35),
+              resultSnippets: [...document.body.innerText.matchAll(/.{0,45}(?:\\d+ results?|show more|load more|next page|gift card).{0,60}/gi)].map(x=>x[0]).slice(0,20),
+              itemLinks: [...new Map([...document.querySelectorAll('a[href*="/product/"]')].map(a => [a.href.split('?')[0], {url: a.href.split('?')[0], text: a.innerText.trim().slice(0,170)}])).values()],
+              giftLinks: [...document.querySelectorAll('a,button')].filter(a => /gift.?cards?/i.test((a.innerText || '')+' '+(a.getAttribute('aria-label')||'')))
+                .map(a => ({tag:a.tagName, text:(a.innerText||'').trim().slice(0,100), href:a.href||null, outer:a.outerHTML.slice(0,650)})).slice(0,12),
+              buttons:[...document.querySelectorAll('button, a[rel="next"]')].filter(a=>/load|more|next|page|show/i.test((a.innerText||'')+' '+(a.getAttribute('aria-label')||'')))
+                .map(a=>({tag:a.tagName,label:(a.innerText||'').trim().slice(0,80),aria:a.getAttribute('aria-label'),disabled:a.disabled||false,href:a.href||null})).slice(0,20),
+              textTail: document.body.innerText.slice(-1500),
+            }));
+          }
+          try {
+            const home=await open(base+'/');
+            output.homepage={...home,...await scan(false)};
+            console.log('HOME GIFT LINKS:',JSON.stringify(output.homepage.giftLinks));
+            for (const name of ['engine-bracket/24','pump/12']) {
+              for (const qs of ['?limit=30&page=1&sort_by=category_order&sort_order=asc','?limit=30&page=2&sort_by=category_order&sort_order=asc','?limit=30&page=3&sort_by=category_order&sort_order=asc']) {
+                const url=base+'/shop/'+name+qs;
+                try {
+                  const meta=await open(url);
+                  const snapshot=await scan();
+                  output.categories.push({category:name,query:qs,...meta,...snapshot});
+                  console.log('CATEGORY:',name,qs,meta.http,'COUNT',snapshot.itemLinks.length,'IDS',snapshot.itemLinks.map(x=>x.url.match(/\\/(\\d+)$/)?.[1]).join(','),'SNIPPETS',JSON.stringify(snapshot.resultSnippets));
+                } catch(e) {
+                  output.categories.push({category:name,query:qs,error:String(e)});
+                }
+              }
+            }
+            for (const [id,path] of [
+              [27,'850mah-9-9v-life-battery'],[138,'temp-probe-k30-45g'],
+              ...[26,28,29,31,32,33,34,37,38,40,52,53,54,61,64,101,102,107,109,110,111,118,119,123,147,150]
+                .map(id=>[id,'probe'])
+            ]) {
+              try {
+                const url=base+'/product/'+path+'/'+id;
+                const meta=await open(url);
+                const snapshot=await scan(false);
+                output.probes.push({id,url,...meta,title:snapshot.title,headings:snapshot.headings.slice(0,5),textTail:snapshot.textTail.slice(-350)});
+                console.log('DIRECT ID',id,meta.http,meta.landed,JSON.stringify(snapshot.headings.slice(0,2)));
+              } catch(e) {output.probes.push({id,error:String(e)});}
+            }
+          } finally {
+            output.networkPaths=[...network.entries()].map(([path,hits])=>({path,hits})).slice(0,90);
+            writeFileSync('kingtech-source-diagnostic.json',JSON.stringify(output,null,2)+'\n');
+            await browser.close();
+          }
+          JS
+          node ./_kingtech_probe.mjs
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: kingtech-source-diagnostic
+          path: kingtech-source-diagnostic.json
+          retention-days: 7
+          if-no-files-found: warn
