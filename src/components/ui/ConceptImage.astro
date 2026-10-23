@@ -4,8 +4,9 @@
  *
  * Callers must supply meaningful alt text and a localized caption, e.g.
  * "Concept rendering" (EN) or "Vizualizare conceptuală" (RO).
- * Public WebP assets are served directly; optional srcset/sizes point to
- * separately generated responsive files (this component does not create them).
+ * Public assets (currently WebP) are served directly; optional srcset/sizes
+ * point to separately generated responsive files. For width-descriptor srcset,
+ * sizes defaults to 100vw; this component does not create responsive files.
  */
 interface Props {
   src: string;
@@ -32,6 +33,11 @@ const {
   class: figureClass,
   imageClass,
 } = Astro.props;
+
+// Empty alt would incorrectly mark this meaningful image as decorative;
+// an empty caption would silently remove the concept-art disclosure.
+if (!alt.trim()) throw new Error('ConceptImage: meaningful `alt` is required');
+if (!caption.trim()) throw new Error('ConceptImage: visible concept `caption` is required');
 ---
 
 <figure class:list={['min-w-0', figureClass]}>
@@ -43,9 +49,9 @@ const {
     width={width}
     height={height}
     loading={priority ? 'eager' : 'lazy'}
-    fetchpriority={priority ? 'high' : 'auto'}
+    fetchpriority={priority ? 'high' : undefined}
     decoding="async"
     class:list={['block h-auto w-full max-w-full rounded-control object-contain', imageClass]}
   />
-  <figcaption class="mt-2 text-xs font-medium text-bodich-muted">{caption}</figcaption>
+  <figcaption class="mt-2 text-sm font-medium text-bodich-muted">{caption}</figcaption>
 </figure>
