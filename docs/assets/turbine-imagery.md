@@ -54,11 +54,11 @@
 
 **RO alt:** Vizualizare conceptuală a unui motor turboreactor miniatural marca BODICH, cu admisie frontală roșie, carcasă metalică închisă la culoare, racorduri vizibile și duză de evacuare cu nuanțe termice.
 
-This is **asset 1 of a planned 2–4 matching Stage 3B images**. It must not be mistaken for a photograph or specification of an available BODICH engine. Apply the same concept-labeling and rights-review requirements documented above; **commercial-use / third-party IP review has not yet been completed** and is a pre-publication gate, not an implied clearance. The source generation PNG is not committed; the optimized WebP is the versioned site asset.
+This is **asset 1 of 2 Stage 3B images completed so far** (the target series remains 2–4 assets). It must not be mistaken for a photograph or specification of an available BODICH engine. Apply the same concept-labeling and rights-review requirements documented above; **commercial-use / third-party IP review has not yet been completed** and is a pre-publication gate, not an implied clearance. The source generation PNG is not committed; the optimized WebP is the versioned site asset.
 
 **Integration follow-up (Stages 3C/3D):** The exhaust nozzle is close to the right image edge. Avoid blind square `object-fit: cover` crops, test `object-position` / contained layouts across screen sizes, and expose a visible localized **Concept rendering / Vizualizare conceptuală** caption adjacent to the image (not burned into the raster). Provide a smaller approximately 600 px card variant or `srcset` to reduce catalog-grid transfer size. Further cards, variants and on-page integration are separate stages.
 
-## Intake-detail concept 02 — Issue #10, Stage 3B (second asset)
+## Intake-detail concept 02 — Issue #10, Stage 3B (second asset; supporting gallery detail)
 
 | Property | Value |
 | --- | --- |
@@ -66,7 +66,7 @@ This is **asset 1 of a planned 2–4 matching Stage 3B images**. It must not be 
 | Format | WebP, 950 × 950 pixels (1:1 square) |
 | Optimized size | 130,848 bytes (approximately 128 KiB) |
 | SHA-256 | `bb7a5a098df5a1552b96a6af908c3c2f6044336ac92543deb722458a9aeab1e3` |
-| Purpose | Close-up detail card emphasizing the intake, protective mesh, spinner, red inlet housing and BODICH mark |
+| Purpose | Supporting product-gallery detail image emphasizing the intake, protective mesh, spinner, red inlet housing and BODICH mark; not a standalone full-engine catalog card |
 | Status | **Concept rendering / Vizualizare conceptuală**, not a real product photograph |
 | Origin | AI-generated concept image with OpenAI ChatGPT image generation, October 23, 2026 (Europe/Bucharest); newly generated square studio scene, cropped to a different product-detail composition. |
 
