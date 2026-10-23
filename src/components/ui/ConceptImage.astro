@@ -1,0 +1,51 @@
+---
+/**
+ * Displays a BODICH concept image with a visible localized disclosure.
+ *
+ * Callers must supply meaningful alt text and a localized caption, e.g.
+ * "Concept rendering" (EN) or "Vizualizare conceptuală" (RO).
+ * Public WebP assets are served directly; optional srcset/sizes point to
+ * separately generated responsive files (this component does not create them).
+ */
+interface Props {
+  src: string;
+  alt: string;
+  width: number;
+  height: number;
+  caption: string;
+  srcset?: string;
+  sizes?: string;
+  priority?: boolean;
+  class?: string;
+  imageClass?: string;
+}
+
+const {
+  src,
+  alt,
+  width,
+  height,
+  caption,
+  srcset,
+  sizes,
+  priority = false,
+  class: figureClass,
+  imageClass,
+} = Astro.props;
+---
+
+<figure class:list={['min-w-0', figureClass]}>
+  <img
+    src={src}
+    srcset={srcset}
+    sizes={srcset ? (sizes ?? '100vw') : undefined}
+    alt={alt}
+    width={width}
+    height={height}
+    loading={priority ? 'eager' : 'lazy'}
+    fetchpriority={priority ? 'high' : 'auto'}
+    decoding="async"
+    class:list={['block h-auto w-full max-w-full rounded-control object-contain', imageClass]}
+  />
+  <figcaption class="mt-2 text-xs font-medium text-bodich-muted">{caption}</figcaption>
+</figure>
