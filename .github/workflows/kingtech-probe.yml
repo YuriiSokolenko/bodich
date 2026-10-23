@@ -70,7 +70,7 @@ jobs:
             const home=await open(base+'/');
             output.homepage={...home,...await scan(false)};
             console.log('HOME GIFT LINKS:',JSON.stringify(output.homepage.giftLinks));
-            for (const name of ['engine-bracket/24','pump/12']) {
+            for (const name of []) {
               for (const qs of ['?limit=30&page=1&sort_by=category_order&sort_order=asc','?limit=30&page=2&sort_by=category_order&sort_order=asc','?limit=30&page=3&sort_by=category_order&sort_order=asc']) {
                 const url=base+'/shop/'+name+qs;
                 try {
@@ -83,12 +83,22 @@ jobs:
                 }
               }
             }
-            for (const [id,path] of []) {
+            for (const [id,path] of [
+              [32,'power-cable'],
+              [33,'g4-g4-data-cable'],
+              [107,'fuel-solenoid-valve'],
+              [138,'temp-probe-k30-45g'],
+              ['VCEYUYCU5FJF2GZQMXDNZXJO','stainless-steel-bracket-for-k102'],
+              ['ECX6KXRCBWRIZ2YGLCIVQAWT','stainless-steel-bracket-for-k130'],
+              ['PYRA6D5K64KITYJCJGXLZCQU','engine-bracket-k450'],
+              ['LRO5A4V3ZOBXOVEKU4F3PPC3','kingtech-kp500v-'],
+              ['B6UE3Q5GGAWUC57XIETALASF','pisco-one-way-valve'],
+            ]) {
               try {
                 const url=base+'/product/'+path+'/'+id;
                 const meta=await open(url);
                 const snapshot=await scan(false);
-                output.probes.push({id,url,...meta,title:snapshot.title,headings:snapshot.headings.slice(0,5),textTail:snapshot.textTail.slice(-350)});
+                output.probes.push({id,url,...meta,title:snapshot.title,headings:snapshot.headings.slice(0,5),textTail:snapshot.textTail.slice(-350),canonical:await page.evaluate(()=>document.querySelector('link[rel=canonical]')?.href||null),og:await page.evaluate(()=>document.querySelector('meta[property="og:url"]')?.content||null),linkedProducts:snapshot.itemLinks.filter(x=>/\/(32|33|107|138)$/.test(x.url))});
                 console.log('DIRECT ID',id,meta.http,meta.landed,JSON.stringify(snapshot.headings.slice(0,2)));
               } catch(e) {output.probes.push({id,error:String(e)});}
             }
