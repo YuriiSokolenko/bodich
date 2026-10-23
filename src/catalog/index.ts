@@ -20,3 +20,20 @@ export function categoryHref(locale: Locale, category: CatalogCategoryEntry): st
 export function productsInCategory(category: CatalogCategoryEntry): ConfirmedCatalogProduct[] {
   return confirmedProducts.filter((product) => product.categoryId === category.id);
 }
+
+/** No product path is generated for an unregistered category. */
+export function categoryForProduct(product: ConfirmedCatalogProduct): CatalogCategoryEntry {
+  const category = catalogCategories.find((item) => item.id === product.categoryId);
+  if (!category) throw new Error(`Unknown category for confirmed product: ${product.id}`);
+  return category;
+}
+
+export function productHref(locale: Locale, product: ConfirmedCatalogProduct): string {
+  const category = categoryForProduct(product);
+  return hrefFor(locale, category.section, `${category.id}/${product.slug}`);
+}
+
+/** Catalog photographs live under public/ and honor the deployment base. */
+export function productImageHref(src: string): string {
+  return `${import.meta.env.BASE_URL.replace(/\/+$/, '')}${src}`;
+}

@@ -1,0 +1,48 @@
+---
+import { productHref, productImageHref, type ConfirmedCatalogProduct } from '../../catalog';
+import { translations, type Locale } from '../../i18n';
+
+interface Props {
+  locale: Locale;
+  product: ConfirmedCatalogProduct;
+}
+
+const { locale, product } = Astro.props;
+const t = translations[locale];
+const copy = product.copy[locale];
+---
+
+<!-- Stretched heading link: the entire card remains clickable, but screen
+     readers announce only the model name as the link's accessible name. -->
+<article
+  data-product-card={product.slug}
+  class="group relative flex h-full min-w-0 min-h-80 flex-col overflow-hidden rounded-control border border-bodich-border bg-bodich-panel/80 transition-colors hover:border-bodich-accent-hover hover:bg-bodich-panel-raised focus-within:outline-3 focus-within:outline-offset-4 focus-within:outline-bodich-accent-hover"
+>
+  {product.image ? (
+    <img
+      src={productImageHref(product.image.src)}
+      alt={product.image.alt[locale]}
+      width={product.image.width}
+      height={product.image.height}
+      loading="lazy"
+      decoding="async"
+      class="aspect-[4/3] w-full bg-bodich-canvas object-contain"
+    />
+  ) : (
+    <div data-product-no-image class="flex aspect-[4/3] items-center justify-center border-b border-bodich-border bg-bodich-canvas/60 p-6">
+      <span class="max-w-56 text-center text-sm leading-6 text-bodich-muted">{t.catalogImageUnavailable}</span>
+    </div>
+  )}
+  <div class="flex flex-1 flex-col p-6">
+    <h3 class="text-xl font-bold text-bodich-ink">
+      <a
+        href={productHref(locale, product)}
+        class="after:absolute after:inset-0 after:content-[''] group-hover:text-bodich-accent-hover focus-visible:outline-none"
+      >{copy.name}</a>
+    </h3>
+    <p class="mt-3 flex-1 text-sm leading-6 text-bodich-muted">{copy.summary}</p>
+    <span aria-hidden="true" class="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-bodich-accent-hover">
+      {t.catalogViewModel} <span aria-hidden="true">→</span>
+    </span>
+  </div>
+</article>

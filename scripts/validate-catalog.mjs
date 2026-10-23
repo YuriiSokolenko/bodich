@@ -123,16 +123,25 @@ if (mode === '--self-test') {
 }
 if (mode === '--routes') {
   const dist = resolve(process.argv[3] ?? 'dist');
-  let checked = 0;
+  let categoryPages = 0;
+  let productPages = 0;
   for (const locale of locales) {
     for (const category of catalogCategories) {
       const file = join(dist, locale, category.section, category.id, 'index.html');
       if (!existsSync(file)) fail(`Missing catalog route: ${file}`);
-      checked++;
+      categoryPages++;
+    }
+    for (const product of confirmedProducts) {
+      const category = catalogCategories.find((item) => item.id === product.categoryId);
+      if (!category) continue; // Already reported by catalog data validation.
+      const file = join(dist, locale, category.section, category.id, product.slug, 'index.html');
+      if (!existsSync(file)) fail(`Missing confirmed product route: ${file}`);
+      productPages++;
     }
   }
-  if (checked !== locales.length * catalogCategories.length) {
-    fail('Category route count does not match locales x categories');
+  if (categoryPages !== locales.length * catalogCategories.length
+      || productPages !== locales.length * confirmedProducts.length) {
+    fail('Generated catalog route counts do not match locales x records');
   }
 }
 

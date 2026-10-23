@@ -62,6 +62,11 @@ type Translations = {
   catalogBreadcrumbLabel: string;
   catalogEmptyCategory: string;
   catalogVerifiedModelsTitle: string;
+  catalogImageUnavailable: string;
+  catalogViewModel: string;
+  catalogProductDescriptionTitle: string;
+  catalogUnconfirmedDetailsNotice: string;
+  catalogBackToCategory: string;
   pages: Record<PageKey, PageText>;
 };
 
@@ -103,6 +108,11 @@ export const translations: Record<Locale, Translations> = {
     catalogBreadcrumbLabel: 'Breadcrumb',
     catalogEmptyCategory: 'No confirmed models have been published in this category yet.',
     catalogVerifiedModelsTitle: 'Confirmed models',
+    catalogImageUnavailable: 'Product photograph not yet available',
+    catalogViewModel: 'View model',
+    catalogProductDescriptionTitle: 'Model overview',
+    catalogUnconfirmedDetailsNotice: 'Additional technical details and prices are not published until confirmed.',
+    catalogBackToCategory: 'Back to category',
     pages: {
       home: {
         label: 'Home',
@@ -173,6 +183,11 @@ export const translations: Record<Locale, Translations> = {
     catalogBreadcrumbLabel: 'Navigare ierarhică',
     catalogEmptyCategory: 'Nu au fost publicate încă modele confirmate în această categorie.',
     catalogVerifiedModelsTitle: 'Modele confirmate',
+    catalogImageUnavailable: 'Fotografia produsului nu este încă disponibilă',
+    catalogViewModel: 'Vezi modelul',
+    catalogProductDescriptionTitle: 'Prezentarea modelului',
+    catalogUnconfirmedDetailsNotice: 'Detaliile tehnice suplimentare și prețurile nu sunt publicate înainte de confirmare.',
+    catalogBackToCategory: 'Înapoi la categorie',
     pages: {
       home: {
         label: 'Acasă',

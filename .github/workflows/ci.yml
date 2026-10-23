@@ -68,3 +68,5 @@ jobs:
           npm run build
           node scripts/validate-catalog.mjs --routes dist
           node scripts/verify-base-preview.mjs dist
+      - name: Validate card and detail templates with isolated CI-only records
+        run: node scripts/verify-product-fixture.mjs

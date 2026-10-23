@@ -1,0 +1,23 @@
+---
+import ProductPage from '../../../../components/catalog/ProductPage.astro';
+import { catalogCategories, confirmedProducts } from '../../../../catalog/data';
+import { locales } from '../../../../i18n';
+
+/** Static detail pages exist only for company-confirmed catalog records. */
+export function getStaticPaths() {
+  return locales.flatMap((locale) =>
+    confirmedProducts.map((product) => {
+      const category = catalogCategories.find((item) => item.id === product.categoryId);
+      if (!category) throw new Error(`Unknown category for product ${product.id}`);
+      return {
+        params: { locale, section: category.section, category: category.id, product: product.slug },
+        props: { locale, category, product },
+      };
+    }),
+  );
+}
+
+const { locale, category, product } = Astro.props;
+---
+
+<ProductPage locale={locale} category={category} product={product} />
