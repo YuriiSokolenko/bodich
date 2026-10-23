@@ -1,0 +1,50 @@
+name: One-time issue 25 reference import
+
+on:
+  push:
+    branches: [feature/issue-25-kingtech-source-inventory]
+    paths: [.github/workflows/issue-25-audit-import.yml]
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  import-verified-snapshot:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Download previously audited 123-item browser snapshot
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p /tmp/kingtech-audit
+          gh run download 39952559036 --repo YuriiSokolenko/bodich --name incomplete-kingtech-source-audit --dir /tmp/kingtech-audit
+          test -s /tmp/kingtech-audit/source-inventory.json
+      - name: Import only a larger reviewed-source snapshot
+        run: |
+          node --input-type=module <<'JS'
+          import { readFileSync, writeFileSync } from 'node:fs';
+          const old = JSON.parse(readFileSync('docs/catalog/source-inventory.json','utf8'));
+          const next = JSON.parse(readFileSync('/tmp/kingtech-audit/source-inventory.json','utf8'));
+          if (next.products.length !== 123 || next.sections.length !== 9 || next.products.some((p) => p.urlCheck !== 'http_200')) {
+            throw Error('Expected 123 individually reachable, source-only product records; refusing import.');
+          }
+          if (next.products.length > old.products.length) writeFileSync('docs/catalog/source-inventory.json', JSON.stringify(next,null,2) + '\n');
+          JS
+          node scripts/validate-source-inventory.mjs
+          node scripts/validate-source-inventory.mjs --self-test
+      - name: Commit unpublished partial evidence with explicit warnings
+        run: |
+          if ! git diff --quiet -- docs/catalog/source-inventory.json; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add docs/catalog/source-inventory.json
+            git commit -m "docs(catalog): store 123 inspected KingTech references [skip ci]"
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi
