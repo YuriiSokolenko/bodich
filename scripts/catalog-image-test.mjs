@@ -150,12 +150,49 @@ export function runImageSelfTest({ fail, validateImage, checkUnapprovedFiles, va
     ['ICC profile', 0xe2, icc],
     ['Adobe', 0xee, adobe],
   ]) {
-    const bytes = Buffer.concat([
+    // The baseline JPEG already has a JFIF APP0 as its first segment; a
+    // second JFIF is intentionally rejected, so test its existing instance.
+    const bytes = marker === 0xe0 ? original.jpeg : Buffer.concat([
       original.jpeg.subarray(0, beforeSos),
       jpegSegment(marker, payload),
       original.jpeg.subarray(beforeSos),
     ]);
-    if (inspectRaster(bytes, 'jpg')?.privateMetadata) fail('Allowed ' + label + ' APP segment was flagged');
+    const result = inspectRaster(bytes, 'jpg');
+    if (!result || result.privateMetadata) fail('Allowed ' + label + ' APP segment was rejected');
+  }
+
+  for (const [label, marker, payload] of [
+    ['second JFIF', 0xe0, jfif],
+    ['duplicate Adobe', 0xee, adobe],
+    ['duplicate ICC', 0xe2, icc],
+  ]) {
+    const segments = marker === 0xe0 ? [jpegSegment(marker, payload)] :
+      [jpegSegment(marker, payload), jpegSegment(marker, payload)];
+    const bytes = Buffer.concat([
+      original.jpeg.subarray(0, beforeSos),
+      ...segments,
+      original.jpeg.subarray(beforeSos),
+    ]);
+    if (!inspectRaster(bytes, 'jpg')?.privateMetadata) {
+      fail('Repeated JPEG APP segment bypassed metadata gate: ' + label);
+    }
+  }
+
+  // An otherwise valid JFIF APP0 cannot be moved after quantization tables.
+  if (original.jpeg[2] !== 0xff || original.jpeg[3] !== 0xe0) fail('Expected leading JFIF APP0');
+  const firstAppEnd = 4 + original.jpeg.readUInt16BE(4);
+  const withoutApp0 = Buffer.concat([
+    original.jpeg.subarray(0, 2), original.jpeg.subarray(firstAppEnd),
+  ]);
+  const laterSos = withoutApp0.indexOf(Buffer.from([0xff, 0xda]));
+  if (laterSos < 0) fail('Cannot locate SOS in JFIF-free test image');
+  const misplacedJfif = Buffer.concat([
+    withoutApp0.subarray(0, laterSos),
+    jpegSegment(0xe0, jfif),
+    withoutApp0.subarray(laterSos),
+  ]);
+  if (!inspectRaster(misplacedJfif, 'jpg')?.privateMetadata) {
+    fail('Out-of-order JFIF should be flagged');
   }
 
   // A valid prefix by itself must not exempt arbitrary trailing content.
@@ -189,6 +226,61 @@ export function runImageSelfTest({ fail, validateImage, checkUnapprovedFiles, va
     }
   }
 
+  // Known structural markers must follow their internal layouts. A standalone
+  // length-prefixed segment containing text must never look like an innocent
+  // quantization, Huffman, arithmetic-conditioning, restart or scan segment.
+  const injectedText = Buffer.from('Owner: Alice, serial 12345');
+  for (const [label, marker] of [
+    ['DQT', 0xdb], ['DHT', 0xc4], ['DAC', 0xcc],
+    ['DRI', 0xdd], ['DNL', 0xdc], ['SOS', 0xda],
+  ]) {
+    const bytes = Buffer.concat([
+      original.jpeg.subarray(0, beforeSos),
+      jpegSegment(marker, injectedText),
+      original.jpeg.subarray(beforeSos),
+    ]);
+    const result = inspectRaster(bytes, 'jpg');
+    if (result && !result.privateMetadata) fail('JPEG ' + label + ' accepted private text payload');
+  }
+
+  // Positive structural cases ensure the hardening does not simply block all
+  // legal segments. The existing JPEGs also cover real DQT/DHT/SOS tables.
+  const dqtTable = Buffer.from([0, ...Array(64).fill(1)]);
+  const dhtTable = Buffer.from([0, 1, ...Array(15).fill(0), 0]);
+  const conditioning = Buffer.from([0x00, 0x11]);
+  for (const [label, marker, payload] of [
+    ['DQT', 0xdb, dqtTable],
+    ['DHT', 0xc4, dhtTable],
+    ['DAC', 0xcc, conditioning],
+    ['DRI', 0xdd, Buffer.from([0, 0])],
+    ['DNL', 0xdc, Buffer.from([0, 1])],
+  ]) {
+    const bytes = Buffer.concat([
+      original.jpeg.subarray(0, beforeSos),
+      jpegSegment(marker, payload),
+      original.jpeg.subarray(beforeSos),
+    ]);
+    const result = inspectRaster(bytes, 'jpg');
+    if (!result || result.privateMetadata) fail('Valid JPEG ' + label + ' structural segment was rejected');
+
+    const smuggled = Buffer.concat([
+      original.jpeg.subarray(0, beforeSos),
+      jpegSegment(marker, Buffer.concat([payload, injectedText])),
+      original.jpeg.subarray(beforeSos),
+    ]);
+    const badResult = inspectRaster(smuggled, 'jpg');
+    if (badResult && !badResult.privateMetadata) {
+      fail('JPEG ' + label + ' accepted trailing text after a valid structural table');
+    }
+  }
+  const originalSosPayload = original.jpeg.subarray(beforeSos + 4, beforeSos + 2 + sosSize);
+  const modifiedSos = Buffer.concat([
+    original.jpeg.subarray(0, beforeSos),
+    jpegSegment(0xda, Buffer.concat([originalSosPayload, injectedText])),
+    original.jpeg.subarray(beforeSos + 2 + sosSize),
+  ]);
+  if (inspectRaster(modifiedSos, 'jpg')) fail('SOS accepted appended free-form data');
+
   // A JPEG frame must have consistent dimensions across multiple SOF
   // segments, and a frame without SOS must not pass as a real image.
   const sofAt = original.jpeg.indexOf(Buffer.from([0xff, 0xc0]));
@@ -218,12 +310,12 @@ export function runImageSelfTest({ fail, validateImage, checkUnapprovedFiles, va
   if (!inspectRaster(filledHeader, 'jpg') || !inspectRaster(filledEntropy, 'jpg')) {
     fail('JPEG marker fill bytes were rejected');
   }
-  // Pin the fixture's genuine ten-scan structure. It was accidentally
-  // truncated once; this catches regressions even before parser-level checks.
-  const scanMarkers = [...original.progressive.keys()].filter((offset) =>
-    original.progressive[offset] === 0xff && original.progressive[offset + 1] === 0xda).length;
-  if (scanMarkers !== 10) fail('Progressive JPEG fixture must contain ten SOS markers, got ' + scanMarkers);
+  // Count complete SOS segments in the JPEG marker walker, not raw FF DA
+  // byte pairs, to keep the fixture regression tied to parser semantics.
   const realProgressive = inspectRaster(original.progressive, 'jpg');
+  if (realProgressive?.scans !== 10) {
+    fail('Progressive JPEG fixture must contain ten parsed scans, got ' + realProgressive?.scans);
+  }
   if (!realProgressive || realProgressive.privateMetadata ||
       realProgressive.width !== 1 || realProgressive.height !== 1) {
     fail('Real multi-scan progressive JPEG fixture was rejected');
