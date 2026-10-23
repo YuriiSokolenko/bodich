@@ -1,0 +1,88 @@
+name: KingTech source inventory audit
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: kingtech-reference-audit-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  refresh-reference:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '24'
+      - name: Install pinned browser tooling for client-rendered Square listings
+        run: |
+          npm install --no-save --package-lock=false playwright@1.64.1
+          npx playwright install --only-shell chromium
+      - name: Preserve previous reference inventory for regression checking
+        run: cp docs/catalog/source-inventory.json /tmp/kingtech-previous-inventory.json
+      - name: Audit public KingTech source listings (review only)
+        shell: bash
+        run: |
+          set +e
+          node scripts/audit-kingtech-source.mjs --write --browser
+          status=$?
+          set -e
+          case "$status" in
+            0)
+              echo "AUDIT_INCOMPLETE=0" >> "$GITHUB_ENV"
+              ;;
+            2)
+              echo "AUDIT_INCOMPLETE=1" >> "$GITHUB_ENV"
+              echo "::warning::Live source coverage has unresolved gaps; the proposed artifact requires review."
+              ;;
+            *)
+              echo "::error::Source crawler failed unexpectedly (exit $status). No candidate can be accepted."
+              exit 1
+              ;;
+          esac
+      - name: Validate shape, negative fixtures, and previous source IDs
+        run: |
+          node scripts/validate-source-inventory.mjs
+          node scripts/validate-source-inventory.mjs --self-test
+          node scripts/validate-source-inventory.mjs --compare=/tmp/kingtech-previous-inventory.json
+      - name: Reject failed product URL checks
+        run: |
+          node --input-type=module <<'JS'
+          import { readFileSync } from 'node:fs';
+          const now = JSON.parse(readFileSync('docs/catalog/source-inventory.json', 'utf8'));
+          if (now.products.length === 0) throw Error('Empty source inventory; refusing candidate.');
+          if (now.products.some((p) => p.urlCheck !== 'http_200')) {
+            throw Error('Candidate includes unverified source URLs; refusing candidate.');
+          }
+          JS
+      - name: Summarize candidate audit without publishing or committing
+        shell: bash
+        run: |
+          {
+            echo "## KingTech source inventory candidate"
+            echo "This workflow has read-only repository permissions. It never pushes to any branch."
+            echo "Review the uploaded JSON diff before updating the reference inventory manually."
+            if [ "$AUDIT_INCOMPLETE" = "1" ]; then
+              echo "**Coverage incomplete**: source-count discrepancies remain; do not treat this as accepted data."
+            else
+              echo "Crawler reported no coverage gaps; human source review remains required."
+            fi
+            echo '### Changes relative to the checked-out reference'
+            echo '~~~'
+            git diff --stat -- docs/catalog/source-inventory.json
+            echo '~~~'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload candidate inventory for manual review
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: kingtech-source-candidate
+          path: docs/catalog/source-inventory.json
+          if-no-files-found: error
+          retention-days: 7
