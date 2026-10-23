@@ -2,6 +2,7 @@
 // Review-only KingTech reference inventory. No data from here is shipped by Astro.
 // Usage: node scripts/audit-kingtech-source.mjs --write
 // Network audit deliberately runs on demand, not during ordinary builds.
+// Exit statuses: 0 = no detected gaps; 2 = valid but incomplete; 1 = fatal.
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 
