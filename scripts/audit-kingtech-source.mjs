@@ -200,6 +200,19 @@ async function listCategory(categoryUrl, errors) {
 const sectionRoots = new Map(ROOTS.map(([id, title, path, mappedCategoryId]) =>
   [id, { id, title, url: path ? ORIGIN + path : null, mappedCategoryId }]));
 async function run() {
+  if (process.argv.length === 3 && process.argv[2] === '--self-test') {
+    const opaque = 'VCEYUYCU5FJF2GZQMXDNZXJO';
+    const numeric = itemRef(ORIGIN + '/product/sample/123');
+    const square = itemRef(ORIGIN + '/product/sample/' + opaque);
+    if (numeric?.id !== 'kt-123' || numeric.numericId !== '123' || numeric.opaqueId !== null ||
+        square?.id !== 'kt-sq-' + opaque || square.numericId !== null || square.opaqueId !== opaque ||
+        itemRef('https://example.com/product/sample/123') !== null ||
+        itemRef(ORIGIN + '/product/sample/short-id') !== null) {
+      throw new Error('Square numeric and opaque source-ID parser fixtures failed');
+    }
+    console.log('Square source-ID parser: 4 fixtures passed.');
+    return;
+  }
   const useBrowser = process.argv.includes('--browser');
   if (!process.argv.includes('--write') || process.argv.some((a, i) => i > 1 && !['--write', '--browser'].includes(a))) {
     console.error('Usage: node scripts/audit-kingtech-source.mjs --write [--browser]');
