@@ -36,6 +36,8 @@ type Translations = {
   skipContentLabel: string;
   previewLabel: string;
   intro: string;
+  heroImageAlt: string;
+  conceptRenderingLabel: string;
   placeholder: string;
   browseProducts: string;
   backHome: string;
@@ -59,6 +61,8 @@ export const translations: Record<Locale, Translations> = {
     skipContentLabel: 'Skip to content',
     previewLabel: 'Website preview',
     intro: 'A new BODICH website is taking shape.',
+    heroImageAlt: 'BODICH-branded miniature jet turbine with a red intake, dark metal housing and a bronze-blue heat-tinted exhaust nozzle against a charcoal background.',
+    conceptRenderingLabel: 'Concept rendering',
     placeholder: 'Content for this section is being prepared. Product specifications and company contact details will be published when confirmed.',
     browseProducts: 'Explore products',
     backHome: 'Back to home',
@@ -111,6 +115,8 @@ export const translations: Record<Locale, Translations> = {
     skipContentLabel: 'Sari la conținut',
     previewLabel: 'Previzualizarea site-ului',
     intro: 'Noul site BODICH este în curs de pregătire.',
+    heroImageAlt: 'Motor turboreactor miniatural marca BODICH, cu admisie roșie, corp metalic închis la culoare și duză de evacuare cu reflexii de bronz și albastru, pe fundal gri închis.',
+    conceptRenderingLabel: 'Vizualizare conceptuală',
     placeholder: 'Conținutul acestei secțiuni este în curs de pregătire. Specificațiile produselor și datele de contact ale companiei vor fi publicate după confirmare.',
     browseProducts: 'Explorează produsele',
     backHome: 'Înapoi la pagina principală',
