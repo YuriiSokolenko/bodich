@@ -19,6 +19,18 @@ function validSourceUrl(str, prefix = null) {
       !url.search && !url.hash && (!prefix || url.pathname.startsWith(prefix));
   } catch { return false; }
 }
+function validCountEvidence(evidence, count) {
+  if (evidence === null) return count === null;
+  if (!evidence || typeof evidence !== 'object' || typeof evidence.text !== 'string') return false;
+  if (evidence.kind === 'result_label') {
+    const match = evidence.text.match(/^([0-9][0-9,]*)\s+results?$/i);
+    return !!match && Number(match[1].replaceAll(',', '')) === count;
+  }
+  if (evidence.kind === 'explicit_empty_message') {
+    return count === 0 && /^(items aren't available|items are not available|no items available|no products available|nothing found)$/i.test(evidence.text);
+  }
+  return false;
+}
 function validate(doc) {
   const problems = [];
   const fail = (msg) => problems.push(msg);
@@ -26,8 +38,7 @@ function validate(doc) {
   if (doc.schemaVersion !== 1 || doc.sourceSite !== expectedOrigin || doc.purpose !== 'public_repo_reference_not_site_product' || doc.companyStockClaim !== false) {
     fail('Manifest must be review-only schemaVersion 1 and never claim BODICH stock');
   }
-  if (!datePattern.test(doc.capturedAt || '') || Number.isNaN(Date.parse(doc.capturedAt + 'T00:00:00Z')) ||
-      new Date(doc.capturedAt).toISOString?.() === 'INVALID') fail('Invalid capture date');
+  if (!datePattern.test(doc.capturedAt || '') || Number.isNaN(Date.parse(doc.capturedAt + 'T00:00:00Z'))) fail('Invalid capture date');
   if (!Array.isArray(doc.sections) || !Array.isArray(doc.products) || !Array.isArray(doc.exclusions) || !Array.isArray(doc.warnings)) {
     return [...problems, 'Manifest sections/products/exclusions/warnings must be arrays'];
   }
@@ -83,6 +94,12 @@ function validate(doc) {
     if (!['matched', 'incomplete', 'manual_review_required', 'external_service_documented'].includes(section.status)) fail('Invalid section status ' + section.id);
     if (section.reportedCount !== null && (!Number.isSafeInteger(section.reportedCount) || section.reportedCount < 0))
       fail('Invalid measured source count ' + section.id);
+    if ('countEvidence' in section && !validCountEvidence(section.countEvidence, section.reportedCount))
+      fail('Invalid count evidence for section ' + section.id);
+    for (const sub of section.subcategories || []) {
+      if ('countEvidence' in sub && !validCountEvidence(sub.countEvidence, sub.reportedCount))
+        fail('Invalid count evidence for subcategory ' + sub.url);
+    }
     const actual = doc.products.filter((p) => p.sourceCategoryIds?.includes(section.id));
     if (actual.length !== section.discoveredCount) fail('Category discovered count mismatch: ' + section.id);
     const cross = actual.filter((p) => p.sourceCategoryIds.length > 1).length;
@@ -150,6 +167,7 @@ if (process.argv.includes('--self-test')) {
       (d) => d.products[0].sourceCategoryIds = ['unknown-category'],
       (d) => d.products[0].mappedCategoryId = 'not-a-BODICH-category',
       (d) => d.sections[0].discoveredCount++,
+      (d) => { d.sections[0].countEvidence = { kind: 'result_label', text: '999 Results' }; },
       (d) => d.products[0].price = 500,
       (d) => { const p = d.products.find((p) => p.sourceOpaqueId); if (p) p.sourceOpaqueId = 'INVALID'; },
       (d) => { const p = d.products.find((p) => p.sourceDiscovery === 'direct_verified_unlisted'); if (p) p.subcategoryUrls.push('https://www.kingtechturbines.com/shop/pump/12'); },
