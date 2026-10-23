@@ -33,7 +33,7 @@
 - **Label prominently when published:** "Concept rendering" (EN) / "Vizualizare conceptuală" (RO).
 - The image depicts a fictional concept, not a manufacturing prototype or a verified product. Do not associate it with a real SKU, specifications, certification, thrust rating, price, warranty or inventory.
 - For the homepage hero, preserve the full subject and negative space; do not stretch the raster or place white text over the engine.
-- The image is not integrated into the homepage in Stage 3A. Responsive integration and layout behavior belong to later stages of Issue #10 / homepage work.
+- Stage 3A committed the asset; PR #15 subsequently integrated it into both localized homepages. Its WebP source remains unchanged.
 - The source studio render was produced specifically for this project and exported to an optimized WebP delivery asset; no third-party product photo is redistributed.
 
 ## Product-card concept 01 — Issue #10, Stage 3B (first asset)
@@ -77,3 +77,20 @@ This is **asset 1 of 2 Stage 3B images completed so far** (the target series rem
 **RO alt:** Detaliu conceptual generat cu IA al admisiei roșii a unui turboreactor miniatural BODICH, cu grilaj de protecție, con central negru și racorduri metalice.
 
 **Integration guidance:** The crop deliberately concentrates on the intake, so the exhaust nozzle is not visible; don't present it as the complete engine or as a real product photograph. Add a nearby visible **Concept rendering / Vizualizare conceptuală** caption when displayed on the site. Avoid secondary cropping that cuts off the intake or the BODICH mark. Responsive derivatives and visual QA belong to Stages 3C/3D. The rights and representation caveats above apply equally to this image, and commercial publication still requires review.
+
+## Responsive WebP delivery — catalog integration follow-up
+
+Six new WebP derivatives are generated from the **three versioned originals above**, by Lanczos resize with Pillow 12.3.0 (WebP encoder quality 82, method 6). The existing source images are unchanged and remain available as the largest `srcset` candidates.
+
+| Original | Responsive file | Dimensions | Bytes | SHA-256 |
+| --- | --- | --- | ---: | --- |
+| `bodich-hero-concept.webp` | `bodich-hero-concept-640.webp` | 640 × 360 | 17,372 | `eca0c639df9e52b74cb2af0588683355b523b2834e77d0efdb3bb5f388e97ccc` |
+| `bodich-hero-concept.webp` | `bodich-hero-concept-960.webp` | 960 × 540 | 32,714 | `a360256a44699acd6e9767172b49fff63ac491370ca559873d269cc4a3cb677d` |
+| `bodich-card-concept-01.webp` | `bodich-card-concept-01-360.webp` | 360 × 360 | 17,698 | `63016d46c5ade7dd5a79acb631b83921bf16d11bfbd7d6001a55848fd37303cf` |
+| `bodich-card-concept-01.webp` | `bodich-card-concept-01-600.webp` | 600 × 600 | 41,062 | `5d3f858c554bef61c56afc45ac3aab51b5a55f40aa8a4a8e03c08da0776daf64` |
+| `bodich-intake-detail-concept-02.webp` | `bodich-intake-detail-concept-02-360.webp` | 360 × 360 | 24,738 | `913506c80767b2db6ba674012d2965bf8aa23541e13de5c025e4f0e831a1a1bb` |
+| `bodich-intake-detail-concept-02.webp` | `bodich-intake-detail-concept-02-600.webp` | 600 × 600 | 57,300 | `29bf4417cf084d00adf0ce8ddce8e18b50eb427a9979c9de58a12c0478d064e3` |
+
+**Delivery:** `src/components/ui/ConceptImage.astro` receives width-descriptor `srcset` and `sizes` from the localized homepage and `src/components/TurbineConceptPreview.astro`. This allows Chromium to pick the appropriate file at common viewport sizes while avoiding extra client-side JavaScript. The product preview intentionally presents **one turbine concept overview plus one supporting intake detail**—not two verified commercial products. Both images retain visible EN/RO concept disclosures.
+
+**Verification:** Automated Chromium checks cover all six derivatives, browser selection, width and aspect ratio, image load, EN/RO caption, mobile/desktop clipping and overflow. Final validation on physical devices, Safari/Firefox and professional Romanian copyediting remains deferred to pre-launch. Commercial brand/IP clearance is **not** implied.
