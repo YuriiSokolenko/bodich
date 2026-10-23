@@ -38,6 +38,15 @@ type Translations = {
   intro: string;
   heroImageAlt: string;
   conceptRenderingLabel: string;
+  conceptPreviewTitle: string;
+  conceptPreviewIntro: string;
+  conceptTurbineTitle: string;
+  conceptTurbineAlt: string;
+  conceptTurbineDescription: string;
+  conceptIntakeTitle: string;
+  conceptIntakeAlt: string;
+  conceptIntakeDescription: string;
+  conceptNotice: string;
   placeholder: string;
   browseProducts: string;
   backHome: string;
@@ -63,6 +72,15 @@ export const translations: Record<Locale, Translations> = {
     intro: 'A new BODICH website is taking shape.',
     heroImageAlt: 'BODICH-branded miniature jet turbine with a red intake, dark metal housing and a bronze-blue heat-tinted exhaust nozzle against a charcoal background.',
     conceptRenderingLabel: 'Concept rendering',
+    conceptPreviewTitle: 'Turbine design concepts',
+    conceptPreviewIntro: 'Explore the visual direction for BODICH turbines. These are concept images, not listings of confirmed products.',
+    conceptTurbineTitle: 'Turbine overview',
+    conceptTurbineAlt: 'BODICH-branded miniature jet turbine concept with a red intake and dark metal housing.',
+    conceptTurbineDescription: 'A full-engine concept view showing the housing, inlet and heat-tinted exhaust.',
+    conceptIntakeTitle: 'Intake detail',
+    conceptIntakeAlt: 'Close-up of a conceptual BODICH turbine intake with red housing, protective grille and central cone.',
+    conceptIntakeDescription: 'An enlarged design detail of the inlet grille, spinner and fittings.',
+    conceptNotice: 'Models, technical specifications and availability will be shown only after they are verified.',
     placeholder: 'Content for this section is being prepared. Product specifications and company contact details will be published when confirmed.',
     browseProducts: 'Explore products',
     backHome: 'Back to home',
@@ -117,6 +135,15 @@ export const translations: Record<Locale, Translations> = {
     intro: 'Noul site BODICH este în curs de pregătire.',
     heroImageAlt: 'Motor turboreactor miniatural marca BODICH, cu admisie roșie, corp metalic închis la culoare și duză de evacuare cu reflexii de bronz și albastru, pe fundal gri închis.',
     conceptRenderingLabel: 'Vizualizare conceptuală',
+    conceptPreviewTitle: 'Concepte vizuale de turbine',
+    conceptPreviewIntro: 'Descoperă direcția vizuală a turbinelor BODICH. Imaginile sunt conceptuale și nu reprezintă produse confirmate.',
+    conceptTurbineTitle: 'Prezentare generală a turbinei',
+    conceptTurbineAlt: 'Concept de turbină cu reacție miniaturală BODICH, cu admisie roșie și carcasă metalică închisă la culoare.',
+    conceptTurbineDescription: 'O reprezentare conceptuală a motorului, cu carcasă, admisie și duză cu nuanțe termice.',
+    conceptIntakeTitle: 'Detaliu al admisiei',
+    conceptIntakeAlt: 'Detaliu al admisiei unei turbine BODICH conceptuale, cu carcasă roșie, grilaj de protecție și con central.',
+    conceptIntakeDescription: 'Detaliu vizual al grilajului de admisie, al conului central și al racordurilor.',
+    conceptNotice: 'Modelele, specificațiile tehnice și disponibilitatea vor fi prezentate numai după verificare.',
     placeholder: 'Conținutul acestei secțiuni este în curs de pregătire. Specificațiile produselor și datele de contact ale companiei vor fi publicate după confirmare.',
     browseProducts: 'Explorează produsele',
     backHome: 'Înapoi la pagina principală',

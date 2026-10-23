@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { chromium } from 'playwright';
 
@@ -114,6 +115,63 @@ try {
           assert.equal(footerNavsNamed, true, 'Footer navigation must reference its heading');
         });
 
+        await verify(`${name}: localized catalog concepts use responsive lazy WebP`, async () => {
+          const gallery = page.locator('[data-turbine-concepts]');
+          assert.equal(await gallery.count(), 1, 'Products page must contain a concept preview gallery');
+          assert.equal(await gallery.locator('h2').count(), 1);
+          const expected = [
+            {
+              key: 'turbine',
+              full: 'bodich-card-concept-01.webp',
+              candidates: ['bodich-card-concept-01-360.webp', 'bodich-card-concept-01-600.webp', 'bodich-card-concept-01.webp'],
+            },
+            {
+              key: 'intake',
+              full: 'bodich-intake-detail-concept-02.webp',
+              candidates: ['bodich-intake-detail-concept-02-360.webp', 'bodich-intake-detail-concept-02-600.webp', 'bodich-intake-detail-concept-02.webp'],
+            },
+          ];
+          assert.equal(await gallery.locator('[data-concept-card]').count(), expected.length);
+          for (const item of expected) {
+            const card = gallery.locator(`[data-concept-card="${item.key}"]`);
+            const image = card.locator('figure img');
+            assert.equal(await image.getAttribute('src'), `/images/turbines/${item.full}`);
+            assert.equal(await image.getAttribute('loading'), 'lazy', 'Catalog images must be lazy loaded');
+            assert.equal(await image.getAttribute('fetchpriority'), null, 'Catalog images should not request hero priority');
+            assert((await image.getAttribute('srcset'))?.includes('360w'), 'Responsive candidate missing');
+            assert((await image.getAttribute('alt'))?.trim(), 'Catalog images need localized alt');
+            assert.equal((await card.locator('figcaption').innerText()).trim(), heroExpectations[locale].caption);
+            await image.scrollIntoViewIfNeeded();
+            const decoded = await image.evaluate(async (img) => {
+              await img.decode();
+              return {
+                current: new URL(img.currentSrc).pathname.split('/').pop(),
+                complete: img.complete,
+                naturalWidth: img.naturalWidth,
+              };
+            });
+            assert(decoded.complete && decoded.naturalWidth > 0, `${item.key} image did not decode`);
+            assert(item.candidates.includes(decoded.current), `${item.key} picked unexpected candidate ${decoded.current}`);
+            if (width <= 390) {
+              assert(decoded.current.endsWith('-360.webp'), `${item.key} must use compact image on narrow screens`);
+            }
+            const rect = await image.boundingBox();
+            const parent = await card.boundingBox();
+            assert(rect && parent && rect.width > 0 && rect.height > 0, 'Catalog image must be visible');
+            assert(rect.x >= parent.x - 1 && rect.x + rect.width <= parent.x + parent.width + 1,
+              'Catalog image must not be cropped horizontally');
+            assert(Math.abs(rect.width / rect.height - 1) < 0.02, 'Square catalog concept must retain its full ratio');
+          }
+          // After scrolling to decode lazy images, reset to the document top.
+          // Otherwise Chromium can paint the sticky header in the middle of
+          // a full-page screenshot even though the page layout is correct.
+          await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
+          await page.waitForFunction(() => window.scrollY === 0);
+          const shot = `${output}/screenshots/${name}-products.png`;
+          await page.screenshot({ path: shot, fullPage: true });
+          screenshots.push(shot);
+        });
+
         await verify(`${name}: no horizontal overflow or clipped brand`, async () => {
           const dimensions = await page.evaluate(() => ({
             viewport: document.documentElement.clientWidth,
@@ -203,14 +261,26 @@ try {
           assert.equal(await image.getAttribute('loading'), 'eager', 'Hero must not lazy-load');
           assert.equal(await image.getAttribute('fetchpriority'), 'high', 'Hero is LCP-priority');
 
-          const dimensions = await image.evaluate((img) => ({
-            complete: img.complete,
-            naturalWidth: img.naturalWidth,
-            naturalHeight: img.naturalHeight,
-          }));
+          const dimensions = await image.evaluate(async (img) => {
+            await img.decode();
+            return {
+              complete: img.complete,
+              naturalWidth: img.naturalWidth,
+              naturalHeight: img.naturalHeight,
+              currentFile: new URL(img.currentSrc).pathname,
+            };
+          });
           assert.equal(dimensions.complete, true, 'Hero image request must complete');
-          assert.equal(dimensions.naturalWidth, 1672, 'Hero image must decode at source width');
-          assert.equal(dimensions.naturalHeight, 941, 'Hero image must decode at source height');
+          assert(dimensions.naturalWidth > 0 && dimensions.naturalHeight > 0, 'Hero image must decode');
+          assert([
+            '/images/turbines/bodich-hero-concept-640.webp',
+            '/images/turbines/bodich-hero-concept-960.webp',
+            '/images/turbines/bodich-hero-concept.webp',
+          ].includes(dimensions.currentFile), 'Hero must use one of the responsive WebP candidates');
+          if (width <= 390) {
+            assert(dimensions.currentFile.endsWith('-640.webp'), 'Small viewports must use the compact hero candidate');
+          }
+          assert((await image.getAttribute('srcset'))?.includes('640w'), 'Hero must include width-descriptor srcset');
 
           const box = await image.boundingBox();
           const copy = hero.locator('[data-hero-copy]');
@@ -313,6 +383,51 @@ try {
     }
   }
 
+
+  // DPR-2 coverage: on modern phones the browser often selects a larger
+  // srcset file than it does at DPR 1, even at the same CSS viewport.
+  // The primary 5-width matrix intentionally uses DPR 1 for stable geometry.
+  for (const locale of locales) {
+    await verify(`${locale}: DPR-2 responsive WebP selection at 390px`, async () => {
+      const context = await browser.newContext({
+        viewport: { width: 390, height: 900 },
+        deviceScaleFactor: 2,
+        reducedMotion: 'reduce',
+      });
+      try {
+        const page = await context.newPage();
+        await page.goto(`${baseUrl}${pathFor(locale, 'home')}`, { waitUntil: 'load' });
+        const hero = page.locator('[data-hero] img');
+        const heroResource = await hero.evaluate(async (img) => {
+          await img.decode();
+          return new URL(img.currentSrc).pathname.split('/').pop();
+        });
+        assert([
+          'bodich-hero-concept-960.webp',
+          'bodich-hero-concept.webp',
+        ].includes(heroResource),
+        `DPR-2 hero should choose >=960px candidate, got ${heroResource}`);
+
+        await page.goto(`${baseUrl}${pathFor(locale, 'products')}`, { waitUntil: 'load' });
+        for (const { key, medium, full } of [
+          { key: 'turbine', medium: 'bodich-card-concept-01-600.webp', full: 'bodich-card-concept-01.webp' },
+          { key: 'intake', medium: 'bodich-intake-detail-concept-02-600.webp', full: 'bodich-intake-detail-concept-02.webp' },
+        ]) {
+          const img = page.locator(`[data-concept-card="${key}"] img`);
+          await img.scrollIntoViewIfNeeded();
+          const resource = await img.evaluate(async (image) => {
+            await image.decode();
+            return new URL(image.currentSrc).pathname.split('/').pop();
+          });
+          assert([medium, full].includes(resource),
+            `DPR-2 ${key} should not choose the low-DPR 360px asset, got ${resource}`);
+        }
+      } finally {
+        await context.close();
+      }
+    });
+  }
+
   for (const locale of locales) {
     await verify(`${locale}: menu works without JavaScript`, async () => {
       const context = await browser.newContext({
@@ -337,6 +452,40 @@ try {
       }
     });
   }
+
+  await verify('All six responsive turbine WebP assets are available and decodable', async () => {
+    const variants = [
+      ['bodich-hero-concept-640.webp', 640, 360, 17372, 'eca0c639df9e52b74cb2af0588683355b523b2834e77d0efdb3bb5f388e97ccc'],
+      ['bodich-hero-concept-960.webp', 960, 540, 32714, 'a360256a44699acd6e9767172b49fff63ac491370ca559873d269cc4a3cb677d'],
+      ['bodich-card-concept-01-360.webp', 360, 360, 17698, '63016d46c5ade7dd5a79acb631b83921bf16d11bfbd7d6001a55848fd37303cf'],
+      ['bodich-card-concept-01-600.webp', 600, 600, 41062, '5d3f858c554bef61c56afc45ac3aab51b5a55f40aa8a4a8e03c08da0776daf64'],
+      ['bodich-intake-detail-concept-02-360.webp', 360, 360, 24738, '913506c80767b2db6ba674012d2965bf8aa23541e13de5c025e4f0e831a1a1bb'],
+      ['bodich-intake-detail-concept-02-600.webp', 600, 600, 57300, '29bf4417cf084d00adf0ce8ddce8e18b50eb427a9979c9de58a12c0478d064e3'],
+    ];
+    const page = await browser.newPage();
+    try {
+      await page.goto(`${baseUrl}/en/products/`, { waitUntil: 'load' });
+      for (const [file, expectedWidth, expectedHeight, expectedBytes, expectedSha256] of variants) {
+        const path = `/images/turbines/${file}`;
+        const response = await page.request.get(`${baseUrl}${path}`);
+        assert.equal(response.status(), 200, `Missing responsive WebP: ${file}`);
+        assert.match(response.headers()['content-type'], /^image\/webp/, `Incorrect MIME: ${file}`);
+        const bytes = await response.body();
+        assert.equal(bytes.length, expectedBytes, `Unexpected asset size: ${file}`);
+        assert.equal(createHash('sha256').update(bytes).digest('hex'), expectedSha256,
+          `SHA-256 mismatch for ${file}; update the asset and documented hash together`);
+        const actual = await page.evaluate(async (url) => {
+          const bitmap = await createImageBitmap(await (await fetch(url)).blob());
+          const dimensions = [bitmap.width, bitmap.height];
+          bitmap.close();
+          return dimensions;
+        }, path);
+        assert.deepEqual(actual, [expectedWidth, expectedHeight], `Corrupt variant: ${file}`);
+      }
+    } finally {
+      await page.close();
+    }
+  });
 
   await verify('All six localized sections resolve in both languages', async () => {
     const page = await browser.newPage();
