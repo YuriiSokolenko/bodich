@@ -81,14 +81,14 @@ function meta(html, property) {
   }
   return '';
 }
-function productTitle(html, fallback) {
+function productTitle(html) {
   for (const m of html.matchAll(/<h1\b[^>]*>([\s\S]*?)<\/h1>/gi)) {
     const name = plain(m[1]);
     if (name && !/^(KingTech Turbines|Shopping Cart|Cart)$/i.test(name)) return name;
   }
   const og = meta(html, 'og:title');
   if (og && !/^KingTech Turbines$/i.test(og)) return og.replace(/\s+\|\s+KingTech Turbines$/i, '');
-  return fallback || null;
+  return null;
 }
 function sourceStatus(title, html) {
   if (/discontinued/i.test(title || '')) return 'discontinued';
@@ -97,10 +97,17 @@ function sourceStatus(title, html) {
   if (/\bout of stock\b/i.test(nearTitle)) return 'out_of_stock';
   return 'unknown';
 }
-function reportedCount(html) {
+function measuredCount(html) {
   const text = plain(html);
-  const match = text.match(/\b([0-9][0-9,]*)\s+results?\b/i);
-  return match ? Number(match[1].replaceAll(',', '')) : null;
+  const label = text.match(/\b([0-9][0-9,]*)\s+results?\b/i);
+  if (label) return {
+    count: Number(label[1].replaceAll(',', '')),
+    evidence: { kind: 'result_label', text: label[0] },
+  };
+  const empty = text.match(/\b(?:items aren't available|items are not available|no items available|no products available|nothing found)\b/i);
+  if (empty) return { count: 0, evidence: { kind: 'explicit_empty_message', text: empty[0] } };
+  // Child-category links or a successful HTTP response do not prove zero products.
+  return { count: null, evidence: null };
 }
 async function fetchHtml(url) {
   if (browserPage) {
@@ -146,6 +153,7 @@ async function listCategory(categoryUrl, errors) {
   const ids = new Map();
   const subcategories = new Map();
   let count = null;
+  let countEvidence = null;
   let pages = 0;
   for (let page = 1; page <= 30; page++) {
     const url = categoryUrl + '?limit=30&page=' + page + '&sort_by=category_order&sort_order=asc';
@@ -171,7 +179,9 @@ async function listCategory(categoryUrl, errors) {
     pages++;
     if (page === 1) {
       console.log('Audit source HTML: ' + categoryUrl + ' HTTP ' + response.status + ' bytes=' + response.html.length + ' product-links=' + (response.html.split('/product/').length - 1) + ' sample=' + plain(response.html.slice(0, 600)).slice(0, 220));
-      count = reportedCount(response.html);
+      const measured = measuredCount(response.html);
+      count = measured.count;
+      countEvidence = measured.evidence;
     }
     const list = anchors(response.html);
     for (const a of list) {
@@ -184,18 +194,11 @@ async function listCategory(categoryUrl, errors) {
       if (!p) continue;
       if (!ids.has(p.id)) { ids.set(p.id, { ...p, fallbackTitle: a.text }); fresh++; }
     }
-    if (page === 1 && count === null && ids.size === 0) {
-      // A section that only links to child categories has zero *direct*
-      // listings, even though its child categories contain many products.
-      // A separately empty offer category may explicitly say so.
-      const emptyText = /items aren't available|items are not available|no items available|no products available|nothing found/i.test(plain(response.html));
-      if (subcategories.size > 0 || emptyText) count = 0;
-    }
     if (!fresh || (count !== null && ids.size >= count)) break;
   }
   const complete = count !== null && ids.size === count;
   if (!complete) errors.push('Count mismatch/unmeasured: ' + categoryUrl + ' reported=' + count + ', extracted=' + ids.size);
-  return { products: [...ids.values()], subcategories: [...subcategories.values()], reportedCount: count, pages, complete };
+  return { products: [...ids.values()], subcategories: [...subcategories.values()], reportedCount: count, countEvidence, pages, complete };
 }
 const sectionRoots = new Map(ROOTS.map(([id, title, path, mappedCategoryId]) =>
   [id, { id, title, url: path ? ORIGIN + path : null, mappedCategoryId }]));
@@ -210,7 +213,23 @@ async function run() {
         itemRef(ORIGIN + '/product/sample/short-id') !== null) {
       throw new Error('Square numeric and opaque source-ID parser fixtures failed');
     }
-    console.log('Square source-ID parser: 4 fixtures passed.');
+    const validH1 = productTitle('<main><h1>KingTech KP500V+</h1></main>');
+    const validOg = productTitle('<meta property="og:title" content="KingTech KP500V+ | KingTech Turbines">');
+    const tileOnly = productTitle('<main><a href="/product/sample/123">Listing title only</a></main>');
+    const genericH1 = productTitle('<main><h1>KingTech Turbines</h1><p>Listing title</p></main>');
+    if (validH1 !== 'KingTech KP500V+' || validOg !== 'KingTech KP500V+' ||
+        tileOnly !== null || genericH1 !== null) {
+      throw new Error('Product verification must require a page h1 or og:title');
+    }
+    const countedEmpty = measuredCount('<main>0 Results</main>');
+    const explicitEmpty = measuredCount('<main>No items available</main>');
+    const childrenOnly = measuredCount('<main><a href="/shop/example/42">Category</a></main>');
+    if (countedEmpty.count !== 0 || countedEmpty.evidence?.kind !== 'result_label' ||
+        explicitEmpty.count !== 0 || explicitEmpty.evidence?.kind !== 'explicit_empty_message' ||
+        childrenOnly.count !== null || childrenOnly.evidence !== null) {
+      throw new Error('Source zero-count evidence fixtures failed');
+    }
+    console.log('Source-ID, product-title and count-evidence fixtures passed.');
     return;
   }
   const useBrowser = process.argv.includes('--browser');
@@ -251,20 +270,24 @@ async function run() {
     const sectionIds = new Set();
     const subcategories = [];
     let reportedCountRoot = null;
+    let countEvidenceRoot = null;
     let completed = true;
     while (queue.length && seen.size < 60) {
       const categoryUrl = queue.shift();
       if (seen.has(categoryUrl)) continue;
       seen.add(categoryUrl);
       const listed = await listCategory(categoryUrl, warnings);
-      if (categoryUrl === root.url) reportedCountRoot = listed.reportedCount;
+      if (categoryUrl === root.url) {
+        reportedCountRoot = listed.reportedCount;
+        countEvidenceRoot = listed.countEvidence;
+      }
       completed &&= listed.complete;
       for (const sub of listed.subcategories) {
         if (root.id === 'accessories' && !seen.has(sub.url) && !queue.includes(sub.url)) queue.push(sub.url);
       }
       if (categoryUrl !== root.url) {
-        subcategories.push({ url: categoryUrl, reportedCount: listed.reportedCount, discoveredCount: listed.products.length,
-          status: listed.complete ? 'matched' : 'incomplete' });
+        subcategories.push({ url: categoryUrl, reportedCount: listed.reportedCount, countEvidence: listed.countEvidence,
+          discoveredCount: listed.products.length, status: listed.complete ? 'matched' : 'incomplete' });
       }
       for (const p of listed.products) {
         sectionIds.add(p.id);
@@ -285,7 +308,7 @@ async function run() {
     }
     if (seen.size >= 60) { completed = false; warnings.push('Subcategory traversal cap hit in ' + root.id); }
     sections.push({ id: root.id, title: root.title, url: root.url, reportedCount: reportedCountRoot,
-      discoveredCount: sectionIds.size, crossListedCount: 0,
+      countEvidence: countEvidenceRoot, discoveredCount: sectionIds.size, crossListedCount: 0,
       status: completed ? 'matched' : 'incomplete',
       subcategories: subcategories.sort((a,b)=>a.url.localeCompare(b.url)) });
   }
@@ -295,7 +318,7 @@ async function run() {
     const ref = itemRef(direct.url);
     if (!ref || products.has(ref.id)) continue;
     const response = await fetchHtml(ref.url);
-    const title = response.status === 200 ? productTitle(response.html, null) : null;
+    const title = response.status === 200 ? productTitle(response.html) : null;
     if (response.status !== 200 || !title || /^(404|page not found)$/i.test(title)) {
       warnings.push('Direct-only source page no longer renders a product: ' + ref.url);
       continue;
@@ -351,8 +374,15 @@ async function run() {
       warnings.push('Product ' + p.id + ' returned HTTP ' + response.status + ': ' + p.canonicalUrl);
       continue;
     }
-    const verifiedTitle = productTitle(response.html, p.sourceTitle);
-    if (!verifiedTitle || /^(404|page not found)$/i.test(verifiedTitle)) {
+    const verifiedTitle = productTitle(response.html);
+    if (!verifiedTitle) {
+      p.urlCheck = 'not_checked';
+      p.sourceStatus = 'unknown';
+      p.confidence = 'low';
+      warnings.push('Product page returned HTTP 200 but lacks a verifiable h1/og:title: ' + p.canonicalUrl);
+      continue;
+    }
+    if (/^(404|page not found)$/i.test(verifiedTitle)) {
       p.urlCheck = 'http_404';
       p.sourceStatus = 'archived_or_missing';
       p.confidence = 'low';
