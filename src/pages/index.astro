@@ -1,3 +1,5 @@
 ---
-return Astro.redirect('/en/');
+import { hrefFor } from '../i18n';
+
+return Astro.redirect(hrefFor('en', 'home'));
 ---
