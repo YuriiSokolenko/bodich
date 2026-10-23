@@ -3192,12 +3192,26 @@
       "reason": "Not one of the nine requested source sections; excluded pending scope approval.",
       "evidenceUrl": "https://www.kingtechturbines.com/shop/promotional-items/9",
       "count": null
+    },
+    {
+      "sectionId": "batteries",
+      "reason": "Previously indexed 850mAh-9.9V LIFE Battery source candidate; not present in the rendered Batteries listing on 2026-10-23. Direct URL and archive status require manual verification. Not confirmed current BODICH stock.",
+      "evidenceUrl": "https://www.kingtechturbines.com/product/850mah-9-9v-life-battery/27",
+      "count": 1
+    },
+    {
+      "sectionId": "accessories",
+      "reason": "Previously indexed Temp Probe K30/45G source candidate; not present in the rendered accessory listings on 2026-10-23. Direct URL and archive status require manual verification. Not confirmed current BODICH stock.",
+      "evidenceUrl": "https://www.kingtechturbines.com/product/temp-probe-k30-45g/138",
+      "count": 1
     }
   ],
   "warnings": [
     "Count mismatch/unmeasured: https://www.kingtechturbines.com/shop/discounted-turbines/4 reported=null, extracted=0",
     "Count mismatch/unmeasured: https://www.kingtechturbines.com/shop/turbine-accessories/6 reported=null, extracted=0",
     "Count mismatch/unmeasured: https://www.kingtechturbines.com/shop/engine-bracket/24 reported=13, extracted=10",
-    "Count mismatch/unmeasured: https://www.kingtechturbines.com/shop/pump/12 reported=28, extracted=26"
+    "Count mismatch/unmeasured: https://www.kingtechturbines.com/shop/pump/12 reported=28, extracted=26",
+    "Unlisted indexed candidate needs manual archived-URL verification: https://www.kingtechturbines.com/product/850mah-9-9v-life-battery/27",
+    "Unlisted indexed candidate needs manual archived-URL verification: https://www.kingtechturbines.com/product/temp-probe-k30-45g/138"
   ]
 }

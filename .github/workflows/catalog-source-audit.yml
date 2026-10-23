@@ -1,11 +1,6 @@
 name: KingTech source inventory audit
 
 on:
-  push:
-    branches: [feature/issue-25-kingtech-source-inventory]
-    paths:
-      - .github/workflows/catalog-source-audit.yml
-      - scripts/audit-kingtech-source.mjs
   workflow_dispatch:
 
 permissions:

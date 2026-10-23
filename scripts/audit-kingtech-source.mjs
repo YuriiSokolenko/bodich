@@ -273,6 +273,13 @@ async function run() {
       });
       warnings.push('Previously indexed candidate absent from current listing: ' + old.canonicalUrl);
     }
+    // Preserve manual review/exclusion evidence even when the current source
+    // storefront no longer links to the item.
+    for (const legacy of previous.exclusions || []) {
+      if (!exclusions.some((entry) => entry.evidenceUrl === legacy.evidenceUrl)) {
+        exclusions.push(legacy);
+      }
+    }
   } catch { /* no previously committed snapshot */ }
   for (const p of products.values()) {
     const response = await fetchHtml(p.canonicalUrl);
