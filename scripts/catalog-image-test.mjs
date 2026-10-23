@@ -4,6 +4,7 @@ import { join } from 'node:path';
 import { inspectRaster, MAX_CATALOG_IMAGE_BYTES } from './catalog-image.mjs';
 import {
   CI_PNG_BASE64, CI_VP8_WEBP_BASE64, CI_VP8L_WEBP_BASE64, CI_JPEG_BASE64,
+  CI_PROGRESSIVE_JPEG_BASE64,
 } from './catalog-fixtures.mjs';
 
 function webpChunk(type, payload) {
@@ -32,6 +33,7 @@ export function runImageSelfTest({ fail, validateImage, checkUnapprovedFiles, va
     vp8: Buffer.from(CI_VP8_WEBP_BASE64, 'base64'),
     vp8l: Buffer.from(CI_VP8L_WEBP_BASE64, 'base64'),
     jpeg: Buffer.from(CI_JPEG_BASE64, 'base64'),
+    progressive: Buffer.from(CI_PROGRESSIVE_JPEG_BASE64, 'base64'),
   };
   const extendedHeader = Buffer.alloc(10); // VP8X canvas 1x1
   const extendedWebp = webpFile(webpChunk('VP8X', extendedHeader), original.vp8.subarray(12));
@@ -42,6 +44,7 @@ export function runImageSelfTest({ fail, validateImage, checkUnapprovedFiles, va
     ['WebP VP8L lossless', original.vp8l, 'webp'],
     ['WebP VP8X extended', extendedWebp, 'webp'],
     ['JPEG baseline', original.jpeg, 'jpg'],
+    ['JPEG progressive', original.progressive, 'jpeg'],
   ];
   const namedFiles = cases.slice(1).map(([label, buffer, extension]) => ({
     label, buffer, extension,
@@ -81,19 +84,19 @@ export function runImageSelfTest({ fail, validateImage, checkUnapprovedFiles, va
     original.jpeg.subarray(0, beforeSos), jpegComment, original.jpeg.subarray(beforeSos),
   ]);
   if (!inspectRaster(withComment, 'jpg')?.privateMetadata) fail('JPEG COM private text was not detected');
-  // A second scan after an injected APP1 models progressive JPEG marker ordering.
+  // A synthetic second scan checks entropy byte-stuffing/restarts and APP1 between scans.
   const sosSize = original.jpeg.readUInt16BE(beforeSos + 2);
   const scanHeader = original.jpeg.subarray(beforeSos, beforeSos + 2 + sosSize);
-  const progressive = Buffer.concat([
+  const twoScans = Buffer.concat([
     original.jpeg.subarray(0, original.jpeg.length - 2),
     jpegSegment(0xe1, Buffer.from('Exif\0\0', 'binary')),
     scanHeader,
     Buffer.from([0x31, 0xff, 0x00, 0x32, 0xff, 0xd0, 0x33]),
     original.jpeg.subarray(original.jpeg.length - 2),
   ]);
-  const progressiveInfo = inspectRaster(progressive, 'jpg');
-  if (!progressiveInfo || !progressiveInfo.privateMetadata ||
-      progressiveInfo.width !== 1 || progressiveInfo.height !== 1) {
+  const twoScanInfo = inspectRaster(twoScans, 'jpg');
+  if (!twoScanInfo || !twoScanInfo.privateMetadata ||
+      twoScanInfo.width !== 1 || twoScanInfo.height !== 1) {
     fail('JPEG metadata between scans or JPEG entropy escape/restart was not detected');
   }
   for (const [label, buffer] of [
@@ -104,6 +107,72 @@ export function runImageSelfTest({ fail, validateImage, checkUnapprovedFiles, va
     if (inspectRaster(buffer, 'jpg')) fail('JPEG accepted ' + label);
   }
   if (!inspectRaster(original.jpeg, 'JPG')) fail('Uppercase inspector extension was rejected');
+
+  // Marker allowlist: regular JFIF is fine; ICC and Adobe profile segments
+  // are fine; unfamiliar APPn payloads and JPEG comments are not.
+  const applicationSegments = [
+    ['APP3 text', 0xe3, 'Private serial'],
+    ['APP12 text', 0xec, 'Maker identifier'],
+    ['APP0 unexpected payload', 0xe0, 'User info'],
+    ['APP2 unexpected payload', 0xe2, 'Camera serial'],
+    ['APP14 unexpected payload', 0xee, 'User name'],
+  ];
+  for (const [label, marker, payload] of applicationSegments) {
+    const bytes = Buffer.concat([
+      original.jpeg.subarray(0, beforeSos),
+      jpegSegment(marker, Buffer.from(payload)),
+      original.jpeg.subarray(beforeSos),
+    ]);
+    if (!inspectRaster(bytes, 'jpg')?.privateMetadata) fail(label + ' was not flagged as private metadata');
+  }
+  for (const [label, marker, payload] of [
+    ['JFIF', 0xe0, Buffer.from('JFIF\0', 'ascii')],
+    ['ICC profile', 0xe2, Buffer.from('ICC_PROFILE\0', 'ascii')],
+    ['Adobe', 0xee, Buffer.from('Adobe', 'ascii')],
+  ]) {
+    const bytes = Buffer.concat([
+      original.jpeg.subarray(0, beforeSos),
+      jpegSegment(marker, payload),
+      original.jpeg.subarray(beforeSos),
+    ]);
+    if (inspectRaster(bytes, 'jpg')?.privateMetadata) fail('Allowed ' + label + ' APP segment was flagged');
+  }
+
+  // A JPEG frame must have consistent dimensions across multiple SOF
+  // segments, and a frame without SOS must not pass as a real image.
+  const sofAt = original.jpeg.indexOf(Buffer.from([0xff, 0xc0]));
+  if (sofAt < 0) fail('Baseline JPEG fixture missing SOF0');
+  const sofSize = original.jpeg.readUInt16BE(sofAt + 2);
+  const conflictingSof = Buffer.from(original.jpeg.subarray(sofAt, sofAt + 2 + sofSize));
+  conflictingSof.writeUInt16BE(2, 7); // SOF width is at marker + 7.
+  const contradictoryFrames = Buffer.concat([
+    original.jpeg.subarray(0, beforeSos), conflictingSof, original.jpeg.subarray(beforeSos),
+  ]);
+  if (inspectRaster(contradictoryFrames, 'jpeg')) fail('Conflicting JPEG SOF dimensions accepted');
+  const noScan = Buffer.concat([
+    original.jpeg.subarray(0, beforeSos), Buffer.from([0xff, 0xd9]),
+  ]);
+  if (inspectRaster(noScan, 'jpeg')) fail('SOS-less JPEG accepted');
+
+  // JPEG marker fill bytes (FF FF) are allowed before segment markers
+  // and between entropy-coded pixels and EOI.
+  const filledHeader = Buffer.concat([
+    original.jpeg.subarray(0, beforeSos + 1), Buffer.from([0xff]),
+    original.jpeg.subarray(beforeSos + 1),
+  ]);
+  const filledEntropy = Buffer.concat([
+    original.jpeg.subarray(0, original.jpeg.length - 2), Buffer.from([0xff]),
+    original.jpeg.subarray(original.jpeg.length - 2),
+  ]);
+  if (!inspectRaster(filledHeader, 'jpg') || !inspectRaster(filledEntropy, 'jpg')) {
+    fail('JPEG marker fill bytes were rejected');
+  }
+  const realProgressive = inspectRaster(original.progressive, 'jpg');
+  if (!realProgressive || realProgressive.privateMetadata ||
+      realProgressive.width !== 1 || realProgressive.height !== 1) {
+    fail('Real multi-scan progressive JPEG fixture was rejected');
+  }
+
   const withPngText = Buffer.concat([
     original.png.subarray(0, 33),
     pngChunk('tEXt', Buffer.from('GPSInfo\0value', 'binary')),

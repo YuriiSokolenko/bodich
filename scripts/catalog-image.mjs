@@ -109,8 +109,17 @@ function inspectJpeg(bytes) {
     const length = bytes.readUInt16BE(offset);
     if (length < 2 || length > bytes.length - offset) return null;
 
-    // APP1 (EXIF/XMP), APP13 (IPTC) and COM can contain private information.
-    if (marker === 0xe1 || marker === 0xed || marker === 0xfe) privateMetadata = true;
+    // Treat unknown APPn payloads as potentially private. Only recognized
+    // JFIF/JFXX, ICC and Adobe markers are permitted without a warning.
+    if (marker === 0xfe) privateMetadata = true; // JPEG COM text.
+    if (marker >= 0xe0 && marker <= 0xef) {
+      const payload = bytes.subarray(offset + 2, offset + length);
+      const startsWith = (prefix) => payload.subarray(0, prefix.length).equals(Buffer.from(prefix, 'ascii'));
+      const allowed = (marker === 0xe0 && (startsWith('JFIF\0') || startsWith('JFXX\0')))
+        || (marker === 0xe2 && startsWith('ICC_PROFILE\0'))
+        || (marker === 0xee && startsWith('Adobe'));
+      if (!allowed) privateMetadata = true;
+    }
     if ([0xc0, 0xc1, 0xc2, 0xc3, 0xc5, 0xc6, 0xc7,
          0xc9, 0xca, 0xcb, 0xcd, 0xce, 0xcf].includes(marker)) {
       if (length < 7) return null;
