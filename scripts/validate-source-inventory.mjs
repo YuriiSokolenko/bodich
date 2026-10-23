@@ -23,7 +23,7 @@ function validate(doc) {
   const problems = [];
   const fail = (msg) => problems.push(msg);
   if (!doc || typeof doc !== 'object' || Array.isArray(doc)) return ['Invalid document'];
-  if (doc.schemaVersion !== 1 || doc.sourceSite !== expectedOrigin || doc.purpose !== 'unpublished_reference_only' || doc.companyStockClaim !== false) {
+  if (doc.schemaVersion !== 1 || doc.sourceSite !== expectedOrigin || doc.purpose !== 'public_repo_reference_not_site_product' || doc.companyStockClaim !== false) {
     fail('Manifest must be review-only schemaVersion 1 and never claim BODICH stock');
   }
   if (!datePattern.test(doc.capturedAt || '') || Number.isNaN(Date.parse(doc.capturedAt + 'T00:00:00Z')) ||
@@ -90,12 +90,36 @@ function validate(doc) {
   }
   return problems;
 }
+// The only accepted removal evidence is an exclusion already present in the
+// previously committed manifest; one newly emitted by the crawler cannot
+// excuse a regression it just introduced.
+function continuityProblems(previous, current) {
+  const oldIds = new Set((previous.products || []).map((p) => p.id));
+  const newIds = new Set((current.products || []).map((p) => p.id));
+  const previouslyExcluded = new Set((previous.exclusions || []).flatMap((entry) => {
+    if (!validSourceUrl(entry.evidenceUrl, '/product/')) return [];
+    const match = entry.evidenceUrl.match(/\/product\/[^/]+\/([0-9]+)$/);
+    return match && entry.reason?.trim() ? ['kt-' + match[1]] : [];
+  }));
+  const lost = [...oldIds].filter((id) => !newIds.has(id) && !previouslyExcluded.has(id));
+  return lost.length ? ['Previously catalogued source IDs disappeared without a pre-existing documented exclusion: ' + lost.join(', ')] : [];
+}
 const file = resolve('docs/catalog/source-inventory.json');
 let doc;
 try { doc = JSON.parse(readFileSync(file, 'utf8')); }
 catch (e) { console.error('Source inventory missing or invalid: ' + e.message); process.exit(1); }
 const errors = validate(doc);
-if (process.argv[2] === '--self-test') {
+const previousPath = process.argv.find((arg) => arg.startsWith('--compare='));
+if (previousPath) {
+  try {
+    const previous = JSON.parse(readFileSync(resolve(previousPath.slice('--compare='.length)), 'utf8'));
+    errors.push(...validate(previous).map((e) => 'Previous inventory invalid: ' + e));
+    errors.push(...continuityProblems(previous, doc));
+  } catch (error) {
+    errors.push('Cannot check previous inventory: ' + error.message);
+  }
+}
+if (process.argv.includes('--self-test')) {
   const clone = () => structuredClone(doc);
   if (doc.products.length === 0) errors.push('Self-test requires at least one reference product');
   else {
@@ -112,11 +136,25 @@ if (process.argv[2] === '--self-test') {
       test(copy);
       if (validate(copy).length === 0) errors.push('Negative fixture was accepted');
     }
+    const before = clone(), after = clone();
+    const removed = after.products.shift();
+    const newRef = structuredClone(removed);
+    newRef.sourceNumericId = String(Number(removed.sourceNumericId) + 100000);
+    newRef.id = 'kt-' + newRef.sourceNumericId;
+    newRef.canonicalUrl = removed.canonicalUrl.replace(/\/[0-9]+$/, '/' + newRef.sourceNumericId);
+    newRef.evidenceUrls = removed.evidenceUrls.map((url) => url === removed.canonicalUrl ? newRef.canonicalUrl : url);
+    after.products.push(newRef);
+    if (after.products.length !== before.products.length || continuityProblems(before, after).length === 0)
+      errors.push('Equal-volume source ID substitution bypassed regression guard');
+    before.exclusions.push({ sectionId: removed.sourceCategoryIds[0],
+      evidenceUrl: removed.canonicalUrl, reason: 'Manually approved absence from source', count: 1 });
+    if (continuityProblems(before, after).length !== 0)
+      errors.push('Pre-existing manual exclusion was rejected');
   }
 }
 if (errors.length) {
   for (const error of errors) console.error('Source inventory: ' + error);
   process.exitCode = 1;
 } else {
-  console.log('Source inventory validated: ' + doc.products.length + ' unique review-only references; ' + doc.sections.length + ' source sections' + (process.argv[2] === '--self-test' ? '; negative fixtures passed' : '') + '.');
+  console.log('Source inventory validated: ' + doc.products.length + ' unique review-only references; ' + doc.sections.length + ' source sections' + (process.argv.includes('--self-test') ? '; negative fixtures passed' : '') + '.');
 }

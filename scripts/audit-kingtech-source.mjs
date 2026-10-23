@@ -149,8 +149,8 @@ async function listCategory(categoryUrl, errors) {
     response ??= await fetchHtml(url);
     await delay(220);
     if (response.status !== 200) {
-      errors.push('Listing ' + categoryUrl + ' page ' + page + ' returned HTTP ' + response.status);
-      break;
+      // A broken listing fetch is a fatal crawler failure, not a legitimate count gap.
+      throw new Error('Listing ' + categoryUrl + ' page ' + page + ' returned HTTP ' + response.status);
     }
     pages++;
     if (page === 1) {
@@ -187,7 +187,7 @@ async function run() {
   const useBrowser = process.argv.includes('--browser');
   if (!process.argv.includes('--write') || process.argv.some((a, i) => i > 1 && !['--write', '--browser'].includes(a))) {
     console.error('Usage: node scripts/audit-kingtech-source.mjs --write [--browser]');
-    process.exitCode = 2;
+    process.exitCode = 1;
     return;
   }
   if (useBrowser) {
@@ -195,6 +195,7 @@ async function run() {
     browser = await chromium.launch({ headless: true });
     browserPage = await browser.newPage({ viewport: { width: 1280, height: 900 } });
   }
+  try {
   const capturedAt = new Date().toISOString().slice(0, 10);
   const warnings = [];
   const products = new Map();
@@ -284,6 +285,9 @@ async function run() {
   for (const p of products.values()) {
     const response = await fetchHtml(p.canonicalUrl);
     await delay(220);
+    if (response.status === 0 || response.status >= 500 || response.status === 429) {
+      throw new Error('Product fetch failed for ' + p.id + ': HTTP ' + response.status);
+    }
     if (response.status !== 200) {
       p.urlCheck = 'http_' + response.status;
       p.confidence = 'low';
@@ -315,18 +319,23 @@ async function run() {
       p.sourceCategoryIds.includes(section.id) && p.sourceCategoryIds.length > 1).length;
   }
   const result = { schemaVersion: 1, sourceSite: ORIGIN, capturedAt,
-    purpose: 'unpublished_reference_only', companyStockClaim: false,
+    purpose: 'public_repo_reference_not_site_product', companyStockClaim: false,
     sections, products: [...products.values()].sort((a,b)=>Number(a.sourceNumericId)-Number(b.sourceNumericId)),
     exclusions, warnings: [...new Set(warnings)] };
   const destination = resolve('docs/catalog/source-inventory.json');
   mkdirSync(dirname(destination), { recursive: true });
   writeFileSync(destination, JSON.stringify(result, null, 2) + '\n');
   console.log('Source audit: ' + result.products.length + ' unique items, ' + result.sections.length + ' sections, ' + result.warnings.length + ' warnings.');
-  await browserPage?.close();
-  await browser?.close();
   if (result.warnings.length) {
     for (const w of result.warnings) console.warn('INCOMPLETE: ' + w);
-    process.exitCode = 1;
+    process.exitCode = 2;
+  }
+  } finally {
+    await browserPage?.close();
+    await browser?.close();
   }
 }
-await run();
+await run().catch((error) => {
+  console.error('FATAL: KingTech source crawler failed:', error);
+  process.exitCode = 1;
+});
