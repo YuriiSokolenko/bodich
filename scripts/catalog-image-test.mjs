@@ -82,7 +82,7 @@ export function runImageSelfTest({ fail, validateImage, checkUnapprovedFiles, va
     const valid = { src: '/images/catalog/fixture.png', width: 1, height: 1,
       alt: { en: 'Test product photo', ro: 'Fotografie produs test' } };
     writeFileSync(join(dir, 'fixture.png'), original.png);
-    for (const [label, buffer, extension] of cases.slice(1)) {
+    for (const [, buffer, extension] of cases.slice(1)) {
       writeFileSync(join(dir, 'fixture.' + extension), buffer);
     }
     const problems = [];
@@ -109,7 +109,7 @@ export function runImageSelfTest({ fail, validateImage, checkUnapprovedFiles, va
       if (!errors.length) fail('Invalid photo accepted: ' + name);
     }
     // Every raster format is tested through the same validation used by intake.
-    for (const [name, bytes, ext] of cases.slice(1)) {
+    for (const [name, , ext] of cases.slice(1)) {
       const errors = [];
       validateImage({ ...valid, src: '/images/catalog/fixture.' + ext },
         name, message => errors.push(message), root);
