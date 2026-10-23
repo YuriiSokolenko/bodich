@@ -21,10 +21,10 @@ const t = translations[locale];
   <div class="mt-8 grid gap-6 lg:grid-cols-2">
     <article data-concept-card="turbine" class="min-w-0 rounded-control border border-bodich-border bg-bodich-panel/80 p-4 sm:p-6">
       <h3 class="mb-5 text-xl font-semibold text-bodich-ink">{t.conceptTurbineTitle}</h3>
+      <!-- sizes follows the 2-column max-w-6xl grid (1.5rem gap plus card padding); mobile sizes use site gutters. -->
       <ConceptImage
         src="/images/turbines/bodich-card-concept-01.webp"
         srcset="/images/turbines/bodich-card-concept-01-360.webp 360w, /images/turbines/bodich-card-concept-01-600.webp 600w, /images/turbines/bodich-card-concept-01.webp 1254w"
-        <!-- 520px approximates the 2-column grid cell inside max-w-6xl SiteContainer with 1.5rem gap/card padding; mobile hint follows site gutters. -->
         sizes="(min-width: 1024px) 520px, calc(100vw - 2.5rem)"
         alt={t.conceptTurbineAlt}
         caption={t.conceptRenderingLabel}
@@ -36,10 +36,10 @@ const t = translations[locale];
 
     <article data-concept-card="intake" class="min-w-0 rounded-control border border-bodich-border bg-bodich-panel/80 p-4 sm:p-6">
       <h3 class="mb-5 text-xl font-semibold text-bodich-ink">{t.conceptIntakeTitle}</h3>
+      <!-- sizes follows the 2-column max-w-6xl grid (1.5rem gap plus card padding); mobile sizes use site gutters. -->
       <ConceptImage
         src="/images/turbines/bodich-intake-detail-concept-02.webp"
         srcset="/images/turbines/bodich-intake-detail-concept-02-360.webp 360w, /images/turbines/bodich-intake-detail-concept-02-600.webp 600w, /images/turbines/bodich-intake-detail-concept-02.webp 950w"
-        <!-- 520px approximates the 2-column grid cell inside max-w-6xl SiteContainer with 1.5rem gap/card padding; mobile hint follows site gutters. -->
         sizes="(min-width: 1024px) 520px, calc(100vw - 2.5rem)"
         alt={t.conceptIntakeAlt}
         caption={t.conceptRenderingLabel}
