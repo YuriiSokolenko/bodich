@@ -1,5 +1,6 @@
-import { existsSync, statSync, readFileSync, writeFileSync, mkdirSync, mkdtempSync, rmSync } from 'node:fs';
-import { tmpdir } from 'node:os';
+import { existsSync, lstatSync, readFileSync, readdirSync } from 'node:fs';
+import { inspectRaster, MAX_CATALOG_IMAGE_BYTES } from './catalog-image.mjs';
+import { runImageSelfTest } from './catalog-image-test.mjs';
 import { resolve, join, relative, isAbsolute } from 'node:path';
 import { catalogCategories, confirmedProducts } from '../src/catalog/data.ts';
 import { locales } from '../src/i18n/index.ts';
@@ -19,85 +20,77 @@ function validIsoDate(value) {
     && value <= new Date().toISOString().slice(0, 10);
 }
 
-/** Check actual raster dimensions without native dependencies. */
-function rasterDimensions(bytes, extension) {
-  if (extension === 'png') {
-    if (bytes.length < 24 || !bytes.subarray(0, 8).equals(Buffer.from('89504e470d0a1a0a', 'hex'))) return null;
-    return { width: bytes.readUInt32BE(16), height: bytes.readUInt32BE(20) };
-  }
-  if (extension === 'webp') {
-    if (bytes.length < 30 || bytes.toString('ascii', 0, 4) !== 'RIFF' || bytes.toString('ascii', 8, 12) !== 'WEBP') return null;
-    const format = bytes.toString('ascii', 12, 16);
-    if (format === 'VP8X') return { width: bytes.readUIntLE(24, 3) + 1, height: bytes.readUIntLE(27, 3) + 1 };
-    if (format === 'VP8L' && bytes[20] === 0x2f) {
-      return {
-        width: 1 + (bytes[21] | ((bytes[22] & 0x3f) << 8)),
-        height: 1 + (((bytes[22] & 0xc0) >> 6) | (bytes[23] << 2) | ((bytes[24] & 0x0f) << 10)),
-      };
-    }
-    if (format === 'VP8 ' && bytes[23] === 0x9d && bytes[24] === 0x01 && bytes[25] === 0x2a) {
-      return { width: bytes.readUInt16LE(26) & 0x3fff, height: bytes.readUInt16LE(28) & 0x3fff };
-    }
-    return null;
-  }
-  if (extension === 'jpg' || extension === 'jpeg') {
-    if (bytes.length < 4 || bytes[0] !== 0xff || bytes[1] !== 0xd8) return null;
-    let offset = 2;
-    while (offset + 4 < bytes.length) {
-      if (bytes[offset] !== 0xff) return null;
-      while (bytes[offset] === 0xff) offset++;
-      const marker = bytes[offset++];
-      if (marker === 0xda || marker === 0xd9) break;
-      if (marker === 0x01 || (marker >= 0xd0 && marker <= 0xd7)) continue;
-      if (offset + 2 > bytes.length) return null;
-      const length = bytes.readUInt16BE(offset);
-      if (length < 2 || offset + length > bytes.length) return null;
-      if ([0xc0, 0xc1, 0xc2, 0xc3, 0xc5, 0xc6, 0xc7, 0xc9, 0xca, 0xcb, 0xcd, 0xce, 0xcf].includes(marker)) {
-        if (length < 7) return null;
-        return { width: bytes.readUInt16BE(offset + 5), height: bytes.readUInt16BE(offset + 3) };
-      }
-      offset += length;
-    }
-  }
-  return null;
-}
+const IMAGE_PATH = /^\/images\/catalog\/[a-z0-9_-]+(?:\/[a-z0-9_-]+)*\.(?:webp|png|jpe?g)$/;
 
 function validateImage(image, label, report = fail, publicRoot = resolve('public')) {
   if (!image || typeof image !== 'object' || Array.isArray(image)) {
-    report(`Product "${label}" has an invalid image object`);
+    report('Product "' + label + '" has an invalid image object');
     return;
   }
   for (const locale of locales) {
-    if (!nonempty(image.alt?.[locale])) report(`Product "${label}" requires a non-empty ${locale} image alt`);
+    if (!nonempty(image.alt?.[locale]))
+      report('Product "' + label + '" requires a non-empty ' + locale + ' image alt');
   }
   for (const dimension of ['width', 'height']) {
-    if (!Number.isSafeInteger(image[dimension]) || image[dimension] <= 0) {
-      report(`Product "${label}" image ${dimension} must be a positive integer`);
-    }
+    if (!Number.isSafeInteger(image[dimension]) || image[dimension] <= 0)
+      report('Product "' + label + '" image ' + dimension + ' must be a positive integer');
   }
-
-  // Require a local, unambiguous public asset. Reject parent traversal,
-  // query/hash fragments, protocol-relative paths and backslashes.
   const src = image.src;
-  if (!nonempty(src) || !/^\/images\/catalog\/[a-zA-Z0-9/_-]+\.(?:webp|png|jpe?g)$/.test(src) || src.startsWith('//')
-      || /[?#\\]/.test(src) || src.split('/').some((part) => part === '..' || part === '.')) {
-    report(`Product "${label}" image.src must be a PNG, JPEG or WebP asset under public/images/catalog/`);
+  if (!nonempty(src) || !IMAGE_PATH.test(src)) {
+    report('Product "' + label + '" image.src must use a lowercase PNG/JPEG/WebP path under public/images/catalog/ (no dots in names or repeated slashes)');
     return;
   }
   const root = resolve(publicRoot);
   const destination = resolve(root, '.' + src);
   const relativeFile = relative(root, destination);
   if (!relativeFile || relativeFile.startsWith('..') || isAbsolute(relativeFile)
-      || !existsSync(destination) || !statSync(destination).isFile()) {
-    report(`Product "${label}" image.src is not an existing file under public/: ${src}`);
+      || !existsSync(destination) || !lstatSync(destination).isFile()) {
+    report('Product "' + label + '" image.src is not an existing regular file under public/: ' + src);
     return;
   }
-  const extension = src.slice(src.lastIndexOf('.') + 1).toLowerCase();
-  const actual = rasterDimensions(readFileSync(destination), extension);
+  const info = lstatSync(destination);
+  if (info.size > MAX_CATALOG_IMAGE_BYTES) {
+    report('Product "' + label + '" photo exceeds 5 MiB: ' + src);
+    return;
+  }
+  const extension = src.slice(src.lastIndexOf('.') + 1);
+  const actual = inspectRaster(readFileSync(destination), extension);
   if (!actual || !actual.width || !actual.height) {
-    report(`Product "${label}" image has an invalid raster header: ${src}`);
-  } else if (actual.width !== image.width || actual.height !== image.height) {
-    report(`Product "${label}" image metadata differs from actual ${actual.width}x${actual.height}: ${src}`);
+    report('Product "' + label + '" image has an invalid PNG/JPEG/WebP header: ' + src);
+  } else {
+    if (actual.privateMetadata) report('Product "' + label + '" image contains EXIF/GPS or text metadata: ' + src);
+    if (actual.width !== image.width || actual.height !== image.height)
+      report('Product "' + label + '" dimensions do not match actual ' + actual.width + 'x' + actual.height + ': ' + src);
+  }
+}
+
+/**
+ * Astro copies every public/ asset whether referenced by pages or not.
+ * Fail a preview build if any catalog file lacks an approved product record.
+ */
+function checkUnapprovedFiles(publicRoot, allowedPaths, report = fail) {
+  const root = resolve(publicRoot, 'images', 'catalog');
+  if (!existsSync(root)) return;
+  const visit = (directory, relativePath = '') => {
+    for (const entry of readdirSync(directory, { withFileTypes: true })) {
+      const segment = relativePath ? relativePath + '/' + entry.name : entry.name;
+      const file = join(directory, entry.name);
+      if (entry.isDirectory()) visit(file, segment);
+      else if (!entry.isFile()) {
+        report('Catalog directory contains an unsafe non-file entry: ' + segment);
+      } else {
+        const url = '/images/catalog/' + segment;
+        if (!allowedPaths.has(url)) report('Catalog contains unreferenced public photo/file: ' + url);
+      }
+    }
+  };
+  visit(root);
+}
+
+function checkExtraKeys(object, permitted, path) {
+  if (!object || typeof object !== 'object' || Array.isArray(object)) return;
+  for (const key of Object.keys(object)) {
+    if (!permitted.includes(key)) fail('Unknown intake field: ' + path + '.' + key);
   }
 }
 
@@ -116,7 +109,6 @@ for (const category of catalogCategories) {
   }
 }
 
-
 const mode = process.argv[2];
 let intakeCandidate;
 if (mode === '--intake') {
@@ -133,6 +125,19 @@ if (mode === '--intake') {
     } catch (error) {
       fail('Cannot read catalog intake JSON: ' + error.message);
     }
+  }
+}
+
+if (intakeCandidate) {
+  checkExtraKeys(intakeCandidate, ['id', 'slug', 'categoryId', 'copy', 'image', 'verification'], 'product');
+  checkExtraKeys(intakeCandidate.copy, ['en', 'ro'], 'product.copy');
+  for (const locale of locales) {
+    checkExtraKeys(intakeCandidate.copy?.[locale], ['name', 'summary'], 'product.copy.' + locale);
+  }
+  checkExtraKeys(intakeCandidate.verification, ['sourceReference', 'confirmedOn'], 'product.verification');
+  if (intakeCandidate.image !== undefined) {
+    checkExtraKeys(intakeCandidate.image, ['src', 'alt', 'width', 'height'], 'product.image');
+    checkExtraKeys(intakeCandidate.image?.alt, ['en', 'ro'], 'product.image.alt');
   }
 }
 
@@ -165,46 +170,16 @@ for (const product of [...confirmedProducts, ...(intakeCandidate ? [intakeCandid
   }
 }
 
+// Intake allows inspection of an uncommitted candidate photo, but ordinary
+// check/build must reject the same file until included in confirmedProducts.
+const allowedPhotos = new Set(confirmedProducts.map((product) => product.image?.src).filter(Boolean));
+if (mode === '--intake' && intakeCandidate?.image?.src) allowedPhotos.add(intakeCandidate.image.src);
+checkUnapprovedFiles(resolve('public'), allowedPhotos);
+
 if (mode && !['--routes', '--self-test', '--intake'].includes(mode)) fail(`Unknown argument: ${mode}`);
 
 // Regression coverage even while confirmedProducts is intentionally empty.
-if (mode === '--self-test') {
-  // Disposable test raster; no demo images are copied to production public/.
-  const folder = mkdtempSync(join(tmpdir(), 'bodich-photo-validation-'));
-  try {
-    mkdirSync(join(folder, 'images', 'catalog'), { recursive: true });
-    writeFileSync(join(folder, 'images', 'catalog', 'fixture.png'), Buffer.from(
-      'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Y9qLGkAAAAASUVORK5CYII=',
-      'base64',
-    ));
-    const valid = { src: '/images/catalog/fixture.png', width: 1, height: 1, alt: { en: 'Test', ro: 'Test' } };
-    const scenarios = [
-      { name: 'missing photo', image: { ...valid, src: '/images/catalog/does-not-exist.png' } },
-      { name: 'concept art path', image: { ...valid, src: '/images/turbines/concept.webp' } },
-      { name: 'unsafe path', image: { ...valid, src: '/../README.md' } },
-      { name: 'missing EN alt', image: { ...valid, alt: { en: '', ro: 'Test' } } },
-      { name: 'missing RO alt', image: { ...valid, alt: { en: 'Test', ro: '' } } },
-      { name: 'negative width', image: { ...valid, width: -5 } },
-      { name: 'zero height', image: { ...valid, height: 0 } },
-      { name: 'fractional width', image: { ...valid, width: 1.5 } },
-      { name: 'file size mismatch', image: { ...valid, width: 2 } },
-    ];
-    const validErrors = [];
-    validateImage(valid, 'self-test', message => validErrors.push(message), folder);
-    if (validErrors.length) fail('Validator rejects good photo fixture: ' + validErrors.join('; '));
-    for (const scenario of scenarios) {
-      const errors = [];
-      validateImage(scenario.image, 'self-test', message => errors.push(message), folder);
-      if (!errors.length) fail('Validator accepted bad photo fixture: ' + scenario.name);
-    }
-  } finally {
-    rmSync(folder, { recursive: true, force: true });
-  }
-  for (const date of ['2099-01-01', '2026-02-30', '2026-1-01']) {
-    if (validIsoDate(date)) fail('Validator accepted invalid or future date: ' + date);
-  }
-  if (!validIsoDate('2020-01-01')) fail('Validator rejected valid historical date');
-}
+if (mode === '--self-test') runImageSelfTest({ fail, validateImage, checkUnapprovedFiles, validIsoDate });
 if (mode === '--routes') {
   const dist = resolve(process.argv[3] ?? 'dist');
   let categoryPages = 0;
