@@ -214,7 +214,7 @@ export const translations: Record<Locale, Translations> = {
  */
 export function hrefFor(locale: Locale, page: PageKey, subpath?: string): string {
   const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
-  const parts = [locale, ...(page === 'home' ? [] : [page])];
+  const parts: string[] = [locale, ...(page === 'home' ? [] : [page])];
   if (subpath) parts.push(subpath.replace(/^\/+|\/+$/g, ''));
   return `${base}/${parts.join('/')}/`;
 }
