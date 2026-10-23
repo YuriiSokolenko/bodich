@@ -4,6 +4,7 @@ import { join } from 'node:path';
 import { inspectRaster, MAX_CATALOG_IMAGE_BYTES } from './catalog-image.mjs';
 import {
   CI_PNG_BASE64, CI_VP8_WEBP_BASE64, CI_VP8L_WEBP_BASE64, CI_JPEG_BASE64,
+  CI_PROGRESSIVE_JPEG_BASE64,
 } from './catalog-fixtures.mjs';
 
 function webpChunk(type, payload) {
@@ -32,6 +33,7 @@ export function runImageSelfTest({ fail, validateImage, checkUnapprovedFiles, va
     vp8: Buffer.from(CI_VP8_WEBP_BASE64, 'base64'),
     vp8l: Buffer.from(CI_VP8L_WEBP_BASE64, 'base64'),
     jpeg: Buffer.from(CI_JPEG_BASE64, 'base64'),
+    progressive: Buffer.from(CI_PROGRESSIVE_JPEG_BASE64, 'base64'),
   };
   const extendedHeader = Buffer.alloc(10); // VP8X canvas 1x1
   const extendedWebp = webpFile(webpChunk('VP8X', extendedHeader), original.vp8.subarray(12));
@@ -42,7 +44,12 @@ export function runImageSelfTest({ fail, validateImage, checkUnapprovedFiles, va
     ['WebP VP8L lossless', original.vp8l, 'webp'],
     ['WebP VP8X extended', extendedWebp, 'webp'],
     ['JPEG baseline', original.jpeg, 'jpg'],
+    ['JPEG progressive', original.progressive, 'jpeg'],
   ];
+  const namedFiles = cases.slice(1).map(([label, buffer, extension]) => ({
+    label, buffer, extension,
+    filename: 'fixture-' + label.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '.' + extension,
+  }));
   for (const [label, buffer, ext] of cases) {
     const info = inspectRaster(buffer, ext);
     if (!info || info.width !== 1 || info.height !== 1 || info.privateMetadata) {
@@ -62,6 +69,110 @@ export function runImageSelfTest({ fail, validateImage, checkUnapprovedFiles, va
     original.jpeg.subarray(2),
   ]);
   if (!inspectRaster(withExif, 'jpeg')?.privateMetadata) fail('JPEG EXIF metadata not detected');
+  function jpegSegment(marker, contents) {
+    const length = contents.length + 2;
+    const header = Buffer.alloc(4);
+    header[0] = 0xff;
+    header[1] = marker;
+    header.writeUInt16BE(length, 2);
+    return Buffer.concat([header, contents]);
+  }
+  const jpegComment = jpegSegment(0xfe, Buffer.from('Owner: Demo Coordinates: 0,0'));
+  const beforeSos = original.jpeg.indexOf(Buffer.from([0xff, 0xda]));
+  if (beforeSos < 0) fail('Baseline JPEG fixture missing SOS');
+  const withComment = Buffer.concat([
+    original.jpeg.subarray(0, beforeSos), jpegComment, original.jpeg.subarray(beforeSos),
+  ]);
+  if (!inspectRaster(withComment, 'jpg')?.privateMetadata) fail('JPEG COM private text was not detected');
+  // A synthetic second scan checks entropy byte-stuffing/restarts and APP1 between scans.
+  const sosSize = original.jpeg.readUInt16BE(beforeSos + 2);
+  const scanHeader = original.jpeg.subarray(beforeSos, beforeSos + 2 + sosSize);
+  const twoScans = Buffer.concat([
+    original.jpeg.subarray(0, original.jpeg.length - 2),
+    jpegSegment(0xe1, Buffer.from('Exif\0\0', 'binary')),
+    scanHeader,
+    Buffer.from([0x31, 0xff, 0x00, 0x32, 0xff, 0xd0, 0x33]),
+    original.jpeg.subarray(original.jpeg.length - 2),
+  ]);
+  const twoScanInfo = inspectRaster(twoScans, 'jpg');
+  if (!twoScanInfo || !twoScanInfo.privateMetadata ||
+      twoScanInfo.width !== 1 || twoScanInfo.height !== 1) {
+    fail('JPEG metadata between scans or JPEG entropy escape/restart was not detected');
+  }
+  for (const [label, buffer] of [
+    ['trailing bytes after EOI', Buffer.concat([original.jpeg, Buffer.from('secret')])],
+    ['truncated EOI', original.jpeg.subarray(0, original.jpeg.length - 2)],
+    ['COM without EOI', withComment.subarray(0, withComment.length - 2)],
+  ]) {
+    if (inspectRaster(buffer, 'jpg')) fail('JPEG accepted ' + label);
+  }
+  if (!inspectRaster(original.jpeg, 'JPG')) fail('Uppercase inspector extension was rejected');
+
+  // Marker allowlist: regular JFIF is fine; ICC and Adobe profile segments
+  // are fine; unfamiliar APPn payloads and JPEG comments are not.
+  const applicationSegments = [
+    ['APP3 text', 0xe3, 'Private serial'],
+    ['APP12 text', 0xec, 'Maker identifier'],
+    ['APP0 unexpected payload', 0xe0, 'User info'],
+    ['APP2 unexpected payload', 0xe2, 'Camera serial'],
+    ['APP14 unexpected payload', 0xee, 'User name'],
+  ];
+  for (const [label, marker, payload] of applicationSegments) {
+    const bytes = Buffer.concat([
+      original.jpeg.subarray(0, beforeSos),
+      jpegSegment(marker, Buffer.from(payload)),
+      original.jpeg.subarray(beforeSos),
+    ]);
+    if (!inspectRaster(bytes, 'jpg')?.privateMetadata) fail(label + ' was not flagged as private metadata');
+  }
+  for (const [label, marker, payload] of [
+    ['JFIF', 0xe0, Buffer.from('JFIF\0', 'ascii')],
+    ['ICC profile', 0xe2, Buffer.from('ICC_PROFILE\0', 'ascii')],
+    ['Adobe', 0xee, Buffer.from('Adobe', 'ascii')],
+  ]) {
+    const bytes = Buffer.concat([
+      original.jpeg.subarray(0, beforeSos),
+      jpegSegment(marker, payload),
+      original.jpeg.subarray(beforeSos),
+    ]);
+    if (inspectRaster(bytes, 'jpg')?.privateMetadata) fail('Allowed ' + label + ' APP segment was flagged');
+  }
+
+  // A JPEG frame must have consistent dimensions across multiple SOF
+  // segments, and a frame without SOS must not pass as a real image.
+  const sofAt = original.jpeg.indexOf(Buffer.from([0xff, 0xc0]));
+  if (sofAt < 0) fail('Baseline JPEG fixture missing SOF0');
+  const sofSize = original.jpeg.readUInt16BE(sofAt + 2);
+  const conflictingSof = Buffer.from(original.jpeg.subarray(sofAt, sofAt + 2 + sofSize));
+  conflictingSof.writeUInt16BE(2, 7); // SOF width is at marker + 7.
+  const contradictoryFrames = Buffer.concat([
+    original.jpeg.subarray(0, beforeSos), conflictingSof, original.jpeg.subarray(beforeSos),
+  ]);
+  if (inspectRaster(contradictoryFrames, 'jpeg')) fail('Conflicting JPEG SOF dimensions accepted');
+  const noScan = Buffer.concat([
+    original.jpeg.subarray(0, beforeSos), Buffer.from([0xff, 0xd9]),
+  ]);
+  if (inspectRaster(noScan, 'jpeg')) fail('SOS-less JPEG accepted');
+
+  // JPEG marker fill bytes (FF FF) are allowed before segment markers
+  // and between entropy-coded pixels and EOI.
+  const filledHeader = Buffer.concat([
+    original.jpeg.subarray(0, beforeSos + 1), Buffer.from([0xff]),
+    original.jpeg.subarray(beforeSos + 1),
+  ]);
+  const filledEntropy = Buffer.concat([
+    original.jpeg.subarray(0, original.jpeg.length - 2), Buffer.from([0xff]),
+    original.jpeg.subarray(original.jpeg.length - 2),
+  ]);
+  if (!inspectRaster(filledHeader, 'jpg') || !inspectRaster(filledEntropy, 'jpg')) {
+    fail('JPEG marker fill bytes were rejected');
+  }
+  const realProgressive = inspectRaster(original.progressive, 'jpg');
+  if (!realProgressive || realProgressive.privateMetadata ||
+      realProgressive.width !== 1 || realProgressive.height !== 1) {
+    fail('Real multi-scan progressive JPEG fixture was rejected');
+  }
+
   const withPngText = Buffer.concat([
     original.png.subarray(0, 33),
     pngChunk('tEXt', Buffer.from('GPSInfo\0value', 'binary')),
@@ -82,8 +193,9 @@ export function runImageSelfTest({ fail, validateImage, checkUnapprovedFiles, va
     const valid = { src: '/images/catalog/fixture.png', width: 1, height: 1,
       alt: { en: 'Test product photo', ro: 'Fotografie produs test' } };
     writeFileSync(join(dir, 'fixture.png'), original.png);
-    for (const [, buffer, extension] of cases.slice(1)) {
-      writeFileSync(join(dir, 'fixture.' + extension), buffer);
+    // Separate filenames so VP8, VP8L and VP8X are each tested end-to-end.
+    for (const { filename, buffer } of namedFiles) {
+      writeFileSync(join(dir, filename), buffer);
     }
     const problems = [];
     const report = (message) => problems.push(message);
@@ -109,11 +221,11 @@ export function runImageSelfTest({ fail, validateImage, checkUnapprovedFiles, va
       if (!errors.length) fail('Invalid photo accepted: ' + name);
     }
     // Every raster format is tested through the same validation used by intake.
-    for (const [name, , ext] of cases.slice(1)) {
+    for (const { label, filename } of namedFiles) {
       const errors = [];
-      validateImage({ ...valid, src: '/images/catalog/fixture.' + ext },
-        name, message => errors.push(message), root);
-      if (errors.length) fail(name + ' rejected: ' + errors.join('; '));
+      validateImage({ ...valid, src: '/images/catalog/' + filename },
+        label, message => errors.push(message), root);
+      if (errors.length) fail(label + ' rejected: ' + errors.join('; '));
     }
     writeFileSync(join(dir, 'large.png'), Buffer.alloc(MAX_CATALOG_IMAGE_BYTES + 1));
     const tooLarge = [];
@@ -123,6 +235,7 @@ export function runImageSelfTest({ fail, validateImage, checkUnapprovedFiles, va
 
     const metadataCases = [
       ['photo-exif.jpeg', withExif],
+      ['photo-comment.jpg', withComment],
       ['photo-text.png', withPngText],
       ['photo-exif.webp', withWebpExif],
     ];
@@ -137,12 +250,18 @@ export function runImageSelfTest({ fail, validateImage, checkUnapprovedFiles, va
     const orphan = [];
     checkUnapprovedFiles(root, new Set(), message => orphan.push(message));
     if (!orphan.some(x => x.includes('unreferenced'))) fail('Unreferenced public photos were accepted');
-    const refs = new Set(['fixture.png', 'fixture.webp', 'fixture.jpg', 'large.png',
-      'photo-exif.jpeg', 'photo-text.png', 'photo-exif.webp']
+    const refs = new Set(['fixture.png', ...namedFiles.map(({ filename }) => filename),
+      'large.png', 'photo-exif.jpeg', 'photo-comment.jpg', 'photo-text.png', 'photo-exif.webp']
       .map(x => '/images/catalog/' + x));
     const clean = [];
     checkUnapprovedFiles(root, refs, message => clean.push(message));
     if (clean.length) fail('Approved-path files incorrectly flagged: ' + clean.join('; '));
+    writeFileSync(join(dir, '.DS_Store'), Buffer.from('Finder metadata'));
+    const hidden = [];
+    checkUnapprovedFiles(root, refs, message => hidden.push(message));
+    if (!hidden.some(x => x.includes('Remove hidden local file') && x.includes('.DS_Store'))) {
+      fail('macOS hidden-file cleanup error was not actionable');
+    }
   } finally {
     rmSync(root, { recursive: true, force: true });
   }

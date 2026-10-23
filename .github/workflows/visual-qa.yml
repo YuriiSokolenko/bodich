@@ -12,6 +12,11 @@ on:
       - 'tailwind.config.*'
       - 'vite.config.*'
       - 'scripts/visual-qa.mjs'
+      # Catalog safety checks are executed by Browser QA before screenshots.
+      - 'scripts/catalog-image*.mjs'
+      - 'scripts/catalog-fixtures.mjs'
+      - 'scripts/validate-catalog.mjs'
+      - 'scripts/verify-product-fixture.mjs'
       - '.github/workflows/visual-qa.yml'
       - 'package.json'
       - 'package-lock.json'
