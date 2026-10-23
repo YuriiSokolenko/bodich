@@ -50,9 +50,9 @@
 
 **Art-direction brief:** Square premium studio-style AI-generated concept image of one compact BODICH-branded fictional RC-type jet turbine, front three-quarter intake view; legible BODICH lettering on anodized red inlet housing, fine intake mesh, dark gunmetal center body, machined fittings, red accents, bronze/blue/purple heat-tinted exhaust, charcoal background and subtle floor reflection. No third-party logo, genuine SKU, thrust specification or certification marks.
 
-**EN alt:** Concept rendering of a BODICH-branded miniature jet turbine with red front intake, dark metal housing, visible fittings and a heat-tinted exhaust nozzle.
+**EN alt (current catalog preview):** BODICH-branded miniature jet turbine concept with a red intake and dark metal housing.
 
-**RO alt:** Vizualizare conceptuală a unui motor turboreactor miniatural marca BODICH, cu admisie frontală roșie, carcasă metalică închisă la culoare, racorduri vizibile și duză de evacuare cu nuanțe termice.
+**RO alt (current catalog preview):** Concept de turbină cu reacție miniaturală BODICH, cu admisie roșie și carcasă metalică închisă la culoare.
 
 This is **asset 1 of 2 Stage 3B images completed so far** (the target series remains 2–4 assets). It must not be mistaken for a photograph or specification of an available BODICH engine. Apply the same concept-labeling and rights-review requirements documented above; **commercial-use / third-party IP review has not yet been completed** and is a pre-publication gate, not an implied clearance. The source generation PNG is not committed; the optimized WebP is the versioned site asset.
 
@@ -72,9 +72,9 @@ This is **asset 1 of 2 Stage 3B images completed so far** (the target series rem
 
 **Art-direction brief:** Maintain the same BODICH red-and-charcoal industrial look as Stage 3A and card 01; show an enlarged front-intake three-quarter detail view of a fictional small model-aircraft turbine, with readable BODICH lettering on the red housing, protective inlet mesh, black central cone, machined fittings and dark metallic casing. The source image was 1,254 × 1,254 pixels; this 950 × 950 detail was cropped from source coordinates `(32, 204, 982, 1154)` and encoded as optimized WebP. The unoptimized PNG is retained only in the image-generation conversation, not in the Git repository.
 
-**EN alt:** AI-generated concept close-up of a BODICH-branded miniature jet turbine's red intake housing, protective grille, black spinner and metal fittings.
+**EN alt (current catalog preview):** Close-up of a conceptual BODICH turbine intake with red housing, protective grille and central cone.
 
-**RO alt:** Detaliu conceptual generat cu IA al admisiei roșii a unui turboreactor miniatural BODICH, cu grilaj de protecție, con central negru și racorduri metalice.
+**RO alt (current catalog preview):** Detaliu al admisiei unei turbine BODICH conceptuale, cu carcasă roșie, grilaj de protecție și con central.
 
 **Integration guidance:** The crop deliberately concentrates on the intake, so the exhaust nozzle is not visible; don't present it as the complete engine or as a real product photograph. Add a nearby visible **Concept rendering / Vizualizare conceptuală** caption when displayed on the site. Avoid secondary cropping that cuts off the intake or the BODICH mark. Responsive derivatives and visual QA belong to Stages 3C/3D. The rights and representation caveats above apply equally to this image, and commercial publication still requires review.
 
@@ -92,5 +92,7 @@ Six new WebP derivatives are generated from the **three versioned originals abov
 | `bodich-intake-detail-concept-02.webp` | `bodich-intake-detail-concept-02-600.webp` | 600 × 600 | 57,300 | `29bf4417cf084d00adf0ce8ddce8e18b50eb427a9979c9de58a12c0478d064e3` |
 
 **Delivery:** `src/components/ui/ConceptImage.astro` receives width-descriptor `srcset` and `sizes` from the localized homepage and `src/components/TurbineConceptPreview.astro`. This allows Chromium to pick the appropriate file at common viewport sizes while avoiding extra client-side JavaScript. The product preview intentionally presents **one turbine concept overview plus one supporting intake detail**—not two verified commercial products. Both images retain visible EN/RO concept disclosures.
+
+**Accessibility text source of truth:** The catalog-preview alt strings above intentionally match `src/i18n/index.ts` exactly. The concise `alt` describes the image; the adjacent localized caption labels it as a concept rendering, and this inventory records its AI-generation provenance. Update this inventory whenever the i18n strings change.
 
 **Verification:** Automated Chromium checks cover all six derivatives, browser selection, width and aspect ratio, image load, EN/RO caption, mobile/desktop clipping and overflow. Final validation on physical devices, Safari/Firefox and professional Romanian copyediting remains deferred to pre-launch. Commercial brand/IP clearance is **not** implied.
