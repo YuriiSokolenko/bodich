@@ -2,11 +2,6 @@ name: KingTech source inventory audit
 
 on:
   workflow_dispatch:
-  # One-time source-ID reproduction test on this feature branch; removed after queueing.
-  push:
-    branches: [feature/issue-25-kingtech-source-inventory]
-    paths:
-      - scripts/audit-kingtech-source.mjs
 
 permissions:
   contents: read
