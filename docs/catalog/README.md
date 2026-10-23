@@ -1,5 +1,36 @@
 # Verified catalog intake
 
+## Unpublished KingTech reference catalog (Issue #26)
+
+The `docs/catalog/source-inventory.json` manifest records **132 external research references**. It is publicly viewable in GitHub, but is not a BODICH product or inventory claim. `src/catalog/reference.ts` derives **exactly one draft per source ID** from this manifest, joined by `sourceId` to `docs/catalog/reference-overrides.json`. The latter intentionally starts with an empty `records` array; future category tasks add original editorial fields there, never to the scraped evidence manifest. The reference module is **not re-exported** from `src/catalog/index.ts`, and no site component or page imports it.
+
+Reference taxonomy is separate from public `catalogCategories` until items have passed company verification:
+
+| Source section | Draft category | Item type |
+|---|---|---|
+| G5, G4+ | `g5`, `g4-plus` | `turbojet` |
+| TP | `turboprop` | `turboprop` |
+| Turbine Accessories | `turbine-accessories` | `accessory` |
+| Engine Oil | `engine-oil` | `oil` |
+| Batteries | `batteries` | `battery` |
+| Warranty Purchase | `warranty-service` | `service` |
+| Gift Card | `digital-gift-card` | `digital` (currently **zero** source /product rows; checkout documented as external service) |
+
+`discounted` is a collection tag on an existing item, **not** a new SKU. Absent source facts remain `null`, never guessed. The status `unknown` does not imply sale, stock or availability. A reference model name and an original bilingual description are separate fields. Do not copy vendor marketing descriptions or competitor photography.
+
+### Adding one editorial draft
+
+1. Select an existing `sourceId` from the reference manifest (for example `kt-127`) and add **one** matching record to `reference-overrides.json`. Use a unique lowercase hyphenated `slug`. Do not add an item the source inventory does not contain.
+2. Supply original `copy.en` and `copy.ro` with `name`, `summary`, `description` for **both** locales, or leave them `null` while researching. The fields contain authored BODICH explanations, not published seller text. Keep real model/brand attribution and Romanian diacritics; do not assert a BODICH-manufactured model.
+3. Add specifications only when verified: `specs: [{ "kind": "thrust", "value": 100, "unit": "N", "sourceUrl": "https://…", "verifiedOn": "YYYY-MM-DD" }]` illustrates the **shape**, not an actual turbine specification. Each value must have evidence, a permitted unit for its kind, and a verification date. Never invent missing thrust, speed, battery, or pump compatibility.
+4. Stage prospective **original** images under `docs/catalog/draft-assets/<source-id>/` (outside `public/`). An `images` entry requires `path`, `kind` (`original_concept`, `original_diagram` or `product_photo`), `rights` (`pending`, `cleared`, `rejected`), EN/RO `alt`, and pixel `width`/`height`. Concept visuals must be explicitly labeled and must not pass as accurate physical product photography. `company_approved` drafts cannot contain images without `rights: "cleared"`.
+5. Run `npm run catalog:source:check` and `npm run check`. The offline checks reject lost/duplicate source IDs, duplicate slugs, unknown source/item types, unknown keys, incomplete translations, bad units/provenance, unsafe asset paths and uncleared images on approved drafts. Self-tests cover every item type, the digital service, collection tagging, and negative examples.
+6. An authorized reviewer must verify source identity, originality, bilingual copy, usage rights, and applicability to **BODICH's** own catalog. Setting `approval: "company_approved"` in research data **does not publish anything**. Publication remains an explicit, separately reviewed change to `confirmedProducts` in `src/catalog/data.ts`, using its stricter manufacturer/evidence/asset checks.
+
+**Publication invariant:** Draft/reference entries never generate public EN/RO routes, product cards, SEO metadata or image files. The public `ProductCard` and `ProductPage` are explicitly typed to `ConfirmedCatalogProduct`, have no cart/checkout controls, and display an unconfirmed-details notice rather than inventing stock or performance. Keep `public/images/catalog/` limited to files referenced by approved confirmed product records. This separation must remain intact during import issues #27–#34.
+
+---
+
 The website intentionally has no published product records yet. This guide prepares an approval workflow for real BODICH model photos and descriptions. Provisional categories and AI concept art must never be presented as confirmed stock or product photography.
 
 ## Approval checklist
