@@ -11,14 +11,16 @@ The source site renders its store client-side. This table compares **source-repo
 | [Turbine G5](https://www.kingtechturbines.com/shop/turbine-g5/29) | 11 | 11 | Matched |
 | [Turbines G4+](https://www.kingtechturbines.com/shop/turbines-g4/2) | 17 | 17 | Matched, includes discontinued and industry-only |
 | [Turbines TP](https://www.kingtechturbines.com/shop/turbines-tp/3) | 4 | 4 | Matched |
-| [Discounted Turbines](https://www.kingtechturbines.com/shop/discounted-turbines/4) | Not reported | 0 | Appears empty; source count not independently confirmed |
+| [Discounted Turbines](https://www.kingtechturbines.com/shop/discounted-turbines/4) | 0 | 0 | **Matched**; rendered shop reports zero results |
 | [Warranty Purchase](https://www.kingtechturbines.com/shop/warranty-purchase/10) | 1 | 1 | Matched; service, not an engine |
 | [Engine Oil](https://www.kingtechturbines.com/shop/engine-oil/8) | 4 | 4 | Matched |
 | [Batteries](https://www.kingtechturbines.com/shop/batteries/7) | 2 | 2 | Matched currently visible; one older indexed item requires archive review |
-| [Turbine Accessories](https://www.kingtechturbines.com/shop/turbine-accessories/6) | No top-level count; 89 across 14 child-category results | 84 | **Incomplete**: bracket 13 vs 10, pumps 28 vs 26 |
+| [Turbine Accessories](https://www.kingtechturbines.com/shop/turbine-accessories/6) | 0 direct listings; 89 across 14 child-category results | 84 | **Incomplete**: bracket 13 vs 10, pumps 28 vs 26 |
 | [Gift Card](https://www.kingtechturbines.com/) | Not measured | 0 | Separate digital checkout, manual review required |
 
 Only **38 of the 123 references** have a provisional BODICH category mapping; 85 remain explicitly unmapped (84 accessories and one warranty-service record). The `confidence` field currently measures evidence quality for exact source-title/URL capture (HTTP 200), **not** approval to publish or proof of manufacturer. Every `reviewStatus` deliberately remains `needs_human_review`, and `possibleVariants: null` means unverified, not "no variants". Uniform values are intentional safety gates pending manual review.
+
+A fresh, read-only browser audit on 23 October 2026 (GitHub Actions run [39985717812](https://github.com/YuriiSokolenko/bodich/actions/runs/39985717812)) independently reproduced **exactly the same 123 product IDs**: zero missing, zero added. It also confirmed **0** products on Discounted Turbines and **0 direct** products in the Accessories hub, reducing active source-count warnings from four to two. The two accessory-subcategory shortfalls remain unresolved. The resulting snapshot is manually reconciled; no audit job pushed changes to the repository.
 
 The initial non-rendered seed contained 53 URL candidates; the browser audit expanded the current verified set to 123. Two old indexed references (battery ID 27 and temperature probe ID 138) are retained as **documented pending exclusions**, not silently dropped or represented as available stock. They require direct-URL/archive verification. Cross-listed counts are computed from source numeric IDs; current snapshot found no cross-section duplicates.
 
@@ -52,7 +54,7 @@ Source records use `kt-<source numeric product ID>`, not inferred SKUs, so a pro
 
 - Engine Bracket reports 13 source results, but only 10 unique links were extracted.
 - Pump reports 28 source results, but only 26 unique links were extracted.
-- Discounted Turbines and the Accessories parent page have no source-reported numeric product count; inspect the empty category/hub manually.
+- Discounted Turbines was confirmed empty (0 results), and the Accessories hub has 0 direct listings; 14 child categories contain the 84 inventoried items (89 reported before reconciling five gaps).
 - Gift Card and two previously indexed but now-unlisted item URLs still require human verification.
 
 Do not close issue #25 or merge the PR until these coverage gaps are resolved or explicitly reviewed with source evidence.
