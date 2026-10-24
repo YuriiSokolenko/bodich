@@ -2,7 +2,7 @@
 
 ## Unpublished KingTech reference catalog (Issue #26)
 
-The `docs/catalog/source-inventory.json` manifest records **132 external research references**. It is publicly viewable in GitHub, but is not a BODICH product or inventory claim. `src/catalog/reference.ts` derives **exactly one draft per source ID** from this manifest, joined by `sourceId` to `docs/catalog/reference-overrides.json`. That overlay began with an empty `records` array; issue #27 stages **11 original, unpublished G5 engine drafts** (EN/RO copy and per-spec evidence), while later category tasks add their own records there, never to the scraped evidence manifest. The reference module is **not re-exported** from `src/catalog/index.ts`, and no site component or page imports it.
+The `docs/catalog/source-inventory.json` manifest records **132 external research references**. It is publicly viewable in GitHub, but is not a BODICH product or inventory claim. `src/catalog/reference.ts` derives **exactly one draft per source ID** from this manifest, joined by `sourceId` to `docs/catalog/reference-overrides.json`. That overlay began with an empty `records` array; issue #27 stages **11 original, unpublished G5 engine drafts** (EN/RO copy and per-spec evidence), and issue #28 stages **17 original, unpublished G4+ engine drafts**, never modifying the scraped evidence manifest. The reference module is **not re-exported** from `src/catalog/index.ts`, and no site component or page imports it.
 
 Reference taxonomy is separate from public `catalogCategories` until items have passed company verification:
 
@@ -23,6 +23,12 @@ Reference taxonomy is separate from public `catalogCategories` until items have 
 All **11 of 11** source-inventory G5 SKUs now have an unpublished bilingual draft with distinct canonical `slug` mappings: K-86G5, K-102G5, K-130G5, K-142G5, K-160G5, K-180G5, K-210G5, K-240G5, K-260G5, K-320G5 and K-450G5. K-86G5 is explicitly discontinued, and K-450G5 is industrial-inquiries-only. Their source-linked specification data uses `kgf` (thrust), `g` (mass), `mm` with `metric: "diameter" | "length"`, `rpm`, `°C` where undisputed, and `g/min` for **mass-based** fuel consumption. A litre-based conversion would be invalid without known fuel density. K-180G5's conflicting EGT values are left unset.
 
 See [G5 evidence and original-image briefs](./g5-reference-evidence.md) for source URLs, unresolved technical issues and a distinct conceptual illustration direction per SKU. All staged G5 records keep `images: []`, `approval: "draft"`, and cannot appear on public routes. The offline validator now enforces G5 source-ID parity, both translations, labelled dimensions and minimum technical fields. Images remain future work under #33, copy review under #34, and final approvals under #35.
+
+### KingTech G4+ staged references (issue #28)
+
+All **17 unique G4+ source IDs** now have separate KingTech-branded unpublished EN/RO drafts, including the archived K-30 and K-45 excluded from the homepage featured list. Seven are recorded as discontinued, one (K-450) is industrial-only and nine have unknown lifecycle status. G4+ SKU identity is deliberately separate from same-numbered G5 turbines. Supplier prices and stock indications do not represent BODICH terms.
+
+Read the [G4+ evidence ledger, ambiguities and 17 original visual briefs](./g4-reference-evidence.md). The source says K-30 thrust is “3 kg+” rather than a precise nominal value; K-142 and K-320 have conflicting supplier EGT values. Their disputed numeric fields are deliberately unset. All 17 records remain `images: []` and `approval: "draft"`; only offline reference-category grouping and validation are allowed, with no public cards, routes or cart. The source-check script now includes G4+ parity and negative fixtures.
 
 ### Adding one editorial draft
 
