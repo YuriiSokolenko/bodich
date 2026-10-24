@@ -1,6 +1,6 @@
 # KingTech G4+ editorial reference staging — issue #28
 
-**Cross-checked on 2026-10-25 UTC. Third-party research only; no BODICH stock or sale claim.**
+**Cross-checked on 2026-10-25 (Europe/Tirane local date). Third-party research only; no BODICH stock or sale claim.**
 
 Exactly **17 unique G4+ source IDs** occur in the 2026-10-23 inventory, including **K-30 and K-45** omitted from homepage featured items. The records have 1:1 unpublished EN/RO editorial overlays, per-measurement provenance, distinct reference slugs and draft approval. Status distribution: **7 discontinued, 1 industrial-only, 9 unknown**. Unknown does not mean available. These research listings do not generate public BODICH cards, URLs or purchase controls.
 
