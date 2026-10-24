@@ -207,15 +207,23 @@ function g5DraftProblems(inventory, drafts) {
       errors.push('Missing G5 reference draft: ' + source.id);
       continue;
     }
+    // A G5 editorial record is expected at least to be a draft. Future tasks
+    // #33–#35 may legitimately add rights-reviewed draft images and advance
+    // approval; publication stays gated by confirmedProducts, not this file.
     if (d.approval === 'research') errors.push('Unedited G5 reference: ' + source.id);
     if (!d.model?.trim() || !d.slug.startsWith('kingtech-') || d.source.manufacturer !== 'KingTech')
       errors.push('Unmapped G5 model identity: ' + source.id);
     for (const locale of ['en', 'ro']) {
       const copy = d.copy?.[locale];
       if (!copy || ![copy.name, copy.summary, copy.description].every(
-        (s) => typeof s === 'string' && s.includes('KingTech') || typeof s === 'string' && s.length >= 25
+        (s) => typeof s === 'string' && s.trim().length >= 25
       )) errors.push('Incomplete G5 ' + locale + ' draft copy: ' + source.id);
     }
+    // GCC and Luxembourg sources disagree on K-180G5 EGT (700 vs 750 °C).
+    // Until a signed manufacturer decision is documented and this guard is
+    // deliberately revised, a new temperature number would be misleading.
+    if (source.id === 'kt-131' && d.specs.some((s) => s.kind === 'temperature'))
+      errors.push('Conflicting K-180G5 EGT must remain unrecorded: ' + source.id);
     const kinds = new Set(d.specs.map((s) => s.kind));
     for (const kind of ['thrust', 'mass', 'speed', 'fuel_consumption', 'dimension']) {
       if (!kinds.has(kind)) errors.push('Missing G5 technical kind ' + kind + ': ' + source.id);
@@ -244,7 +252,7 @@ let drafts;
 try {
   draftOverrides = JSON.parse(readFileSync(resolve('docs/catalog/reference-overrides.json'), 'utf8'));
   drafts = buildReferenceDrafts(doc, draftOverrides);
-   errors.push(...validateReferenceDrafts(doc, draftOverrides, drafts).map((e) => 'Reference drafts: ' + e));
+  errors.push(...validateReferenceDrafts(doc, draftOverrides, drafts).map((e) => 'Reference drafts: ' + e));
   errors.push(...g5DraftProblems(doc, drafts).map((e) => 'G5 coverage: ' + e));
 } catch (error) {
   errors.push('Cannot derive unpublished reference catalog: ' + error.message);
@@ -366,6 +374,28 @@ if (process.argv.includes('--self-test')) {
       { ...d, copy: { ...d.copy, ro: null } } : d);
     if (!g5DraftProblems(doc, damagedCopy).length)
       errors.push('Missing Romanian G5 copy bypassed validation');
+    const insufficientText = drafts.map((d) => d.sourceId === 'kt-127' ? {
+      ...d, copy: {
+        ...d.copy, en: { ...d.copy.en, description: 'KingTech' },
+      },
+    } : d);
+    if (!g5DraftProblems(doc, insufficientText).some((e) => e.includes('Incomplete G5 en draft copy')))
+      errors.push('Short KingTech-only G5 text bypassed minimum-length guard');
+    const paddedText = drafts.map((d) => d.sourceId === 'kt-127' ? {
+      ...d, copy: {
+        ...d.copy, ro: { ...d.copy.ro, summary: 'KingTech' + ' '.repeat(40) },
+      },
+    } : d);
+    if (!g5DraftProblems(doc, paddedText).some((e) => e.includes('Incomplete G5 ro draft copy')))
+      errors.push('Whitespace-padded G5 translation bypassed minimum-length guard');
+    const disputedEgt = drafts.map((d) => d.sourceId === 'kt-131' ? {
+      ...d, specs: [...d.specs, {
+        kind: 'temperature', value: 700, unit: '°C',
+        sourceUrl: d.source.url, verifiedOn: doc.capturedAt,
+      }],
+    } : d);
+    if (!g5DraftProblems(doc, disputedEgt).some((e) => e.includes('Conflicting K-180G5 EGT')))
+      errors.push('Disputed K-180G5 EGT bypassed regression guard');
     const importer = resolve('src/catalog/index.ts');
     const forbidden = [
       "export * from './reference';",
