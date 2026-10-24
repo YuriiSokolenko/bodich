@@ -261,7 +261,7 @@ function g4DraftProblems(inventory, drafts) {
       errors.push('Missing G4+ reference draft: ' + source.id);
       continue;
     }
-    const nameModel = source.sourceTitle?.match(/K-(\\d+)G4\\+/i);
+    const nameModel = source.sourceTitle?.match(/K-(\d+)G4\+/i);
     const expectedModel = nameModel ? 'K-' + nameModel[1] + 'G4+' : null;
     const expectedSlug = nameModel ? 'kingtech-k-' + nameModel[1] + 'g4-plus' : null;
     if (!expectedModel || d.model !== expectedModel || d.slug !== expectedSlug ||
@@ -273,7 +273,7 @@ function g4DraftProblems(inventory, drafts) {
     for (const locale of ['en', 'ro']) {
       const copy = d.copy?.[locale];
       if (!copy || ![copy.name, copy.summary, copy.description].every(
-        (s) => typeof s === 'string' && s.replace(/\\s+/g, ' ').trim().length >= 25
+        (s) => typeof s === 'string' && s.replace(/\s+/g, ' ').trim().length >= 25
       )) errors.push('Incomplete G4+ ' + locale + ' draft copy: ' + source.id);
     }
     const kinds = new Set(d.specs.map((s) => s.kind));
