@@ -278,7 +278,9 @@ function g4DraftProblems(inventory, drafts) {
     }
     const kinds = new Set(d.specs.map((s) => s.kind));
     for (const kind of ['mass', 'speed', 'fuel_consumption', 'dimension']) {
-      if (!kinds.has(kind)) errors.push('Missing G4+ technical kind ' + kind + ': ' + source.id);
+      // K-210G4+ speed/fuel values differ across named KingTech regional pages.
+      if (!kinds.has(kind) && !(source.id === 'kt-12' && ['speed', 'fuel_consumption'].includes(kind)))
+        errors.push('Missing G4+ technical kind ' + kind + ': ' + source.id);
     }
     // The K-30 source gives "3kg+" and no exact nominal thrust.
     if (source.id !== 'kt-1' && !kinds.has('thrust'))
@@ -289,9 +291,14 @@ function g4DraftProblems(inventory, drafts) {
       if (!d.specs.some((s) => s.kind === 'dimension' && s.metric === metric))
         errors.push('Missing G4+ dimension ' + metric + ': ' + source.id);
     }
-    // K-142 and K-320 conflicting EGT values across distributors.
-    if (['kt-9', 'kt-15'].includes(source.id) && kinds.has('temperature'))
+    // Several regional references conflict on EGT; do not silently
+    // select the US or regional number without a factory revision record.
+    if (['kt-9', 'kt-11', 'kt-12', 'kt-14', 'kt-15'].includes(source.id) &&
+        kinds.has('temperature'))
       errors.push('Conflicting G4+ EGT must remain unset: ' + source.id);
+    if (source.id === 'kt-12' &&
+        (kinds.has('speed') || kinds.has('fuel_consumption')))
+      errors.push('Conflicting K-210G4+ speed/fuel values must remain unset: ' + source.id);
     if (source.sourceStatus === 'discontinued' &&
         (!/discontinued/i.test(d.copy?.en?.name || '') ||
          !/retras/i.test(d.copy?.ro?.name || '')))
@@ -494,7 +501,7 @@ if (process.argv.includes('--self-test')) {
     } : d);
     if (!g4DraftProblems(doc, fictionalG4Thrust).some((e) => e.includes('Inexact K-30G4+')))
       errors.push('Ambiguous archived G4+ thrust was accepted as exact');
-    for (const disputedId of ['kt-9', 'kt-15']) {
+    for (const disputedId of ['kt-9', 'kt-11', 'kt-12', 'kt-14', 'kt-15']) {
       const disputedG4Temp = drafts.map((d) => d.sourceId === disputedId ? {
         ...d, specs: [...d.specs, { kind: 'temperature', value: 700, unit: '°C',
           sourceUrl: d.source.url, verifiedOn: doc.capturedAt }],
@@ -503,6 +510,20 @@ if (process.argv.includes('--self-test')) {
         errors.push('Disputed G4+ EGT bypassed regression guard: ' + disputedId);
     }
 
+    for (const kind of ['speed', 'fuel_consumption']) {
+      const spec = kind === 'speed' ? {
+        kind, value: 121000, unit: 'rpm',
+      } : {
+        kind, value: 620, unit: 'g/min',
+      };
+      const disputedK210 = drafts.map((d) => d.sourceId === 'kt-12' ? {
+        ...d, specs: [...d.specs, {
+          ...spec, sourceUrl: d.source.url, verifiedOn: doc.capturedAt,
+        }],
+      } : d);
+      if (!g4DraftProblems(doc, disputedK210).some((e) => e.includes('Conflicting K-210G4+')))
+        errors.push('Contradictory K-210G4+ ' + kind + ' bypassed regression');
+    }
     const importer = resolve('src/catalog/index.ts');
     const forbidden = [
       "export * from './reference';",
