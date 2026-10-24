@@ -1,4 +1,790 @@
 {
   "schemaVersion": 1,
-  "records": []
+  "records": [
+    {
+      "sourceId": "kt-126",
+      "slug": "kingtech-k-86g5",
+      "model": "K-86G5",
+      "copy": {
+        "en": {
+          "name": "KingTech K-86G5 — G5 turbine reference (discontinued)",
+          "summary": "Technical reference for the KingTech K-86G5 turbojet, with supplier-reported thrust of 8.6 kgf and an engine diameter of 76 mm.",
+          "description": "Recorded dimensions are 76 mm in diameter and 178 mm long, with an engine mass of 725 g and maximum speed of 176,000 rpm. Maximum exhaust gas temperature is listed as 700 °C. The source specifies a KP300DP digital SBus fuel pump, kerosene or Jet A as fuels, and mass-based fuel consumption of 300 g/min. The source records that this model was discontinued on 1 October 2025; it is retained here only as a historical reference."
+        },
+        "ro": {
+          "name": "KingTech K-86G5 — fișă de referință pentru turbină G5 (model retras)",
+          "summary": "Fișă tehnică de referință pentru turboreactorul KingTech K-86G5, cu tracțiune declarată de 8,6 kgf și diametrul de 76 mm.",
+          "description": "Dimensiunile consemnate sunt 76 mm în diametru și 178 mm în lungime; masa motorului este de 725 g, iar turația maximă de 176.000 rpm. Temperatura maximă indicată pentru gazele de evacuare este 700 °C. Sursa menționează pompa digitală SBus KP300DP, combustibilii kerosen sau Jet A și un consum masic de 300 g/min. Sursa indică retragerea modelului din fabricație la 1 octombrie 2025; această fișă are numai rol de referință istorică."
+        }
+      },
+      "specs": [
+        {
+          "kind": "thrust",
+          "value": 8.6,
+          "unit": "kgf",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-86g5-discontinued/126",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "dimension",
+          "metric": "diameter",
+          "value": 76,
+          "unit": "mm",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-86g5-discontinued/126",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "dimension",
+          "metric": "length",
+          "value": 178,
+          "unit": "mm",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-86g5-discontinued/126",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "mass",
+          "value": 725,
+          "unit": "g",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-86g5-discontinued/126",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "speed",
+          "value": 176000,
+          "unit": "rpm",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-86g5-discontinued/126",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "temperature",
+          "value": 700,
+          "unit": "°C",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-86g5-discontinued/126",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "fuel_consumption",
+          "value": 300,
+          "unit": "g/min",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-86g5-discontinued/126",
+          "verifiedOn": "2026-10-24"
+        }
+      ],
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-127",
+      "slug": "kingtech-k-102g5",
+      "model": "K-102G5",
+      "copy": {
+        "en": {
+          "name": "KingTech K-102G5 — G5 turbine reference",
+          "summary": "Technical reference for the KingTech K-102G5 turbojet, with supplier-reported thrust of 10 kgf and an engine diameter of 84 mm.",
+          "description": "Recorded dimensions are 84 mm in diameter and 203.3 mm long, with an engine mass of 910 g and maximum speed of 160,000 rpm. Maximum exhaust gas temperature is listed as 750 °C. The source specifies a KP500DP digital SBus fuel pump, diesel, Jet A1 or kerosene as fuels, and mass-based fuel consumption of 330 g/min. This is an external technical reference, not a BODICH-made model or a sales listing."
+        },
+        "ro": {
+          "name": "KingTech K-102G5 — fișă de referință pentru turbină G5",
+          "summary": "Fișă tehnică de referință pentru turboreactorul KingTech K-102G5, cu tracțiune declarată de 10 kgf și diametrul de 84 mm.",
+          "description": "Dimensiunile consemnate sunt 84 mm în diametru și 203,3 mm în lungime; masa motorului este de 910 g, iar turația maximă de 160.000 rpm. Temperatura maximă indicată pentru gazele de evacuare este 750 °C. Sursa menționează pompa digitală SBus KP500DP, combustibilii motorină, Jet A1 sau kerosen și un consum masic de 330 g/min. Aceasta este o referință tehnică externă, nu un model fabricat de BODICH sau o ofertă de vânzare."
+        }
+      },
+      "specs": [
+        {
+          "kind": "thrust",
+          "value": 10,
+          "unit": "kgf",
+          "sourceUrl": "https://kingtech-gcc.com/product/kingtech-k-102g5/",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "dimension",
+          "metric": "diameter",
+          "value": 84,
+          "unit": "mm",
+          "sourceUrl": "https://kingtech-gcc.com/product/kingtech-k-102g5/",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "dimension",
+          "metric": "length",
+          "value": 203.3,
+          "unit": "mm",
+          "sourceUrl": "https://kingtech-gcc.com/product/kingtech-k-102g5/",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "mass",
+          "value": 910,
+          "unit": "g",
+          "sourceUrl": "https://kingtech-gcc.com/product/kingtech-k-102g5/",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "speed",
+          "value": 160000,
+          "unit": "rpm",
+          "sourceUrl": "https://kingtech-gcc.com/product/kingtech-k-102g5/",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "temperature",
+          "value": 750,
+          "unit": "°C",
+          "sourceUrl": "https://kingtech-gcc.com/product/kingtech-k-102g5/",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "fuel_consumption",
+          "value": 330,
+          "unit": "g/min",
+          "sourceUrl": "https://kingtech-gcc.com/product/kingtech-k-102g5/",
+          "verifiedOn": "2026-10-24"
+        }
+      ],
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-128",
+      "slug": "kingtech-k-130g5",
+      "model": "K-130G5",
+      "copy": {
+        "en": {
+          "name": "KingTech K-130G5 — G5 turbine reference",
+          "summary": "Technical reference for the KingTech K-130G5 turbojet, with supplier-reported thrust of 13 kgf and an engine diameter of 94.5 mm.",
+          "description": "Recorded dimensions are 94.5 mm in diameter and 220 mm long, with an engine mass of 1200 g and maximum speed of 142,000 rpm. Maximum exhaust gas temperature is listed as 700 °C. The source specifies a KP500DP digital SBus fuel pump, diesel, Jet A1 or kerosene as fuels, and mass-based fuel consumption of 410 g/min. This is an external technical reference, not a BODICH-made model or a sales listing."
+        },
+        "ro": {
+          "name": "KingTech K-130G5 — fișă de referință pentru turbină G5",
+          "summary": "Fișă tehnică de referință pentru turboreactorul KingTech K-130G5, cu tracțiune declarată de 13 kgf și diametrul de 94,5 mm.",
+          "description": "Dimensiunile consemnate sunt 94,5 mm în diametru și 220 mm în lungime; masa motorului este de 1200 g, iar turația maximă de 142.000 rpm. Temperatura maximă indicată pentru gazele de evacuare este 700 °C. Sursa menționează pompa digitală SBus KP500DP, combustibilii motorină, Jet A1 sau kerosen și un consum masic de 410 g/min. Aceasta este o referință tehnică externă, nu un model fabricat de BODICH sau o ofertă de vânzare."
+        }
+      },
+      "specs": [
+        {
+          "kind": "thrust",
+          "value": 13,
+          "unit": "kgf",
+          "sourceUrl": "https://kingtech-gcc.com/product/kingtech-k-130g5/",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "dimension",
+          "metric": "diameter",
+          "value": 94.5,
+          "unit": "mm",
+          "sourceUrl": "https://kingtech-gcc.com/product/kingtech-k-130g5/",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "dimension",
+          "metric": "length",
+          "value": 220,
+          "unit": "mm",
+          "sourceUrl": "https://kingtech-gcc.com/product/kingtech-k-130g5/",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "mass",
+          "value": 1200,
+          "unit": "g",
+          "sourceUrl": "https://kingtech-gcc.com/product/kingtech-k-130g5/",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "speed",
+          "value": 142000,
+          "unit": "rpm",
+          "sourceUrl": "https://kingtech-gcc.com/product/kingtech-k-130g5/",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "temperature",
+          "value": 700,
+          "unit": "°C",
+          "sourceUrl": "https://kingtech-gcc.com/product/kingtech-k-130g5/",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "fuel_consumption",
+          "value": 410,
+          "unit": "g/min",
+          "sourceUrl": "https://kingtech-gcc.com/product/kingtech-k-130g5/",
+          "verifiedOn": "2026-10-24"
+        }
+      ],
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-129",
+      "slug": "kingtech-k-142g5",
+      "model": "K-142G5",
+      "copy": {
+        "en": {
+          "name": "KingTech K-142G5 — G5 turbine reference",
+          "summary": "Technical reference for the KingTech K-142G5 turbojet, with supplier-reported thrust of 14 kgf and an engine diameter of 92.25 mm.",
+          "description": "Recorded dimensions are 92.25 mm in diameter and 235 mm long, with an engine mass of 1300 g and maximum speed of 142,000 rpm. Maximum exhaust gas temperature is listed as 750 °C. The source specifies a KP600DP digital SBus fuel pump, diesel, Jet A1 or kerosene as fuels, and mass-based fuel consumption of 440 g/min. This is an external technical reference, not a BODICH-made model or a sales listing."
+        },
+        "ro": {
+          "name": "KingTech K-142G5 — fișă de referință pentru turbină G5",
+          "summary": "Fișă tehnică de referință pentru turboreactorul KingTech K-142G5, cu tracțiune declarată de 14 kgf și diametrul de 92,25 mm.",
+          "description": "Dimensiunile consemnate sunt 92,25 mm în diametru și 235 mm în lungime; masa motorului este de 1300 g, iar turația maximă de 142.000 rpm. Temperatura maximă indicată pentru gazele de evacuare este 750 °C. Sursa menționează pompa digitală SBus KP600DP, combustibilii motorină, Jet A1 sau kerosen și un consum masic de 440 g/min. Aceasta este o referință tehnică externă, nu un model fabricat de BODICH sau o ofertă de vânzare."
+        }
+      },
+      "specs": [
+        {
+          "kind": "thrust",
+          "value": 14,
+          "unit": "kgf",
+          "sourceUrl": "https://kingtech-gcc.com/product/kingtech-k-142g5/",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "dimension",
+          "metric": "diameter",
+          "value": 92.25,
+          "unit": "mm",
+          "sourceUrl": "https://kingtech-gcc.com/product/kingtech-k-142g5/",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "dimension",
+          "metric": "length",
+          "value": 235,
+          "unit": "mm",
+          "sourceUrl": "https://kingtech-gcc.com/product/kingtech-k-142g5/",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "mass",
+          "value": 1300,
+          "unit": "g",
+          "sourceUrl": "https://kingtech-gcc.com/product/kingtech-k-142g5/",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "speed",
+          "value": 142000,
+          "unit": "rpm",
+          "sourceUrl": "https://kingtech-gcc.com/product/kingtech-k-142g5/",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "temperature",
+          "value": 750,
+          "unit": "°C",
+          "sourceUrl": "https://kingtech-gcc.com/product/kingtech-k-142g5/",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "fuel_consumption",
+          "value": 440,
+          "unit": "g/min",
+          "sourceUrl": "https://kingtech-gcc.com/product/kingtech-k-142g5/",
+          "verifiedOn": "2026-10-24"
+        }
+      ],
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-130",
+      "slug": "kingtech-k-160g5",
+      "model": "K-160G5",
+      "copy": {
+        "en": {
+          "name": "KingTech K-160G5 — G5 turbine reference",
+          "summary": "Technical reference for the KingTech K-160G5 turbojet, with supplier-reported thrust of 16 kgf and an engine diameter of 103 mm.",
+          "description": "Recorded dimensions are 103 mm in diameter and 251 mm long, with an engine mass of 1540 g and maximum speed of 125,000 rpm. Maximum exhaust gas temperature is listed as 740 °C. The source specifies a KP600DP digital SBus fuel pump, diesel, Jet A1 or kerosene as fuels, and mass-based fuel consumption of 490 g/min. This is an external technical reference, not a BODICH-made model or a sales listing."
+        },
+        "ro": {
+          "name": "KingTech K-160G5 — fișă de referință pentru turbină G5",
+          "summary": "Fișă tehnică de referință pentru turboreactorul KingTech K-160G5, cu tracțiune declarată de 16 kgf și diametrul de 103 mm.",
+          "description": "Dimensiunile consemnate sunt 103 mm în diametru și 251 mm în lungime; masa motorului este de 1540 g, iar turația maximă de 125.000 rpm. Temperatura maximă indicată pentru gazele de evacuare este 740 °C. Sursa menționează pompa digitală SBus KP600DP, combustibilii motorină, Jet A1 sau kerosen și un consum masic de 490 g/min. Aceasta este o referință tehnică externă, nu un model fabricat de BODICH sau o ofertă de vânzare."
+        }
+      },
+      "specs": [
+        {
+          "kind": "thrust",
+          "value": 16,
+          "unit": "kgf",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-160g5/130",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "dimension",
+          "metric": "diameter",
+          "value": 103,
+          "unit": "mm",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-160g5/130",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "dimension",
+          "metric": "length",
+          "value": 251,
+          "unit": "mm",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-160g5/130",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "mass",
+          "value": 1540,
+          "unit": "g",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-160g5/130",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "speed",
+          "value": 125000,
+          "unit": "rpm",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-160g5/130",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "temperature",
+          "value": 740,
+          "unit": "°C",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-160g5/130",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "fuel_consumption",
+          "value": 490,
+          "unit": "g/min",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-160g5/130",
+          "verifiedOn": "2026-10-24"
+        }
+      ],
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-131",
+      "slug": "kingtech-k-180g5",
+      "model": "K-180G5",
+      "copy": {
+        "en": {
+          "name": "KingTech K-180G5 — G5 turbine reference",
+          "summary": "Technical reference for the KingTech K-180G5 turbojet, with supplier-reported thrust of 18 kgf and an engine diameter of 103 mm.",
+          "description": "Recorded dimensions are 103 mm in diameter and 251 mm long, with an engine mass of 1540 g and maximum speed of 130,000 rpm. The source specifies a KP600DP digital SBus fuel pump, diesel, Jet A1 or kerosene as fuels, and mass-based fuel consumption of 560 g/min. The maximum exhaust-temperature figures conflict between sources; that value remains unrecorded pending review."
+        },
+        "ro": {
+          "name": "KingTech K-180G5 — fișă de referință pentru turbină G5",
+          "summary": "Fișă tehnică de referință pentru turboreactorul KingTech K-180G5, cu tracțiune declarată de 18 kgf și diametrul de 103 mm.",
+          "description": "Dimensiunile consemnate sunt 103 mm în diametru și 251 mm în lungime; masa motorului este de 1540 g, iar turația maximă de 130.000 rpm. Sursa menționează pompa digitală SBus KP600DP, combustibilii motorină, Jet A1 sau kerosen și un consum masic de 560 g/min. Valorile temperaturii maxime a gazelor de evacuare diferă între surse; acest parametru rămâne necompletat până la verificare."
+        }
+      },
+      "specs": [
+        {
+          "kind": "thrust",
+          "value": 18,
+          "unit": "kgf",
+          "sourceUrl": "https://kingtech-gcc.com/product/kingtech-k-180g5/",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "dimension",
+          "metric": "diameter",
+          "value": 103,
+          "unit": "mm",
+          "sourceUrl": "https://kingtech-gcc.com/product/kingtech-k-180g5/",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "dimension",
+          "metric": "length",
+          "value": 251,
+          "unit": "mm",
+          "sourceUrl": "https://kingtech-gcc.com/product/kingtech-k-180g5/",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "mass",
+          "value": 1540,
+          "unit": "g",
+          "sourceUrl": "https://kingtech-gcc.com/product/kingtech-k-180g5/",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "speed",
+          "value": 130000,
+          "unit": "rpm",
+          "sourceUrl": "https://kingtech-gcc.com/product/kingtech-k-180g5/",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "fuel_consumption",
+          "value": 560,
+          "unit": "g/min",
+          "sourceUrl": "https://kingtech-gcc.com/product/kingtech-k-180g5/",
+          "verifiedOn": "2026-10-24"
+        }
+      ],
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-132",
+      "slug": "kingtech-k-210g5",
+      "model": "K-210G5",
+      "copy": {
+        "en": {
+          "name": "KingTech K-210G5 — G5 turbine reference",
+          "summary": "Technical reference for the KingTech K-210G5 turbojet, with supplier-reported thrust of 21 kgf and an engine diameter of 112.6 mm.",
+          "description": "Recorded dimensions are 112.6 mm in diameter and 280 mm long, with an engine mass of 1740 g and maximum speed of 121,000 rpm. Maximum exhaust gas temperature is listed as 750 °C. The source specifies a KP800DP digital SBus fuel pump, diesel, Jet A1 or kerosene as fuels, and mass-based fuel consumption of 590 g/min. This is an external technical reference, not a BODICH-made model or a sales listing."
+        },
+        "ro": {
+          "name": "KingTech K-210G5 — fișă de referință pentru turbină G5",
+          "summary": "Fișă tehnică de referință pentru turboreactorul KingTech K-210G5, cu tracțiune declarată de 21 kgf și diametrul de 112,6 mm.",
+          "description": "Dimensiunile consemnate sunt 112,6 mm în diametru și 280 mm în lungime; masa motorului este de 1740 g, iar turația maximă de 121.000 rpm. Temperatura maximă indicată pentru gazele de evacuare este 750 °C. Sursa menționează pompa digitală SBus KP800DP, combustibilii motorină, Jet A1 sau kerosen și un consum masic de 590 g/min. Aceasta este o referință tehnică externă, nu un model fabricat de BODICH sau o ofertă de vânzare."
+        }
+      },
+      "specs": [
+        {
+          "kind": "thrust",
+          "value": 21,
+          "unit": "kgf",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-210g5/132",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "dimension",
+          "metric": "diameter",
+          "value": 112.6,
+          "unit": "mm",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-210g5/132",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "dimension",
+          "metric": "length",
+          "value": 280,
+          "unit": "mm",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-210g5/132",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "mass",
+          "value": 1740,
+          "unit": "g",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-210g5/132",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "speed",
+          "value": 121000,
+          "unit": "rpm",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-210g5/132",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "temperature",
+          "value": 750,
+          "unit": "°C",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-210g5/132",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "fuel_consumption",
+          "value": 590,
+          "unit": "g/min",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-210g5/132",
+          "verifiedOn": "2026-10-24"
+        }
+      ],
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-133",
+      "slug": "kingtech-k-240g5",
+      "model": "K-240G5",
+      "copy": {
+        "en": {
+          "name": "KingTech K-240G5 — G5 turbine reference",
+          "summary": "Technical reference for the KingTech K-240G5 turbojet, with supplier-reported thrust of 24 kgf and an engine diameter of 119 mm.",
+          "description": "Recorded dimensions are 119 mm in diameter and 278 mm long, with an engine mass of 2000 g and maximum speed of 109,000 rpm. Maximum exhaust gas temperature is listed as 750 °C. The source specifies a KP800DP digital SBus fuel pump, diesel, Jet A1 or kerosene as fuels, and mass-based fuel consumption of 680 g/min. This is an external technical reference, not a BODICH-made model or a sales listing."
+        },
+        "ro": {
+          "name": "KingTech K-240G5 — fișă de referință pentru turbină G5",
+          "summary": "Fișă tehnică de referință pentru turboreactorul KingTech K-240G5, cu tracțiune declarată de 24 kgf și diametrul de 119 mm.",
+          "description": "Dimensiunile consemnate sunt 119 mm în diametru și 278 mm în lungime; masa motorului este de 2000 g, iar turația maximă de 109.000 rpm. Temperatura maximă indicată pentru gazele de evacuare este 750 °C. Sursa menționează pompa digitală SBus KP800DP, combustibilii motorină, Jet A1 sau kerosen și un consum masic de 680 g/min. Aceasta este o referință tehnică externă, nu un model fabricat de BODICH sau o ofertă de vânzare."
+        }
+      },
+      "specs": [
+        {
+          "kind": "thrust",
+          "value": 24,
+          "unit": "kgf",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-240g5/133",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "dimension",
+          "metric": "diameter",
+          "value": 119,
+          "unit": "mm",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-240g5/133",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "dimension",
+          "metric": "length",
+          "value": 278,
+          "unit": "mm",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-240g5/133",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "mass",
+          "value": 2000,
+          "unit": "g",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-240g5/133",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "speed",
+          "value": 109000,
+          "unit": "rpm",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-240g5/133",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "temperature",
+          "value": 750,
+          "unit": "°C",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-240g5/133",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "fuel_consumption",
+          "value": 680,
+          "unit": "g/min",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-240g5/133",
+          "verifiedOn": "2026-10-24"
+        }
+      ],
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-134",
+      "slug": "kingtech-k-260g5",
+      "model": "K-260G5",
+      "copy": {
+        "en": {
+          "name": "KingTech K-260G5 — G5 turbine reference",
+          "summary": "Technical reference for the KingTech K-260G5 turbojet, with supplier-reported thrust of 26 kgf and an engine diameter of 120 mm.",
+          "description": "Recorded dimensions are 120 mm in diameter and 299 mm long, with an engine mass of 2200 g and maximum speed of 112,000 rpm. Maximum exhaust gas temperature is listed as 750 °C. The source specifies a KP1000DP digital SBus fuel pump, diesel, Jet A1 or kerosene as fuels, and mass-based fuel consumption of 760 g/min. This is an external technical reference, not a BODICH-made model or a sales listing."
+        },
+        "ro": {
+          "name": "KingTech K-260G5 — fișă de referință pentru turbină G5",
+          "summary": "Fișă tehnică de referință pentru turboreactorul KingTech K-260G5, cu tracțiune declarată de 26 kgf și diametrul de 120 mm.",
+          "description": "Dimensiunile consemnate sunt 120 mm în diametru și 299 mm în lungime; masa motorului este de 2200 g, iar turația maximă de 112.000 rpm. Temperatura maximă indicată pentru gazele de evacuare este 750 °C. Sursa menționează pompa digitală SBus KP1000DP, combustibilii motorină, Jet A1 sau kerosen și un consum masic de 760 g/min. Aceasta este o referință tehnică externă, nu un model fabricat de BODICH sau o ofertă de vânzare."
+        }
+      },
+      "specs": [
+        {
+          "kind": "thrust",
+          "value": 26,
+          "unit": "kgf",
+          "sourceUrl": "https://kingtechtw.com/product/k260g5/",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "dimension",
+          "metric": "diameter",
+          "value": 120,
+          "unit": "mm",
+          "sourceUrl": "https://kingtechtw.com/product/k260g5/",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "dimension",
+          "metric": "length",
+          "value": 299,
+          "unit": "mm",
+          "sourceUrl": "https://kingtechtw.com/product/k260g5/",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "mass",
+          "value": 2200,
+          "unit": "g",
+          "sourceUrl": "https://kingtechtw.com/product/k260g5/",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "speed",
+          "value": 112000,
+          "unit": "rpm",
+          "sourceUrl": "https://kingtechtw.com/product/k260g5/",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "temperature",
+          "value": 750,
+          "unit": "°C",
+          "sourceUrl": "https://kingtechtw.com/product/k260g5/",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "fuel_consumption",
+          "value": 760,
+          "unit": "g/min",
+          "sourceUrl": "https://kingtechtw.com/product/k260g5/",
+          "verifiedOn": "2026-10-24"
+        }
+      ],
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-135",
+      "slug": "kingtech-k-320g5",
+      "model": "K-320G5",
+      "copy": {
+        "en": {
+          "name": "KingTech K-320G5 — G5 turbine reference",
+          "summary": "Technical reference for the KingTech K-320G5 turbojet, with supplier-reported thrust of 32 kgf and an engine diameter of 132.5 mm.",
+          "description": "Recorded dimensions are 132.5 mm in diameter and 335 mm long, with an engine mass of 2900 g and maximum speed of 100,000 rpm. Maximum exhaust gas temperature is listed as 730 °C. The source specifies a KP1200DP digital SBus fuel pump, diesel, Jet A1 or kerosene as fuels, and mass-based fuel consumption of 870 g/min. This is an external technical reference, not a BODICH-made model or a sales listing."
+        },
+        "ro": {
+          "name": "KingTech K-320G5 — fișă de referință pentru turbină G5",
+          "summary": "Fișă tehnică de referință pentru turboreactorul KingTech K-320G5, cu tracțiune declarată de 32 kgf și diametrul de 132,5 mm.",
+          "description": "Dimensiunile consemnate sunt 132,5 mm în diametru și 335 mm în lungime; masa motorului este de 2900 g, iar turația maximă de 100.000 rpm. Temperatura maximă indicată pentru gazele de evacuare este 730 °C. Sursa menționează pompa digitală SBus KP1200DP, combustibilii motorină, Jet A1 sau kerosen și un consum masic de 870 g/min. Aceasta este o referință tehnică externă, nu un model fabricat de BODICH sau o ofertă de vânzare."
+        }
+      },
+      "specs": [
+        {
+          "kind": "thrust",
+          "value": 32,
+          "unit": "kgf",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-320g5/135",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "dimension",
+          "metric": "diameter",
+          "value": 132.5,
+          "unit": "mm",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-320g5/135",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "dimension",
+          "metric": "length",
+          "value": 335,
+          "unit": "mm",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-320g5/135",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "mass",
+          "value": 2900,
+          "unit": "g",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-320g5/135",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "speed",
+          "value": 100000,
+          "unit": "rpm",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-320g5/135",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "temperature",
+          "value": 730,
+          "unit": "°C",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-320g5/135",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "fuel_consumption",
+          "value": 870,
+          "unit": "g/min",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-320g5/135",
+          "verifiedOn": "2026-10-24"
+        }
+      ],
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-136",
+      "slug": "kingtech-k-450g5",
+      "model": "K-450G5",
+      "copy": {
+        "en": {
+          "name": "KingTech K-450G5 — G5 turbine reference (industrial inquiries only)",
+          "summary": "Technical reference for the KingTech K-450G5 turbojet, with supplier-reported thrust of 45 kgf and an engine diameter of 152.6 mm.",
+          "description": "Recorded dimensions are 152.6 mm in diameter and 374 mm long, with an engine mass of 4000 g and maximum speed of 90,000 rpm. Maximum exhaust gas temperature is listed as 730 °C. The source specifies a KP1250DP digital SBus fuel pump, diesel, Jet A1 or kerosene as fuels, and mass-based fuel consumption of 1100 g/min. The source restricts purchase inquiries to industrial customers; this reference does not imply retail availability."
+        },
+        "ro": {
+          "name": "KingTech K-450G5 — fișă de referință pentru turbină G5 (doar solicitări industriale)",
+          "summary": "Fișă tehnică de referință pentru turboreactorul KingTech K-450G5, cu tracțiune declarată de 45 kgf și diametrul de 152,6 mm.",
+          "description": "Dimensiunile consemnate sunt 152,6 mm în diametru și 374 mm în lungime; masa motorului este de 4000 g, iar turația maximă de 90.000 rpm. Temperatura maximă indicată pentru gazele de evacuare este 730 °C. Sursa menționează pompa digitală SBus KP1250DP, combustibilii motorină, Jet A1 sau kerosen și un consum masic de 1100 g/min. Sursa rezervă solicitările de achiziție clienților industriali; această fișă nu implică disponibilitate la vânzare cu amănuntul."
+        }
+      },
+      "specs": [
+        {
+          "kind": "thrust",
+          "value": 45,
+          "unit": "kgf",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-450g5-industrial-purchases-only-please-inquire-/136",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "dimension",
+          "metric": "diameter",
+          "value": 152.6,
+          "unit": "mm",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-450g5-industrial-purchases-only-please-inquire-/136",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "dimension",
+          "metric": "length",
+          "value": 374,
+          "unit": "mm",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-450g5-industrial-purchases-only-please-inquire-/136",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "mass",
+          "value": 4000,
+          "unit": "g",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-450g5-industrial-purchases-only-please-inquire-/136",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "speed",
+          "value": 90000,
+          "unit": "rpm",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-450g5-industrial-purchases-only-please-inquire-/136",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "temperature",
+          "value": 730,
+          "unit": "°C",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-450g5-industrial-purchases-only-please-inquire-/136",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "fuel_consumption",
+          "value": 1100,
+          "unit": "g/min",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-450g5-industrial-purchases-only-please-inquire-/136",
+          "verifiedOn": "2026-10-24"
+        }
+      ],
+      "images": [],
+      "approval": "draft"
+    }
+  ]
 }
