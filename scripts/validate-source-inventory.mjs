@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Pure, offline guard. Only a separate on-demand audit accesses KingTech.
-import { readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { readFileSync, readdirSync } from 'node:fs';
+import { resolve, dirname, join } from 'node:path';
 import { catalogCategories } from '../src/catalog/data.ts';
 import { buildReferenceDrafts, validateReferenceDrafts, referenceTaxonomy } from '../src/catalog/reference.ts';
 
@@ -11,6 +11,47 @@ const allowedStatuses = new Set(['discontinued', 'industrial_only', 'out_of_stoc
 const noCommerce = new Set(['price', 'currency', 'stock', 'inventory', 'image', 'images', 'media', 'checkout', 'available']);
 const expectedOrigin = 'https://www.kingtechturbines.com';
 const datePattern = /^\d{4}-\d{2}-\d{2}$/;
+
+/**
+ * Prevent accidental publication via importing the research module or source
+ * manifests into Astro components, pages, layouts or runtime catalog modules.
+ * The offline validator lives in scripts/, so it may import the draft schema.
+ */
+function unsafeReferenceImports(source, importer) {
+  const restricted = [];
+  const sourceRef = resolve('src/catalog/reference');
+  const moduleSpecifiers = /\b(?:from\s+|import\s*\(\s*|import\s+|require\s*\(\s*)['"`]([^'"`]+)['"`]/g;
+  for (const match of source.matchAll(moduleSpecifiers)) {
+    const specifier = match[1].split(/[?#]/, 1)[0].replace(/\\/g, '/');
+    const withoutExtension = specifier.replace(/\.(?:m?js|cjs|tsx?|json)$/, '');
+    const absoluteTarget = specifier.startsWith('.') ? resolve(dirname(importer), withoutExtension) : '';
+    if (absoluteTarget === sourceRef ||
+        /(?:^|\/)catalog\/reference$/.test(withoutExtension) ||
+        /(?:^|\/)(?:source-inventory|reference-overrides)(?:\.json)?$/.test(specifier)) {
+      restricted.push(specifier);
+    }
+  }
+  return restricted;
+}
+function checkRuntimeImportBoundary(root = resolve('src')) {
+  const violations = [];
+  const walk = (directory) => {
+    for (const entry of readdirSync(directory, { withFileTypes: true })) {
+      const filename = join(directory, entry.name);
+      if (entry.isDirectory()) {
+        walk(filename);
+      } else if (!entry.isFile()) {
+        violations.push('Unsupported file type under src/: ' + filename);
+      } else if (/\.(?:astro|[cm]?js|jsx|tsx?)$/.test(entry.name)) {
+        for (const imported of unsafeReferenceImports(readFileSync(filename, 'utf8'), filename)) {
+          violations.push('Runtime module ' + filename + ' imports unpublished research data: ' + imported);
+        }
+      }
+    }
+  };
+  walk(root);
+  return violations;
+}
 
 function validSourceUrl(str, prefix = null) {
   if (typeof str !== 'string') return false;
@@ -148,6 +189,7 @@ let doc;
 try { doc = JSON.parse(readFileSync(file, 'utf8')); }
 catch (e) { console.error('Source inventory missing or invalid: ' + e.message); process.exit(1); }
 const errors = validate(doc);
+errors.push(...checkRuntimeImportBoundary());
 // The source manifest and editorial overlays stay outside public/ and are never
 // imported by the website. Check the derived draft collection alongside source
 // continuity; only src/catalog/data.ts's confirmedProducts is publishable.
@@ -206,7 +248,37 @@ if (process.argv.includes('--self-test')) {
     const accepted = candidate([goodEdit]);
     if (validateReferenceDrafts(doc, accepted, buildReferenceDrafts(doc, accepted)).length)
       errors.push('Valid localized/provenanced editorial overlay was rejected');
+    // Every kind of invalid source metadata or editorial approval must remain rejected.
+    // The path is normalized to lowercase for opaque Square source IDs.
+    const safeImagePath = 'docs/catalog/draft-assets/' + one.id.toLowerCase() + '/front.webp';
+    const sampleImage = (edit = {}) => ({
+      path: safeImagePath, kind: 'original_concept', rights: 'pending',
+      alt: { en: 'Concept illustration', ro: 'Ilustrație conceptuală' },
+      width: 1200, height: 900, ...edit,
+    });
+    const pendingDraft = candidate([{ sourceId: one.id, approval: 'draft',
+      images: [sampleImage()] }]);
+    if (validateReferenceDrafts(doc, pendingDraft, buildReferenceDrafts(doc, pendingDraft)).length)
+      errors.push('Valid source-ID-scoped unpublished image was rejected');
     const badOverlays = [
+      candidate([{ sourceId: one.id, slug: 'Broken_UPPERCASE' }]),
+      candidate([{ sourceId: one.id, approval: 'published' }]),
+      candidate([{ sourceId: one.id, model: '  ' }]),
+      candidate([{ sourceId: one.id, approval: 'company_approved',
+        copy: { en: localized.en, ro: null } }]),
+      candidate([{ sourceId: one.id, specs: [{ kind: 'thrust', value: 0, unit: 'N',
+        sourceUrl: one.canonicalUrl, verifiedOn: doc.capturedAt }] }]),
+      candidate([{ sourceId: one.id, specs: [{ kind: 'thrust', value: 1, unit: 'N',
+        sourceUrl: one.canonicalUrl.replace('https:', 'http:'), verifiedOn: doc.capturedAt }] }]),
+      candidate([{ sourceId: one.id, specs: [{ kind: 'thrust', value: 1, unit: 'N',
+        sourceUrl: one.canonicalUrl, verifiedOn: '2026-99-99' }] }]),
+      candidate([{ sourceId: one.id, specs: [{ kind: 'thrust', value: 1, unit: 'N',
+        sourceUrl: one.canonicalUrl, verifiedOn: '2999-01-01' }] }]),
+      candidate([{ sourceId: one.id, images: [sampleImage({
+        path: 'docs/catalog/draft-assets/wrong-product/front.webp' })] }]),
+      candidate([{ sourceId: one.id, images: [sampleImage({
+        alt: { en: 'Only English' } })] }]),
+      candidate([{ sourceId: one.id, images: [sampleImage({ width: 1200.5 })] }]),
       candidate([{ sourceId: 'kt-not-in-source' }]),
       candidate([{ sourceId: one.id, unexpectedStock: 10 }]),
       candidate([{ sourceId: one.id }, { sourceId: one.id }]),
@@ -218,7 +290,7 @@ if (process.argv.includes('--self-test')) {
         kind: 'original_concept', rights: 'cleared', alt: { en: 'Render', ro: 'Randare' },
         width: 1000, height: 1000 }] }]),
       candidate([{ sourceId: one.id, approval: 'company_approved', copy: localized,
-        images: [{ path: 'docs/catalog/draft-assets/sample/front.webp',
+        images: [{ path: safeImagePath,
           kind: 'original_concept', rights: 'pending', alt: { en: 'Concept', ro: 'Concept' },
           width: 1000, height: 1000 }] }]),
     ];
@@ -229,6 +301,19 @@ if (process.argv.includes('--self-test')) {
     }
     if (!validateReferenceDrafts(doc, draftOverrides, drafts.slice(1)).length)
       errors.push('Partial reference catalog bypassed 100% coverage guard');
+    const importer = resolve('src/catalog/index.ts');
+    const forbidden = [
+      "export * from './reference';",
+      "import('./reference.ts')",
+      "import '../../docs/catalog/source-inventory.json'",
+      "const source = require('../../docs/catalog/reference-overrides.json')",
+    ];
+    for (const example of forbidden) {
+      if (!unsafeReferenceImports(example, importer).length)
+        errors.push('Runtime import boundary fixture was not detected: ' + example);
+    }
+    if (unsafeReferenceImports("export { confirmedProducts } from './data';", importer).length)
+      errors.push('Runtime import boundary rejected a safe public catalog import');
     try {
       buildReferenceDrafts({ products: [{ ...one, sourceCategoryIds: ['discounted'] }] }, emptyEdits);
       errors.push('Discount-only source invented a product taxonomy');
