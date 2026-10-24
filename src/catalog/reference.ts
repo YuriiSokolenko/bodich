@@ -105,7 +105,7 @@ export type ReferenceDraft = {
 const primarySections: readonly ReferenceSection[] = [
   'g5', 'g4', 'tp', 'oil', 'batteries', 'accessories', 'warranty', 'gift-card',
 ];
-const isKnownSection = (value: string): value is ReferenceSection => value in referenceTaxonomy;
+const isKnownSection = (value: string): value is ReferenceSection => Object.hasOwn(referenceTaxonomy, value);
 
 /** Discounted is a collection tag, never a second SKU or a standalone item type. */
 export function primaryReferenceSection(sections: readonly string[]): ReferenceSection | null {
@@ -149,11 +149,29 @@ export function buildReferenceDrafts(inventory: SourceInventory, overrides: Refe
 const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const draftAssetPattern = /^docs\/catalog\/draft-assets\/[a-z0-9_-]+(?:\/[a-z0-9_-]+)*\.(?:webp|png|jpe?g)$/;
 const isoDate = /^\d{4}-\d{2}-\d{2}$/;
+function validVerificationDate(value: unknown): value is string {
+  if (typeof value !== 'string' || !isoDate.test(value)) return false;
+  const actual = new Date(value + 'T00:00:00.000Z');
+  return !Number.isNaN(actual.getTime()) &&
+    actual.toISOString().slice(0, 10) === value &&
+    value <= new Date().toISOString().slice(0, 10);
+}
+function validEvidenceUrl(value: unknown): boolean {
+  if (typeof value !== 'string') return false;
+  try {
+    const parsed = new URL(value);
+    return parsed.protocol === 'https:' && Boolean(parsed.hostname) &&
+      !parsed.username && !parsed.password;
+  } catch { return false; }
+}
 const nonempty = (x: unknown): x is string => typeof x === 'string' && x.trim().length > 0;
 const keysOnly = (obj: object, names: readonly string[]) => Object.keys(obj).every((key) => names.includes(key));
 const locales = ['en', 'ro'] as const;
 
-/** Errors are returned rather than throwing so CI can report all issues at once. */
+/**
+ * Report all validation errors for already-derived drafts.
+ * buildReferenceDrafts throws immediately for an unclassifiable source row.
+ */
 export function validateReferenceDrafts(
   inventory: SourceInventory,
   overrides: ReferenceOverrides,
@@ -216,14 +234,15 @@ export function validateReferenceDrafts(
           !Object.hasOwn(permittedSpecUnits, spec.kind) ||
           !(permittedSpecUnits[spec.kind as SpecKind] as readonly string[] | undefined)?.includes(spec.unit) ||
           !Number.isFinite(spec.value) || spec.value <= 0 ||
-          !nonempty(spec.sourceUrl) || !/^https:\/\//.test(spec.sourceUrl) ||
-          !isoDate.test(spec.verifiedOn)) fail('Invalid specification/unit/provenance: ' + draft.sourceId);
+          !validEvidenceUrl(spec.sourceUrl) ||
+          !validVerificationDate(spec.verifiedOn)) fail('Invalid specification/unit/provenance: ' + draft.sourceId);
     }
     if (!Array.isArray(draft.images)) { fail('Invalid images: ' + draft.sourceId); continue; }
     for (const img of draft.images) {
       if (!img || typeof img !== 'object' || Array.isArray(img) ||
           !keysOnly(img, ['path', 'kind', 'rights', 'alt', 'width', 'height']) ||
           !draftAssetPattern.test(img.path) ||
+          !img.path.startsWith('docs/catalog/draft-assets/' + draft.sourceId.toLowerCase() + '/') ||
           !['original_concept', 'original_diagram', 'product_photo'].includes(img.kind) ||
           !['pending', 'cleared', 'rejected'].includes(img.rights) ||
           !Number.isSafeInteger(img.width) || img.width <= 0 ||
