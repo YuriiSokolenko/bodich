@@ -242,6 +242,68 @@ function g5DraftProblems(inventory, drafts) {
   return errors;
 }
 
+
+/**
+ * Issue #28: every inventoried G4+ engine must have a separate, unpublished
+ * bilingual reference, even when the model has vanished from featured listings.
+ * Do not turn incomplete or disputed supplier numbers into precise spec fields.
+ */
+function g4DraftProblems(inventory, drafts) {
+  const errors = [];
+  const sourceG4 = inventory.products.filter((p) => p.sourceCategoryIds.includes('g4'));
+  const grouped = drafts.filter((d) => d.categoryId === 'g4-plus');
+  if (sourceG4.length !== grouped.length)
+    errors.push('G4+ category coverage differs from unique G4 source inventory');
+  const byId = new Map(drafts.map((d) => [d.sourceId, d]));
+  for (const source of sourceG4) {
+    const d = byId.get(source.id);
+    if (!d || d.categoryId !== 'g4-plus') {
+      errors.push('Missing G4+ reference draft: ' + source.id);
+      continue;
+    }
+    const nameModel = source.sourceTitle?.match(/K-(\\d+)G4\\+/i);
+    const expectedModel = nameModel ? 'K-' + nameModel[1] + 'G4+' : null;
+    const expectedSlug = nameModel ? 'kingtech-k-' + nameModel[1] + 'g4-plus' : null;
+    if (!expectedModel || d.model !== expectedModel || d.slug !== expectedSlug ||
+        d.source.manufacturer !== 'KingTech' || d.itemType !== 'turbojet' ||
+        d.source.url !== source.canonicalUrl)
+      errors.push('Incorrect G4+ model identity/category: ' + source.id);
+    if (d.approval === 'research')
+      errors.push('Unedited G4+ reference: ' + source.id);
+    for (const locale of ['en', 'ro']) {
+      const copy = d.copy?.[locale];
+      if (!copy || ![copy.name, copy.summary, copy.description].every(
+        (s) => typeof s === 'string' && s.replace(/\\s+/g, ' ').trim().length >= 25
+      )) errors.push('Incomplete G4+ ' + locale + ' draft copy: ' + source.id);
+    }
+    const kinds = new Set(d.specs.map((s) => s.kind));
+    for (const kind of ['mass', 'speed', 'fuel_consumption', 'dimension']) {
+      if (!kinds.has(kind)) errors.push('Missing G4+ technical kind ' + kind + ': ' + source.id);
+    }
+    // The K-30 source gives "3kg+" and no exact nominal thrust.
+    if (source.id !== 'kt-1' && !kinds.has('thrust'))
+      errors.push('Missing G4+ technical kind thrust: ' + source.id);
+    if (source.id === 'kt-1' && kinds.has('thrust'))
+      errors.push('Inexact K-30G4+ thrust must not be stored as nominal: ' + source.id);
+    for (const metric of ['diameter', 'length']) {
+      if (!d.specs.some((s) => s.kind === 'dimension' && s.metric === metric))
+        errors.push('Missing G4+ dimension ' + metric + ': ' + source.id);
+    }
+    // K-142 and K-320 conflicting EGT values across distributors.
+    if (['kt-9', 'kt-15'].includes(source.id) && kinds.has('temperature'))
+      errors.push('Conflicting G4+ EGT must remain unset: ' + source.id);
+    if (source.sourceStatus === 'discontinued' &&
+        (!/discontinued/i.test(d.copy?.en?.name || '') ||
+         !/retras/i.test(d.copy?.ro?.name || '')))
+      errors.push('G4+ discontinued status missing in bilingual names: ' + source.id);
+    if (source.sourceStatus === 'industrial_only' &&
+        (!/industrial/i.test(d.copy?.en?.name || '') ||
+         !/industriale/i.test(d.copy?.ro?.name || '')))
+      errors.push('G4+ industrial restriction missing in bilingual names: ' + source.id);
+  }
+  return errors;
+}
+
 const errors = validate(doc);
 errors.push(...checkRuntimeImportBoundary());
 // The source manifest and editorial overlays stay outside public/ and are never
@@ -254,6 +316,7 @@ try {
   drafts = buildReferenceDrafts(doc, draftOverrides);
   errors.push(...validateReferenceDrafts(doc, draftOverrides, drafts).map((e) => 'Reference drafts: ' + e));
   errors.push(...g5DraftProblems(doc, drafts).map((e) => 'G5 coverage: ' + e));
+  errors.push(...g4DraftProblems(doc, drafts).map((e) => 'G4+ coverage: ' + e));
 } catch (error) {
   errors.push('Cannot derive unpublished reference catalog: ' + error.message);
 }
@@ -396,6 +459,50 @@ if (process.argv.includes('--self-test')) {
     } : d);
     if (!g5DraftProblems(doc, disputedEgt).some((e) => e.includes('Conflicting K-180G5 EGT')))
       errors.push('Disputed K-180G5 EGT bypassed regression guard');
+
+    // Representative G4+ category, archived, industrial-only and conflicting
+    // evidence fixtures; all must stay unpublished and source-ID scoped.
+    const g4Items = drafts.filter((d) => d.categoryId === 'g4-plus');
+    if (g4Items.length !== doc.products.filter((p) => p.sourceCategoryIds.includes('g4')).length ||
+        g4Items.some((d) => d.itemType !== 'turbojet' || d.approval === 'research'))
+      errors.push('G4+ grouped reference category lost staged product cards');
+    if (!g4DraftProblems(doc, drafts.filter((d) => d.sourceId !== 'kt-2'))
+        .some((e) => e.includes('Missing G4+ reference')))
+      errors.push('Missing archived G4+ reference bypassed parity guard');
+    const damagedG4Copy = drafts.map((d) => d.sourceId === 'kt-7' ? {
+      ...d, copy: { ...d.copy, ro: { ...d.copy.ro, description: 'KingTech' } },
+    } : d);
+    if (!g4DraftProblems(doc, damagedG4Copy).some((e) => e.includes('Incomplete G4+ ro')))
+      errors.push('Short Romanian G4+ copy bypassed completeness guard');
+    const brokenG4Status = drafts.map((d) => d.sourceId === 'kt-120' ? {
+      ...d, copy: { ...d.copy, en: {
+        ...d.copy.en, name: 'KingTech K-86G4+ — G4+ turbine reference',
+      } },
+    } : d);
+    if (!g4DraftProblems(doc, brokenG4Status).some((e) => e.includes('discontinued status')))
+      errors.push('Archived G4+ status lost without a failing regression');
+    const brokenIndustrialStatus = drafts.map((d) => d.sourceId === 'kt-16' ? {
+      ...d, copy: { ...d.copy, ro: {
+        ...d.copy.ro, name: 'KingTech K-450G4+ — fișă de referință G4+',
+      } },
+    } : d);
+    if (!g4DraftProblems(doc, brokenIndustrialStatus).some((e) => e.includes('industrial restriction')))
+      errors.push('Industrial-only G4+ restriction lost without a failing regression');
+    const fictionalG4Thrust = drafts.map((d) => d.sourceId === 'kt-1' ? {
+      ...d, specs: [...d.specs, { kind: 'thrust', value: 3, unit: 'kgf',
+        sourceUrl: d.source.url, verifiedOn: doc.capturedAt }],
+    } : d);
+    if (!g4DraftProblems(doc, fictionalG4Thrust).some((e) => e.includes('Inexact K-30G4+')))
+      errors.push('Ambiguous archived G4+ thrust was accepted as exact');
+    for (const disputedId of ['kt-9', 'kt-15']) {
+      const disputedG4Temp = drafts.map((d) => d.sourceId === disputedId ? {
+        ...d, specs: [...d.specs, { kind: 'temperature', value: 700, unit: '°C',
+          sourceUrl: d.source.url, verifiedOn: doc.capturedAt }],
+      } : d);
+      if (!g4DraftProblems(doc, disputedG4Temp).some((e) => e.includes('Conflicting G4+ EGT')))
+        errors.push('Disputed G4+ EGT bypassed regression guard: ' + disputedId);
+    }
+
     const importer = resolve('src/catalog/index.ts');
     const forbidden = [
       "export * from './reference';",
