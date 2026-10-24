@@ -28,7 +28,7 @@ See [G5 evidence and original-image briefs](./g5-reference-evidence.md) for sour
 
 All **17 unique G4+ source IDs** now have separate KingTech-branded unpublished EN/RO drafts, including the archived K-30 and K-45 excluded from the homepage featured list. Seven are recorded as discontinued, one (K-450) is industrial-only and nine have unknown lifecycle status. G4+ SKU identity is deliberately separate from same-numbered G5 turbines. Supplier prices and stock indications do not represent BODICH terms.
 
-Read the [G4+ evidence ledger, ambiguities and 17 original visual briefs](./g4-reference-evidence.md). The source says K-30 thrust is “3 kg+” rather than a precise nominal value; K-142 and K-320 have conflicting supplier EGT values. Their disputed numeric fields are deliberately unset. All 17 records remain `images: []` and `approval: "draft"`; only offline reference-category grouping and validation are allowed, with no public cards, routes or cart. The source-check script now includes G4+ parity and negative fixtures.
+Read the [G4+ evidence ledger, ambiguities and 17 original visual briefs](./g4-reference-evidence.md). The source says K-30 thrust is “3 kg+” rather than a precise nominal value. K-142, K-180, K-260 and K-320 have conflicting regional EGT figures; K-210 also has conflicting RPM and fuel-flow data. These disputed numeric fields remain unset pending revision evidence. The evidence ledger records the source-specific figures and discrepancies. All 17 records remain `images: []` and `approval: "draft"`; only offline reference-category grouping and validation are allowed, with no public cards, routes or cart. The source-check script now includes G4+ parity and negative fixtures.
 
 ### Adding one editorial draft
 
