@@ -1,6 +1,6 @@
 # KingTech G4+ editorial reference staging — issue #28
 
-**Verified on 2026-10-24 UTC. Third-party research only; no BODICH stock or sale claim.**
+**Cross-checked on 2026-10-25 UTC. Third-party research only; no BODICH stock or sale claim.**
 
 Exactly **17 unique G4+ source IDs** occur in the 2026-10-23 inventory, including **K-30 and K-45** omitted from homepage featured items. The records have 1:1 unpublished EN/RO editorial overlays, per-measurement provenance, distinct reference slugs and draft approval. Status distribution: **7 discontinued, 1 industrial-only, 9 unknown**. Unknown does not mean available. These research listings do not generate public BODICH cards, URLs or purchase controls.
 
@@ -49,6 +49,25 @@ All numeric fields carry their individual `sourceUrl` and `verifiedOn`. Supplier
 - **K-86G4+ (kt-120)**: AerobatX source used for K-86G4+; regional KingTech GCC K-86 page reproduces the K-85 table. Different from K-86G5.
 
 The K-142G4+ conflicting-temperature sources are [RC Jet Center](https://rcjetcenter.com/website/product/kingtech-k-142g4/) and [BigPlanes](https://www.bigplanes.nl/contents/nl/p27612_Kingtech-K-142G4-New-%281.3kg%29.html). The K-320G4+ conflict is between [BGD Tech](https://www.bgdtech.biz/product-page/kingtech-k-320g4) and [Al's Hobbies](https://alshobbies.co.uk/jet-centre-engines/Kingtech-K-320G4-Turbine-K-320G4). The regional [KingTech GCC K-86 page](https://kingtech-gcc.com/product/kingtech-k-85g4/) actually contains a K-85 specification table; the K-86G4+ data uses [AerobatX](https://aerobatx.co.uk/shop/Kingtech-K86-K86G4-turbine) instead. No disputed exhaust temperature is asserted as verified. The source's '+3 kgf' style indicator for K-30 does not prove exact nominal thrust.
+
+## Regional discrepancies and source-selection rule (2026-10-25 audit)
+
+The US KingTech source inventory product page identifies the SKU, but individual regional listings sometimes have **different technical tables for an identically named G4+ model**. Neither a supplier's current ecommerce listing nor agreement on engine name alone proves an exact factory hardware revision. Numerical fields are omitted where these source statements conflict, even if one is directly from the US listing. The conflicting figures below are documentary evidence **only**, not structured specifications or BODICH performance claims.
+
+| Model | US KingTech G4+ listing | Regional KingTech GCC G4+ listing | Staging decision |
+|---|---|---|---|
+| K-180G4+ (`kt-11`) | [US KingTech](https://www.kingtechturbines.com/product/kingtech-k-180g4-/11): max EGT 750 °C | [GCC](https://kingtech-gcc.com/product/kingtech-k-180g4/): max EGT 700 °C | EGT **unset**; agreed dimensions, nominal thrust, mass, RPM and fuel flow retained |
+| K-210G4+ (`kt-12`) | [US KingTech](https://www.kingtechturbines.com/product/kingtech-k-210g4-/12): 121,000 rpm, max EGT 750 °C and fuel consumption 620 g/min | [GCC](https://kingtech-gcc.com/product/kingtech-k-210g4/): 120,000 rpm, max EGT 650 °C and fuel consumption 590 g/min | RPM, EGT and fuel flow **unset**; diameter 112.6 mm, length 280 mm, engine mass 1,740 g and nominal thrust 21 kgf remain |
+| K-260G4+ (`kt-14`) | [US KingTech](https://www.kingtechturbines.com/product/kingtech-k-260g4-/14?si=true): max EGT 750 °C | [GCC](https://kingtech-gcc.com/product/kingtech-k-260g4/): max EGT 700 °C | EGT **unset**; identical other core dimensions, RPM and nominal thrust retained |
+
+**Other known conflicts / product revisions:**
+
+- **K-142G4+ (`kt-9`)**: vendor EGT 700 versus 750 °C; the number was already omitted. A second reseller's inconsistent geometric dimensions and RPM remain an editorial verification note, with the selected measurement provenance explicitly pointing to [RC Jet Center](https://rcjetcenter.com/website/product/kingtech-k-142g4/). Confirm the hardware revision before approval.
+- **K-320G4+ (`kt-15`)**: the 700 °C value shown by [KingTech GCC](https://kingtech-gcc.com/product/kingtech-k-320g4/) contrasts with 730 °C in the linked [BGD Tech](https://www.bgdtech.biz/product-page/kingtech-k-320g4) table. EGT remains unset.
+- **K-86G4+ (`kt-120`)**: [AerobatX's later G4+ listing](https://aerobatx.co.uk/shop/Kingtech-K86-K86G4-turbine) gives 76 mm, 8.6 kgf, 700 °C and 300 g/min; the older [KingTech Taiwan K86G4+ page](https://kingtechtw.com/product/k85g4/) instead shows 76.5 mm, 8.5 kgf, 770 °C and 280 g/min. The current draft specifically cites the AerobatX page, not the older Taiwanese table, and must **not** be generalized to every K-86 revision. Factory revision identification remains pending. The historical source's `K-86G4+` identity must not be deduplicated with G5.
+- **K-45G4+ (`kt-2`)**: an Australian reseller also lists a **K45mG4+** with 230,000 rpm and 770 °C; this may be a distinct variant. Its figures were not mixed into the [source inventory K-45G4+](https://www.kingtechturbines.com/product/kingtech-k-45g4-discontinued/2) record.
+
+**Gate:** until authoritative factory revision documentation resolves disagreements, do not restore the withheld G4+ numeric fields as "verified". The offline checker rejects these contradictory values even if a contributor otherwise supplies syntactically valid units and evidence URLs. This policy matches the omitted K-180G5 temperature in issue #27. No assumption about an engine’s availability, interchangeability or BODICH product approval is made from these sources.
 
 ## Original illustration briefs, future issue #33
 
