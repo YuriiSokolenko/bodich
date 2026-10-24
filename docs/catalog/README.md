@@ -2,7 +2,7 @@
 
 ## Unpublished KingTech reference catalog (Issue #26)
 
-The `docs/catalog/source-inventory.json` manifest records **132 external research references**. It is publicly viewable in GitHub, but is not a BODICH product or inventory claim. `src/catalog/reference.ts` derives **exactly one draft per source ID** from this manifest, joined by `sourceId` to `docs/catalog/reference-overrides.json`. The latter intentionally starts with an empty `records` array; future category tasks add original editorial fields there, never to the scraped evidence manifest. The reference module is **not re-exported** from `src/catalog/index.ts`, and no site component or page imports it.
+The `docs/catalog/source-inventory.json` manifest records **132 external research references**. It is publicly viewable in GitHub, but is not a BODICH product or inventory claim. `src/catalog/reference.ts` derives **exactly one draft per source ID** from this manifest, joined by `sourceId` to `docs/catalog/reference-overrides.json`. That overlay began with an empty `records` array; issue #27 stages **11 original, unpublished G5 engine drafts** (EN/RO copy and per-spec evidence), while later category tasks add their own records there, never to the scraped evidence manifest. The reference module is **not re-exported** from `src/catalog/index.ts`, and no site component or page imports it.
 
 Reference taxonomy is separate from public `catalogCategories` until items have passed company verification:
 
@@ -17,6 +17,12 @@ Reference taxonomy is separate from public `catalogCategories` until items have 
 | Gift Card | `digital-gift-card` | `digital` (currently **zero** source /product rows; checkout documented as external service) |
 
 `discounted` is a collection tag on an existing item, **not** a new SKU. The source inventory captured on 2026-10-23 reports **zero** items in Discounted Turbines, so no current record has this tag; the synthetic tagged-item fixture verifies handling if the source later cross-lists an actual product. No discount membership was removed during the inventory deduplication. Absent source facts remain `null`, never guessed. The status `unknown` does not imply sale, stock or availability. A reference model name and an original bilingual description are separate fields. Do not copy vendor marketing descriptions or competitor photography.
+
+### KingTech G5 staged references (issue #27)
+
+All **11 of 11** source-inventory G5 SKUs now have an unpublished bilingual draft with distinct canonical `slug` mappings: K-86G5, K-102G5, K-130G5, K-142G5, K-160G5, K-180G5, K-210G5, K-240G5, K-260G5, K-320G5 and K-450G5. K-86G5 is explicitly discontinued, and K-450G5 is industrial-inquiries-only. Their source-linked specification data uses `kgf` (thrust), `g` (mass), `mm` with `metric: "diameter" | "length"`, `rpm`, `°C` where undisputed, and `g/min` for **mass-based** fuel consumption. A litre-based conversion would be invalid without known fuel density. K-180G5's conflicting EGT values are left unset.
+
+See [G5 evidence and original-image briefs](./g5-reference-evidence.md) for source URLs, unresolved technical issues and a distinct conceptual illustration direction per SKU. All staged G5 records keep `images: []`, `approval: "draft"`, and cannot appear on public routes. The offline validator now enforces G5 source-ID parity, both translations, labelled dimensions and minimum technical fields. Images remain future work under #33, copy review under #34, and final approvals under #35.
 
 ### Adding one editorial draft
 

@@ -188,6 +188,60 @@ const file = resolve('docs/catalog/source-inventory.json');
 let doc;
 try { doc = JSON.parse(readFileSync(file, 'utf8')); }
 catch (e) { console.error('Source inventory missing or invalid: ' + e.message); process.exit(1); }
+
+/**
+ * Issue #27: enforce complete unpublished editorial coverage for every real G5
+ * source item, including discontinued and industrial-only references.
+ * Other source sections may remain at the unedited research stage.
+ */
+function g5DraftProblems(inventory, drafts) {
+  const errors = [];
+  const sourceG5 = inventory.products.filter((p) => p.sourceCategoryIds.includes('g5'));
+  const byId = new Map(drafts.map((p) => [p.sourceId, p]));
+  const drafted = drafts.filter((p) => p.categoryId === 'g5');
+  if (sourceG5.length !== drafted.length)
+    errors.push('G5 draft count differs from unique G5 source inventory');
+  for (const source of sourceG5) {
+    const d = byId.get(source.id);
+    if (!d || d.categoryId !== 'g5') {
+      errors.push('Missing G5 reference draft: ' + source.id);
+      continue;
+    }
+    // A G5 editorial record is expected at least to be a draft. Future tasks
+    // #33–#35 may legitimately add rights-reviewed draft images and advance
+    // approval; publication stays gated by confirmedProducts, not this file.
+    if (d.approval === 'research') errors.push('Unedited G5 reference: ' + source.id);
+    if (!d.model?.trim() || !d.slug.startsWith('kingtech-') || d.source.manufacturer !== 'KingTech')
+      errors.push('Unmapped G5 model identity: ' + source.id);
+    for (const locale of ['en', 'ro']) {
+      const copy = d.copy?.[locale];
+      if (!copy || ![copy.name, copy.summary, copy.description].every(
+        (s) => typeof s === 'string' && s.trim().length >= 25
+      )) errors.push('Incomplete G5 ' + locale + ' draft copy: ' + source.id);
+    }
+    // GCC and Luxembourg sources disagree on K-180G5 EGT (700 vs 750 °C).
+    // Until a signed manufacturer decision is documented and this guard is
+    // deliberately revised, a new temperature number would be misleading.
+    if (source.id === 'kt-131' && d.specs.some((s) => s.kind === 'temperature'))
+      errors.push('Conflicting K-180G5 EGT must remain unrecorded: ' + source.id);
+    const kinds = new Set(d.specs.map((s) => s.kind));
+    for (const kind of ['thrust', 'mass', 'speed', 'fuel_consumption', 'dimension']) {
+      if (!kinds.has(kind)) errors.push('Missing G5 technical kind ' + kind + ': ' + source.id);
+    }
+    for (const metric of ['diameter', 'length']) {
+      if (!d.specs.some((s) => s.kind === 'dimension' && s.metric === metric))
+        errors.push('Missing G5 dimension ' + metric + ': ' + source.id);
+    }
+    if (source.sourceStatus === 'discontinued' &&
+        (!/discontinued/i.test(d.copy.en?.name || '') || !/retras/i.test(d.copy.ro?.name || '')))
+      errors.push('Historical discontinued status is not labelled in G5 copy: ' + source.id);
+    if (source.sourceStatus === 'industrial_only' &&
+        (!/industrial/i.test(d.copy.en?.name || '') || !/industriale/i.test(d.copy.ro?.name || '')))
+      errors.push('Industrial-only restriction is not labelled in G5 copy: ' + source.id);
+  }
+  return errors;
+}
+
 const errors = validate(doc);
 errors.push(...checkRuntimeImportBoundary());
 // The source manifest and editorial overlays stay outside public/ and are never
@@ -199,6 +253,7 @@ try {
   draftOverrides = JSON.parse(readFileSync(resolve('docs/catalog/reference-overrides.json'), 'utf8'));
   drafts = buildReferenceDrafts(doc, draftOverrides);
   errors.push(...validateReferenceDrafts(doc, draftOverrides, drafts).map((e) => 'Reference drafts: ' + e));
+  errors.push(...g5DraftProblems(doc, drafts).map((e) => 'G5 coverage: ' + e));
 } catch (error) {
   errors.push('Cannot derive unpublished reference catalog: ' + error.message);
 }
@@ -244,7 +299,11 @@ if (process.argv.includes('--self-test')) {
     const goodEdit = { sourceId: one.id, slug: 'sample-reviewed-model',
       approval: 'editorial_review', copy: localized,
       specs: [{ kind: 'thrust', value: 100, unit: 'N',
-        sourceUrl: one.canonicalUrl, verifiedOn: doc.capturedAt }] };
+        sourceUrl: one.canonicalUrl, verifiedOn: doc.capturedAt },
+        { kind: 'dimension', metric: 'diameter', value: 101, unit: 'mm',
+          sourceUrl: one.canonicalUrl, verifiedOn: doc.capturedAt },
+        { kind: 'fuel_consumption', value: 220, unit: 'g/min',
+          sourceUrl: one.canonicalUrl, verifiedOn: doc.capturedAt }] };
     const accepted = candidate([goodEdit]);
     if (validateReferenceDrafts(doc, accepted, buildReferenceDrafts(doc, accepted)).length)
       errors.push('Valid localized/provenanced editorial overlay was rejected');
@@ -286,6 +345,14 @@ if (process.argv.includes('--self-test')) {
       candidate([{ sourceId: one.id, copy: { en: localized.en } }]),
       candidate([{ sourceId: one.id, specs: [{ kind: 'thrust', value: 100,
         unit: 'miles', sourceUrl: one.canonicalUrl, verifiedOn: doc.capturedAt }] }]),
+      candidate([{ sourceId: one.id, specs: [{ kind: 'dimension', value: 100, unit: 'mm',
+        sourceUrl: one.canonicalUrl, verifiedOn: doc.capturedAt }] }]),
+      candidate([{ sourceId: one.id, specs: [{ kind: 'dimension', metric: 'height',
+        value: 100, unit: 'mm', sourceUrl: one.canonicalUrl, verifiedOn: doc.capturedAt }] }]),
+      candidate([{ sourceId: one.id, specs: [{ kind: 'thrust', metric: 'length',
+        value: 10, unit: 'kgf', sourceUrl: one.canonicalUrl, verifiedOn: doc.capturedAt }] }]),
+      candidate([{ sourceId: one.id, specs: [{ kind: 'fuel_consumption', value: 220,
+        unit: 'kg/h', sourceUrl: one.canonicalUrl, verifiedOn: doc.capturedAt }] }]),
       candidate([{ sourceId: one.id, images: [{ path: '/images/catalog/unsafe.webp',
         kind: 'original_concept', rights: 'cleared', alt: { en: 'Render', ro: 'Randare' },
         width: 1000, height: 1000 }] }]),
@@ -301,6 +368,34 @@ if (process.argv.includes('--self-test')) {
     }
     if (!validateReferenceDrafts(doc, draftOverrides, drafts.slice(1)).length)
       errors.push('Partial reference catalog bypassed 100% coverage guard');
+    if (!g5DraftProblems(doc, drafts.filter((d) => d.sourceId !== 'kt-126')).length)
+      errors.push('Partial G5 editorial coverage bypassed source-ID count check');
+    const damagedCopy = drafts.map((d) => d.sourceId === 'kt-127' ?
+      { ...d, copy: { ...d.copy, ro: null } } : d);
+    if (!g5DraftProblems(doc, damagedCopy).length)
+      errors.push('Missing Romanian G5 copy bypassed validation');
+    const insufficientText = drafts.map((d) => d.sourceId === 'kt-127' ? {
+      ...d, copy: {
+        ...d.copy, en: { ...d.copy.en, description: 'KingTech' },
+      },
+    } : d);
+    if (!g5DraftProblems(doc, insufficientText).some((e) => e.includes('Incomplete G5 en draft copy')))
+      errors.push('Short KingTech-only G5 text bypassed minimum-length guard');
+    const paddedText = drafts.map((d) => d.sourceId === 'kt-127' ? {
+      ...d, copy: {
+        ...d.copy, ro: { ...d.copy.ro, summary: 'KingTech' + ' '.repeat(40) },
+      },
+    } : d);
+    if (!g5DraftProblems(doc, paddedText).some((e) => e.includes('Incomplete G5 ro draft copy')))
+      errors.push('Whitespace-padded G5 translation bypassed minimum-length guard');
+    const disputedEgt = drafts.map((d) => d.sourceId === 'kt-131' ? {
+      ...d, specs: [...d.specs, {
+        kind: 'temperature', value: 700, unit: '°C',
+        sourceUrl: d.source.url, verifiedOn: doc.capturedAt,
+      }],
+    } : d);
+    if (!g5DraftProblems(doc, disputedEgt).some((e) => e.includes('Conflicting K-180G5 EGT')))
+      errors.push('Disputed K-180G5 EGT bypassed regression guard');
     const importer = resolve('src/catalog/index.ts');
     const forbidden = [
       "export * from './reference';",

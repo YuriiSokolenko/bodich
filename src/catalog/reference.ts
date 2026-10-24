@@ -38,7 +38,7 @@ export const permittedSpecUnits = {
   thrust: ['N', 'kgf'],
   speed: ['rpm'],
   temperature: ['°C'],
-  fuel_consumption: ['L/h', 'mL/min'],
+  fuel_consumption: ['g/min', 'L/h', 'mL/min'],
   mass: ['g', 'kg'],
   dimension: ['mm', 'cm'],
   voltage: ['V'],
@@ -49,6 +49,8 @@ export const permittedSpecUnits = {
 export type SpecKind = keyof typeof permittedSpecUnits;
 export type ReferenceSpec = {
   kind: SpecKind;
+  /** A dimension must specify its axis so diameter and length are not confused. */
+  metric?: 'diameter' | 'length';
   value: number;
   unit: string;
   /** Provenance must be per specification, not just per product. */
@@ -230,7 +232,10 @@ export function validateReferenceDrafts(
     if (!Array.isArray(draft.specs)) { fail('Invalid specs: ' + draft.sourceId); continue; }
     for (const spec of draft.specs) {
       if (!spec || typeof spec !== 'object' || Array.isArray(spec) ||
-          !keysOnly(spec, ['kind', 'value', 'unit', 'sourceUrl', 'verifiedOn']) ||
+          !keysOnly(spec, ['kind', 'metric', 'value', 'unit', 'sourceUrl', 'verifiedOn']) ||
+          (spec.kind === 'dimension'
+            ? !['diameter', 'length'].includes(spec.metric as string)
+            : spec.metric !== undefined) ||
           !Object.hasOwn(permittedSpecUnits, spec.kind) ||
           !(permittedSpecUnits[spec.kind as SpecKind] as readonly string[] | undefined)?.includes(spec.unit) ||
           !Number.isFinite(spec.value) || spec.value <= 0 ||
