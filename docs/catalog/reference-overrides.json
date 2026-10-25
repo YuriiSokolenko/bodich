@@ -5579,8 +5579,7 @@
         "sourceUrl": "https://www.kingtechturbines.com/product/3800mah-9-9v-life-battery/24",
         "verifiedOn": "2026-10-25",
         "chemistry": {
-          "sourceLabel": "LIFE",
-          "family": "LiFe"
+          "sourceLabel": "LIFE"
         },
         "cellCount": null,
         "voltage": {
@@ -5596,7 +5595,7 @@
         "sourceNotes": [
           "LIFE, voltage and capacity are original source-title labels; detailed chemistry documentation remains review-needed.",
           "No confirmed connector, cell count or specific engine compatibility from the manufacturer product title.",
-          "The original uppercase LIFE chemistry notation is preserved; the LiFe family label alone does not establish exact cell construction or a 3S count.",
+          "The original uppercase LIFE chemistry notation is preserved; the source title alone does not establish exact cell construction or a 3S count.",
           "Publication and safety verification status belong to metadata, not customer-facing copy."
         ],
         "artBriefId": "kt-24"
@@ -5639,8 +5638,7 @@
         "sourceUrl": "https://www.kingtechturbines.com/product/2100mah-9-9v-life-battery/25",
         "verifiedOn": "2026-10-25",
         "chemistry": {
-          "sourceLabel": "LIFE",
-          "family": "LiFe"
+          "sourceLabel": "LIFE"
         },
         "cellCount": null,
         "voltage": {
@@ -5656,7 +5654,7 @@
         "sourceNotes": [
           "LIFE, voltage and capacity are original source-title labels; detailed chemistry documentation remains review-needed.",
           "No confirmed connector, cell count or specific engine compatibility from the manufacturer product title.",
-          "The original uppercase LIFE chemistry notation is preserved; the LiFe family label alone does not establish exact cell construction or a 3S count.",
+          "The original uppercase LIFE chemistry notation is preserved; the source title alone does not establish exact cell construction or a 3S count.",
           "Publication and safety verification status belong to metadata, not customer-facing copy."
         ],
         "artBriefId": "kt-25"
