@@ -5391,6 +5391,264 @@
       },
       "images": [],
       "approval": "draft"
+    },
+    {
+      "sourceId": "kt-21",
+      "slug": "kingtech-special-blend-oil-2-gallons",
+      "copy": {
+        "en": {
+          "name": "KingTech Special Blend Oil — 2 gallons",
+          "summary": "KingTech Special Blend turbine engine oil in a two-gallon size, listed separately from the manufacturer's other oil presentations.",
+          "description": "KingTech lists this Special Blend turbine engine oil with a source size label of 2 Gallons. This listing is distinct from the one-gallon and 32oz sizes and from the separate red-dyed oil entry. The original unit wording is retained as printed, without a regional unit conversion or an assumed count of individual containers."
+        },
+        "ro": {
+          "name": "Ulei KingTech Special Blend pentru turbine — 2 galoane",
+          "summary": "Ulei KingTech Special Blend pentru motoare cu turbină, prezentat în varianta de 2 galoane, distinctă de celelalte volume din catalog.",
+          "description": "KingTech listează acest ulei Special Blend pentru motoare cu turbină cu indicația originală de 2 galoane. Este o poziție distinctă de prezentările de 1 galon și 32oz, precum și de uleiul colorat în roșu. Unitatea este păstrată conform denumirii sursei, fără o conversie regională sau presupuneri despre numărul de recipiente."
+        }
+      },
+      "specs": [],
+      "oil": {
+        "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-special-blend-oil-2-gallons/21",
+        "verifiedOn": "2026-10-25",
+        "volume": {
+          "value": 2,
+          "unit": "gallon",
+          "sourceLabel": "2 Gallons"
+        },
+        "packQuantity": null,
+        "intendedUse": "turbine_engine_oil",
+        "blend": "special_blend",
+        "sourceNotes": [
+          "The title states 2 Gallons but does not specify how many separate containers are included.",
+          "The exact regional gallon convention is not specified by the source title."
+        ],
+        "artBriefId": "kt-21"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-22",
+      "slug": "kingtech-special-blend-oil-1-gallon",
+      "copy": {
+        "en": {
+          "name": "KingTech Special Blend Oil — 1 gallon",
+          "summary": "KingTech Special Blend turbine oil supplied under a one-gallon source label, distinct from its other listed sizes.",
+          "description": "This KingTech Special Blend turbine engine oil entry has a one-gallon label on its original catalog page. The one-gallon presentation has its own product identity alongside separately listed two-gallon and 32oz presentations. The gallon wording reproduces the original catalog size; it does not establish a regional conversion or the number of physical containers."
+        },
+        "ro": {
+          "name": "Ulei KingTech Special Blend pentru turbine — 1 galon",
+          "summary": "Ulei KingTech Special Blend pentru motoare cu turbină, cu volumul sursă de 1 galon, listat separat de celelalte prezentări.",
+          "description": "Această poziție KingTech Special Blend pentru motoare cu turbină are în catalog indicația de 1 galon. Prezentarea este individualizată față de cele de 2 galoane și 32oz, fiecare având propria fișă în sursă. Menționarea galonului reproduce dimensiunea din catalog, fără a preciza o conversie regională ori numărul de recipiente fizice."
+        }
+      },
+      "specs": [],
+      "oil": {
+        "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-special-blend-oil-1-gallon/22",
+        "verifiedOn": "2026-10-25",
+        "volume": {
+          "value": 1,
+          "unit": "gallon",
+          "sourceLabel": "1 Gallon"
+        },
+        "packQuantity": null,
+        "intendedUse": "turbine_engine_oil",
+        "blend": "special_blend",
+        "sourceNotes": [
+          "The title states 1 Gallon but does not specify how many separate containers are included.",
+          "The exact regional gallon convention is not specified by the source title."
+        ],
+        "artBriefId": "kt-22"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-23",
+      "slug": "kingtech-special-blend-oil-32oz",
+      "copy": {
+        "en": {
+          "name": "KingTech Special Blend Oil — 32oz",
+          "summary": "KingTech Special Blend turbine engine oil in the separate 32oz catalog size, reproduced with the original unit wording.",
+          "description": "KingTech lists this Special Blend turbine engine oil as a separate 32oz presentation. The size is retained exactly as shown in the original title, without treating the ounce abbreviation as a verified mass or fluid-volume convention. This presentation is distinct from the one-gallon and two-gallon standard-blend entries."
+        },
+        "ro": {
+          "name": "Ulei KingTech Special Blend pentru turbine — 32oz",
+          "summary": "Ulei KingTech Special Blend pentru motoare cu turbină, în prezentarea distinctă de 32oz, păstrată în unitatea originală.",
+          "description": "KingTech listează separat acest ulei Special Blend pentru motoare cu turbină în varianta denumită 32oz. Notația este păstrată întocmai ca în titlul original, fără a interpreta uncia drept unitate de masă sau de volum lichid. Această prezentare se deosebește de variantele standard de 1 galon și 2 galoane."
+        }
+      },
+      "specs": [],
+      "oil": {
+        "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-special-blend-oil-32oz/23",
+        "verifiedOn": "2026-10-25",
+        "volume": {
+          "value": 32,
+          "unit": "oz",
+          "sourceLabel": "32oz"
+        },
+        "packQuantity": null,
+        "intendedUse": "turbine_engine_oil",
+        "blend": "special_blend",
+        "sourceNotes": [
+          "The source title uses 32oz without distinguishing liquid-volume ounces from weight ounces.",
+          "Neither a converted metric quantity nor individual container count is stated."
+        ],
+        "artBriefId": "kt-23"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-122",
+      "slug": "kingtech-red-dyed-special-blend-oil-2-gallons",
+      "copy": {
+        "en": {
+          "name": "KingTech Red Dyed Special Blend Oil — 2 gallons",
+          "summary": "KingTech red-dyed Special Blend turbine engine oil, separately listed in a two-gallon presentation.",
+          "description": "The KingTech catalog identifies a red-dyed Special Blend turbine engine oil in a two-gallon size. The red-dyed designation distinguishes this product record from the separate standard two-gallon oil entry. Its title supplies a colour designation and size, rather than independent evidence of a difference in viscosity, engine suitability or performance."
+        },
+        "ro": {
+          "name": "Ulei KingTech Special Blend colorat în roșu — 2 galoane",
+          "summary": "Ulei KingTech Special Blend pentru motoare cu turbină, colorat în roșu și listat separat în prezentarea de 2 galoane.",
+          "description": "Catalogul KingTech identifică separat un ulei Special Blend pentru motoare cu turbină, colorat în roșu, în prezentarea de 2 galoane. Mențiunea despre colorant diferențiază această poziție de uleiul standard de același volum. Denumirea oferă informații despre culoare și volum, nu despre diferențe de vâscozitate, compatibilitate sau performanță."
+        }
+      },
+      "specs": [],
+      "oil": {
+        "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-red-dyed-special-blend-oil-2-gallons/122",
+        "verifiedOn": "2026-10-25",
+        "volume": {
+          "value": 2,
+          "unit": "gallon",
+          "sourceLabel": "2 Gallons"
+        },
+        "packQuantity": null,
+        "intendedUse": "turbine_engine_oil",
+        "blend": "red_dyed_special_blend",
+        "sourceNotes": [
+          "Red Dyed is a separate source title for the 2 Gallons presentation.",
+          "No viscosity or performance difference can be established from the red-dyed title."
+        ],
+        "artBriefId": "kt-122"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-24",
+      "slug": "life-battery-3800mah-9-9v",
+      "copy": {
+        "en": {
+          "name": "LIFE battery — 3800 mAh, 9.9 V",
+          "summary": "The KingTech battery catalog lists a LIFE-marked battery with a stated 3800 mAh capacity and 9.9 V voltage.",
+          "description": "This KingTech battery listing uses the source designation LIFE and specifies 3800 mAh and 9.9 V in its title. It is a separate catalog item from the LIFE battery marked 2100 mAh. The original markings identify the listed electrical ratings; they do not by themselves specify a plug, internal cell configuration or the requirements of any particular turbine system."
+        },
+        "ro": {
+          "name": "Acumulator LIFE — 3800 mAh, 9,9 V",
+          "summary": "Catalogul KingTech include un acumulator cu marcajul LIFE și valorile declarate de 3800 mAh și 9,9 V.",
+          "description": "Această poziție din catalogul KingTech poartă denumirea sursă LIFE și menționează 3800 mAh și 9,9 V. Este o poziție diferită de acumulatorul LIFE cu capacitatea înscrisă de 2100 mAh. Marcajele originale prezintă valorile electrice listate, dar nu determină singure conectorul, configurația internă a celulelor sau cerințele unui anumit sistem cu turbină."
+        }
+      },
+      "specs": [
+        {
+          "kind": "voltage",
+          "value": 9.9,
+          "unit": "V",
+          "sourceUrl": "https://www.kingtechturbines.com/product/3800mah-9-9v-life-battery/24",
+          "verifiedOn": "2026-10-25"
+        },
+        {
+          "kind": "capacity",
+          "value": 3800,
+          "unit": "mAh",
+          "sourceUrl": "https://www.kingtechturbines.com/product/3800mah-9-9v-life-battery/24",
+          "verifiedOn": "2026-10-25"
+        }
+      ],
+      "battery": {
+        "sourceUrl": "https://www.kingtechturbines.com/product/3800mah-9-9v-life-battery/24",
+        "verifiedOn": "2026-10-25",
+        "chemistry": {
+          "sourceLabel": "LIFE"
+        },
+        "cellCount": null,
+        "voltage": {
+          "value": 9.9,
+          "unit": "V"
+        },
+        "capacity": {
+          "value": 3800,
+          "unit": "mAh"
+        },
+        "connector": null,
+        "compatibleApplications": [],
+        "sourceNotes": [
+          "The original listing title explicitly marks 3800mAh, 9.9V and LIFE.",
+          "Cell count, exact chemical construction, connector and specific engine application are absent from the source title."
+        ],
+        "artBriefId": "kt-24"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-25",
+      "slug": "life-battery-2100mah-9-9v",
+      "copy": {
+        "en": {
+          "name": "LIFE battery — 2100 mAh, 9.9 V",
+          "summary": "A separately listed LIFE-marked KingTech catalog battery with stated values of 2100 mAh and 9.9 V.",
+          "description": "KingTech lists this LIFE-marked battery with a 2100 mAh capacity and 9.9 V voltage in the original product title. The capacity differentiates it from the separate 3800 mAh listing. These source-title values describe the electrical markings of the item and do not identify its physical connector, cell arrangement or suitability for any individual turbine-engine installation."
+        },
+        "ro": {
+          "name": "Acumulator LIFE — 2100 mAh, 9,9 V",
+          "summary": "Acumulator cu marcajul LIFE, listat separat în catalogul KingTech cu valorile declarate de 2100 mAh și 9,9 V.",
+          "description": "KingTech listează acest acumulator sub denumirea LIFE, cu capacitatea indicată de 2100 mAh și tensiunea de 9,9 V în titlul original. Capacitatea îl diferențiază de poziția distinctă de 3800 mAh. Aceste valori identifică marcajele electrice din catalog, fără să stabilească tipul conectorului, dispunerea celulelor sau adecvarea pentru o anumită instalație cu turbină."
+        }
+      },
+      "specs": [
+        {
+          "kind": "voltage",
+          "value": 9.9,
+          "unit": "V",
+          "sourceUrl": "https://www.kingtechturbines.com/product/2100mah-9-9v-life-battery/25",
+          "verifiedOn": "2026-10-25"
+        },
+        {
+          "kind": "capacity",
+          "value": 2100,
+          "unit": "mAh",
+          "sourceUrl": "https://www.kingtechturbines.com/product/2100mah-9-9v-life-battery/25",
+          "verifiedOn": "2026-10-25"
+        }
+      ],
+      "battery": {
+        "sourceUrl": "https://www.kingtechturbines.com/product/2100mah-9-9v-life-battery/25",
+        "verifiedOn": "2026-10-25",
+        "chemistry": {
+          "sourceLabel": "LIFE"
+        },
+        "cellCount": null,
+        "voltage": {
+          "value": 9.9,
+          "unit": "V"
+        },
+        "capacity": {
+          "value": 2100,
+          "unit": "mAh"
+        },
+        "connector": null,
+        "compatibleApplications": [],
+        "sourceNotes": [
+          "The original listing title explicitly marks 2100mAh, 9.9V and LIFE.",
+          "Cell count, exact chemical construction, connector and specific engine application are absent from the source title."
+        ],
+        "artBriefId": "kt-25"
+      },
+      "images": [],
+      "approval": "draft"
     }
   ]
 }
