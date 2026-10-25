@@ -20,20 +20,20 @@ const copy = product.copy[locale];
 >
   {product.image ? (
     <figure class="relative">
-    <img
-      src={productImageHref(product.image.src)}
-      alt={product.image.alt[locale]}
-      width={product.image.width}
-      height={product.image.height}
-      loading="lazy"
-      decoding="async"
-      class="aspect-[4/3] w-full bg-bodich-canvas object-contain"
+      <img
+        src={productImageHref(product.image.src)}
+        alt={product.image.alt[locale]}
+        width={product.image.width}
+        height={product.image.height}
+        loading="lazy"
+        decoding="async"
+        class="aspect-[4/3] w-full bg-bodich-canvas object-contain"
     />
-    {product.image.kind !== 'product_photo' && (
-      <figcaption data-concept-disclosure class="relative z-10 border-b border-bodich-border bg-bodich-canvas px-4 py-2 text-xs font-semibold leading-5 text-bodich-muted">
+      {product.image.kind !== 'product_photo' && (
+        <figcaption data-concept-disclosure class="relative z-10 border-b border-bodich-border bg-bodich-canvas px-4 py-2 text-xs font-semibold leading-5 text-bodich-muted">
         {t.catalogIllustrativeImageNotice}
-      </figcaption>
-    )}
+        </figcaption>
+      )}
     </figure>
   ) : (
     <div data-product-no-image class="flex aspect-[4/3] items-center justify-center border-b border-bodich-border bg-bodich-canvas/60 p-6">
