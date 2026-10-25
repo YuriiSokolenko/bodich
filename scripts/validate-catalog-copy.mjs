@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 // Offline QA for unpublished bilingual supplier-reference product copy.
 import assert from 'node:assert/strict';
-import { readFileSync, writeFileSync, renameSync, existsSync, unlinkSync, realpathSync } from 'node:fs';
+import { readFileSync, writeFileSync, renameSync, existsSync, unlinkSync, realpathSync, mkdtempSync, symlinkSync, rmSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
-import { resolve } from 'node:path';
+import { resolve, join } from 'node:path';
+import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
 
 const read = (p) => JSON.parse(readFileSync(p, 'utf8'));
@@ -22,9 +23,26 @@ const measurementPattern = /(^|[^\p{L}\p{N}])([0-9][0-9.,]*)(\s*)(g\/min|mL\/min
 // Match explicit promotional forms, not neutral mentions of stock, delivery,
 // or compatibility. This lexical gate does NOT replace native legal review.
 const salesPhrases = {
-  en: /(?:order now|buy now|ships today|free shipping|free delivery|guaranteed delivery|warranty included|guaranteed by BODICH|in stock at BODICH|in stock now|ready to ship|ships within [0-9]+ (?:business )?days?|available for immediate delivery|sale price|special offer)/iu,
-  ro: /(?:comandă acum|cumpără acum|expediere astăzi|expediem astăzi|livrare gratuită|livrare garantată|livrăm în [0-9]+ zile|garanție inclusă|garantat(?:ă|e|i)? de BODICH|în stoc la BODICH|pe stoc|disponibil acum|disponibil(?:ă)? pentru livrare imediată|preț promoțional|ofertă specială)/iu,
+  en: /(?<![\p{L}])(?:order now|buy now|ships today|free shipping|free delivery|guaranteed delivery|warranty included|guaranteed by BODICH|in stock at BODICH|in stock now|ready to ship|ships within [0-9]+ (?:business )?days?|available for immediate delivery|sale price|special offer)(?![\p{L}])/giu,
+  ro: /(?<![\p{L}])(?:comandă acum|cumpără acum|expediere astăzi|expediem astăzi|livrare gratuită|livrare garantată|livrăm în [0-9]+ zile|garanție inclusă|garantat(?:ă|e|i)? de BODICH|în stoc la BODICH|pe stoc|disponibil acum|disponibil(?:ă)? pentru livrare imediată|preț promoțional|ofertă specială)(?![\p{L}])/giu,
 };
+// Conservative local negation cue immediately preceding a promotional phrase.
+// This is an editorial heuristic, NOT a linguistic/legal review or full NLP.
+const negationPrefix = {
+  en: /(?:^|[^\p{L}])(?:not|no|never|is not|are not|isn't|aren't|cannot|can't)(?:\s+[\p{L}]+){0,3}\s*$/iu,
+  ro: /(?:^|[^\p{L}])(?:nu|nici|niciun|nicio|fără)(?:\s+[\p{L}]+){0,3}\s*$/iu,
+};
+function hasUnapprovedPromotion(copy, lang) {
+  for (const field of fields) {
+    const value = copy[field];
+    for (const match of value.matchAll(salesPhrases[lang])) {
+      const before = value.slice(0, match.index);
+      const clause = before.split(/[.!?;:\n]/u).at(-1).slice(-80);
+      if (!negationPrefix[lang].test(clause)) return true;
+    }
+  }
+  return false;
+}
 const sortUnique = (xs) => [...new Set(xs)].sort();
 const keyFor = (x) => x.sourceId + '/' + x.value + '/' + x.unit;
 
@@ -184,7 +202,7 @@ export function validate(input, { checkMatrix = true } = {}) {
             fail('Romanian diacritics missing in ' + id + '/ro/' + field);
         }
       }
-      if (salesPhrases[lang].test(fields.map((field) => copy[field]).join(' ')))
+      if (hasUnapprovedPromotion(copy, lang))
         fail('Unapproved commercial claims: ' + id + '/' + lang);
       if (typeof alt !== 'string' || alt.length < 85 || alt.length > 260 ||
           !alt.includes(id) || !alt.includes(source.sourceTitle) ||
@@ -375,6 +393,18 @@ function selfTest(input) {
   disclaimer.drafts.records[0].copy.ro.description +=
     ' Această fișă nu implică o compatibilitate garantată și nu confirmă livrare.';
   assert.deepEqual(validate(disclaimer), [], 'Neutral EN/RO commercial disclaimers must pass');
+  const negated = structuredClone(input);
+  negated.drafts.records[0].copy.en.description +=
+    ' The item is not in stock now and is not ready to ship.';
+  negated.drafts.records[0].copy.ro.description +=
+    ' Produsul nu este pe stoc și nu este disponibil acum.';
+  assert.deepEqual(validate(negated), [],
+    'Negated promotions in both languages must remain valid');
+  const supplierInventory = structuredClone(input);
+  supplierInventory.drafts.records[0].copy.ro.description +=
+    ' Situația pe stocul furnizorului este necunoscută.';
+  assert.deepEqual(validate(supplierInventory), [],
+    'pe stocul must not match pe stoc as an incomplete word');
   // Importing the module must not parse foreign argv, emit output or rewrite the matrix.
   const before = readFileSync(paths.matrix, 'utf8');
   const imported = spawnSync(process.execPath,
@@ -401,6 +431,24 @@ function selfTest(input) {
     'legacy foreign argv should not cause an import-time ENOENT');
   assert.equal(canonicalArgvPath('scripts/validate-catalog-copy.mjs'), thisPath,
     'legacy real file argv canonicalized');
+  const tempDir = mkdtempSync(join(tmpdir(), 'bodich-copy-entry-'));
+  try {
+    const linked = join(tempDir, 'validator.mjs');
+    try {
+      symlinkSync(thisPath, linked);
+    } catch (error) {
+      if (!['EPERM', 'EACCES', 'ENOTSUP'].includes(error.code)) throw error;
+      console.log('Node entrypoint symlink fixture skipped: symlinks are not permitted');
+    }
+    if (existsSync(linked)) {
+      assert.equal(canonicalArgvPath(linked), thisPath,
+        'legacy argv symlink resolves to the script realpath');
+      assert.equal(isEntryPoint(undefined, thisPath, canonicalArgvPath(linked)), true,
+        'legacy direct-entry symlink must run the CLI');
+    }
+  } finally {
+    rmSync(tempDir, { recursive: true, force: true });
+  }
   console.log('Copy QA regression fixtures: ' + cases +
     ' expected failures detected, with positive disclaimer/title and module-CLI smoke tests');
 }
@@ -414,10 +462,9 @@ function canonicalArgvPath(argv1) {
   const candidate = resolve(argv1);
   return existsSync(candidate) ? realpathSync(candidate) : undefined;
 }
-const runningDirectly = import.meta.main ??
-  isEntryPoint(undefined,
-    realpathSync(fileURLToPath(import.meta.url)),
-    canonicalArgvPath(process.argv[1]));
+const runningDirectly = isEntryPoint(import.meta.main,
+  realpathSync(fileURLToPath(import.meta.url)),
+  canonicalArgvPath(process.argv[1]));
 if (runningDirectly) {
   const options = process.argv.slice(2);
   if (options.some((x) => !['--write-matrix', '--self-test'].includes(x)) ||
