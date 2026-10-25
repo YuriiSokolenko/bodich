@@ -24,13 +24,13 @@ The 2026-10-23 source audit found **no Discounted Turbines category-listed produ
 - **Model/type:** no model, `itemType: service`, `categoryId: warranty-service`; one source ID and one reference overlay.
 - **Staging:** `approval: draft`, `warranty.offerStatus: reference_only`, `warranty.legalApproval: pending`, `specs: []`, `images: []`. No price, live route, warranty coverage, term, transfer eligibility, return right, payment or fulfillment promise.
 
-**EN reference presentation**
+**EN reference excerpt (exact name and summary)**
 
-> **KingTech Warranty Transfer — reference only.** An unpublished record of a KingTech warranty-transfer service; BODICH does not offer a warranty purchase or transfer. Any future offering requires separate company and legal approval.
+> **KingTech Warranty Transfer — reference only** An unpublished record of a KingTech warranty-transfer service; BODICH does not offer a warranty purchase or transfer.
 
-**RO reference presentation**
+**RO reference excerpt (exact name and summary)**
 
-> **Transfer de garanție KingTech — doar referință.** Înregistrare nepublicată a unui serviciu KingTech de transfer al garanției; BODICH nu oferă cumpărarea sau transferul garanției. Orice ofertă viitoare necesită aprobare distinctă din partea companiei și a departamentului juridic.
+> **Transfer de garanție KingTech — doar referință** Înregistrare nepublicată a unui serviciu KingTech de transfer al garanției; BODICH nu oferă cumpărarea sau transferul garanției.
 
 The full EN/RO summary and original authored explanation are stored in the `kt-100` editorial override, not in public `confirmedProducts`.
 
@@ -40,15 +40,15 @@ The full EN/RO summary and original authored explanation are stored in the `kt-1
 - **Identity:** `kingtech-gift-card-external` is a **reference ID, not an SKU** or KingTech `/product` record. The supplier section's product count stays at zero. No product slug or BODICH route is generated.
 - **Staging:** `externalReferenceServices` in `src/catalog/reference.ts`, `itemType: digital`, `approval: draft`, `offerStatus: reference_only`, `legalApproval: pending`. No redeemable code, value, purchase action, seller terms or delivery promise.
 
-**EN reference presentation**
+**EN reference excerpt (exact name and summary)**
 
-> **KingTech Gift Card — external reference only.** A supplier-linked digital gift card, recorded for catalog research; BODICH does not sell or issue gift cards. This is information only.
+> **KingTech Gift Card — external reference only** A supplier-linked digital gift card, recorded for catalog research; BODICH does not sell or issue gift cards.
 
-**RO reference presentation**
+**RO reference excerpt (exact name and summary)**
 
-> **Card cadou KingTech — doar referință externă.** Card cadou digital de la furnizor, documentat doar pentru catalog; BODICH nu vinde și nu emite carduri cadou. Aceasta este doar o referință.
+> **Card cadou KingTech — doar referință externă** Card cadou digital de la furnizor, documentat doar pentru catalog; BODICH nu vinde și nu emite carduri cadou.
 
-These are **internal draft/reference descriptions**, not retail cards. Both languages are checked by the offline validator. Supplier Square checkout must never be injected into a BODICH purchase link.
+These are **internal draft/reference descriptions**, not retail cards. Both languages and the exact quoted name/summary excerpts are checked by the offline validator. Supplier Square checkout must never be injected into a BODICH purchase link.
 
 ## Items outside the nine requested categories
 
@@ -65,6 +65,6 @@ The four verified direct-only accessory references (32, 33, 107, 138) are alread
 
 Run `npm run catalog:source:check` (included in `npm run check` and CI). `scripts/validate-commerce-references.mjs` validates: unique source IDs; source URLs/title/manufacturer/historical status; a derived discount grouping only over G4+/G5/TP; one service warranty record with KingTech attribution and explicit EN/RO disclaimers; exactly one externally referenced digital Gift Card with no purchasable SKU; existing promotional/unavailable-product exclusions; and no commercial publication of either nonphysical entity.
 
-`node scripts/validate-commerce-references.mjs --self-test` covers a **positive synthetic discounted-engine cross-list** (identity-preserving membership) and negative cases for warranty promotion, identity/type changes, missing Romanian disclaimer, external checkout leakage, digital legal promotion, accidental public inclusion, duplicate warranty records, malformed discounted non-engine membership, discount-only orphan and lost exclusions.
+`node scripts/validate-commerce-references.mjs --self-test` covers **positive synthetic cross-listing for G4+, G5 and TP** (identity-preserving membership) and exact-error negative fixtures for warranty approval, historic source URL/title/manufacturer/status tampering, invalid/future review dates, missing EN/RO disclaimers, unapproved commerce-field injection, leaked Square URLs (including nested query links), Gift Card promotion/public SKU leakage, duplicate warranty records, discount-only orphan/non-engine membership and removed gift/promotion/battery exclusions. The evidence excerpt fixture rejects documentation that diverges from the stored EN/RO names or summaries.
 
 Future releases still require **BODICH company and legal approval**, rights review, separate reviewed commercial content, payment/compliance handling and a deliberate public-catalog migration. This task deliberately creates **no public routes, prices, checkout, gift-code issuance or warranty purchase**.
