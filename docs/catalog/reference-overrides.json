@@ -5420,10 +5420,8 @@
         "intendedUse": "turbine_engine_oil",
         "blend": "special_blend",
         "sourceNotes": [
-          "Source label gives total quantity, not a confirmed container count.",
-          "Source-side shipping, price and stock are not BODICH policies.",
-          "Composition, V3.1 version and additive claims are not established by the six-SKU source ledger; do not copy them into product descriptions until individually evidenced.",
-          "Current approval, stock, regional volume interpretation and publication status are separate metadata, not product copy."
+          "The title states 2 Gallons but does not specify how many separate containers are included.",
+          "The exact regional gallon convention is not specified by the source title."
         ],
         "artBriefId": "kt-21"
       },
@@ -5458,10 +5456,8 @@
         "intendedUse": "turbine_engine_oil",
         "blend": "special_blend",
         "sourceNotes": [
-          "Source label gives total quantity, not a confirmed container count.",
-          "Source-side shipping, price and stock are not BODICH policies.",
-          "Composition, V3.1 version and additive claims are not established by the six-SKU source ledger; do not copy them into product descriptions until individually evidenced.",
-          "Current approval, stock, regional volume interpretation and publication status are separate metadata, not product copy."
+          "The title states 1 Gallon but does not specify how many separate containers are included.",
+          "The exact regional gallon convention is not specified by the source title."
         ],
         "artBriefId": "kt-22"
       },
@@ -5496,10 +5492,8 @@
         "intendedUse": "turbine_engine_oil",
         "blend": "special_blend",
         "sourceNotes": [
-          "The 32oz title does not specify fluid vs weight ounces; metric conversion withheld.",
-          "Source-side shipping, price and stock are not BODICH policies.",
-          "Composition, V3.1 version and additive claims are not established by the six-SKU source ledger; do not copy them into product descriptions until individually evidenced.",
-          "Current approval, stock, regional volume interpretation and publication status are separate metadata, not product copy."
+          "The source title uses 32oz without distinguishing liquid-volume ounces from weight ounces.",
+          "Neither a converted metric quantity nor individual container count is stated."
         ],
         "artBriefId": "kt-23"
       },
@@ -5534,10 +5528,8 @@
         "intendedUse": "turbine_engine_oil",
         "blend": "red_dyed_special_blend",
         "sourceNotes": [
-          "Red Dyed is an original-source product distinction; performance equivalence unverified.",
-          "Source-side shipping, price and stock are not BODICH policies.",
-          "Composition, V3.1 version and additive claims are not established by the six-SKU source ledger; do not copy them into product descriptions until individually evidenced.",
-          "Current approval, stock, regional volume interpretation and publication status are separate metadata, not product copy."
+          "Red Dyed is a separate source title for the 2 Gallons presentation.",
+          "No viscosity or performance difference can be established from the red-dyed title."
         ],
         "artBriefId": "kt-122"
       },
@@ -5593,10 +5585,8 @@
         "connector": null,
         "compatibleApplications": [],
         "sourceNotes": [
-          "LIFE, voltage and capacity are original source-title labels; detailed chemistry documentation remains review-needed.",
-          "No confirmed connector, cell count or specific engine compatibility from the manufacturer product title.",
-          "The original uppercase LIFE chemistry notation is preserved; the source title alone does not establish exact cell construction or a 3S count.",
-          "Publication and safety verification status belong to metadata, not customer-facing copy."
+          "The original listing title explicitly marks 3800mAh, 9.9V and LIFE.",
+          "Cell count, exact chemical construction, connector and specific engine application are absent from the source title."
         ],
         "artBriefId": "kt-24"
       },
@@ -5652,10 +5642,8 @@
         "connector": null,
         "compatibleApplications": [],
         "sourceNotes": [
-          "LIFE, voltage and capacity are original source-title labels; detailed chemistry documentation remains review-needed.",
-          "No confirmed connector, cell count or specific engine compatibility from the manufacturer product title.",
-          "The original uppercase LIFE chemistry notation is preserved; the source title alone does not establish exact cell construction or a 3S count.",
-          "Publication and safety verification status belong to metadata, not customer-facing copy."
+          "The original listing title explicitly marks 2100mAh, 9.9V and LIFE.",
+          "Cell count, exact chemical construction, connector and specific engine application are absent from the source title."
         ],
         "artBriefId": "kt-25"
       },
