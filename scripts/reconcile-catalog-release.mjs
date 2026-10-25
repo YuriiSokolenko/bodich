@@ -288,7 +288,7 @@ function runSelfTest() {
   if (baseline.errors.length) throw new Error('Baseline failed: ' + baseline.errors.join('; '));
   const cases = [
     ['missing SKU draft', (d) => { d.edits.records.pop(); }, 'Silently missing editorial draft'],
-    ['duplicate SKU draft', (d) => { d.edits.records.push(d.edits.records[0]); }, 'Duplicate editorial draft'],
+    ['duplicate SKU draft', (d) => { d.edits.records.push(d.edits.records[0]); }, 'Missing/duplicate editorial draft'],
     ['orphan illustration', (d) => { d.artwork.entries[0].sourceId = 'phantom'; }, 'Silently missing original-art'],
     ['missing localized alt', (d) => { d.artwork.entries[0].alt.ro = ''; }, 'Missing/unattributed ro'],
     ['shared image derivative', (d) => { d.artwork.entries[1].assets.webp600 = d.artwork.entries[0].assets.webp600; }, 'Non-unique or wrong'],
