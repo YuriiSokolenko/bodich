@@ -52,6 +52,10 @@ All four are provisionally classified under Accessories with **no invented subca
 
 There were **no detected cross-listings between the nine shop sections** in the captured current source snapshot. Source status labels are evidence-only; `unknown` is not a stock or availability assertion.
 
+## Discounted, warranty and digital service follow-up (issue #32)
+
+The [2026-10-25 commerce reference ledger](./commerce-reference-evidence.md) reconciles the zero-result Discounted Turbines category (derived collection only, no duplicate SKU), the single [Warranty Transfer ID 100](https://www.kingtechturbines.com/product/warranty-transfer/100) as an unpublished EN/RO service reference and the Gift Card as an external EN/RO digital-service reference with no shop SKU. The source brand is preserved, with all seller-specific offers and legal terms withheld from BODICH. Out-of-scope Promotional Items, the missing original battery ID 27, and four already classified direct-only accessory pages remain documented exceptions.
+
 ## Repeatable audit and acceptance guards
 
 1. Use Node 24. For the optional on-demand live browser audit: `npm install --no-save --package-lock=false playwright@1.64.1`, `npx playwright install --only-shell chromium`, then `npm run catalog:source:refresh`. The crawler traverses the nine shop sections, all accessory subcategories, numeric **and opaque** product links, plus the four independently verified direct-only URLs. A page counts as product-verified only when its own `h1` or `og:title` yields a product title (never the category-tile fallback); a missing title is reported as unverified, not mistaken for a 404. Fresh audits preserve the exact matched count label or empty-state phrase in `countEvidence` for category roots and children. Category links alone never establish a zero count: missing evidence marks coverage incomplete. The captured 2026-10-23 snapshot predates these evidence fields. This audit never edits the published BODICH catalog.
