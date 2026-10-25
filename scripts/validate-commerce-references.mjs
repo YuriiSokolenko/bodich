@@ -154,7 +154,7 @@ if (drafts) {
 }
 if (process.argv.includes('--self-test') && drafts) {
   const reject = (description, values, text) => {
-    if (!commerceProblems(...values).some((error) => error.includes(text)))
+    if (!commerceProblems(...values).some((error) => error.toLowerCase().includes(text.toLowerCase())))
       problems.push('Negative fixture accepted: ' + description);
   };
   const warranty = drafts.find((d) => d.sourceId === WARRANTY_ID);
