@@ -407,7 +407,7 @@ export function validateReferenceDrafts(
       fail('Non-battery reference contains battery metadata: ' + draft.sourceId);
     if (draft.oil !== null) {
       const detail = draft.oil;
-      const volumeTitle = sourceProduct?.sourceTitle?.match(/,\\s*(\\d+)\\s*(Gallons?|oz)$/i);
+      const volumeTitle = sourceProduct?.sourceTitle?.match(/,\s*(\d+)\s*(Gallons?|oz)$/i);
       const correctUnit = volumeTitle?.[2].toLowerCase().startsWith('gallon') ? 'gallon' : 'oz';
       if (draft.itemType !== 'oil' || !sourceProduct || !detail || typeof detail !== 'object' ||
           Array.isArray(detail) ||
@@ -428,7 +428,7 @@ export function validateReferenceDrafts(
     }
     if (draft.battery !== null) {
       const detail = draft.battery;
-      const batteryTitle = sourceProduct?.sourceTitle?.match(/^(\\d+)mAh-(\\d+(?:\\.\\d+)?)V LIFE Battery$/i);
+      const batteryTitle = sourceProduct?.sourceTitle?.match(/^(\d+)mAh-(\d+(?:\.\d+)?)V LIFE Battery$/i);
       if (draft.itemType !== 'battery' || !sourceProduct || !detail || typeof detail !== 'object' ||
           Array.isArray(detail) ||
           !keysOnly(detail, ['sourceUrl', 'verifiedOn', 'chemistry', 'cellCount', 'voltage', 'capacity', 'connector', 'compatibleApplications', 'sourceNotes', 'artBriefId']) ||
