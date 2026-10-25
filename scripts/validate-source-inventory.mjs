@@ -382,8 +382,11 @@ function g4DraftProblems(inventory, drafts, policy = g4Withheld) {
 function tpSnapshotProblems(inventory, snapshot) {
   const issues = [];
   if (!snapshot || snapshot.schemaVersion !== 1 ||
-      snapshot.purpose !== 'original_kingtech_tp_2026_10_25_specification_snapshot' ||
-      snapshot.checkedOn !== '2026-10-25' ||
+      snapshot.purpose !== 'original_kingtech_tp_specification_snapshot' ||
+      typeof snapshot.checkedOn !== 'string' || !datePattern.test(snapshot.checkedOn) ||
+      Number.isNaN(Date.parse(snapshot.checkedOn + 'T00:00:00Z')) ||
+      new Date(snapshot.checkedOn + 'T00:00:00Z').toISOString().slice(0, 10) !== snapshot.checkedOn ||
+      snapshot.checkedOn > new Date().toISOString().slice(0, 10) ||
       !Array.isArray(snapshot.records) ||
       Object.keys(snapshot).some((k) => !['schemaVersion','purpose','checkedOn','records'].includes(k)))
     return ['Invalid TP manufacturer evidence snapshot schema'];
@@ -508,8 +511,9 @@ try {
   errors.push(...g5DraftProblems(doc, drafts).map((e) => 'G5 coverage: ' + e));
   errors.push(...g4QuarantineProblems(doc, g4Withheld).map((e) => 'G4+ policy: ' + e));
   errors.push(...g4DraftProblems(doc, drafts).map((e) => 'G4+ coverage: ' + e));
-  errors.push(...tpSnapshotProblems(doc, tpVerified).map((e) => 'TP snapshot: ' + e));
-  if (!tpSnapshotProblems(doc, tpVerified).length)
+  const tpSnapshotErrors = tpSnapshotProblems(doc, tpVerified);
+  errors.push(...tpSnapshotErrors.map((e) => 'TP snapshot: ' + e));
+  if (!tpSnapshotErrors.length)
     errors.push(...tpDraftProblems(doc, drafts).map((e) => 'TP coverage: ' + e));
 } catch (error) {
   errors.push('Cannot derive unpublished reference catalog: ' + error.message);
@@ -705,6 +709,12 @@ if (process.argv.includes('--self-test')) {
     if (!validateReferenceDrafts(doc,wrongCategory,buildReferenceDrafts(doc,wrongCategory))
         .some((e) => e.includes('Non-TP record')))
       errors.push('TP metadata illegally accepted on turbojet');
+    const missingTpSpeedAxis = structuredClone(draftOverrides);
+    delete missingTpSpeedAxis.records.find((r) => r.sourceId === 'kt-18').specs
+      .find((p) => p.kind === 'speed').metric;
+    if (!validateReferenceDrafts(doc,missingTpSpeedAxis,buildReferenceDrafts(doc,missingTpSpeedAxis))
+        .some((e) => e.includes('Invalid specification/unit/provenance')))
+      errors.push('Unqualified turboprop RPM escaped TP schema validation');
     const wrongSpeedAxis = structuredClone(draftOverrides);
     wrongSpeedAxis.records.find((r) => r.sourceId === 'kt-127').specs
       .find((p) => p.kind === 'speed').metric = 'propeller';
@@ -715,6 +725,11 @@ if (process.argv.includes('--self-test')) {
     wrongSnapshot.records[0].specs[0].value = -1;
     if (!tpSnapshotProblems(doc,wrongSnapshot).some((e) => e.includes('technical values')))
       errors.push('Malformed TP numeric evidence snapshot bypassed validation');
+    for (const checkedOn of ['2026-02-30', '2099-01-01', 'not-a-date']) {
+      const wrongDate = {...tpVerified, checkedOn};
+      if (!tpSnapshotProblems(doc,wrongDate).some((e) => e.includes('schema')))
+        errors.push('TP snapshot with invalid/future date was accepted: ' + checkedOn);
+    }
     const duplicateSnapshot = structuredClone(tpVerified);
     duplicateSnapshot.records.push(structuredClone(duplicateSnapshot.records[0]));
     if (!tpSnapshotProblems(doc,duplicateSnapshot).some((e) => e.includes('coverage mismatch')))
