@@ -9,7 +9,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "catalog:intake": "node scripts/validate-catalog.mjs --intake",
-    "catalog:source:check": "node scripts/audit-kingtech-source.mjs --self-test && node scripts/validate-source-inventory.mjs && node scripts/validate-source-inventory.mjs --self-test && node scripts/validate-accessories.mjs && node scripts/validate-accessories.mjs --self-test && node scripts/validate-consumables.mjs && node scripts/validate-consumables.mjs --self-test",
+    "catalog:source:check": "node scripts/audit-kingtech-source.mjs --self-test && node scripts/validate-source-inventory.mjs && node scripts/validate-source-inventory.mjs --self-test && node scripts/validate-accessories.mjs && node scripts/validate-accessories.mjs --self-test && node scripts/validate-consumables.mjs && node scripts/validate-consumables.mjs --self-test && node scripts/validate-commerce-references.mjs && node scripts/validate-commerce-references.mjs --self-test",
     "catalog:source:refresh": "node scripts/audit-kingtech-source.mjs --write --browser"
   },
   "engines": {
