@@ -14,7 +14,12 @@ const paths = {
 const languages = ['en', 'ro'], fields = ['name', 'summary', 'description'];
 const qaStatus = 'automated_consistency_checked_unpublished';
 const humanStatus = 'pending_prelaunch_native_Romanian_legal_marketing_review';
-const measurementPattern = /(^|[^\p{L}\p{N}])([0-9][0-9.,]*)\s+(g\/min|mL\/min|L\/h|mAh|kgf|rpm|°C|mm|cm|kW|mL|Ah|kg|g|V|W|L)(?![\p{L}/])/gu;
+// Space is optional for detection (9.9V must not bypass evidence), but mandatory in approved copy.
+const measurementPattern = /(^|[^\p{L}\p{N}])([0-9][0-9.,]*)(\s*)(g\/min|mL\/min|L\/h|km\/h|m\/s|mAh|kgf|rpm|°C|°F|bar|psi|mm|cm|kW|mL|Ah|kg|g|V|W|L|N|%)(?![\p{L}/])/gu;
+const salesPhrases = {
+  en: /(?:order now|buy now|ships today|available now|in stock|guaranteed by BODICH|free shipping|warranty included|guaranteed delivery)/iu,
+  ro: /(?:comandă acum|cumpără acum|în stoc|livrare|garantat(?:ă|e|i)?|garanție inclusă|preț (?:actual|promoțional))/iu,
+};
 const sortUnique = (xs) => [...new Set(xs)].sort();
 const keyFor = (x) => x.sourceId + '/' + x.value + '/' + x.unit;
 
@@ -22,7 +27,7 @@ function parseQuantity(token, lang) {
   const format = lang === 'en'
     ? /^(?:[0-9]+(?:\.[0-9]+)?|[0-9]{1,3}(?:,[0-9]{3})+(?:\.[0-9]+)?)$/
     : /^(?:[0-9]+(?:,[0-9]+)?|[0-9]{1,3}(?:\.[0-9]{3})+(?:,[0-9]+)?)$/;
-  if (!format.test(token)) return null;
+  if (!format.test(token) || /^[0-9]{5,}$/.test(token)) return null;
   return Number(lang === 'en' ? token.replaceAll(',', '') : token.replaceAll('.', '').replace(',', '.'));
 }
 function measured(copy, lang) {
@@ -30,12 +35,48 @@ function measured(copy, lang) {
   for (const field of fields) {
     if (typeof copy?.[field] !== 'string') continue;
     for (const m of copy[field].matchAll(measurementPattern))
-      out.push({ value: parseQuantity(m[2], lang), unit: m[3], surface: m[2] + ' ' + m[3] });
+      out.push({ value: parseQuantity(m[2], lang), unit: m[4], surface: m[2] + m[3] + m[4],
+        spaced: m[3].length > 0, field, start: m.index + m[1].length,
+        end: m.index + m[0].length });
   }
   return out;
 }
 function equivalent(a, b) {
   return a.unit === b.unit && a.value !== null && Math.abs(a.value - b.value) < 0.000001;
+}
+function primaryCategory(source) {
+  const category = Array.isArray(source.sourceCategoryIds)
+    ? source.sourceCategoryIds.filter((item) => item !== 'discounted') : [];
+  if (category.length !== 1 || typeof category[0] !== 'string' || !category[0])
+    throw new Error('Missing or ambiguous source category for ' + source.id);
+  return category[0];
+}
+function qualifiedClaim(copy, claim, lang, exception) {
+  const original = copy[claim.field];
+  return (exception.acceptedPhrases?.[lang] ?? []).some((phrase) => {
+    let at = original.indexOf(phrase);
+    while (at !== -1) {
+      if (at <= claim.start && at + phrase.length >= claim.end) return true;
+      at = original.indexOf(phrase, at + 1);
+    }
+    return false;
+  });
+}
+/** Return first specific mismatched field, not an opaque whole-document error. */
+function mismatch(a, b, prefix = '') {
+  if (Object.is(a, b)) return null;
+  if (a === null || b === null || typeof a !== typeof b ||
+      typeof a !== 'object') return prefix || '(root)';
+  if (Array.isArray(a) !== Array.isArray(b)) return prefix || '(root)';
+  const keys = Array.isArray(a) ? [...Array(Math.max(a.length, b.length)).keys()].map(String)
+    : [...new Set([...Object.keys(a), ...Object.keys(b)])].sort();
+  for (const key of keys) {
+    if (!Object.hasOwn(a, key) || !Object.hasOwn(b, key))
+      return (prefix ? prefix + '.' : '') + key;
+    const field = mismatch(a[key], b[key], (prefix ? prefix + '.' : '') + key);
+    if (field) return field;
+  }
+  return null;
 }
 export function expectedMatrix(inventory, drafts, exceptions) {
   const edits = new Map(drafts.records.map((d) => [d.sourceId, d]));
@@ -48,7 +89,7 @@ export function expectedMatrix(inventory, drafts, exceptions) {
       const extra = exceptions.entries.filter((x) => x.sourceId === source.id);
       return {
         sourceId: source.id,
-        sourceCategory: source.sourceCategoryIds.find((x) => x !== 'discounted'),
+        sourceCategory: primaryCategory(source),
         sourceUrl: source.canonicalUrl,
         supplierLifecycle: source.sourceStatus,
         structuredSpecCount: draft?.specs?.length ?? 0,
@@ -65,12 +106,13 @@ export function expectedMatrix(inventory, drafts, exceptions) {
     }),
   };
 }
-export function validate(input) {
+export function validate(input, { checkMatrix = true } = {}) {
   const { inventory, drafts, art, exceptions, matrix } = input, errors = [];
   const fail = (msg) => errors.push(msg);
   if (!Array.isArray(inventory?.products) || !Array.isArray(drafts?.records) ||
-      !Array.isArray(art?.entries) || !Array.isArray(matrix?.items) ||
-      [inventory.products.length, drafts.records.length, art.entries.length, matrix.items.length].some((n) => n !== 132))
+      !Array.isArray(art?.entries) || (checkMatrix && !Array.isArray(matrix?.items)) ||
+      [inventory.products.length, drafts.records.length, art.entries.length].some((n) => n !== 132) ||
+      (checkMatrix && matrix.items.length !== 132))
     return ['Frozen inventory, translations, artwork and review matrix must cover 132 records'];
   if (exceptions?.schemaVersion !== 1 ||
       exceptions?.purpose !== 'documented_non_nominal_or_cross_reference_copy_claims' ||
@@ -80,12 +122,20 @@ export function validate(input) {
   const artById = new Map(art.entries.map((p) => [p.sourceId, p]));
   if (sources.size !== 132 || edits.size !== 132 || artById.size !== 132)
     fail('Duplicate or missing SKU identities');
+  for (const source of inventory.products) {
+    try { primaryCategory(source); } catch (error) { fail(error.message); }
+  }
   const knownUrls = new Set(inventory.products.map((x) => x.canonicalUrl));
   const exceptionsByKey = new Map();
   for (const e of exceptions.entries) {
     if (!sources.has(e.sourceId) || !Number.isFinite(e.value) || e.value < 0 ||
         !knownUrls.has(e.sourceUrl) || typeof e.note !== 'string' || e.note.length < 45 ||
-        !/^[a-z_]+$/.test(e.reviewTag ?? '') || !/^(?:kgf|rpm|g|mAh)$/.test(e.unit))
+        !/^[a-z_]+$/.test(e.reviewTag ?? '') || !/^(?:kgf|rpm|g|mAh)$/.test(e.unit) ||
+        !e.acceptedPhrases || !languages.every((lang) =>
+          Array.isArray(e.acceptedPhrases[lang]) && e.acceptedPhrases[lang].length > 0 &&
+          e.acceptedPhrases[lang].every((phrase) =>
+            typeof phrase === 'string' && phrase.length > 8 &&
+            measured({ name: phrase }, lang).some((found) => equivalent(found, e)))))
       fail('Invalid, unclear or unsourced claim exception: ' + e.sourceId);
     if (exceptionsByKey.has(keyFor(e))) fail('Duplicate claim exception: ' + keyFor(e));
     exceptionsByKey.set(keyFor(e), e);
@@ -120,8 +170,17 @@ export function validate(input) {
       }
       if (!fields.some((field) => copy[field].toLowerCase().includes('kingtech')))
         fail('No supplier attribution: ' + id + '/' + lang);
-      if (lang === 'ro' && !/[ăâîșț]/i.test(Object.values(copy).join(' ')))
-        fail('Romanian diacritics missing: ' + id);
+      if (lang === 'ro') {
+        for (const field of fields) {
+          if (/[şţŞŢ]/u.test(copy[field]))
+            fail('Deprecated Romanian cedilla instead of comma-below: ' + id + '/ro/' + field);
+          // Some short names (e.g. "Acumulator LIFE") legitimately contain no diacritics.
+          if (field !== 'name' && !/[ăâîșț]/iu.test(copy[field]))
+            fail('Romanian diacritics missing in ' + id + '/ro/' + field);
+        }
+      }
+      if (salesPhrases[lang].test(fields.map((field) => copy[field]).join(' ')))
+        fail('Unapproved commercial claims: ' + id + '/' + lang);
       if (typeof alt !== 'string' || alt.length < 85 || alt.length > 260 ||
           !alt.includes(id) || !alt.includes(source.sourceTitle) ||
           !alt.startsWith(lang === 'en' ? 'Illustrative ' : 'Diagramă ilustrativă ') ||
@@ -132,9 +191,13 @@ export function validate(input) {
           fail('Wrong decimal/thousands locale format: ' + id + '/' + lang + '/' + claim.surface);
           continue;
         }
+        if (!claim.spaced) fail('Missing space before engineering unit: ' + id + '/' + lang + '/' + claim.surface);
         if ((edit.specs ?? []).some((spec) => equivalent(spec, claim))) continue;
         const key = keyFor({ sourceId: id, ...claim });
-        if (!exceptionsByKey.has(key)) fail('Numeric copy claim lacks evidence: ' + id + '/' + lang + '/' + claim.surface);
+        const exception = exceptionsByKey.get(key);
+        if (!exception) fail('Numeric copy claim lacks evidence: ' + id + '/' + lang + '/' + claim.surface);
+        else if (!qualifiedClaim(copy, claim, lang, exception))
+          fail('Qualified numeric claim lost context: ' + id + '/' + lang + '/' + claim.surface);
         else usedClaims.add(key + '/' + lang);
       }
       const propeller = lang === 'en'
@@ -148,18 +211,29 @@ export function validate(input) {
     }
     if (fields.some((field) => edit.copy?.en?.[field] === edit.copy?.ro?.[field]) ||
         image.alt?.en === image.alt?.ro) fail('Identical EN and RO text: ' + id);
-    if (/\b(?:order now|buy now|ships today|in stock at BODICH|guaranteed by BODICH)\b/i.test(
-      fields.map((f) => edit.copy?.en?.[f] ?? '').join(' ')))
-      fail('Unapproved commercial claims: ' + id);
   }
   for (const exception of exceptions.entries)
     for (const lang of languages)
       if (!usedClaims.has(keyFor(exception) + '/' + lang))
         fail('Unused/unpaired copy evidence exception: ' + exception.sourceId + '/' + lang);
-  if (matrix?.schemaVersion !== 1 || matrix?.purpose !== 'unpublished_catalog_copy_review' ||
-      matrix.requiredHumanProofreading !== humanStatus ||
-      JSON.stringify(matrix.items) !== JSON.stringify(expectedMatrix(inventory, drafts, exceptions).items))
-    fail('Review matrix stale, silent omissions, or human gate removed');
+  if (checkMatrix) {
+    if (matrix.schemaVersion !== 1 || matrix.purpose !== 'unpublished_catalog_copy_review' ||
+        matrix.requiredHumanProofreading !== humanStatus)
+      fail('Review matrix metadata missing or human proofreading gate removed');
+    // Skip regeneration when malformed source categories would otherwise throw.
+    if (!errors.some((error) => error.startsWith('Missing or ambiguous source category'))) {
+      const expected = expectedMatrix(inventory, drafts, exceptions);
+      for (let index = 0; index < expected.items.length; index++) {
+        const a = expected.items[index], b = matrix.items[index];
+        const field = mismatch(a, b);
+        if (field) {
+          fail('Review matrix mismatch for ' + a.sourceId + ' at ' + field +
+            ' (actual sourceId: ' + (b?.sourceId ?? '(missing)') + ')');
+          break;
+        }
+      }
+    }
+  }
   return errors;
 }
 function selfTest(input) {
