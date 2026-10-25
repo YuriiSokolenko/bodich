@@ -107,6 +107,31 @@ export type ReferenceAccessoryDetails = {
   /** Corresponding BODICH-original proposed artwork direction in documentation. */
   artBriefId: ReferenceAccessoryGroup;
 };
+/** Source-labeled volumes: no unsourced US/imperial or fluid-ounce conversion. */
+export type ReferenceOilDetails = {
+  sourceUrl: string;
+  verifiedOn: string;
+  volume: { value: number; unit: 'gallon' | 'oz'; sourceLabel: string };
+  /** The source names a total volume, not a count of separate bottles. */
+  packQuantity: number | null;
+  intendedUse: 'turbine_engine_oil';
+  blend: 'special_blend' | 'red_dyed_special_blend';
+  sourceNotes: string[];
+  artBriefId: string;
+};
+/** LIFE wording does not by itself prove cell count, connector or engine fitment. */
+export type ReferenceBatteryDetails = {
+  sourceUrl: string;
+  verifiedOn: string;
+  chemistry: 'LiFe';
+  cellCount: number | null;
+  voltage: { value: number; unit: 'V' };
+  capacity: { value: number; unit: 'mAh' };
+  connector: string | null;
+  compatibleApplications: string[];
+  sourceNotes: string[];
+  artBriefId: string;
+};
 export type SourceInventoryProduct = {
   id: string;
   sourceTitle: string | null;
@@ -127,6 +152,8 @@ export type ReferenceOverride = {
   specs?: ReferenceSpec[];
   turboprop?: ReferenceTurbopropDetails;
   accessory?: ReferenceAccessoryDetails;
+  oil?: ReferenceOilDetails;
+  battery?: ReferenceBatteryDetails;
   images?: ReferenceImage[];
   approval?: ReferenceApproval;
 };
@@ -145,6 +172,8 @@ export type ReferenceDraft = {
   specs: ReferenceSpec[];
   turboprop: ReferenceTurbopropDetails | null;
   accessory: ReferenceAccessoryDetails | null;
+  oil: ReferenceOilDetails | null;
+  battery: ReferenceBatteryDetails | null;
   images: ReferenceImage[];
   approval: ReferenceApproval;
   source: {
@@ -192,6 +221,8 @@ export function buildReferenceDrafts(inventory: SourceInventory, overrides: Refe
       specs: edit?.specs ?? [],
       turboprop: edit?.turboprop ?? null,
       accessory: edit?.accessory ?? null,
+      oil: edit?.oil ?? null,
+      battery: edit?.battery ?? null,
       images: edit?.images ?? [],
       approval: edit?.approval ?? 'research',
       source: {
@@ -245,7 +276,7 @@ export function validateReferenceDrafts(
   const edited = new Set<string>();
   for (const edit of overrides.records) {
     if (!edit || typeof edit !== 'object' || Array.isArray(edit)) { fail('Invalid editorial record'); continue; }
-    if (!keysOnly(edit, ['sourceId', 'slug', 'model', 'copy', 'specs', 'turboprop', 'accessory', 'images', 'approval']))
+    if (!keysOnly(edit, ['sourceId', 'slug', 'model', 'copy', 'specs', 'turboprop', 'accessory', 'oil', 'battery', 'images', 'approval']))
       fail('Unknown editorial field for ' + edit.sourceId);
     if (!sourceIds.has(edit.sourceId)) fail('Editorial record references unknown source: ' + edit.sourceId);
     if (edited.has(edit.sourceId)) fail('Duplicate editorial override: ' + edit.sourceId);
@@ -262,6 +293,10 @@ export function validateReferenceDrafts(
       fail('Invalid turboprop metadata: ' + edit.sourceId);
     if (edit.accessory !== undefined && (!edit.accessory || typeof edit.accessory !== 'object' ||
         Array.isArray(edit.accessory))) fail('Invalid accessory metadata: ' + edit.sourceId);
+    if (edit.oil !== undefined && (!edit.oil || typeof edit.oil !== 'object' || Array.isArray(edit.oil)))
+      fail('Invalid oil metadata: ' + edit.sourceId);
+    if (edit.battery !== undefined && (!edit.battery || typeof edit.battery !== 'object' || Array.isArray(edit.battery)))
+      fail('Invalid battery metadata: ' + edit.sourceId);
     if (edit.images !== undefined && !Array.isArray(edit.images)) fail('Images must be an array: ' + edit.sourceId);
   }
   if (drafts.length !== inventory.products.length) fail('Draft/reference coverage lost source rows');
@@ -364,6 +399,57 @@ export function validateReferenceDrafts(
             (!nonempty(compatibility.sourceLabel) || !source.sourceTitle ||
               compatibility.sourceLabel !== accessoryTitleQualifier(source.sourceTitle))))
         fail('Invalid/unsourced accessory metadata: ' + draft.sourceId);
+    }
+    const sourceProduct = inventory.products.find((p) => p.id === draft.sourceId);
+    if (draft.itemType !== 'oil' && draft.oil !== null)
+      fail('Non-oil reference contains oil metadata: ' + draft.sourceId);
+    if (draft.itemType !== 'battery' && draft.battery !== null)
+      fail('Non-battery reference contains battery metadata: ' + draft.sourceId);
+    if (draft.oil !== null) {
+      const detail = draft.oil;
+      const volumeTitle = sourceProduct?.sourceTitle?.match(/,\\s*(\\d+)\\s*(Gallons?|oz)$/i);
+      const correctUnit = volumeTitle?.[2].toLowerCase().startsWith('gallon') ? 'gallon' : 'oz';
+      if (draft.itemType !== 'oil' || !sourceProduct || !detail || typeof detail !== 'object' ||
+          Array.isArray(detail) ||
+          !keysOnly(detail, ['sourceUrl', 'verifiedOn', 'volume', 'packQuantity', 'intendedUse', 'blend', 'sourceNotes', 'artBriefId']) ||
+          detail.sourceUrl !== sourceProduct.canonicalUrl || !validEvidenceUrl(detail.sourceUrl) ||
+          !validVerificationDate(detail.verifiedOn) ||
+          !detail.volume || typeof detail.volume !== 'object' || Array.isArray(detail.volume) ||
+          !keysOnly(detail.volume, ['value', 'unit', 'sourceLabel']) ||
+          !volumeTitle || detail.volume.value !== Number(volumeTitle[1]) ||
+          detail.volume.unit !== correctUnit ||
+          detail.volume.sourceLabel !== volumeTitle[0].slice(1).trim() ||
+          detail.packQuantity !== null ||
+          detail.intendedUse !== 'turbine_engine_oil' ||
+          detail.blend !== (sourceProduct.sourceTitle?.includes('Red Dyed') ? 'red_dyed_special_blend' : 'special_blend') ||
+          !Array.isArray(detail.sourceNotes) || !detail.sourceNotes.every(nonempty) ||
+          detail.artBriefId !== draft.sourceId)
+        fail('Invalid/unsourced oil metadata: ' + draft.sourceId);
+    }
+    if (draft.battery !== null) {
+      const detail = draft.battery;
+      const batteryTitle = sourceProduct?.sourceTitle?.match(/^(\\d+)mAh-(\\d+(?:\\.\\d+)?)V LIFE Battery$/i);
+      if (draft.itemType !== 'battery' || !sourceProduct || !detail || typeof detail !== 'object' ||
+          Array.isArray(detail) ||
+          !keysOnly(detail, ['sourceUrl', 'verifiedOn', 'chemistry', 'cellCount', 'voltage', 'capacity', 'connector', 'compatibleApplications', 'sourceNotes', 'artBriefId']) ||
+          detail.sourceUrl !== sourceProduct.canonicalUrl || !validEvidenceUrl(detail.sourceUrl) ||
+          !validVerificationDate(detail.verifiedOn) || !batteryTitle ||
+          detail.chemistry !== 'LiFe' || detail.cellCount !== null || detail.connector !== null ||
+          !detail.voltage || typeof detail.voltage !== 'object' || Array.isArray(detail.voltage) ||
+          !keysOnly(detail.voltage, ['value', 'unit']) ||
+          detail.voltage.value !== Number(batteryTitle[2]) || detail.voltage.unit !== 'V' ||
+          !detail.capacity || typeof detail.capacity !== 'object' || Array.isArray(detail.capacity) ||
+          !keysOnly(detail.capacity, ['value', 'unit']) ||
+          detail.capacity.value !== Number(batteryTitle[1]) || detail.capacity.unit !== 'mAh' ||
+          !Array.isArray(detail.compatibleApplications) || detail.compatibleApplications.length !== 0 ||
+          !Array.isArray(detail.sourceNotes) || !detail.sourceNotes.every(nonempty) ||
+          detail.artBriefId !== draft.sourceId ||
+          draft.specs.length !== 2 ||
+          !['voltage', 'capacity'].every((kind) => draft.specs.filter((spec) =>
+            spec.kind === kind && spec.unit === (kind === 'voltage' ? 'V' : 'mAh') &&
+            spec.value === (kind === 'voltage' ? detail.voltage.value : detail.capacity.value) &&
+            spec.sourceUrl === sourceProduct.canonicalUrl).length === 1))
+        fail('Invalid/unsourced battery metadata: ' + draft.sourceId);
     }
     if (!Array.isArray(draft.images)) { fail('Invalid images: ' + draft.sourceId); continue; }
     for (const img of draft.images) {
