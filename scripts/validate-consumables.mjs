@@ -26,6 +26,7 @@ const enoughCopy = (c) => c && ['name', 'summary', 'description'].every((key) =>
 
 const header = '| Source ID | Original KingTech listing | Section | Distinct source variant | Source-verified fields | Needs review |\n|---|---|---|---|---|---|\n';
 function sourceRow(p, d) {
+  if (!d) return '';
   const variant = d.oil ? d.oil.volume.sourceLabel + (d.oil.blend === 'red_dyed_special_blend' ? ' / red dyed' : ' / standard') :
     d.battery.capacity.value + ' mAh / ' + d.battery.voltage.value + ' V / LiFe';
   const verified = d.oil ? 'Source oil-size label and turbine use' :
