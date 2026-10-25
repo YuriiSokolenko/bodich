@@ -1744,12 +1744,12 @@
         "en": {
           "name": "KingTech K-320G4+ — G4+ turbine reference",
           "summary": "Unpublished technical reference for the KingTech K-320G4+: 32 kgf nominal thrust, 132.5 mm housing diameter and 2,900 g reported mass.",
-          "description": "This KingTech G4+ turbojet reference records a 132.5 mm diameter, 335 mm length, 2,900 g mass and a maximum listed speed of 100,000 rpm. The listed nominal thrust is 32 kgf. Recorded fuel use is 870 g/min, with diesel, Jet A1 or kerosene stated as fuel; the specified pump is KP1200BL. Maximum EGT has competing 700 °C and 730 °C reseller figures; no temperature value is asserted. This is a third-party technical draft, not a BODICH-manufactured product, quotation, stock indication or sale offer."
+          "description": "This KingTech G4+ turbojet reference records a 132.5 mm diameter, 335 mm length, 2,900 g mass and a maximum listed speed of 100,000 rpm. The listed nominal thrust is 32 kgf. Recorded fuel use is 870 g/min, with diesel, Jet A1 or kerosene stated as fuel; the specified pump is KP1200BL. Published reseller EGT readings conflict; the exhaust-temperature figure is withheld pending factory revision evidence. This is a third-party technical draft, not a BODICH-manufactured product, quotation, stock indication or sale offer."
         },
         "ro": {
           "name": "KingTech K-320G4+ — fișă de referință G4+",
           "summary": "Fișă tehnică nepublicată pentru KingTech K-320G4+: tracțiune nominală de 32 kgf, diametru de 132,5 mm și masă declarată de 2.900 g.",
-          "description": "Această fișă de referință pentru turboreactorul KingTech G4+ consemnează diametrul de 132,5 mm, lungimea de 335 mm, masa de 2.900 g și turația maximă indicată de 100.000 rpm. Tracțiunea nominală indicată este de 32 kgf. Consumul masic raportat este de 870 g/min; combustibilii indicați sunt motorina, Jet A1 și kerosenul, iar pompa menționată este KP1200BL. Pentru EGT maxim apar valori diferite, 700 °C și 730 °C; fișa nu afirmă nicio valoare. Aceasta este o fișă tehnică externă în stadiu de redactare, nu un produs fabricat de BODICH, o ofertă, o dovadă de stoc sau o promisiune de vânzare."
+          "description": "Această fișă de referință pentru turboreactorul KingTech G4+ consemnează diametrul de 132,5 mm, lungimea de 335 mm, masa de 2.900 g și turația maximă indicată de 100.000 rpm. Tracțiunea nominală indicată este de 32 kgf. Consumul masic raportat este de 870 g/min; combustibilii indicați sunt motorina, Jet A1 și kerosenul, iar pompa menționată este KP1200BL. Comercianții indică temperaturi EGT maxime contradictorii; cifra este omisă până la confirmarea reviziei producătorului. Aceasta este o fișă tehnică externă în stadiu de redactare, nu un produs fabricat de BODICH, o ofertă, o dovadă de stoc sau o promisiune de vânzare."
         }
       },
       "specs": [
