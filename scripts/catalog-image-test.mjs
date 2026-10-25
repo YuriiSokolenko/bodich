@@ -387,6 +387,7 @@ export function runImageSelfTest({ fail, validateImage, checkUnapprovedFiles, va
     const dir = join(root, 'images', 'catalog');
     mkdirSync(dir, { recursive: true });
     const valid = { src: '/images/catalog/fixture.png', width: 1, height: 1,
+      kind: 'original_diagram', rights: 'cleared', rightsEvidence: 'CI-FIXTURE-NOT-PUBLISHED',
       alt: { en: 'Test product photo', ro: 'Fotografie produs test' } };
     writeFileSync(join(dir, 'fixture.png'), original.png);
     // Separate filenames so VP8, VP8L and VP8X are each tested end-to-end.
@@ -400,6 +401,10 @@ export function runImageSelfTest({ fail, validateImage, checkUnapprovedFiles, va
 
     const invalid = [
       ['missing file', { ...valid, src: '/images/catalog/no-file.png' }],
+      ['missing kind', { ...valid, kind: undefined }],
+      ['uncleared rights', { ...valid, rights: 'pending' }],
+      ['no rights evidence', { ...valid, rightsEvidence: '' }],
+      ['genuine photo without model proof', { ...valid, kind: 'product_photo' }],
       ['concept path', { ...valid, src: '/images/turbines/concept.webp' }],
       ['unsafe path', { ...valid, src: '/../README.md' }],
       ['double slash', { ...valid, src: '/images/catalog//fixture.png' }],
