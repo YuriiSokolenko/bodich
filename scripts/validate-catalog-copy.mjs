@@ -31,19 +31,21 @@ const salesPhrases = {
 // an affirmative marketing promise: "not a drill and order now" is still banned.
 // This conservative lexical rule is not a linguistic or legal review.
 const negationPrefix = {
-  en: /(?:^|[^\p{L}])(?:not|no|never|is not|are not|isn't|aren't|cannot|can't)(?:\s+(?:is|are|be|yet|currently)){0,3}\s*$/iu,
-  ro: /(?:^|[^\p{L}])(?:nu|nici|niciun|nicio|fără)(?:\s+(?:este|sunt|mai|încă)){0,3}\s*$/iu,
+  en: /(?:^|[^\p{L}])(?:not|no|never|is not|are not|isn't|aren't|cannot|can't)(?:\s+(?:is|are|be|yet|currently|longer)){0,3}\s*$/iu,
+  ro: /(?:^|[^\p{L}])(?:nu|nici|niciun|nicio|fără)(?:\s+(?:este|sunt|mai|încă|momentan|se|află)){0,3}\s*$/iu,
 };
-function hasUnapprovedPromotion(copy, lang) {
+// Return the actual first violation to give copywriters a concrete field and phrase.
+function findUnapprovedPromotion(copy, lang) {
   for (const field of fields) {
     const value = copy[field];
     for (const match of value.matchAll(salesPhrases[lang])) {
       const before = value.slice(0, match.index);
-      const clause = before.split(/[.!?;:\n]/u).at(-1).slice(-80);
-      if (!negationPrefix[lang].test(clause)) return true;
+      const clause = before.split(/[.!?;,:\n]/u).at(-1).slice(-80);
+      if (!negationPrefix[lang].test(clause))
+        return { field, phrase: match[0] };
     }
   }
-  return false;
+  return null;
 }
 const sortUnique = (xs) => [...new Set(xs)].sort();
 const keyFor = (x) => x.sourceId + '/' + x.value + '/' + x.unit;
@@ -204,8 +206,10 @@ export function validate(input, { checkMatrix = true } = {}) {
             fail('Romanian diacritics missing in ' + id + '/ro/' + field);
         }
       }
-      if (hasUnapprovedPromotion(copy, lang))
-        fail('Unapproved commercial claims: ' + id + '/' + lang);
+      const promotion = findUnapprovedPromotion(copy, lang);
+      if (promotion)
+        fail('Unapproved commercial claims: ' + id + '/' + lang + '/' +
+          promotion.field + ': ' + JSON.stringify(promotion.phrase));
       if (typeof alt !== 'string' || alt.length < 85 || alt.length > 260 ||
           !alt.includes(id) || !alt.includes(source.sourceTitle) ||
           !alt.startsWith(lang === 'en' ? 'Illustrative ' : 'Diagramă ilustrativă ') ||
@@ -379,6 +383,9 @@ function selfTest(input) {
   negative('additional English shipping promotion', (x) => {
     x.drafts.records[0].copy.en.description += ' Ready to ship.';
   }, 'Unapproved commercial claims');
+  negative('commercial error identifies the exact field and phrase', (x) => {
+    x.drafts.records[0].copy.en.description += ' Ready to ship.';
+  }, 'en/description: "Ready to ship"');
   negative('additional English shipping estimate', (x) => {
     x.drafts.records[0].copy.en.description += ' Ships within 2 business days.';
   }, 'Unapproved commercial claims');
@@ -402,6 +409,13 @@ function selfTest(input) {
     ' Produsul nu este pe stoc și nu este disponibil acum.';
   assert.deepEqual(validate(negated), [],
     'Negated promotions in both languages must remain valid');
+  const extendedNegation = structuredClone(input);
+  extendedNegation.drafts.records[0].copy.en.description +=
+    ' This item is no longer in stock now.';
+  extendedNegation.drafts.records[0].copy.ro.description +=
+    ' Articolul nu se află pe stoc. Produsul nu este momentan pe stoc.';
+  assert.deepEqual(validate(extendedNegation), [],
+    'EN/RO longer and currently unavailable stock disclaimers must pass');
   const supplierInventory = structuredClone(input);
   supplierInventory.drafts.records[0].copy.ro.description +=
     ' Situația pe stocul furnizorului este necunoscută.';
@@ -413,6 +427,10 @@ function selfTest(input) {
   negative('negation cannot leak past a comma', (x) => {
     x.drafts.records[0].copy.en.description += ' No hidden fees, order now.';
   }, 'Unapproved commercial claims');
+  negative('valid negator and auxiliary cannot cross comma', (x) => {
+    x.drafts.records[0].copy.en.description += ' Not yet, ready to ship.';
+  }, 'Unapproved commercial claims: ' + input.drafts.records[0].sourceId +
+    '/en/description: "ready to ship"');
   negative('free words after negation cannot hide a sales pitch', (x) => {
     x.drafts.records[0].copy.en.description += ' Not only available but in stock now.';
   }, 'Unapproved commercial claims');
