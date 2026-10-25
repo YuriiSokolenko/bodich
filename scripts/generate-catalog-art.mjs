@@ -8,7 +8,7 @@
  * node scripts/generate-catalog-art.mjs --self-test
  */
 import { readFileSync, mkdirSync, existsSync, readdirSync, statSync } from 'node:fs';
-import { resolve, dirname, relative, sep, extname } from 'node:path';
+import { resolve, dirname } from 'node:path';
 import sharp from 'sharp';
 import { inspectRaster, MAX_CATALOG_IMAGE_BYTES } from './catalog-image.mjs';
 
@@ -51,7 +51,7 @@ function problems(data) {
   const drafts = new Map(overrides.records.map((item) => [item.sourceId, item]));
   const seen = new Set(), pathSet = new Set();
   for (const entry of data.entries ?? []) {
-    if (!entry || !/^kt-[1-9][0-9]*$/.test(entry.sourceId) ||
+    if (!entry || !/^kt-(?:[1-9][0-9]*|sq-[A-Z0-9]+)$/.test(entry.sourceId) ||
         seen.has(entry.sourceId)) { errors.push('Duplicate or invalid art source ID'); continue; }
     seen.add(entry.sourceId);
     const source = originals.get(entry.sourceId), draft = drafts.get(entry.sourceId);
@@ -96,7 +96,6 @@ function line(x1, y1, x2, y2, stroke = '#96b8bd', sw = 8) {
     '" fill="none" stroke="' + stroke + '" stroke-width="' + sw + '" stroke-linecap="round"/>';
 }
 function turbine(kind, seed) {
-  const x = 735, y = 410;
   let result = '<path d="M575 312 L995 345 L1040 485 L575 525 Z" fill="#354a5c" stroke="#a2b9c5" stroke-width="10"/>' +
     '<path d="M945 350 L1043 365 L1043 468 L945 487" fill="#192c3c" stroke="#d37c4b" stroke-width="11"/>' +
     '<ellipse cx="590" cy="417" rx="108" ry="123" fill="#0b1927" stroke="#c98152" stroke-width="18"/>';
@@ -119,7 +118,7 @@ function propeller(seed) {
   }
   return shape + circle(475, 417, 34, '#c87948');
 }
-function boxArt(seed, type) {
+function boxArt(type) {
   let shape = '<rect x="502" y="272" width="488" height="297" rx="28" fill="#24394b" stroke="#90b6bd" stroke-width="12"/>' +
     '<rect x="528" y="300" width="436" height="239" rx="16" fill="#122535" stroke="#426375" stroke-width="5"/>';
   if (type === 'accessory-fuel-systems') {
@@ -143,14 +142,14 @@ function boxArt(seed, type) {
   }
   return shape;
 }
-function oil(seed) {
+function oil() {
   let shape = '<rect x="575" y="302" width="326" height="298" rx="25" fill="#395569" stroke="#a9c3ce" stroke-width="12"/>' +
     '<path d="M665 298 V254 H820 V300" fill="none" stroke="#d58a57" stroke-width="28"/>' +
     '<rect x="639" y="393" width="208" height="137" rx="9" fill="#122637" stroke="#81b4b6" stroke-width="6"/>' +
     '<path d="M740 417 Q660 482 748 509 Q831 468 740 417 Z" fill="#d38456"/>';
   return shape;
 }
-function battery(seed) {
+function battery() {
   return '<rect x="547" y="300" width="386" height="267" rx="24" fill="#344e61" stroke="#90b4c1" stroke-width="12"/>' +
     '<rect x="657" y="267" width="163" height="40" rx="9" fill="#a2bbc6"/>' +
     '<path d="M756 336 L669 460 H741 L714 536 L833 394 H763 Z" fill="#de9964"/>' +
@@ -172,7 +171,7 @@ function svgFor(entry) {
   const label = labels[entry.family] ?? entry.family.replace('accessory-', '').replaceAll('-', ' ').toUpperCase();
   let art = isJet ? turbine(entry.family, seed) : entry.family === 'turboprop' ? propeller(seed) :
     entry.family === 'oil' ? oil(seed) : entry.family === 'battery' ? battery(seed) :
-    entry.family === 'service' ? service() : boxArt(seed, entry.family);
+    entry.family === 'service' ? service() : boxArt(entry.family);
   let lines = '';
   for (let i = 0; i < 8; i++) {
     const xx = 95 + ((seed >>> (i * 3 % 25)) % 250);
@@ -251,7 +250,8 @@ async function generate() {
     const columns = 4, width = 300, height = 225, rows = Math.ceil(entries.length / columns);
     const images = [];
     for (let i = 0; i < entries.length; i++) {
-      images.push({ input: readFileSync(entries[i].assets.webp360),
+      images.push({ input: await sharp(readFileSync(entries[i].assets.webp360))
+        .resize({ width, height, fit: 'fill' }).toBuffer(),
         top: Math.floor(i / columns) * height, left: (i % columns) * width });
     }
     await sharp({ create: { width: columns * width, height: rows * height,
