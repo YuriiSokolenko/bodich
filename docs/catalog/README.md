@@ -1,5 +1,7 @@
 # Verified catalog intake
 
+See [Issue #33: original illustration fallbacks and 132-SKU artwork manifest](./visual-artwork.md) for the unpublished procedural WebP/PNG review pipeline, rights gates and EN/RO alternative text. These visuals are **not** photographs and none are company-approved or part of the public product catalog.
+
 ## Unpublished KingTech reference catalog (Issue #26)
 
 The `docs/catalog/source-inventory.json` manifest records **132 external research references**. It is publicly viewable in GitHub, but is not a BODICH product or inventory claim. `src/catalog/reference.ts` derives **exactly one draft per source ID** from this manifest, joined by `sourceId` to `docs/catalog/reference-overrides.json`. That overlay began with an empty `records` array; issue #27 stages **11 original, unpublished G5 engine drafts** (EN/RO copy and per-spec evidence), and issue #28 stages **17 original, unpublished G4+ engine drafts**. Issue #29 stages **all four official-source TP turboprop drafts** with TP-specific propeller metadata and **22 source-linked numeric measurements**, never modifying the scraped evidence manifest. The reference module is **not re-exported** from `src/catalog/index.ts`, and no site component or page imports it.
