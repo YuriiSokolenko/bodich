@@ -170,7 +170,7 @@ const REVIEW_TITLE_LINES = 3;
 
 /** Wrap without shortening model identifiers or discarding meaningful suffixes. */
 function reviewTitleLines(sourceTitle) {
-  const normalized = sourceTitle.toUpperCase().trim().replace(/\\s+/g, ' ');
+  const normalized = sourceTitle.toUpperCase().trim().replace(/\s+/g, ' ');
   const lines = [];
   for (const word of normalized.split(' ')) {
     if (word.length > REVIEW_CHARS_PER_LINE)
@@ -448,7 +448,7 @@ function selfTest() {
   }
   for (const entry of manifest.entries) {
     const expectedLines = reviewTitleLines(entry.sourceTitle);
-    if (expectedLines.join(' ') !== entry.sourceTitle.toUpperCase().trim().replace(/\\s+/g, ' '))
+    if (expectedLines.join(' ') !== entry.sourceTitle.toUpperCase().trim().replace(/\s+/g, ' '))
       throw new Error('Source title was truncated or reordered in review caption: ' + entry.sourceId);
     const caption = contactSheetCaption(entry);
     if (!caption.includes(vectorText(entry.sourceId.toUpperCase(), 12, 8, 2, '#edb082')) ||
