@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 // Offline QA for unpublished bilingual supplier-reference product copy.
 import assert from 'node:assert/strict';
-import { readFileSync, writeFileSync, renameSync, existsSync, unlinkSync } from 'node:fs';
+import { readFileSync, writeFileSync, renameSync, existsSync, unlinkSync, realpathSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import { resolve } from 'node:path';
-import { pathToFileURL } from 'node:url';
+import { fileURLToPath } from 'node:url';
 
 const read = (p) => JSON.parse(readFileSync(p, 'utf8'));
 const paths = {
@@ -19,12 +19,11 @@ const qaStatus = 'automated_consistency_checked_unpublished';
 const humanStatus = 'pending_prelaunch_native_Romanian_legal_marketing_review';
 // Space is optional for detection (9.9V must not bypass evidence), but mandatory in approved copy.
 const measurementPattern = /(^|[^\p{L}\p{N}])([0-9][0-9.,]*)(\s*)(g\/min|mL\/min|L\/h|km\/h|m\/s|mAh|kgf|rpm|°C|°F|bar|psi|mm|cm|kW|mL|Ah|kg|g|V|W|L|N|%)(?![\p{L}/])/gu;
-// Intentionally match affirmative marketing promises, not neutral denials:
-// "not in stock", "nu implică o compatibilitate garantată" and references
- // to unverified delivery must not be rejected as if they were promotions.
+// Match explicit promotional forms, not neutral mentions of stock, delivery,
+// or compatibility. This lexical gate does NOT replace native legal review.
 const salesPhrases = {
-  en: /(?:order now|buy now|ships today|free shipping|free delivery|guaranteed delivery|warranty included|guaranteed by BODICH|in stock at BODICH|available for immediate delivery|sale price|special offer)/iu,
-  ro: /(?:comandă acum|cumpără acum|expediere astăzi|livrare gratuită|livrare garantată|garanție inclusă|garantat(?:ă|e|i)? de BODICH|în stoc la BODICH|disponibil(?:ă)? pentru livrare imediată|preț promoțional|ofertă specială)/iu,
+  en: /(?:order now|buy now|ships today|free shipping|free delivery|guaranteed delivery|warranty included|guaranteed by BODICH|in stock at BODICH|in stock now|ready to ship|ships within [0-9]+ (?:business )?days?|available for immediate delivery|sale price|special offer)/iu,
+  ro: /(?:comandă acum|cumpără acum|expediere astăzi|expediem astăzi|livrare gratuită|livrare garantată|livrăm în [0-9]+ zile|garanție inclusă|garantat(?:ă|e|i)? de BODICH|în stoc la BODICH|pe stoc|disponibil acum|disponibil(?:ă)? pentru livrare imediată|preț promoțional|ofertă specială)/iu,
 };
 const sortUnique = (xs) => [...new Set(xs)].sort();
 const keyFor = (x) => x.sourceId + '/' + x.value + '/' + x.unit;
@@ -357,6 +356,18 @@ function selfTest(input) {
   negative('explicit English inventory promotion', (x) => {
     x.drafts.records[0].copy.en.description += ' In stock at BODICH.';
   }, 'Unapproved commercial claims');
+  negative('additional English shipping promotion', (x) => {
+    x.drafts.records[0].copy.en.description += ' Ready to ship.';
+  }, 'Unapproved commercial claims');
+  negative('additional English shipping estimate', (x) => {
+    x.drafts.records[0].copy.en.description += ' Ships within 2 business days.';
+  }, 'Unapproved commercial claims');
+  negative('additional Romanian availability promotion', (x) => {
+    x.drafts.records[0].copy.ro.description += ' Disponibil acum.';
+  }, 'Unapproved commercial claims');
+  negative('additional Romanian dispatch promotion', (x) => {
+    x.drafts.records[0].copy.ro.description += ' Expediem astăzi.';
+  }, 'Unapproved commercial claims');
   // Genuine disclaimers must remain valid even when mentioning stock, delivery and guarantees.
   const disclaimer = structuredClone(input);
   disclaimer.drafts.records[0].copy.en.description +=
@@ -378,14 +389,27 @@ function selfTest(input) {
     ['scripts/validate-catalog-copy.mjs', '--not-an-option'], { encoding: 'utf8', cwd: process.cwd() });
   assert.notEqual(cli.status, 0, 'CLI cannot silently exit success for unknown options');
   assert.match(cli.stderr, /Use one of --write-matrix or --self-test/);
+  const thisPath = realpathSync(resolve('scripts/validate-catalog-copy.mjs'));
+  assert.equal(isEntryPoint(true, thisPath, thisPath), true, 'native entrypoint true');
+  assert.equal(isEntryPoint(false, thisPath, thisPath), false, 'native import false');
+  assert.equal(isEntryPoint(undefined, thisPath, thisPath), true, 'legacy direct entry');
+  assert.equal(isEntryPoint(undefined, thisPath, '/nonexistent/foreign.mjs'), false,
+    'legacy import does not run');
+  assert.equal(isEntryPoint(undefined, thisPath, undefined), false,
+    'legacy no argv does not run');
   console.log('Copy QA regression fixtures: ' + cases +
     ' expected failures detected, with positive disclaimer/title and module-CLI smoke tests');
 }
-// Node 24.0/24.1 lack import.meta.main. Do not silently skip CLI validation.
-// A dynamic import still has a different argv entry and remains side-effect free.
-const isEntryPoint = import.meta.main ??
-  (Boolean(process.argv[1]) && import.meta.url === pathToFileURL(resolve(process.argv[1])).href);
-if (isEntryPoint) {
+// Pure predicate: Node 24.0/24.1 lack import.meta.main, so resolve fallback
+// paths canonically at the call site to support symlinked script locations.
+export function isEntryPoint(main, modulePath, argvPath) {
+  return main ?? (Boolean(argvPath) && modulePath === argvPath);
+}
+const runningDirectly = import.meta.main ??
+  isEntryPoint(undefined,
+    realpathSync(fileURLToPath(import.meta.url)),
+    process.argv[1] ? realpathSync(resolve(process.argv[1])) : undefined);
+if (runningDirectly) {
   const options = process.argv.slice(2);
   if (options.some((x) => !['--write-matrix', '--self-test'].includes(x)) ||
       (options.includes('--write-matrix') && options.includes('--self-test')))
