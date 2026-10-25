@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Offline QA for unpublished bilingual supplier-reference product copy.
 import assert from 'node:assert/strict';
-import { readFileSync, writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, renameSync, existsSync, unlinkSync } from 'node:fs';
 
 const read = (p) => JSON.parse(readFileSync(p, 'utf8'));
 const paths = {
@@ -238,36 +238,115 @@ export function validate(input, { checkMatrix = true } = {}) {
 }
 function selfTest(input) {
   assert.deepEqual(validate(input), [], 'baseline must pass');
-  const negative = (mutate, phrase) => {
-    const fixture = structuredClone(input); mutate(fixture);
-    assert(validate(fixture).some((e) => e.includes(phrase)), phrase);
+  let cases = 0;
+  const negative = (label, mutate, phrase, { checkMatrix = true } = {}) => {
+    const fixture = structuredClone(input);
+    mutate(fixture);
+    const errors = validate(fixture, { checkMatrix });
+    assert(errors.some((e) => e.includes(phrase)),
+      label + ': expected ' + phrase + ', got ' + errors.join('; '));
+    cases++;
   };
-  negative((x) => { delete x.drafts.records[0].copy.ro.description; }, 'Complete copy.ro');
-  negative((x) => { x.drafts.records[0].copy.ro = { ...x.drafts.records[0].copy.en }; }, 'Identical EN');
-  negative((x) => { x.drafts.records[1].copy.en.summary = x.drafts.records[0].copy.en.summary; }, 'Non-unique');
-  negative((x) => { x.drafts.records[0].copy.en.summary = x.drafts.records[0].copy.en.summary.replace('8.6 kgf', '9.9 kgf'); }, 'Numeric copy claim');
-  negative((x) => { x.drafts.records[0].copy.ro.summary = x.drafts.records[0].copy.ro.summary.replace('8,6 kgf', '8.6 kgf'); }, 'decimal/thousands');
-  negative((x) => { x.art.entries[0].alt.ro = x.art.entries[0].alt.en; }, 'image alt');
-  negative((x) => { x.matrix.items.pop(); }, 'cover 132');
-  negative((x) => { x.exceptions.entries[0].value = 999; }, 'Numeric copy claim');
-  negative((x) => { x.matrix.items[0].unresolved = []; }, 'Review matrix stale');
-  console.log('Copy QA regression fixtures: 9 expected failures detected');
+  const first = (fixture, lang, field, expression) => {
+    const record = fixture.drafts.records.find((r) => expression.test(r.copy[lang][field]));
+    assert(record, 'No fixture with ' + expression + ' found');
+    return record;
+  };
+  negative('missing RO description', (x) => {
+    delete x.drafts.records[0].copy.ro.description;
+  }, 'Complete copy.ro');
+  negative('identical EN/RO translation', (x) => {
+    x.drafts.records[0].copy.ro = { ...x.drafts.records[0].copy.en };
+  }, 'Identical EN');
+  negative('duplicated English summary', (x) => {
+    x.drafts.records[1].copy.en.summary = x.drafts.records[0].copy.en.summary;
+  }, 'Non-unique');
+  negative('invented claim without evidence', (x) => {
+    x.drafts.records[0].copy.en.description += ' Unverified sample force is 98765 N.';
+  }, 'Numeric copy claim');
+  negative('wrong Romanian decimal format', (x) => {
+    const r = first(x, 'ro', 'summary', /[0-9]+,[0-9]+ kgf/);
+    const match = r.copy.ro.summary.match(/[0-9]+,[0-9]+ kgf/);
+    r.copy.ro.summary = r.copy.ro.summary.replace(match[0], match[0].replace(',', '.'));
+  }, 'decimal/thousands');
+  negative('no-space numeric claim must be visible to scanner', (x) => {
+    x.drafts.records[0].copy.en.description += ' Invented component pressure 98765psi.';
+  }, 'Numeric copy claim');
+  negative('no-space sourced quantity still invalid typography', (x) => {
+    const r = first(x, 'en', 'summary', /[0-9][0-9.,]* (?:kgf|mm|V)/);
+    const match = r.copy.en.summary.match(/[0-9][0-9.,]* (?:kgf|mm|V)/)[0];
+    r.copy.en.summary = r.copy.en.summary.replace(match, match.replace(' ', ''));
+  }, 'Missing space');
+  negative('qualifier must follow numeric exception', (x) => {
+    const e = x.exceptions.entries.find((e) => e.unit === 'kgf' && e.reviewTag.includes('minimum'));
+    const r = x.drafts.records.find((r) => r.sourceId === e.sourceId);
+    r.copy.en.description += ' The nominal thrust is 3 kgf.';
+  }, 'Qualified numeric claim lost context');
+  negative('Romanian cedilla must be rejected', (x) => {
+    const r = first(x, 'ro', 'description', /ș/);
+    r.copy.ro.description = r.copy.ro.description.replace('ș', 'ş');
+  }, 'Deprecated Romanian cedilla');
+  negative('missing Romanian diacritics from one field', (x) => {
+    const r = x.drafts.records[0];
+    r.copy.ro.summary = r.copy.ro.summary.replace(/[ăâîșț]/gi, (letter) =>
+      ({'ă':'a','â':'a','î':'i','ș':'s','ț':'t'})[letter.toLowerCase()]);
+  }, 'Romanian diacritics missing');
+  negative('Romanian order now promotion', (x) => {
+    x.drafts.records[0].copy.ro.description += ' Cumpără acum.';
+  }, 'Unapproved commercial claims');
+  negative('English shipping promotion', (x) => {
+    x.drafts.records[0].copy.en.description += ' Free shipping available now.';
+  }, 'Unapproved commercial claims');
+  negative('unlocalized artwork alt', (x) => {
+    x.art.entries[0].alt.ro = x.art.entries[0].alt.en;
+  }, 'image alt');
+  negative('omitted matrix row', (x) => {
+    x.matrix.items.pop();
+  }, 'cover 132');
+  negative('stale evidence entry', (x) => {
+    x.exceptions.entries[0].value = 999;
+  }, 'claim exception');
+  negative('mismatched matrix field pinpoints source ID', (x) => {
+    const row = x.matrix.items.find((r) => r.unresolved.length);
+    row.unresolved = [];
+  }, 'Review matrix mismatch for');
+  negative('missing category is not silently undefined', (x) => {
+    x.inventory.products[0].sourceCategoryIds = ['discounted'];
+  }, 'Missing or ambiguous source category', { checkMatrix: false });
+  negative('matrix write preflight detects invalid source draft', (x) => {
+    delete x.drafts.records[0].copy.en.description;
+  }, 'Complete copy.en', { checkMatrix: false });
+  console.log('Copy QA regression fixtures: ' + cases + ' expected failures detected');
 }
-const options = process.argv.slice(2);
-if (options.some((x) => !['--write-matrix', '--self-test'].includes(x)))
-  throw new Error('Unknown argument; use --write-matrix or --self-test');
-const input = {
-  inventory: read(paths.inventory), drafts: read(paths.drafts),
-  art: read(paths.art), exceptions: read(paths.exceptions),
-  matrix: options.includes('--write-matrix') ? null : read(paths.matrix),
-};
-if (options.includes('--write-matrix')) {
-  input.matrix = expectedMatrix(input.inventory, input.drafts, input.exceptions);
-  writeFileSync(paths.matrix, JSON.stringify(input.matrix, null, 2) + '\n');
-}
-const errors = validate(input);
-if (errors.length) { console.error(errors.join('\n')); process.exitCode = 1; }
-else {
-  console.log('Copy QA passed: 132 unpublished EN/RO records, source claims, alt and review rows');
-  if (options.includes('--self-test')) selfTest(input);
+if (import.meta.main) {
+  const options = process.argv.slice(2);
+  if (options.some((x) => !['--write-matrix', '--self-test'].includes(x)) ||
+      (options.includes('--write-matrix') && options.includes('--self-test')))
+    throw new Error('Use one of --write-matrix or --self-test');
+  const writing = options.includes('--write-matrix');
+  const input = {
+    inventory: read(paths.inventory), drafts: read(paths.drafts),
+    art: read(paths.art), exceptions: read(paths.exceptions),
+    matrix: writing ? null : read(paths.matrix),
+  };
+  // Validate the original input BEFORE generating or touching the review matrix.
+  const errors = validate(input, { checkMatrix: !writing });
+  if (errors.length) {
+    console.error(errors.join('\n'));
+    process.exitCode = 1;
+  } else if (writing) {
+    const content = JSON.stringify(expectedMatrix(input.inventory, input.drafts, input.exceptions), null, 2) + '\n';
+    // Atomic replacement avoids a partially written review ledger if interrupted.
+    const temp = paths.matrix + '.tmp-' + process.pid;
+    try {
+      writeFileSync(temp, content, { flag: 'wx' });
+      renameSync(temp, paths.matrix);
+    } finally {
+      if (existsSync(temp)) unlinkSync(temp);
+    }
+    console.log('Validated review matrix written for 132 unpublished source SKUs');
+  } else {
+    console.log('Copy QA passed: 132 unpublished EN/RO records, source claims, alt and review rows');
+    if (options.includes('--self-test')) selfTest(input);
+  }
 }
