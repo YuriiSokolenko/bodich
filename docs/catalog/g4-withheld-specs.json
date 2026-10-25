@@ -1,0 +1,157 @@
+{
+  "schemaVersion": 1,
+  "purpose": "unpublished_g4_conflicting_specs_quarantine",
+  "records": [
+    {
+      "sourceId": "kt-1",
+      "fields": [
+        "thrust"
+      ],
+      "reason": "Original source quotes 3 kgf+ rather than an exact nominal thrust; no precise value can be recorded.",
+      "proseForbidden": {
+        "en": [
+          "nominal thrust is 3 kgf"
+        ],
+        "ro": [
+          "tracțiunea nominală este de 3 kgf"
+        ]
+      }
+    },
+    {
+      "sourceId": "kt-9",
+      "fields": [
+        "dimension:diameter",
+        "dimension:length",
+        "speed",
+        "temperature"
+      ],
+      "reason": "Regional distributors disagree on geometry, maximum RPM and exhaust temperature; factory revision not confirmed.",
+      "proseForbidden": {
+        "en": [
+          "92.25 mm",
+          "235 mm",
+          "142,000 rpm",
+          "700 °C",
+          "750 °C"
+        ],
+        "ro": [
+          "92,25 mm",
+          "235 mm",
+          "142.000 rpm",
+          "700 °C",
+          "750 °C"
+        ]
+      }
+    },
+    {
+      "sourceId": "kt-11",
+      "fields": [
+        "temperature"
+      ],
+      "reason": "US KingTech 750 °C differs from KingTech GCC 700 °C.",
+      "proseForbidden": {
+        "en": [
+          "700 °C",
+          "750 °C"
+        ],
+        "ro": [
+          "700 °C",
+          "750 °C"
+        ]
+      }
+    },
+    {
+      "sourceId": "kt-12",
+      "fields": [
+        "speed",
+        "temperature",
+        "fuel_consumption"
+      ],
+      "reason": "US and KingTech GCC have conflicting RPM, EGT and mass-flow tables.",
+      "proseForbidden": {
+        "en": [
+          "121,000 rpm",
+          "120,000 rpm",
+          "750 °C",
+          "650 °C",
+          "620 g/min",
+          "590 g/min"
+        ],
+        "ro": [
+          "121.000 rpm",
+          "120.000 rpm",
+          "750 °C",
+          "650 °C",
+          "620 g/min",
+          "590 g/min"
+        ]
+      }
+    },
+    {
+      "sourceId": "kt-14",
+      "fields": [
+        "temperature"
+      ],
+      "reason": "US KingTech 750 °C differs from KingTech GCC 700 °C.",
+      "proseForbidden": {
+        "en": [
+          "700 °C",
+          "750 °C"
+        ],
+        "ro": [
+          "700 °C",
+          "750 °C"
+        ]
+      }
+    },
+    {
+      "sourceId": "kt-15",
+      "fields": [
+        "temperature"
+      ],
+      "reason": "BGD Tech 730 °C differs from KingTech GCC 700 °C.",
+      "proseForbidden": {
+        "en": [
+          "700 °C",
+          "730 °C"
+        ],
+        "ro": [
+          "700 °C",
+          "730 °C"
+        ]
+      }
+    },
+    {
+      "sourceId": "kt-120",
+      "fields": [
+        "thrust",
+        "dimension:diameter",
+        "temperature",
+        "fuel_consumption"
+      ],
+      "reason": "AerobatX and earlier Taiwan KingTech tables disagree on K-86 G4+ revision thrust, housing diameter, EGT and fuel flow.",
+      "proseForbidden": {
+        "en": [
+          "8.6 kgf",
+          "8.5 kgf",
+          "76 mm",
+          "76.5 mm",
+          "700 °C",
+          "770 °C",
+          "300 g/min",
+          "280 g/min"
+        ],
+        "ro": [
+          "8,6 kgf",
+          "8,5 kgf",
+          "76 mm",
+          "76,5 mm",
+          "700 °C",
+          "770 °C",
+          "300 g/min",
+          "280 g/min"
+        ]
+      }
+    }
+  ]
+}

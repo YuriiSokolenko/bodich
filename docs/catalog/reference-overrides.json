@@ -785,6 +785,1139 @@
       ],
       "images": [],
       "approval": "draft"
+    },
+    {
+      "sourceId": "kt-1",
+      "slug": "kingtech-k-30g4-plus",
+      "model": "K-30G4+",
+      "copy": {
+        "en": {
+          "name": "KingTech K-30G4+ — G4+ turbine reference (discontinued)",
+          "summary": "Unpublished technical reference for the KingTech K-30G4+: a supplier indication of over 3 kgf (not an exact nominal thrust), 62.9 mm housing diameter and 450 g reported mass.",
+          "description": "This KingTech G4+ turbojet reference records a 62.9 mm diameter, 160 mm length, 450 g mass and a maximum listed speed of 235,000 rpm. The source writes thrust as 3 kgf+, so no exact thrust field is supplied. Recorded fuel use is 120 g/min, with kerosene stated as fuel. The reported maximum EGT is 720 °C. The reported 450 g assembly includes the internal valve and mounting hardware. KingTech marks this model discontinued; it is retained solely for historical research. This is a third-party technical draft, not a BODICH-manufactured product, quotation, stock indication or sale offer."
+        },
+        "ro": {
+          "name": "KingTech K-30G4+ — fișă de referință G4+ (model retras)",
+          "summary": "Fișă tehnică nepublicată pentru KingTech K-30G4+: o indicație de peste 3 kgf, fără valoare nominală exactă, diametru de 62,9 mm și masă declarată de 450 g.",
+          "description": "Această fișă de referință pentru turboreactorul KingTech G4+ consemnează diametrul de 62,9 mm, lungimea de 160 mm, masa de 450 g și turația maximă indicată de 235.000 rpm. Sursa notează tracțiunea ca 3 kgf+, astfel că nu este introdusă o valoare nominală exactă. Consumul masic raportat este de 120 g/min; combustibilul indicat este kerosenul. Temperatura maximă EGT raportată este de 720 °C. Masa ansamblului, de 450 g, include supapa internă și suportul de montaj. KingTech marchează modelul ca retras; fișa este păstrată numai ca arhivă tehnică. Aceasta este o fișă tehnică externă în stadiu de redactare, nu un produs fabricat de BODICH, o ofertă, o dovadă de stoc sau o promisiune de vânzare."
+        }
+      },
+      "specs": [
+        {
+          "kind": "dimension",
+          "metric": "diameter",
+          "value": 62.9,
+          "unit": "mm",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-30g4-discontinued/1",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "dimension",
+          "metric": "length",
+          "value": 160,
+          "unit": "mm",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-30g4-discontinued/1",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "mass",
+          "value": 450,
+          "unit": "g",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-30g4-discontinued/1",
+          "verifiedOn": "2026-10-24",
+          "scope": "assembly_with_integrated_hardware"
+        },
+        {
+          "kind": "speed",
+          "value": 235000,
+          "unit": "rpm",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-30g4-discontinued/1",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "temperature",
+          "value": 720,
+          "unit": "°C",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-30g4-discontinued/1",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "fuel_consumption",
+          "value": 120,
+          "unit": "g/min",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-30g4-discontinued/1",
+          "verifiedOn": "2026-10-24"
+        }
+      ],
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-2",
+      "slug": "kingtech-k-45g4-plus",
+      "model": "K-45G4+",
+      "copy": {
+        "en": {
+          "name": "KingTech K-45G4+ — G4+ turbine reference (discontinued)",
+          "summary": "Unpublished technical reference for the KingTech K-45G4+: 4.5 kgf nominal thrust, 62.9 mm housing diameter and 450 g reported mass.",
+          "description": "This KingTech G4+ turbojet reference records a 62.9 mm diameter, 158 mm length, 450 g mass and a maximum listed speed of 232,000 rpm. The listed nominal thrust is 4.5 kgf. Recorded fuel use is 150 g/min, with kerosene stated as fuel. The reported maximum EGT is 720 °C. Reported weight includes the internal valve, mount, control system and FOD screen. KingTech marks this model discontinued; it is retained solely for historical research. This is a third-party technical draft, not a BODICH-manufactured product, quotation, stock indication or sale offer."
+        },
+        "ro": {
+          "name": "KingTech K-45G4+ — fișă de referință G4+ (model retras)",
+          "summary": "Fișă tehnică nepublicată pentru KingTech K-45G4+: tracțiune nominală de 4,5 kgf, diametru de 62,9 mm și masă declarată de 450 g.",
+          "description": "Această fișă de referință pentru turboreactorul KingTech G4+ consemnează diametrul de 62,9 mm, lungimea de 158 mm, masa de 450 g și turația maximă indicată de 232.000 rpm. Tracțiunea nominală indicată este de 4,5 kgf. Consumul masic raportat este de 150 g/min; combustibilul indicat este kerosenul. Temperatura maximă EGT raportată este de 720 °C. Masa raportată include supapa internă, suportul, sistemul de comandă și ecranul FOD. KingTech marchează modelul ca retras; fișa este păstrată numai ca arhivă tehnică. Aceasta este o fișă tehnică externă în stadiu de redactare, nu un produs fabricat de BODICH, o ofertă, o dovadă de stoc sau o promisiune de vânzare."
+        }
+      },
+      "specs": [
+        {
+          "kind": "thrust",
+          "value": 4.5,
+          "unit": "kgf",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-45g4-discontinued/2",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "dimension",
+          "metric": "diameter",
+          "value": 62.9,
+          "unit": "mm",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-45g4-discontinued/2",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "dimension",
+          "metric": "length",
+          "value": 158,
+          "unit": "mm",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-45g4-discontinued/2",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "mass",
+          "value": 450,
+          "unit": "g",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-45g4-discontinued/2",
+          "verifiedOn": "2026-10-24",
+          "scope": "assembly_with_integrated_hardware"
+        },
+        {
+          "kind": "speed",
+          "value": 232000,
+          "unit": "rpm",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-45g4-discontinued/2",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "temperature",
+          "value": 720,
+          "unit": "°C",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-45g4-discontinued/2",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "fuel_consumption",
+          "value": 150,
+          "unit": "g/min",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-45g4-discontinued/2",
+          "verifiedOn": "2026-10-24"
+        }
+      ],
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-3",
+      "slug": "kingtech-k-55g4-plus",
+      "model": "K-55G4+",
+      "copy": {
+        "en": {
+          "name": "KingTech K-55G4+ — G4+ turbine reference (discontinued)",
+          "summary": "Unpublished technical reference for the KingTech K-55G4+: 5.5 kgf nominal thrust, 76 mm housing diameter and 700 g reported mass.",
+          "description": "This KingTech G4+ turbojet reference records a 76 mm diameter, 180 mm length, 700 g mass and a maximum listed speed of 170,000 rpm. The listed nominal thrust is 5.5 kgf. Recorded fuel use is 200 g/min, with diesel, Jet A1 or kerosene stated as fuel; the specified pump is KP300BL. The reported maximum EGT is 730 °C. The 5.5 kgf nominal figure is supported by a regional KingTech distributor because the inventory landing page did not expose its full table. KingTech marks this model discontinued; it is retained solely for historical research. This is a third-party technical draft, not a BODICH-manufactured product, quotation, stock indication or sale offer."
+        },
+        "ro": {
+          "name": "KingTech K-55G4+ — fișă de referință G4+ (model retras)",
+          "summary": "Fișă tehnică nepublicată pentru KingTech K-55G4+: tracțiune nominală de 5,5 kgf, diametru de 76 mm și masă declarată de 700 g.",
+          "description": "Această fișă de referință pentru turboreactorul KingTech G4+ consemnează diametrul de 76 mm, lungimea de 180 mm, masa de 700 g și turația maximă indicată de 170.000 rpm. Tracțiunea nominală indicată este de 5,5 kgf. Consumul masic raportat este de 200 g/min; combustibilii indicați sunt motorina, Jet A1 și kerosenul, iar pompa menționată este KP300BL. Temperatura maximă EGT raportată este de 730 °C. Valoarea nominală de 5,5 kgf este documentată la un distribuitor regional KingTech; pagina din inventar nu a oferit un tabel tehnic accesibil. KingTech marchează modelul ca retras; fișa este păstrată numai ca arhivă tehnică. Aceasta este o fișă tehnică externă în stadiu de redactare, nu un produs fabricat de BODICH, o ofertă, o dovadă de stoc sau o promisiune de vânzare."
+        }
+      },
+      "specs": [
+        {
+          "kind": "thrust",
+          "value": 5.5,
+          "unit": "kgf",
+          "sourceUrl": "https://kingtech-gcc.com/product/kingtech-k-55g4/",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "dimension",
+          "metric": "diameter",
+          "value": 76,
+          "unit": "mm",
+          "sourceUrl": "https://kingtech-gcc.com/product/kingtech-k-55g4/",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "dimension",
+          "metric": "length",
+          "value": 180,
+          "unit": "mm",
+          "sourceUrl": "https://kingtech-gcc.com/product/kingtech-k-55g4/",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "mass",
+          "value": 700,
+          "unit": "g",
+          "sourceUrl": "https://kingtech-gcc.com/product/kingtech-k-55g4/",
+          "verifiedOn": "2026-10-24",
+          "scope": "not_stated"
+        },
+        {
+          "kind": "speed",
+          "value": 170000,
+          "unit": "rpm",
+          "sourceUrl": "https://kingtech-gcc.com/product/kingtech-k-55g4/",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "temperature",
+          "value": 730,
+          "unit": "°C",
+          "sourceUrl": "https://kingtech-gcc.com/product/kingtech-k-55g4/",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "fuel_consumption",
+          "value": 200,
+          "unit": "g/min",
+          "sourceUrl": "https://kingtech-gcc.com/product/kingtech-k-55g4/",
+          "verifiedOn": "2026-10-24"
+        }
+      ],
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-4",
+      "slug": "kingtech-k-65g4-plus",
+      "model": "K-65G4+",
+      "copy": {
+        "en": {
+          "name": "KingTech K-65G4+ — G4+ turbine reference (discontinued)",
+          "summary": "Unpublished technical reference for the KingTech K-65G4+: 6.5 kgf nominal thrust, 71.4 mm housing diameter and 600 g reported mass.",
+          "description": "This KingTech G4+ turbojet reference records a 71.4 mm diameter, 167 mm length, 600 g mass and a maximum listed speed of 190,000 rpm. The listed nominal thrust is 6.5 kgf. Recorded fuel use is 240 g/min, with diesel, Jet A1 or kerosene stated as fuel. The reported maximum EGT is 730 °C. The source specifies engine mass without the mounting bracket. KingTech marks this model discontinued; it is retained solely for historical research. This is a third-party technical draft, not a BODICH-manufactured product, quotation, stock indication or sale offer."
+        },
+        "ro": {
+          "name": "KingTech K-65G4+ — fișă de referință G4+ (model retras)",
+          "summary": "Fișă tehnică nepublicată pentru KingTech K-65G4+: tracțiune nominală de 6,5 kgf, diametru de 71,4 mm și masă declarată de 600 g.",
+          "description": "Această fișă de referință pentru turboreactorul KingTech G4+ consemnează diametrul de 71,4 mm, lungimea de 167 mm, masa de 600 g și turația maximă indicată de 190.000 rpm. Tracțiunea nominală indicată este de 6,5 kgf. Consumul masic raportat este de 240 g/min; combustibilii indicați sunt motorina, Jet A1 și kerosenul. Temperatura maximă EGT raportată este de 730 °C. Sursa indică masa motorului fără suportul de montaj. KingTech marchează modelul ca retras; fișa este păstrată numai ca arhivă tehnică. Aceasta este o fișă tehnică externă în stadiu de redactare, nu un produs fabricat de BODICH, o ofertă, o dovadă de stoc sau o promisiune de vânzare."
+        }
+      },
+      "specs": [
+        {
+          "kind": "thrust",
+          "value": 6.5,
+          "unit": "kgf",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-65g4-discontinued/4",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "dimension",
+          "metric": "diameter",
+          "value": 71.4,
+          "unit": "mm",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-65g4-discontinued/4",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "dimension",
+          "metric": "length",
+          "value": 167,
+          "unit": "mm",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-65g4-discontinued/4",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "mass",
+          "value": 600,
+          "unit": "g",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-65g4-discontinued/4",
+          "verifiedOn": "2026-10-24",
+          "scope": "bare_engine"
+        },
+        {
+          "kind": "speed",
+          "value": 190000,
+          "unit": "rpm",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-65g4-discontinued/4",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "temperature",
+          "value": 730,
+          "unit": "°C",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-65g4-discontinued/4",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "fuel_consumption",
+          "value": 240,
+          "unit": "g/min",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-65g4-discontinued/4",
+          "verifiedOn": "2026-10-24"
+        }
+      ],
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-5",
+      "slug": "kingtech-k-70g4-plus",
+      "model": "K-70G4+",
+      "copy": {
+        "en": {
+          "name": "KingTech K-70G4+ — G4+ turbine reference (discontinued)",
+          "summary": "Unpublished technical reference for the KingTech K-70G4+: 7 kgf nominal thrust, 76 mm housing diameter and 720 g reported mass.",
+          "description": "This KingTech G4+ turbojet reference records a 76 mm diameter, 180 mm length, 720 g mass and a maximum listed speed of 180,000 rpm. The listed nominal thrust is 7 kgf. Recorded fuel use is 230 g/min, with diesel, Jet A1 or kerosene stated as fuel. The reported maximum EGT is 700 °C. The supplier also mentions remaining units despite discontinued status; no stock statement is carried into this reference. KingTech marks this model discontinued; it is retained solely for historical research. This is a third-party technical draft, not a BODICH-manufactured product, quotation, stock indication or sale offer."
+        },
+        "ro": {
+          "name": "KingTech K-70G4+ — fișă de referință G4+ (model retras)",
+          "summary": "Fișă tehnică nepublicată pentru KingTech K-70G4+: tracțiune nominală de 7 kgf, diametru de 76 mm și masă declarată de 720 g.",
+          "description": "Această fișă de referință pentru turboreactorul KingTech G4+ consemnează diametrul de 76 mm, lungimea de 180 mm, masa de 720 g și turația maximă indicată de 180.000 rpm. Tracțiunea nominală indicată este de 7 kgf. Consumul masic raportat este de 230 g/min; combustibilii indicați sunt motorina, Jet A1 și kerosenul. Temperatura maximă EGT raportată este de 700 °C. Furnizorul menționează și exemplare rămase, dar această fișă nu preia nicio afirmație despre stoc. KingTech marchează modelul ca retras; fișa este păstrată numai ca arhivă tehnică. Aceasta este o fișă tehnică externă în stadiu de redactare, nu un produs fabricat de BODICH, o ofertă, o dovadă de stoc sau o promisiune de vânzare."
+        }
+      },
+      "specs": [
+        {
+          "kind": "thrust",
+          "value": 7,
+          "unit": "kgf",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-70g4-discontinued/5",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "dimension",
+          "metric": "diameter",
+          "value": 76,
+          "unit": "mm",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-70g4-discontinued/5",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "dimension",
+          "metric": "length",
+          "value": 180,
+          "unit": "mm",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-70g4-discontinued/5",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "mass",
+          "value": 720,
+          "unit": "g",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-70g4-discontinued/5",
+          "verifiedOn": "2026-10-24",
+          "scope": "not_stated"
+        },
+        {
+          "kind": "speed",
+          "value": 180000,
+          "unit": "rpm",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-70g4-discontinued/5",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "temperature",
+          "value": 700,
+          "unit": "°C",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-70g4-discontinued/5",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "fuel_consumption",
+          "value": 230,
+          "unit": "g/min",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-70g4-discontinued/5",
+          "verifiedOn": "2026-10-24"
+        }
+      ],
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-6",
+      "slug": "kingtech-k-85g4-plus",
+      "model": "K-85G4+",
+      "copy": {
+        "en": {
+          "name": "KingTech K-85G4+ — G4+ turbine reference (discontinued)",
+          "summary": "Unpublished technical reference for the KingTech K-85G4+: 8.5 kgf nominal thrust, 82 mm housing diameter and 880 g reported mass.",
+          "description": "This KingTech G4+ turbojet reference records a 82 mm diameter, 205 mm length, 880 g mass and a maximum listed speed of 170,000 rpm. The listed nominal thrust is 8.5 kgf. Recorded fuel use is 300 g/min, with diesel, Jet A1 or kerosene stated as fuel. The reported maximum EGT is 700 °C. Specifications are attributed to a preserved retailer table, not the similarly titled K-86 regional listing. KingTech marks this model discontinued; it is retained solely for historical research. This is a third-party technical draft, not a BODICH-manufactured product, quotation, stock indication or sale offer."
+        },
+        "ro": {
+          "name": "KingTech K-85G4+ — fișă de referință G4+ (model retras)",
+          "summary": "Fișă tehnică nepublicată pentru KingTech K-85G4+: tracțiune nominală de 8,5 kgf, diametru de 82 mm și masă declarată de 880 g.",
+          "description": "Această fișă de referință pentru turboreactorul KingTech G4+ consemnează diametrul de 82 mm, lungimea de 205 mm, masa de 880 g și turația maximă indicată de 170.000 rpm. Tracțiunea nominală indicată este de 8,5 kgf. Consumul masic raportat este de 300 g/min; combustibilii indicați sunt motorina, Jet A1 și kerosenul. Temperatura maximă EGT raportată este de 700 °C. Specificațiile provin dintr-un tabel păstrat de un comerciant, nu din pagina regională K-86 cu etichetă ambiguă. KingTech marchează modelul ca retras; fișa este păstrată numai ca arhivă tehnică. Aceasta este o fișă tehnică externă în stadiu de redactare, nu un produs fabricat de BODICH, o ofertă, o dovadă de stoc sau o promisiune de vânzare."
+        }
+      },
+      "specs": [
+        {
+          "kind": "thrust",
+          "value": 8.5,
+          "unit": "kgf",
+          "sourceUrl": "https://www.towerhobbies.com/product/kingtech-turbines-international-kingtech-k-85g4-turbine-engine-with-ecu/KGT85G4.html",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "dimension",
+          "metric": "diameter",
+          "value": 82,
+          "unit": "mm",
+          "sourceUrl": "https://www.towerhobbies.com/product/kingtech-turbines-international-kingtech-k-85g4-turbine-engine-with-ecu/KGT85G4.html",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "dimension",
+          "metric": "length",
+          "value": 205,
+          "unit": "mm",
+          "sourceUrl": "https://www.towerhobbies.com/product/kingtech-turbines-international-kingtech-k-85g4-turbine-engine-with-ecu/KGT85G4.html",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "mass",
+          "value": 880,
+          "unit": "g",
+          "sourceUrl": "https://www.towerhobbies.com/product/kingtech-turbines-international-kingtech-k-85g4-turbine-engine-with-ecu/KGT85G4.html",
+          "verifiedOn": "2026-10-24",
+          "scope": "not_stated"
+        },
+        {
+          "kind": "speed",
+          "value": 170000,
+          "unit": "rpm",
+          "sourceUrl": "https://www.towerhobbies.com/product/kingtech-turbines-international-kingtech-k-85g4-turbine-engine-with-ecu/KGT85G4.html",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "temperature",
+          "value": 700,
+          "unit": "°C",
+          "sourceUrl": "https://www.towerhobbies.com/product/kingtech-turbines-international-kingtech-k-85g4-turbine-engine-with-ecu/KGT85G4.html",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "fuel_consumption",
+          "value": 300,
+          "unit": "g/min",
+          "sourceUrl": "https://www.towerhobbies.com/product/kingtech-turbines-international-kingtech-k-85g4-turbine-engine-with-ecu/KGT85G4.html",
+          "verifiedOn": "2026-10-24"
+        }
+      ],
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-7",
+      "slug": "kingtech-k-102g4-plus",
+      "model": "K-102G4+",
+      "copy": {
+        "en": {
+          "name": "KingTech K-102G4+ — G4+ turbine reference",
+          "summary": "Unpublished technical reference for the KingTech K-102G4+: 10 kgf nominal thrust, 84 mm housing diameter and 910 g reported mass.",
+          "description": "This KingTech G4+ turbojet reference records a 84 mm diameter, 203.3 mm length, 910 g mass and a maximum listed speed of 160,000 rpm. The listed nominal thrust is 10 kgf. Recorded fuel use is 330 g/min, with diesel, Jet A1 or kerosene stated as fuel. The reported maximum EGT is 750 °C. The data characterise this individual G4+ reference; specifications for similarly named G5 engines must not be substituted. This is a third-party technical draft, not a BODICH-manufactured product, quotation, stock indication or sale offer."
+        },
+        "ro": {
+          "name": "KingTech K-102G4+ — fișă de referință G4+",
+          "summary": "Fișă tehnică nepublicată pentru KingTech K-102G4+: tracțiune nominală de 10 kgf, diametru de 84 mm și masă declarată de 910 g.",
+          "description": "Această fișă de referință pentru turboreactorul KingTech G4+ consemnează diametrul de 84 mm, lungimea de 203,3 mm, masa de 910 g și turația maximă indicată de 160.000 rpm. Tracțiunea nominală indicată este de 10 kgf. Consumul masic raportat este de 330 g/min; combustibilii indicați sunt motorina, Jet A1 și kerosenul. Temperatura maximă EGT raportată este de 750 °C. Datele descriu numai această variantă G4+; nu se substituie specificațiile unei turbine G5 cu nume asemănător. Aceasta este o fișă tehnică externă în stadiu de redactare, nu un produs fabricat de BODICH, o ofertă, o dovadă de stoc sau o promisiune de vânzare."
+        }
+      },
+      "specs": [
+        {
+          "kind": "thrust",
+          "value": 10,
+          "unit": "kgf",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-102g4-/7",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "dimension",
+          "metric": "diameter",
+          "value": 84,
+          "unit": "mm",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-102g4-/7",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "dimension",
+          "metric": "length",
+          "value": 203.3,
+          "unit": "mm",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-102g4-/7",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "mass",
+          "value": 910,
+          "unit": "g",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-102g4-/7",
+          "verifiedOn": "2026-10-24",
+          "scope": "not_stated"
+        },
+        {
+          "kind": "speed",
+          "value": 160000,
+          "unit": "rpm",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-102g4-/7",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "temperature",
+          "value": 750,
+          "unit": "°C",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-102g4-/7",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "fuel_consumption",
+          "value": 330,
+          "unit": "g/min",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-102g4-/7",
+          "verifiedOn": "2026-10-24"
+        }
+      ],
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-8",
+      "slug": "kingtech-k-130g4-plus",
+      "model": "K-130G4+",
+      "copy": {
+        "en": {
+          "name": "KingTech K-130G4+ — G4+ turbine reference",
+          "summary": "Unpublished technical reference for the KingTech K-130G4+: 13 kgf nominal thrust, 94.5 mm housing diameter and 1,200 g reported mass.",
+          "description": "This KingTech G4+ turbojet reference records a 94.5 mm diameter, 220 mm length, 1,200 g mass and a maximum listed speed of 142,000 rpm. The listed nominal thrust is 13 kgf. Recorded fuel use is 410 g/min, with diesel, Jet A1 or kerosene stated as fuel. The reported maximum EGT is 700 °C. The 1,200 g value is for the engine; the supplier gives 1,270 g with the mount. This is a third-party technical draft, not a BODICH-manufactured product, quotation, stock indication or sale offer."
+        },
+        "ro": {
+          "name": "KingTech K-130G4+ — fișă de referință G4+",
+          "summary": "Fișă tehnică nepublicată pentru KingTech K-130G4+: tracțiune nominală de 13 kgf, diametru de 94,5 mm și masă declarată de 1.200 g.",
+          "description": "Această fișă de referință pentru turboreactorul KingTech G4+ consemnează diametrul de 94,5 mm, lungimea de 220 mm, masa de 1.200 g și turația maximă indicată de 142.000 rpm. Tracțiunea nominală indicată este de 13 kgf. Consumul masic raportat este de 410 g/min; combustibilii indicați sunt motorina, Jet A1 și kerosenul. Temperatura maximă EGT raportată este de 700 °C. Masa de 1.200 g este a motorului; furnizorul indică 1.270 g cu suportul montat. Aceasta este o fișă tehnică externă în stadiu de redactare, nu un produs fabricat de BODICH, o ofertă, o dovadă de stoc sau o promisiune de vânzare."
+        }
+      },
+      "specs": [
+        {
+          "kind": "thrust",
+          "value": 13,
+          "unit": "kgf",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-130g4-/8",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "dimension",
+          "metric": "diameter",
+          "value": 94.5,
+          "unit": "mm",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-130g4-/8",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "dimension",
+          "metric": "length",
+          "value": 220,
+          "unit": "mm",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-130g4-/8",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "mass",
+          "value": 1200,
+          "unit": "g",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-130g4-/8",
+          "verifiedOn": "2026-10-24",
+          "scope": "bare_engine"
+        },
+        {
+          "kind": "speed",
+          "value": 142000,
+          "unit": "rpm",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-130g4-/8",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "temperature",
+          "value": 700,
+          "unit": "°C",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-130g4-/8",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "fuel_consumption",
+          "value": 410,
+          "unit": "g/min",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-130g4-/8",
+          "verifiedOn": "2026-10-24"
+        }
+      ],
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-9",
+      "slug": "kingtech-k-142g4-plus",
+      "model": "K-142G4+",
+      "copy": {
+        "en": {
+          "name": "KingTech K-142G4+ — G4+ turbine reference",
+          "summary": "Unpublished technical reference for the KingTech K-142G4+ with supplier-reported 14 kgf nominal thrust and 1,300 g mass; geometric and speed figures remain disputed.",
+          "description": "The KingTech K-142G4+ external reference records 14 kgf nominal thrust and 1,300 g engine mass. The selected supplier reports fuel use of 440 g/min and lists diesel, Jet A1 or kerosene. Regional sources disagree on inlet diameter, engine length, maximum shaft speed and exhaust temperature; these figures have been withheld pending confirmation of hardware revision. This is an unpublished third-party draft, not a BODICH-manufactured engine, stock report or sales offer."
+        },
+        "ro": {
+          "name": "KingTech K-142G4+ — fișă de referință G4+",
+          "summary": "Fișă tehnică nepublicată pentru KingTech K-142G4+, cu tracțiune nominală declarată de 14 kgf și masă de 1.300 g; dimensiunile și turația necesită verificare.",
+          "description": "Fișa externă KingTech K-142G4+ consemnează o tracțiune nominală de 14 kgf și masa motorului de 1.300 g. Furnizorul selectat indică un consum masic de 440 g/min și combustibili precum motorina, Jet A1 sau kerosenul. Sursele regionale nu concordă asupra diametrului, lungimii motorului, turației maxime și temperaturii gazelor de evacuare; aceste valori sunt omise până la confirmarea reviziei tehnice. Aceasta este o fișă nepublicată a unui produs terț, nu un motor fabricat de BODICH, o dovadă de stoc sau o ofertă de vânzare."
+        }
+      },
+      "specs": [
+        {
+          "kind": "thrust",
+          "value": 14,
+          "unit": "kgf",
+          "sourceUrl": "https://rcjetcenter.com/website/product/kingtech-k-142g4/",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "mass",
+          "value": 1300,
+          "unit": "g",
+          "sourceUrl": "https://rcjetcenter.com/website/product/kingtech-k-142g4/",
+          "verifiedOn": "2026-10-24",
+          "scope": "not_stated"
+        },
+        {
+          "kind": "fuel_consumption",
+          "value": 440,
+          "unit": "g/min",
+          "sourceUrl": "https://rcjetcenter.com/website/product/kingtech-k-142g4/",
+          "verifiedOn": "2026-10-24"
+        }
+      ],
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-10",
+      "slug": "kingtech-k-160g4-plus",
+      "model": "K-160G4+",
+      "copy": {
+        "en": {
+          "name": "KingTech K-160G4+ — G4+ turbine reference",
+          "summary": "Unpublished technical reference for the KingTech K-160G4+: 16 kgf nominal thrust, 103 mm housing diameter and 1,540 g reported mass.",
+          "description": "This KingTech G4+ turbojet reference records a 103 mm diameter, 251 mm length, 1,540 g mass and a maximum listed speed of 130,000 rpm. The listed nominal thrust is 16 kgf. Recorded fuel use is 490 g/min, with diesel, Jet A1 or kerosene stated as fuel. The reported maximum EGT is 700 °C. The data characterise this individual G4+ reference; specifications for similarly named G5 engines must not be substituted. This is a third-party technical draft, not a BODICH-manufactured product, quotation, stock indication or sale offer."
+        },
+        "ro": {
+          "name": "KingTech K-160G4+ — fișă de referință G4+",
+          "summary": "Fișă tehnică nepublicată pentru KingTech K-160G4+: tracțiune nominală de 16 kgf, diametru de 103 mm și masă declarată de 1.540 g.",
+          "description": "Această fișă de referință pentru turboreactorul KingTech G4+ consemnează diametrul de 103 mm, lungimea de 251 mm, masa de 1.540 g și turația maximă indicată de 130.000 rpm. Tracțiunea nominală indicată este de 16 kgf. Consumul masic raportat este de 490 g/min; combustibilii indicați sunt motorina, Jet A1 și kerosenul. Temperatura maximă EGT raportată este de 700 °C. Datele descriu numai această variantă G4+; nu se substituie specificațiile unei turbine G5 cu nume asemănător. Aceasta este o fișă tehnică externă în stadiu de redactare, nu un produs fabricat de BODICH, o ofertă, o dovadă de stoc sau o promisiune de vânzare."
+        }
+      },
+      "specs": [
+        {
+          "kind": "thrust",
+          "value": 16,
+          "unit": "kgf",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-160g4-/10",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "dimension",
+          "metric": "diameter",
+          "value": 103,
+          "unit": "mm",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-160g4-/10",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "dimension",
+          "metric": "length",
+          "value": 251,
+          "unit": "mm",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-160g4-/10",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "mass",
+          "value": 1540,
+          "unit": "g",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-160g4-/10",
+          "verifiedOn": "2026-10-24",
+          "scope": "not_stated"
+        },
+        {
+          "kind": "speed",
+          "value": 130000,
+          "unit": "rpm",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-160g4-/10",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "temperature",
+          "value": 700,
+          "unit": "°C",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-160g4-/10",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "fuel_consumption",
+          "value": 490,
+          "unit": "g/min",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-160g4-/10",
+          "verifiedOn": "2026-10-24"
+        }
+      ],
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-11",
+      "slug": "kingtech-k-180g4-plus",
+      "model": "K-180G4+",
+      "copy": {
+        "en": {
+          "name": "KingTech K-180G4+ — G4+ turbine reference",
+          "summary": "Unpublished technical reference for the KingTech K-180G4+: 18 kgf nominal thrust, 103 mm housing diameter and 1,540 g reported mass.",
+          "description": "This KingTech G4+ turbojet reference records a 103 mm diameter, 251 mm length, 1,540 g mass and a maximum listed speed of 130,000 rpm. The listed nominal thrust is 18 kgf. Recorded fuel use is 560 g/min, with diesel, Jet A1 or kerosene stated as fuel; the specified pump is KP600BL. Two supplier reference tables report different maximum EGT values for this G4+ model, so exhaust temperature is intentionally not published as a verified measurement. The data characterise this individual G4+ reference; specifications for similarly named G5 engines must not be substituted. This is a third-party technical draft, not a BODICH-manufactured product, quotation, stock indication or sale offer."
+        },
+        "ro": {
+          "name": "KingTech K-180G4+ — fișă de referință G4+",
+          "summary": "Fișă tehnică nepublicată pentru KingTech K-180G4+: tracțiune nominală de 18 kgf, diametru de 103 mm și masă declarată de 1.540 g.",
+          "description": "Această fișă de referință pentru turboreactorul KingTech G4+ consemnează diametrul de 103 mm, lungimea de 251 mm, masa de 1.540 g și turația maximă indicată de 130.000 rpm. Tracțiunea nominală indicată este de 18 kgf. Consumul masic raportat este de 560 g/min; combustibilii indicați sunt motorina, Jet A1 și kerosenul, iar pompa menționată este KP600BL. Două tabele tehnice ale furnizorilor indică temperaturi EGT maxime diferite pentru această variantă G4+, astfel că temperatura este omisă până la verificare. Datele descriu numai această variantă G4+; nu se substituie specificațiile unei turbine G5 cu nume asemănător. Aceasta este o fișă tehnică externă în stadiu de redactare, nu un produs fabricat de BODICH, o ofertă, o dovadă de stoc sau o promisiune de vânzare."
+        }
+      },
+      "specs": [
+        {
+          "kind": "thrust",
+          "value": 18,
+          "unit": "kgf",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-180g4-/11",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "dimension",
+          "metric": "diameter",
+          "value": 103,
+          "unit": "mm",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-180g4-/11",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "dimension",
+          "metric": "length",
+          "value": 251,
+          "unit": "mm",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-180g4-/11",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "mass",
+          "value": 1540,
+          "unit": "g",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-180g4-/11",
+          "verifiedOn": "2026-10-24",
+          "scope": "not_stated"
+        },
+        {
+          "kind": "speed",
+          "value": 130000,
+          "unit": "rpm",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-180g4-/11",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "fuel_consumption",
+          "value": 560,
+          "unit": "g/min",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-180g4-/11",
+          "verifiedOn": "2026-10-24"
+        }
+      ],
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-12",
+      "slug": "kingtech-k-210g4-plus",
+      "model": "K-210G4+",
+      "copy": {
+        "en": {
+          "name": "KingTech K-210G4+ — G4+ turbine reference",
+          "summary": "Unpublished technical reference for the KingTech K-210G4+: 21 kgf nominal thrust, 112.6 mm housing diameter and 1,740 g reported mass.",
+          "description": "This KingTech G4+ turbojet reference records a 112.6 mm diameter, 280 mm length, 1,740 g mass; the maximum speed is disputed across sources. The listed nominal thrust is 21 kgf. The supplier lists diesel, Jet A1 or kerosene as fuels and names a KP800BL pump, but fuel-consumption figures conflict. Published supplier specifications disagree on maximum shaft speed, exhaust temperature and mass-based fuel consumption; those numeric fields are deliberately left unverified. The data characterise this individual G4+ reference; specifications for similarly named G5 engines must not be substituted. This is a third-party technical draft, not a BODICH-manufactured product, quotation, stock indication or sale offer."
+        },
+        "ro": {
+          "name": "KingTech K-210G4+ — fișă de referință G4+",
+          "summary": "Fișă tehnică nepublicată pentru KingTech K-210G4+: tracțiune nominală de 21 kgf, diametru de 112,6 mm și masă declarată de 1.740 g.",
+          "description": "Această fișă de referință pentru turboreactorul KingTech G4+ consemnează diametrul de 112,6 mm, lungimea de 280 mm, masa de 1.740 g; turația maximă rămâne disputată între surse. Tracțiunea nominală indicată este de 21 kgf. Sursa enumeră motorina, Jet A1 și kerosenul drept combustibili și pompa KP800BL, însă valorile consumului masic sunt contradictorii. Fișele publicate de furnizori prezintă valori diferite pentru turația maximă, temperatura gazelor de evacuare și consumul masic; aceste câmpuri numerice rămân neconfirmate. Datele descriu numai această variantă G4+; nu se substituie specificațiile unei turbine G5 cu nume asemănător. Aceasta este o fișă tehnică externă în stadiu de redactare, nu un produs fabricat de BODICH, o ofertă, o dovadă de stoc sau o promisiune de vânzare."
+        }
+      },
+      "specs": [
+        {
+          "kind": "thrust",
+          "value": 21,
+          "unit": "kgf",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-210g4-/12",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "dimension",
+          "metric": "diameter",
+          "value": 112.6,
+          "unit": "mm",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-210g4-/12",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "dimension",
+          "metric": "length",
+          "value": 280,
+          "unit": "mm",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-210g4-/12",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "mass",
+          "value": 1740,
+          "unit": "g",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-210g4-/12",
+          "verifiedOn": "2026-10-24",
+          "scope": "not_stated"
+        }
+      ],
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-13",
+      "slug": "kingtech-k-235g4-plus",
+      "model": "K-235G4+",
+      "copy": {
+        "en": {
+          "name": "KingTech K-235G4+ — G4+ turbine reference",
+          "summary": "Unpublished technical reference for the KingTech K-235G4+: 23.5 kgf nominal thrust, 119 mm housing diameter and 2,000 g reported mass.",
+          "description": "This KingTech G4+ turbojet reference records a 119 mm diameter, 278 mm length, 2,000 g mass and a maximum listed speed of 109,000 rpm. The listed nominal thrust is 23.5 kgf. Recorded fuel use is 680 g/min, with diesel, Jet A1 or kerosene stated as fuel; the specified pump is KP800BL. The reported maximum EGT is 750 °C. The data characterise this individual G4+ reference; specifications for similarly named G5 engines must not be substituted. This is a third-party technical draft, not a BODICH-manufactured product, quotation, stock indication or sale offer."
+        },
+        "ro": {
+          "name": "KingTech K-235G4+ — fișă de referință G4+",
+          "summary": "Fișă tehnică nepublicată pentru KingTech K-235G4+: tracțiune nominală de 23,5 kgf, diametru de 119 mm și masă declarată de 2.000 g.",
+          "description": "Această fișă de referință pentru turboreactorul KingTech G4+ consemnează diametrul de 119 mm, lungimea de 278 mm, masa de 2.000 g și turația maximă indicată de 109.000 rpm. Tracțiunea nominală indicată este de 23,5 kgf. Consumul masic raportat este de 680 g/min; combustibilii indicați sunt motorina, Jet A1 și kerosenul, iar pompa menționată este KP800BL. Temperatura maximă EGT raportată este de 750 °C. Datele descriu numai această variantă G4+; nu se substituie specificațiile unei turbine G5 cu nume asemănător. Aceasta este o fișă tehnică externă în stadiu de redactare, nu un produs fabricat de BODICH, o ofertă, o dovadă de stoc sau o promisiune de vânzare."
+        }
+      },
+      "specs": [
+        {
+          "kind": "thrust",
+          "value": 23.5,
+          "unit": "kgf",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-235g4-/13",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "dimension",
+          "metric": "diameter",
+          "value": 119,
+          "unit": "mm",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-235g4-/13",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "dimension",
+          "metric": "length",
+          "value": 278,
+          "unit": "mm",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-235g4-/13",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "mass",
+          "value": 2000,
+          "unit": "g",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-235g4-/13",
+          "verifiedOn": "2026-10-24",
+          "scope": "not_stated"
+        },
+        {
+          "kind": "speed",
+          "value": 109000,
+          "unit": "rpm",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-235g4-/13",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "temperature",
+          "value": 750,
+          "unit": "°C",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-235g4-/13",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "fuel_consumption",
+          "value": 680,
+          "unit": "g/min",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-235g4-/13",
+          "verifiedOn": "2026-10-24"
+        }
+      ],
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-14",
+      "slug": "kingtech-k-260g4-plus",
+      "model": "K-260G4+",
+      "copy": {
+        "en": {
+          "name": "KingTech K-260G4+ — G4+ turbine reference",
+          "summary": "Unpublished technical reference for the KingTech K-260G4+: 26 kgf nominal thrust, 120 mm housing diameter and 2,200 g reported mass.",
+          "description": "This KingTech G4+ turbojet reference records a 120 mm diameter, 299 mm length, 2,200 g mass and a maximum listed speed of 112,000 rpm. The listed nominal thrust is 26 kgf. Recorded fuel use is 760 g/min, with diesel, Jet A1 or kerosene stated as fuel; the specified pump is KP1000BL. Supplier pages disagree about maximum EGT; no verified temperature field is included. The source states a ±0.5 kgf thrust tolerance; the structured field holds nominal thrust only. This is a third-party technical draft, not a BODICH-manufactured product, quotation, stock indication or sale offer."
+        },
+        "ro": {
+          "name": "KingTech K-260G4+ — fișă de referință G4+",
+          "summary": "Fișă tehnică nepublicată pentru KingTech K-260G4+: tracțiune nominală de 26 kgf, diametru de 120 mm și masă declarată de 2.200 g.",
+          "description": "Această fișă de referință pentru turboreactorul KingTech G4+ consemnează diametrul de 120 mm, lungimea de 299 mm, masa de 2.200 g și turația maximă indicată de 112.000 rpm. Tracțiunea nominală indicată este de 26 kgf. Consumul masic raportat este de 760 g/min; combustibilii indicați sunt motorina, Jet A1 și kerosenul, iar pompa menționată este KP1000BL. Paginile furnizorilor indică temperaturi EGT maxime diferite; câmpul numeric este lăsat neconfirmat. Sursa declară o toleranță de ±0,5 kgf; câmpul structurat conține numai tracțiunea nominală. Aceasta este o fișă tehnică externă în stadiu de redactare, nu un produs fabricat de BODICH, o ofertă, o dovadă de stoc sau o promisiune de vânzare."
+        }
+      },
+      "specs": [
+        {
+          "kind": "thrust",
+          "value": 26,
+          "unit": "kgf",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-260g4-/14",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "dimension",
+          "metric": "diameter",
+          "value": 120,
+          "unit": "mm",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-260g4-/14",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "dimension",
+          "metric": "length",
+          "value": 299,
+          "unit": "mm",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-260g4-/14",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "mass",
+          "value": 2200,
+          "unit": "g",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-260g4-/14",
+          "verifiedOn": "2026-10-24",
+          "scope": "not_stated"
+        },
+        {
+          "kind": "speed",
+          "value": 112000,
+          "unit": "rpm",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-260g4-/14",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "fuel_consumption",
+          "value": 760,
+          "unit": "g/min",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-260g4-/14",
+          "verifiedOn": "2026-10-24"
+        }
+      ],
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-15",
+      "slug": "kingtech-k-320g4-plus",
+      "model": "K-320G4+",
+      "copy": {
+        "en": {
+          "name": "KingTech K-320G4+ — G4+ turbine reference",
+          "summary": "Unpublished technical reference for the KingTech K-320G4+: 32 kgf nominal thrust, 132.5 mm housing diameter and 2,900 g reported mass.",
+          "description": "This KingTech G4+ turbojet reference records a 132.5 mm diameter, 335 mm length, 2,900 g mass and a maximum listed speed of 100,000 rpm. The listed nominal thrust is 32 kgf. Recorded fuel use is 870 g/min, with diesel, Jet A1 or kerosene stated as fuel; the specified pump is KP1200BL. Published reseller EGT readings conflict; the exhaust-temperature figure is withheld pending factory revision evidence. This is a third-party technical draft, not a BODICH-manufactured product, quotation, stock indication or sale offer."
+        },
+        "ro": {
+          "name": "KingTech K-320G4+ — fișă de referință G4+",
+          "summary": "Fișă tehnică nepublicată pentru KingTech K-320G4+: tracțiune nominală de 32 kgf, diametru de 132,5 mm și masă declarată de 2.900 g.",
+          "description": "Această fișă de referință pentru turboreactorul KingTech G4+ consemnează diametrul de 132,5 mm, lungimea de 335 mm, masa de 2.900 g și turația maximă indicată de 100.000 rpm. Tracțiunea nominală indicată este de 32 kgf. Consumul masic raportat este de 870 g/min; combustibilii indicați sunt motorina, Jet A1 și kerosenul, iar pompa menționată este KP1200BL. Comercianții indică temperaturi EGT maxime contradictorii; cifra este omisă până la confirmarea reviziei producătorului. Aceasta este o fișă tehnică externă în stadiu de redactare, nu un produs fabricat de BODICH, o ofertă, o dovadă de stoc sau o promisiune de vânzare."
+        }
+      },
+      "specs": [
+        {
+          "kind": "thrust",
+          "value": 32,
+          "unit": "kgf",
+          "sourceUrl": "https://www.bgdtech.biz/product-page/kingtech-k-320g4",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "dimension",
+          "metric": "diameter",
+          "value": 132.5,
+          "unit": "mm",
+          "sourceUrl": "https://www.bgdtech.biz/product-page/kingtech-k-320g4",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "dimension",
+          "metric": "length",
+          "value": 335,
+          "unit": "mm",
+          "sourceUrl": "https://www.bgdtech.biz/product-page/kingtech-k-320g4",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "mass",
+          "value": 2900,
+          "unit": "g",
+          "sourceUrl": "https://www.bgdtech.biz/product-page/kingtech-k-320g4",
+          "verifiedOn": "2026-10-24",
+          "scope": "not_stated"
+        },
+        {
+          "kind": "speed",
+          "value": 100000,
+          "unit": "rpm",
+          "sourceUrl": "https://www.bgdtech.biz/product-page/kingtech-k-320g4",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "fuel_consumption",
+          "value": 870,
+          "unit": "g/min",
+          "sourceUrl": "https://www.bgdtech.biz/product-page/kingtech-k-320g4",
+          "verifiedOn": "2026-10-24"
+        }
+      ],
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-16",
+      "slug": "kingtech-k-450g4-plus",
+      "model": "K-450G4+",
+      "copy": {
+        "en": {
+          "name": "KingTech K-450G4+ — G4+ turbine reference (industrial only)",
+          "summary": "Unpublished technical reference for the KingTech K-450G4+: 45 kgf nominal thrust, 152.6 mm housing diameter and 4,000 g reported mass.",
+          "description": "This KingTech G4+ turbojet reference records a 152.6 mm diameter, 374 mm length, 4,000 g mass and a maximum listed speed of 90,000 rpm. The listed nominal thrust is 45 kgf. Recorded fuel use is 1,100 g/min, with diesel, Jet A1 or kerosene stated as fuel; the specified pump is KP1250BL. The reported maximum EGT is 730 °C. The manufacturer's source reserves this model for industrial inquiries only, not ordinary retail. KingTech restricts inquiries to industrial purposes. This is a third-party technical draft, not a BODICH-manufactured product, quotation, stock indication or sale offer."
+        },
+        "ro": {
+          "name": "KingTech K-450G4+ — fișă de referință G4+ (doar pentru utilizări industriale)",
+          "summary": "Fișă tehnică nepublicată pentru KingTech K-450G4+: tracțiune nominală de 45 kgf, diametru de 152,6 mm și masă declarată de 4.000 g.",
+          "description": "Această fișă de referință pentru turboreactorul KingTech G4+ consemnează diametrul de 152,6 mm, lungimea de 374 mm, masa de 4.000 g și turația maximă indicată de 90.000 rpm. Tracțiunea nominală indicată este de 45 kgf. Consumul masic raportat este de 1.100 g/min; combustibilii indicați sunt motorina, Jet A1 și kerosenul, iar pompa menționată este KP1250BL. Temperatura maximă EGT raportată este de 730 °C. Sursa producătorului rezervă modelul solicitărilor industriale, nu vânzării obișnuite. KingTech limitează solicitările la utilizări industriale. Aceasta este o fișă tehnică externă în stadiu de redactare, nu un produs fabricat de BODICH, o ofertă, o dovadă de stoc sau o promisiune de vânzare."
+        }
+      },
+      "specs": [
+        {
+          "kind": "thrust",
+          "value": 45,
+          "unit": "kgf",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-450g4-industrial-purchases-only-please-inquire-/16",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "dimension",
+          "metric": "diameter",
+          "value": 152.6,
+          "unit": "mm",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-450g4-industrial-purchases-only-please-inquire-/16",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "dimension",
+          "metric": "length",
+          "value": 374,
+          "unit": "mm",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-450g4-industrial-purchases-only-please-inquire-/16",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "mass",
+          "value": 4000,
+          "unit": "g",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-450g4-industrial-purchases-only-please-inquire-/16",
+          "verifiedOn": "2026-10-24",
+          "scope": "not_stated"
+        },
+        {
+          "kind": "speed",
+          "value": 90000,
+          "unit": "rpm",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-450g4-industrial-purchases-only-please-inquire-/16",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "temperature",
+          "value": 730,
+          "unit": "°C",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-450g4-industrial-purchases-only-please-inquire-/16",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "fuel_consumption",
+          "value": 1100,
+          "unit": "g/min",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-450g4-industrial-purchases-only-please-inquire-/16",
+          "verifiedOn": "2026-10-24"
+        }
+      ],
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-120",
+      "slug": "kingtech-k-86g4-plus",
+      "model": "K-86G4+",
+      "copy": {
+        "en": {
+          "name": "KingTech K-86G4+ — G4+ turbine reference (discontinued)",
+          "summary": "Unpublished historical reference for the discontinued KingTech K-86G4+, with an engine mass of 725 g; thrust, diameter, exhaust temperature and fuel use await revision confirmation.",
+          "description": "This discontinued KingTech K-86G4+ external reference retains the reseller-reported engine length of 178 mm, engine mass of 725 g excluding its mounting bracket, and maximum shaft speed of 176,000 rpm. The reseller names diesel, Jet A1 or kerosene as fuels and a KP300BL pump; these are source-specific statements, not component approvals. AerobatX and an earlier KingTech Taiwan table disagree on nominal thrust, housing diameter, exhaust temperature and mass-based fuel consumption. Those numeric fields are withheld until the exact G4+ hardware revision is identified. An ambiguous regional page labelled K-86 contains K-85 data and is not used as evidence. This is an archived third-party draft, not a BODICH-made product, sales listing or stock indication."
+        },
+        "ro": {
+          "name": "KingTech K-86G4+ — fișă de referință G4+ (model retras)",
+          "summary": "Fișă istorică nepublicată pentru KingTech K-86G4+ retras, cu masa motorului de 725 g; tracțiunea, diametrul, temperatura și consumul necesită confirmarea reviziei.",
+          "description": "Această fișă externă pentru modelul retras KingTech K-86G4+ păstrează lungimea motorului de 178 mm, masa de 725 g fără suportul de montaj și turația maximă de 176.000 rpm, potrivit comerciantului citat. Furnizorul enumeră motorina, Jet A1 sau kerosenul și pompa KP300BL; acestea sunt mențiuni specifice sursei, nu aprobări de compatibilitate. Datele AerobatX și ale unei pagini KingTech Taiwan mai vechi diferă pentru tracțiune, diametru, temperatura gazelor și consumul masic de combustibil. Valorile numerice sunt omise până la identificarea reviziei exacte G4+. O pagină regională etichetată K-86 conține date pentru K-85 și nu este folosită ca dovadă. Fișa este o referință istorică a unui produs terț, nu un produs fabricat de BODICH, o ofertă sau o dovadă de stoc."
+        }
+      },
+      "specs": [
+        {
+          "kind": "dimension",
+          "metric": "length",
+          "value": 178,
+          "unit": "mm",
+          "sourceUrl": "https://aerobatx.co.uk/shop/Kingtech-K86-K86G4-turbine",
+          "verifiedOn": "2026-10-24"
+        },
+        {
+          "kind": "mass",
+          "value": 725,
+          "unit": "g",
+          "sourceUrl": "https://aerobatx.co.uk/shop/Kingtech-K86-K86G4-turbine",
+          "verifiedOn": "2026-10-24",
+          "scope": "bare_engine"
+        },
+        {
+          "kind": "speed",
+          "value": 176000,
+          "unit": "rpm",
+          "sourceUrl": "https://aerobatx.co.uk/shop/Kingtech-K86-K86G4-turbine",
+          "verifiedOn": "2026-10-24"
+        }
+      ],
+      "images": [],
+      "approval": "draft"
     }
   ]
 }

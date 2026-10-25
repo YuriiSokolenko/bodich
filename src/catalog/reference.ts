@@ -53,6 +53,8 @@ export type ReferenceSpec = {
   metric?: 'diameter' | 'length';
   value: number;
   unit: string;
+  /** Mass scope prevents misleading comparisons of engine-only and equipped assemblies. */
+  scope?: 'bare_engine' | 'assembly_with_integrated_hardware' | 'not_stated';
   /** Provenance must be per specification, not just per product. */
   sourceUrl: string;
   verifiedOn: string;
@@ -232,7 +234,10 @@ export function validateReferenceDrafts(
     if (!Array.isArray(draft.specs)) { fail('Invalid specs: ' + draft.sourceId); continue; }
     for (const spec of draft.specs) {
       if (!spec || typeof spec !== 'object' || Array.isArray(spec) ||
-          !keysOnly(spec, ['kind', 'metric', 'value', 'unit', 'sourceUrl', 'verifiedOn']) ||
+          !keysOnly(spec, ['kind', 'metric', 'scope', 'value', 'unit', 'sourceUrl', 'verifiedOn']) ||
+          (spec.kind === 'mass'
+            ? (spec.scope !== undefined && !['bare_engine', 'assembly_with_integrated_hardware', 'not_stated'].includes(spec.scope))
+            : spec.scope !== undefined) ||
           (spec.kind === 'dimension'
             ? !['diameter', 'length'].includes(spec.metric as string)
             : spec.metric !== undefined) ||
