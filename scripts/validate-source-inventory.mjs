@@ -682,6 +682,13 @@ if (process.argv.includes('--self-test')) {
       [mutateTp('kt-20', (d) => ({...d,specs:d.specs.map((p) => p.kind === 'speed' ? {...p,metric:'propeller'} : p)})), 'Missing TP technical field'],
       [mutateTp('kt-17', (d) => ({...d,specs:[...d.specs,{kind:'power',value:8,unit:'kW'}]})), 'unverified power'],
       [mutateTp('kt-19', (d) => ({...d,turboprop:{...d.turboprop,propellers:[{blades:3,diameterInches:25,pitchInches:20}]}})), 'propeller/fuel/pump'],
+      [mutateTp('kt-18', (d) => ({...d,turboprop:{...d.turboprop,pumpModel:'UNVERIFIED'}})), 'propeller/fuel/pump'],
+      [mutateTp('kt-18', (d) => ({...d,turboprop:{...d.turboprop,gearboxRatio:8}})), 'propeller/fuel/pump'],
+      [mutateTp('kt-19', (d) => ({...d,turboprop:{...d.turboprop,includedComponents:['propeller']}})), 'propeller/fuel/pump'],
+      [mutateTp('kt-19', (d) => ({...d,specs:d.specs.map((p) => p.kind === 'mass' ? {...p,scope:'bare_engine'} : p)})), 'mass scope'],
+      [mutateTp('kt-20', (d) => ({...d,specs:d.specs.map((p) => p.kind === 'power' ? {...p,sourceUrl:'https://other.example.com/catalog'} : p)})), 'provenance'],
+      [mutateTp('kt-17', (d) => ({...d,specs:[...d.specs,{kind:'temperature',value:700,unit:'°C'}]})), 'unverified power/EGT'],
+      [mutateTp('kt-20', (d) => ({...d,specs:d.specs.map((p) => p.kind === 'power' ? {...p,value:14} : p)})), 'measurements differ'],
     ];
     for (const [changed, signature] of tpCases) {
       if (!tpDraftProblems(doc, changed).some((e) => e.includes(signature)))
@@ -698,6 +705,20 @@ if (process.argv.includes('--self-test')) {
     if (!validateReferenceDrafts(doc,wrongCategory,buildReferenceDrafts(doc,wrongCategory))
         .some((e) => e.includes('Non-TP record')))
       errors.push('TP metadata illegally accepted on turbojet');
+    const wrongSpeedAxis = structuredClone(draftOverrides);
+    wrongSpeedAxis.records.find((r) => r.sourceId === 'kt-127').specs
+      .find((p) => p.kind === 'speed').metric = 'propeller';
+    if (!validateReferenceDrafts(doc,wrongSpeedAxis,buildReferenceDrafts(doc,wrongSpeedAxis))
+        .some((e) => e.includes('Invalid specification/unit/provenance')))
+      errors.push('TP shaft-speed axis accepted on an ordinary turbojet');
+    const wrongSnapshot = structuredClone(tpVerified);
+    wrongSnapshot.records[0].specs[0].value = -1;
+    if (!tpSnapshotProblems(doc,wrongSnapshot).some((e) => e.includes('technical values')))
+      errors.push('Malformed TP numeric evidence snapshot bypassed validation');
+    const duplicateSnapshot = structuredClone(tpVerified);
+    duplicateSnapshot.records.push(structuredClone(duplicateSnapshot.records[0]));
+    if (!tpSnapshotProblems(doc,duplicateSnapshot).some((e) => e.includes('coverage mismatch')))
+      errors.push('Duplicate TP source snapshot bypassed parity validation');
     // Representative G4+ category, archived, industrial-only and conflicting
     // evidence fixtures; all must stay unpublished and source-ID scoped.
     const g4Items = drafts.filter((d) => d.categoryId === 'g4-plus');
