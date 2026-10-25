@@ -371,6 +371,67 @@ function g4DraftProblems(inventory, drafts, policy = g4Withheld) {
   return errors;
 }
 
+/** #29: all TP source IDs are editorial drafts, not published BODICH stock. */
+function tpDraftProblems(inventory, drafts) {
+  const issues = [];
+  const sources = inventory.products.filter((p) => p.sourceCategoryIds.includes('tp'));
+  const group = drafts.filter((d) => d.categoryId === 'turboprop');
+  if (sources.length !== 4 || group.length !== sources.length)
+    issues.push('TP category coverage differs from four manufacturer source SKUs');
+  const lookup = new Map(group.map((d) => [d.sourceId, d]));
+  const propellerSizes = new Map([
+    ['kt-17', ['3:18:12','3:18:16']], ['kt-18', ['3:22:12']],
+    ['kt-19', ['3:24:20']], ['kt-20', ['3:26:20']],
+  ]);
+  if (sources.some((s) => !propellerSizes.has(s.id)))
+    issues.push('Unknown TP source ID; verify source inventory before importing another model');
+  const slugs = new Set();
+  for (const source of sources) {
+    const d = lookup.get(source.id);
+    if (!d) { issues.push('Missing TP reference: ' + source.id); continue; }
+    const number = source.sourceTitle?.match(/^KingTech K-(\d+)TPG4\+$/)?.[1];
+    if (!number || d.model !== 'K-' + number + 'TPG4+' ||
+        d.slug !== 'kingtech-k-' + number + 'tpg4-plus' ||
+        d.itemType !== 'turboprop' || d.source.manufacturer !== 'KingTech' ||
+        d.source.url !== source.canonicalUrl || slugs.has(d.slug))
+      issues.push('TP identity, taxonomy or unique slug mismatch: ' + source.id);
+    slugs.add(d.slug);
+    // Approval/imagery #33-35 explicitly revise this intake-phase constraint.
+    if (d.approval !== 'draft' || !Array.isArray(d.images) || d.images.length !== 0)
+      issues.push('TP must remain unpublished draft without images: ' + source.id);
+    for (const locale of ['en','ro']) {
+      const c = d.copy?.[locale];
+      if (!c || ![c.name,c.summary,c.description].every((v) => typeof v === 'string' && v.trim().length >= 65))
+        issues.push('Incomplete TP ' + locale + ' copy: ' + source.id);
+    }
+    const fields = d.specs.map((p) => p.kind + (p.metric ? ':' + p.metric : ''));
+    const present = new Set(fields);
+    const allowed = ['dimension:length','mass','speed:turbine','fuel_consumption','power','temperature'];
+    if (fields.length !== present.size || fields.some((x) => !allowed.includes(x)))
+      issues.push('TP jet-only, ambiguous or duplicate technical fields: ' + source.id);
+    const required = ['dimension:length','mass','speed:turbine','fuel_consumption',
+      ...(source.id === 'kt-17' ? [] : ['power','temperature'])];
+    for (const field of required) if (!present.has(field))
+      issues.push('Missing TP technical field ' + field + ': ' + source.id);
+    if (source.id === 'kt-17' && (present.has('power') || present.has('temperature')))
+      issues.push('K-30TP unverified power/EGT must remain unknown');
+    if (d.specs.some((p) => p.sourceUrl !== source.canonicalUrl))
+      issues.push('TP technical value lacks original item provenance: ' + source.id);
+    if (!d.specs.some((p) => p.kind === 'mass' && p.scope === 'not_stated'))
+      issues.push('TP mass scope must be explicitly unknown: ' + source.id);
+    const tp = d.turboprop;
+    if (!tp || tp.sourceUrl !== source.canonicalUrl || !Array.isArray(tp.propellers) ||
+        tp.propellers.map((p) => p.blades + ':' + p.diameterInches + ':' + p.pitchInches).sort().join(',') !==
+          (propellerSizes.get(source.id) ?? []).slice().sort().join(',') ||
+        !Array.isArray(tp.fuelTypes) || tp.fuelTypes.length !== (source.id === 'kt-17' ? 2 : 3) ||
+        tp.fuelTypes.some((x) => !(source.id === 'kt-17' ? ['jet_a1','kerosene'] : ['diesel','jet_a1','kerosene']).includes(x)) ||
+        (source.id === 'kt-17' ? tp.pumpModel !== 'KP200BL' : tp.pumpModel !== undefined) ||
+        tp.gearboxRatio !== undefined || tp.includedComponents !== undefined)
+      issues.push('TP verified propeller/fuel/pump or unknown-gearbox mismatch: ' + source.id);
+  }
+  return issues;
+}
+
 const errors = validate(doc);
 errors.push(...checkRuntimeImportBoundary());
 // The source manifest and editorial overlays stay outside public/ and are never
@@ -385,6 +446,7 @@ try {
   errors.push(...g5DraftProblems(doc, drafts).map((e) => 'G5 coverage: ' + e));
   errors.push(...g4QuarantineProblems(doc, g4Withheld).map((e) => 'G4+ policy: ' + e));
   errors.push(...g4DraftProblems(doc, drafts).map((e) => 'G4+ coverage: ' + e));
+  errors.push(...tpDraftProblems(doc, drafts).map((e) => 'TP coverage: ' + e));
 } catch (error) {
   errors.push('Cannot derive unpublished reference catalog: ' + error.message);
 }
@@ -544,6 +606,34 @@ if (process.argv.includes('--self-test')) {
     if (!g5DraftProblems(doc, disputedEgt).some((e) => e.includes('Conflicting K-180G5 EGT')))
       errors.push('Disputed K-180G5 EGT bypassed regression guard');
 
+    // Dedicated TP negative fixtures: lost SKU, missing locale, changed status,
+    // jet-thrust leakage, turbine vs propeller speed and propeller dimensions.
+    const mutateTp = (id, change) => drafts.map((d) => d.sourceId === id ? change(d) : d);
+    const tpCases = [
+      [drafts.filter((d) => d.sourceId !== 'kt-17'), 'Missing TP reference'],
+      [mutateTp('kt-18', (d) => ({...d,copy:{...d.copy,ro:null}})), 'Incomplete TP ro'],
+      [mutateTp('kt-19', (d) => ({...d,approval:'company_approved'})), 'unpublished draft'],
+      [mutateTp('kt-20', (d) => ({...d,images:[{fake:true}]})), 'unpublished draft'],
+      [mutateTp('kt-18', (d) => ({...d,specs:[...d.specs,{kind:'thrust',value:5,unit:'kgf'}]})), 'jet-only'],
+      [mutateTp('kt-20', (d) => ({...d,specs:d.specs.map((p) => p.kind === 'speed' ? {...p,metric:'propeller'} : p)})), 'Missing TP technical field'],
+      [mutateTp('kt-17', (d) => ({...d,specs:[...d.specs,{kind:'power',value:8,unit:'kW'}]})), 'unverified power'],
+      [mutateTp('kt-19', (d) => ({...d,turboprop:{...d.turboprop,propellers:[{blades:3,diameterInches:25,pitchInches:20}]}})), 'propeller/fuel/pump'],
+    ];
+    for (const [changed, signature] of tpCases) {
+      if (!tpDraftProblems(doc, changed).some((e) => e.includes(signature)))
+        errors.push('TP negative fixture escaped: ' + signature);
+    }
+    const badTp = structuredClone(draftOverrides);
+    badTp.records.find((r) => r.sourceId === 'kt-17').turboprop.propellers[0].diameterInches = -18;
+    if (!validateReferenceDrafts(doc,badTp,buildReferenceDrafts(doc,badTp))
+        .some((e) => e.includes('Invalid or unsourced TP metadata')))
+      errors.push('Negative TP propeller size escaped schema validation');
+    const wrongCategory = structuredClone(draftOverrides);
+    wrongCategory.records.find((r) => r.sourceId === 'kt-127').turboprop =
+      structuredClone(drafts.find((d) => d.sourceId === 'kt-17').turboprop);
+    if (!validateReferenceDrafts(doc,wrongCategory,buildReferenceDrafts(doc,wrongCategory))
+        .some((e) => e.includes('Non-TP record')))
+      errors.push('TP metadata illegally accepted on turbojet');
     // Representative G4+ category, archived, industrial-only and conflicting
     // evidence fixtures; all must stay unpublished and source-ID scoped.
     const g4Items = drafts.filter((d) => d.categoryId === 'g4-plus');
