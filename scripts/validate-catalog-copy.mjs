@@ -2,6 +2,9 @@
 // Offline QA for unpublished bilingual supplier-reference product copy.
 import assert from 'node:assert/strict';
 import { readFileSync, writeFileSync, renameSync, existsSync, unlinkSync } from 'node:fs';
+import { spawnSync } from 'node:child_process';
+import { resolve } from 'node:path';
+import { pathToFileURL } from 'node:url';
 
 const read = (p) => JSON.parse(readFileSync(p, 'utf8'));
 const paths = {
@@ -16,9 +19,12 @@ const qaStatus = 'automated_consistency_checked_unpublished';
 const humanStatus = 'pending_prelaunch_native_Romanian_legal_marketing_review';
 // Space is optional for detection (9.9V must not bypass evidence), but mandatory in approved copy.
 const measurementPattern = /(^|[^\p{L}\p{N}])([0-9][0-9.,]*)(\s*)(g\/min|mL\/min|L\/h|km\/h|m\/s|mAh|kgf|rpm|°C|°F|bar|psi|mm|cm|kW|mL|Ah|kg|g|V|W|L|N|%)(?![\p{L}/])/gu;
+// Intentionally match affirmative marketing promises, not neutral denials:
+// "not in stock", "nu implică o compatibilitate garantată" and references
+ // to unverified delivery must not be rejected as if they were promotions.
 const salesPhrases = {
-  en: /(?:order now|buy now|ships today|available now|in stock|guaranteed by BODICH|free shipping|warranty included|guaranteed delivery)/iu,
-  ro: /(?:comandă acum|cumpără acum|în stoc|livrare|garantat(?:ă|e|i)?|garanție inclusă|preț (?:actual|promoțional))/iu,
+  en: /(?:order now|buy now|ships today|free shipping|free delivery|guaranteed delivery|warranty included|guaranteed by BODICH|in stock at BODICH|available for immediate delivery|sale price|special offer)/iu,
+  ro: /(?:comandă acum|cumpără acum|expediere astăzi|livrare gratuită|livrare garantată|garanție inclusă|garantat(?:ă|e|i)? de BODICH|în stoc la BODICH|disponibil(?:ă)? pentru livrare imediată|preț promoțional|ofertă specială)/iu,
 };
 const sortUnique = (xs) => [...new Set(xs)].sort();
 const keyFor = (x) => x.sourceId + '/' + x.value + '/' + x.unit;
@@ -328,9 +334,58 @@ function selfTest(input) {
   negative('matrix write preflight detects invalid source draft', (x) => {
     delete x.drafts.records[0].copy.en.description;
   }, 'Complete copy.en', { checkMatrix: false });
-  console.log('Copy QA regression fixtures: ' + cases + ' expected failures detected');
+  // Exact external product title is an identifier, not independently verified geometry.
+  const tubingSource = input.inventory.products.find((p) => /Tubing [0-9]+mm/.test(p.sourceTitle));
+  assert(tubingSource, 'Expected at least one unspaced supplier tubing label');
+  const tubingRecord = input.drafts.records.find((r) => r.sourceId === tubingSource.id);
+  assert(tubingRecord.copy.en.description.includes(tubingSource.sourceTitle),
+    'Existing exact supplier title is preserved in the reference prose');
+  assert.deepEqual(validate(input), [], 'Literal source-title dimension must remain acceptable');
+  negative('same tubing number asserted outside supplier title', (x) => {
+    const record = x.drafts.records.find((r) => r.sourceId === tubingSource.id);
+    const value = tubingSource.sourceTitle.match(/([0-9]+)mm/)[1];
+    record.copy.en.description += ' The independently claimed diameter is ' + value + ' mm.';
+  }, 'Numeric copy claim lacks evidence');
+  negative('unspaced standalone tubing dimension outside source title', (x) => {
+    const record = x.drafts.records.find((r) => r.sourceId === tubingSource.id);
+    const value = tubingSource.sourceTitle.match(/([0-9]+)mm/)[1];
+    record.copy.en.description += ' Its verified diameter is ' + value + 'mm.';
+  }, 'Missing space before engineering unit');
+  negative('explicit Romanian inventory promotion', (x) => {
+    x.drafts.records[0].copy.ro.description += ' În stoc la BODICH.';
+  }, 'Unapproved commercial claims');
+  negative('explicit English inventory promotion', (x) => {
+    x.drafts.records[0].copy.en.description += ' In stock at BODICH.';
+  }, 'Unapproved commercial claims');
+  // Genuine disclaimers must remain valid even when mentioning stock, delivery and guarantees.
+  const disclaimer = structuredClone(input);
+  disclaimer.drafts.records[0].copy.en.description +=
+    ' No claim is made that the item is in stock or eligible for delivery.';
+  disclaimer.drafts.records[0].copy.ro.description +=
+    ' Această fișă nu implică o compatibilitate garantată și nu confirmă livrare.';
+  assert.deepEqual(validate(disclaimer), [], 'Neutral EN/RO commercial disclaimers must pass');
+  // Importing the module must not parse foreign argv, emit output or rewrite the matrix.
+  const before = readFileSync(paths.matrix, 'utf8');
+  const imported = spawnSync(process.execPath,
+    ['--input-type=module', '-e', "await import('./scripts/validate-catalog-copy.mjs')", '--', '--write-matrix'],
+    { encoding: 'utf8', cwd: process.cwd() });
+  assert.equal(imported.status, 0, 'import-pure: ' + imported.stderr);
+  assert.equal(imported.stdout, '', 'import-pure: unexpected CLI output');
+  assert.equal(imported.stderr, '', 'import-pure: unexpected error output');
+  assert.equal(readFileSync(paths.matrix, 'utf8'), before, 'import-pure: matrix was mutated');
+  // The entry point itself must run, even on Node 24.0/24.1 without import.meta.main.
+  const cli = spawnSync(process.execPath,
+    ['scripts/validate-catalog-copy.mjs', '--not-an-option'], { encoding: 'utf8', cwd: process.cwd() });
+  assert.notEqual(cli.status, 0, 'CLI cannot silently exit success for unknown options');
+  assert.match(cli.stderr, /Use one of --write-matrix or --self-test/);
+  console.log('Copy QA regression fixtures: ' + cases +
+    ' expected failures detected, with positive disclaimer/title and module-CLI smoke tests');
 }
-if (import.meta.main) {
+// Node 24.0/24.1 lack import.meta.main. Do not silently skip CLI validation.
+// A dynamic import still has a different argv entry and remains side-effect free.
+const isEntryPoint = import.meta.main ??
+  (Boolean(process.argv[1]) && import.meta.url === pathToFileURL(resolve(process.argv[1])).href);
+if (isEntryPoint) {
   const options = process.argv.slice(2);
   if (options.some((x) => !['--write-matrix', '--self-test'].includes(x)) ||
       (options.includes('--write-matrix') && options.includes('--self-test')))
