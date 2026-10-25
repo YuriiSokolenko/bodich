@@ -1,0 +1,105 @@
+{
+  "schemaVersion": 1,
+  "purpose": "documented_non_nominal_or_cross_reference_copy_claims",
+  "notes": "Claims here remain source-linked prose, not extra structured specifications or company-certified values.",
+  "entries": [
+    {
+      "sourceId": "kt-1",
+      "value": 3,
+      "unit": "kgf",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-30g4-discontinued/1",
+      "reviewTag": "minimum_thrust_not_nominal",
+      "note": "Supplier states 3 kgf+ (lower bound). Do not promote to exact nominal thrust.",
+      "acceptedPhrases": {
+        "en": [
+          "over 3 kgf",
+          "3 kgf+"
+        ],
+        "ro": [
+          "peste 3 kgf",
+          "3 kgf+"
+        ]
+      }
+    },
+    {
+      "sourceId": "kt-8",
+      "value": 1270,
+      "unit": "g",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-130g4-/8",
+      "reviewTag": "alternative_mass_scope",
+      "note": "Supplier's 1,270 g refers to the engine with mount, whereas structured 1,200 g is bare engine.",
+      "acceptedPhrases": {
+        "en": [
+          "1,270 g with the mount"
+        ],
+        "ro": [
+          "1.270 g cu suportul montat"
+        ]
+      }
+    },
+    {
+      "sourceId": "kt-14",
+      "value": 0.5,
+      "unit": "kgf",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-260g4-/14",
+      "reviewTag": "thrust_tolerance_and_egt_disagreement",
+      "note": "±0.5 kgf is a tolerance, not the engine's nominal thrust. EGT values disagree between supplier sites and remain unverified.",
+      "acceptedPhrases": {
+        "en": [
+          "±0.5 kgf"
+        ],
+        "ro": [
+          "±0,5 kgf"
+        ]
+      }
+    },
+    {
+      "sourceId": "kt-20",
+      "value": 6200,
+      "unit": "rpm",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-100tpg4-/20",
+      "reviewTag": "output_shaft_rpm_ambiguous",
+      "note": "Source pairs 13 kW with 6,200 rpm but does not identify a shaft, so output-shaft speed is not promoted to a verified spec.",
+      "acceptedPhrases": {
+        "en": [
+          "6,200 rpm, but that number is not unambiguously labelled as output-shaft speed"
+        ],
+        "ro": [
+          "6.200 rpm, dar aceasta nu este identificată fără echivoc ca turație a arborelui de ieșire"
+        ]
+      }
+    },
+    {
+      "sourceId": "kt-24",
+      "value": 2100,
+      "unit": "mAh",
+      "sourceUrl": "https://www.kingtechturbines.com/product/2100mah-9-9v-life-battery/25",
+      "reviewTag": "comparison_to_separate_source_sku",
+      "note": "A comparison with the separately listed 2100 mAh battery (kt-25), not an attribute of kt-24.",
+      "acceptedPhrases": {
+        "en": [
+          "battery marked 2100 mAh"
+        ],
+        "ro": [
+          "acumulatorul LIFE cu capacitatea înscrisă de 2100 mAh"
+        ]
+      }
+    },
+    {
+      "sourceId": "kt-25",
+      "value": 3800,
+      "unit": "mAh",
+      "sourceUrl": "https://www.kingtechturbines.com/product/3800mah-9-9v-life-battery/24",
+      "reviewTag": "comparison_to_separate_source_sku",
+      "note": "A comparison with the separately listed 3800 mAh battery (kt-24), not an attribute of kt-25.",
+      "acceptedPhrases": {
+        "en": [
+          "separate 3800 mAh listing"
+        ],
+        "ro": [
+          "poziția distinctă de 3800 mAh"
+        ]
+      }
+    }
+  ]
+}
