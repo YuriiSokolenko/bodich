@@ -9,7 +9,7 @@
 import { mkdirSync, readFileSync, readdirSync, writeFileSync, existsSync, mkdtempSync, rmSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { tmpdir } from 'node:os';
-import { join, resolve } from 'node:path';
+import { join, resolve, relative } from 'node:path';
 import { buildReferenceDrafts, discountedReferenceDrafts, externalReferenceServices, primaryReferenceSection, referenceTaxonomy } from '../src/catalog/reference.ts';
 import { catalogCategories, confirmedProducts } from '../src/catalog/data.ts';
 
@@ -347,6 +347,45 @@ function reconcile({ source, edits, artwork, copy, published, external }) {
   return { report, errors };
 }
 
+/**
+ * Audit the complete production artifact, not just category HTML. Astro can
+ * copy orphaned public files even if no route imports them; Vite may also
+ * create JS/JSON chunks containing a source SKU or external checkout.
+ */
+function publishedLeakProblems(root) {
+  const errors = [];
+  const slugs = overlays.records.map((record) => record.slug).filter(nonempty);
+  const textFile = /\.(?:html?|js|mjs|cjs|json|xml|txt|css|svg|webmanifest|map)$/i;
+  const seen = new Set();
+  function visit(directory) {
+    for (const entry of readdirSync(directory, { withFileTypes: true })) {
+      const absolute = join(directory, entry.name);
+      const name = relative(root, absolute).replaceAll('\\', '/');
+      const components = name.toLowerCase().split('/');
+      if (entry.isSymbolicLink() || (!entry.isDirectory() && !entry.isFile())) {
+        errors.push('Unexpected unsafe build entry: ' + name);
+        continue;
+      }
+      if (components.some((piece) => ['draft-assets', 'source-inventory.json',
+        'reference-overrides.json', 'art-manifest.json', 'copy-review-matrix.json'].includes(piece)))
+        errors.push('Private catalog artifact copied into dist/: ' + name);
+      if (slugs.some((slug) => components.includes(slug.toLowerCase())))
+        errors.push('Private source SKU path copied into dist/: ' + name);
+      if (entry.isDirectory()) { visit(absolute); continue; }
+      if (!textFile.test(name)) continue;
+      const body = readFileSync(absolute, 'utf8').toLowerCase();
+      if (/kingtech|squareup(?:\.com)?|draft-assets|source-inventory\.json|reference-overrides\.json/.test(body) ||
+          slugs.some((slug) => body.includes(slug.toLowerCase()))) {
+        if (!seen.has(name)) errors.push('Unpublished reference or checkout leaked into dist/: ' + name);
+        seen.add(name);
+      }
+    }
+  }
+  if (!existsSync(root)) return ['Missing production build: ' + root];
+  visit(root);
+  return errors;
+}
+
 function routeProblems(dist, published) {
   const errors = [];
   const root = resolve(dist);
@@ -377,7 +416,64 @@ function routeProblems(dist, published) {
       }
     }
   }
+  errors.push(...publishedLeakProblems(root));
   return errors;
+}
+
+/** Disposable build tree: prove route checks reject broken layout and leaked bundles. */
+function routeSelfTests() {
+  const root = mkdtempSync(join(tmpdir(), 'bodich-release-route-'));
+  const engine = catalogCategories.find((x) => x.id === 'turbine-engines');
+  const categoryDir = (lang, item) => join(root, lang, item.section, item.id);
+  const categoryHtml = (item, extra = '') => '<html><body><main data-catalog-category="' +
+    item.id + '"><div data-catalog-empty-state></div>' + extra + '</main></body></html>';
+  const expect = (label, issue) => {
+    const errors = routeProblems(root, []);
+    if (!errors.some((e) => e.includes(issue)))
+      throw new Error('Route regression failed to catch ' + label + ': ' + errors.join('; '));
+  };
+  try {
+    for (const lang of ['en', 'ro']) {
+      for (const item of catalogCategories) {
+        const parent = categoryDir(lang, item);
+        mkdirSync(parent, { recursive: true });
+        writeFileSync(join(parent, 'index.html'), categoryHtml(item));
+      }
+    }
+    if (routeProblems(root, []).length) throw new Error('Valid empty-category fixture rejected');
+    const target = join(categoryDir('en', engine), 'index.html');
+    writeFileSync(target, categoryHtml(engine, '<div data-product-card="unapproved"></div>'));
+    expect('unexpected card count', 'Wrong localized category/card count');
+    writeFileSync(target, categoryHtml(engine).replace('data-catalog-empty-state', 'data-state-missing'));
+    expect('missing empty state', 'Wrong localized category/card count');
+    writeFileSync(target, categoryHtml(engine));
+    mkdirSync(join(categoryDir('en', engine), 'unexpected-detail'), { recursive: true });
+    expect('unexpected product detail', 'Unexpected product route');
+    rmSync(join(categoryDir('en', engine), 'unexpected-detail'), { recursive: true });
+    rmSync(target);
+    expect('missing category', 'Missing category route');
+    writeFileSync(target, categoryHtml(engine));
+
+    mkdirSync(join(root, '_astro'), { recursive: true });
+    const js = join(root, '_astro', 'bundle.js');
+    writeFileSync(js, '// https://app.squareup.com/gift/checkout');
+    expect('checkout string in JS bundle', 'Unpublished reference or checkout leaked');
+    writeFileSync(js, '// unpublished ' + overlays.records[0].slug);
+    expect('source slug in JS bundle', 'Unpublished reference or checkout leaked');
+    writeFileSync(js, '// clean bundle');
+    const sitemap = join(root, 'sitemap-0.xml');
+    writeFileSync(sitemap, '<url>https://www.kingtechturbines.com/product/example</url>');
+    expect('supplier URL in sitemap', 'Unpublished reference or checkout leaked');
+    rmSync(sitemap);
+    mkdirSync(join(root, 'images', 'draft-assets'), { recursive: true });
+    writeFileSync(join(root, 'images', 'draft-assets', 'concept.webp'), 'dummy');
+    expect('renamed draft-assets copied to dist', 'Private catalog artifact copied into dist');
+    rmSync(join(root, 'images', 'draft-assets'), { recursive: true });
+    writeFileSync(join(root, '_astro', 'source-inventory.json'), '{}');
+    expect('private JSON under dist', 'Private catalog artifact copied into dist');
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
 }
 
 function runSelfTest() {
@@ -388,12 +484,29 @@ function runSelfTest() {
   const cases = [
     ['missing SKU draft', (d) => { d.edits.records.pop(); }, 'Silently missing editorial draft'],
     ['duplicate SKU draft', (d) => { d.edits.records.push(d.edits.records[0]); }, 'Missing/duplicate editorial draft'],
-    ['orphan illustration', (d) => { d.artwork.entries[0].sourceId = 'phantom'; }, 'Silently missing original-art'],
+    ['orphan illustration', (d) => { d.artwork.entries[0].sourceId = 'phantom'; }, 'Orphan art not in source inventory'],
     ['missing localized alt', (d) => { d.artwork.entries[0].alt.ro = ''; }, 'Missing/unattributed ro'],
     ['shared image derivative', (d) => { d.artwork.entries[1].assets.webp600 = d.artwork.entries[0].assets.webp600; }, 'Non-unique or wrong'],
     ['missing copy review', (d) => { d.copy.items.pop(); }, 'Silently missing EN/RO review'],
+    ['duplicate draft slug', (d) => { d.edits.records[1].slug = d.edits.records[0].slug; }, 'Missing/duplicate unique draft slug'],
+    ['art source URL drift', (d) => { d.artwork.entries[0].sourceUrl = 'https://example.invalid'; }, 'Wrong source identity'],
+    ['art title drift', (d) => { d.artwork.entries[0].sourceTitle = 'Different model'; }, 'Wrong source identity'],
+    ['copy review category drift', (d) => { d.copy.items[0].sourceCategory = 'tp'; }, 'Copy-review source/category/lifecycle/evidence drift'],
+    ['copy review lifecycle drift', (d) => { d.copy.items[0].supplierLifecycle = 'unknown-but-changed'; }, 'Copy-review source/category/lifecycle/evidence drift'],
+    ['copy review missing evidence', (d) => { d.copy.items[0].evidenceUrls = []; }, 'Copy-review source/category/lifecycle/evidence drift'],
     ['sale-listed service', (d) => { const item = d.source.products.find((x) => x.sourceCategoryIds.includes('warranty')); item.sourceCategoryIds.push('discounted'); }, 'Non-engine discounted'],
     ['lost exclusion evidence', (d) => { d.source.exclusions[0].reason = ''; }, 'Undocumented source exclusion'],
+    ['undocumented fourth exception', (d) => { d.source.exclusions.push({ ...d.source.exclusions[0], sectionId: 'oil' }); }, 'Frozen source exclusion count/identity drift'],
+    ['reported category count drift', (d) => { d.source.sections[0].reportedCount--; }, 'Frozen source section counts drift'],
+    ['invalid category memberships', (d) => { d.source.products[0].sourceCategoryIds = null; }, 'Invalid source category memberships'],
+    ['silently removed SKU across all files', (d) => {
+      const id = d.source.products.pop().id;
+      d.edits.records = d.edits.records.filter((x) => x.sourceId !== id);
+      d.artwork.entries = d.artwork.entries.filter((x) => x.sourceId !== id);
+      d.copy.items = d.copy.items.filter((x) => x.sourceId !== id);
+      for (const section of d.source.sections)
+        section.discoveredCount = d.source.products.filter((x) => x.sourceCategoryIds.includes(section.id)).length;
+    }, 'Frozen source SKU count drift'],
     ['premature art rights', (d) => { d.artwork.entries[0].approved = true; }, 'prematurely approved'],
     ['unapproved public source slug', (d) => { d.published.push({ id: 'unsafe', slug: d.edits.records[0].slug }); }, 'published as BODICH'],
   ];
@@ -404,7 +517,13 @@ function runSelfTest() {
     if (!actual.some((issue) => issue.includes(expectation)))
       throw new Error('Regression fixture did not reject ' + label + ': ' + actual.join('; '));
   }
-  console.log('Catalog reconciliation regression fixtures passed: ' + cases.length);
+  const discounted = { sourceId: 'tagged', collectionTags: ['discounted'] };
+  if (!discountCollectionProblems([discounted], [{ ...discounted }]).some((e) => e.includes('cloned a reference SKU')))
+    throw new Error('Discount collection accepted a cloned SKU');
+  if (!discountCollectionProblems([discounted], [discounted, discounted]).some((e) => e.includes('duplicated a SKU')))
+    throw new Error('Discount collection accepted repeated SKU');
+  routeSelfTests();
+  console.log('Catalog reconciliation regression fixtures passed: ' + (cases.length + 2) + '; production route fixtures passed');
 }
 
 const mode = process.argv[2] ?? '--check';
