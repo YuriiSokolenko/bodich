@@ -112,7 +112,7 @@ export type ReferenceOilDetails = {
   sourceUrl: string;
   verifiedOn: string;
   volume: { value: number; unit: 'gallon' | 'oz'; sourceLabel: string };
-  /** The source names a total volume, not a count of separate bottles. */
+  /** Number of containers; null until a source confirms the pack configuration. */
   packQuantity: number | null;
   intendedUse: 'turbine_engine_oil';
   blend: 'special_blend' | 'red_dyed_special_blend';
@@ -123,7 +123,8 @@ export type ReferenceOilDetails = {
 export type ReferenceBatteryDetails = {
   sourceUrl: string;
   verifiedOn: string;
-  chemistry: 'LiFe';
+  /** Preserve the manufacturer's exact chemistry wording: LIFE is not a verified 3S/LiFePO₄ specification. */
+  chemistry: { sourceLabel: 'LIFE' };
   cellCount: number | null;
   voltage: { value: number; unit: 'V' };
   capacity: { value: number; unit: 'mAh' };
@@ -419,7 +420,8 @@ export function validateReferenceDrafts(
           !volumeTitle || detail.volume.value !== Number(volumeTitle[1]) ||
           detail.volume.unit !== correctUnit ||
           detail.volume.sourceLabel !== volumeTitle[0].slice(1).trim() ||
-          detail.packQuantity !== null ||
+          !(detail.packQuantity === null ||
+            (Number.isSafeInteger(detail.packQuantity) && detail.packQuantity > 0)) ||
           detail.intendedUse !== 'turbine_engine_oil' ||
           detail.blend !== (sourceProduct.sourceTitle?.includes('Red Dyed') ? 'red_dyed_special_blend' : 'special_blend') ||
           !Array.isArray(detail.sourceNotes) || !detail.sourceNotes.every(nonempty) ||
@@ -434,14 +436,22 @@ export function validateReferenceDrafts(
           !keysOnly(detail, ['sourceUrl', 'verifiedOn', 'chemistry', 'cellCount', 'voltage', 'capacity', 'connector', 'compatibleApplications', 'sourceNotes', 'artBriefId']) ||
           detail.sourceUrl !== sourceProduct.canonicalUrl || !validEvidenceUrl(detail.sourceUrl) ||
           !validVerificationDate(detail.verifiedOn) || !batteryTitle ||
-          detail.chemistry !== 'LiFe' || detail.cellCount !== null || detail.connector !== null ||
+          !detail.chemistry || typeof detail.chemistry !== 'object' ||
+          Array.isArray(detail.chemistry) ||
+          !keysOnly(detail.chemistry, ['sourceLabel']) ||
+          detail.chemistry.sourceLabel !== 'LIFE' ||
+          !(detail.cellCount === null ||
+            (Number.isSafeInteger(detail.cellCount) && detail.cellCount > 0)) ||
+          !(detail.connector === null || nonempty(detail.connector)) ||
           !detail.voltage || typeof detail.voltage !== 'object' || Array.isArray(detail.voltage) ||
           !keysOnly(detail.voltage, ['value', 'unit']) ||
           detail.voltage.value !== Number(batteryTitle[2]) || detail.voltage.unit !== 'V' ||
           !detail.capacity || typeof detail.capacity !== 'object' || Array.isArray(detail.capacity) ||
           !keysOnly(detail.capacity, ['value', 'unit']) ||
           detail.capacity.value !== Number(batteryTitle[1]) || detail.capacity.unit !== 'mAh' ||
-          !Array.isArray(detail.compatibleApplications) || detail.compatibleApplications.length !== 0 ||
+          !Array.isArray(detail.compatibleApplications) ||
+          !detail.compatibleApplications.every(nonempty) ||
+          new Set(detail.compatibleApplications).size !== detail.compatibleApplications.length ||
           !Array.isArray(detail.sourceNotes) || !detail.sourceNotes.every(nonempty) ||
           detail.artBriefId !== draft.sourceId ||
           draft.specs.length !== 2 ||
