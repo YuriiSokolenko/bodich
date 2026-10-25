@@ -2244,7 +2244,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "ECU Comm Cable — accessory reference",
+          "name": "ECU Comm Cable — KingTech reference",
           "summary": "Source-listed turbine system cable: ECU Comm Cable. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "The standard ECU communication-cable listing provides no generation or connector code in its title. It must therefore stay distinct from separately named G4/G5 data leads and the two color-identified Xicoy E/F variants; no pinout or length is asserted. This external reference is not a BODICH product."
         },
@@ -2278,7 +2278,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "Power Cable — accessory reference",
+          "name": "Power Cable — KingTech reference",
           "summary": "Source-listed turbine system cable: Power Cable. The individually verified product page is retained as a distinct unpublished reference.",
           "description": "The direct-only source page identifies a general power cable without a model, connector or voltage in its title. It is retained separately from the nested-category Turbine Power Cable and the explicitly named G4/G4+/G5 battery lead. Electrical rating and pin arrangement are unknown; no BODICH offer is implied."
         },
@@ -2310,7 +2310,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "G4/G4+ Data Cable — accessory reference",
+          "name": "G4/G4+ Data Cable — KingTech reference",
           "summary": "Source-listed turbine system cable: G4/G4+ Data Cable. The individually verified product page is retained as a distinct unpublished reference.",
           "description": "The G4/G4+ wording appears literally in this separately indexed data-cable title. It distinguishes the original item from the later G4/G4+/G5 data-cable listing, but does not prove plug or protocol compatibility with every controller revision. Pinout and cable length remain unknown; this is not BODICH stock."
         },
@@ -2342,7 +2342,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "ECU Comm Cable for E Model (Gold Xicoy ECU) — accessory reference",
+          "name": "ECU Comm Cable for E Model (Gold Xicoy ECU) — KingTech reference",
           "summary": "Source-listed turbine system cable: ECU Comm Cable for E Model (Gold Xicoy ECU). The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "The supplier distinguishes this ECU communication lead specifically by the E-model designation and gold Xicoy ECU description. The housing color is only a source-title identifier, not a measured connector standard; compatibility with a different Xicoy controller is not assumed. No BODICH sales claim is made."
         },
@@ -2376,7 +2376,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "ECU Comm Cable for E/F Model (Black Xicoy ECU) — accessory reference",
+          "name": "ECU Comm Cable for E/F Model (Black Xicoy ECU) — KingTech reference",
           "summary": "Source-listed turbine system cable: ECU Comm Cable for E/F Model (Black Xicoy ECU). The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "This ECU communication cable is titled for E/F models with the black Xicoy ECU, separate from the gold E-model cable. Color and model family are transcribed without asserting the exact pins, protocol or interchangeability between black and gold controller versions. It is a research reference, not a BODICH offer."
         },
@@ -2410,7 +2410,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "Battery/Pump Cable for KT Pump — accessory reference",
+          "name": "Battery/Pump Cable for KT Pump — KingTech reference",
           "summary": "Source-listed fuel pump: Battery/Pump Cable for KT Pump. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "This is the Battery/Pump Cable for KT Pump listing within KingTech's pump family; the \"standard KP\" notation is retained as a model suffix rather than interpreted as a confirmed electrical characteristic. Flow rate, pressure, supply voltage and ECU pairing are not verified by the indexed source title. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -2444,7 +2444,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "Battery/Pump Cable for K30/45G3 — accessory reference",
+          "name": "Battery/Pump Cable for K30/45G3 — KingTech reference",
           "summary": "Source-listed fuel pump: Battery/Pump Cable for K30/45G3. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "This is the Battery/Pump Cable for K30/45G3 listing within KingTech's pump family; the \"standard KP\" notation is retained as a model suffix rather than interpreted as a confirmed electrical characteristic. Flow rate, pressure, supply voltage and ECU pairing are not verified by the indexed source title. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -2478,7 +2478,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "Pump Cable for G4 — accessory reference",
+          "name": "Pump Cable for G4 — KingTech reference",
           "summary": "Source-listed fuel pump: Pump Cable for G4. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "This is the Pump Cable for G4 listing within KingTech's pump family; the \"standard KP\" notation is retained as a model suffix rather than interpreted as a confirmed electrical characteristic. Flow rate, pressure, supply voltage and ECU pairing are not verified by the indexed source title. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -2512,7 +2512,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "Pump Cable for G4+/G5 — accessory reference",
+          "name": "Pump Cable for G4+/G5 — KingTech reference",
           "summary": "Source-listed fuel pump: Pump Cable for G4+/G5. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "This is the Pump Cable for G4+/G5 listing within KingTech's pump family; the \"standard KP\" notation is retained as a model suffix rather than interpreted as a confirmed electrical characteristic. Flow rate, pressure, supply voltage and ECU pairing are not verified by the indexed source title. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -2546,7 +2546,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "Turbine Power Cable — accessory reference",
+          "name": "Turbine Power Cable — KingTech reference",
           "summary": "Source-listed turbine system cable: Turbine Power Cable. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "This source-category item is explicitly called Turbine Power Cable, rather than the direct-only generic Power Cable or the G4/G4+/G5 Battery Cable. No conclusion about shared connectors, cable gauge, current capacity or safe substitution is drawn from the similar names. This is an external reference only."
         },
@@ -2580,7 +2580,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "G4/G4+/G5 Battery Cable — accessory reference",
+          "name": "G4/G4+/G5 Battery Cable — KingTech reference",
           "summary": "Source-listed turbine system cable: G4/G4+/G5 Battery Cable. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "The name associates this lead with battery feed and distinguishes it from the other ECU, pump and power cables listed separately. Connector keying, length, pinout and electrical load are not asserted without a detailed verified source. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -2614,7 +2614,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "FOD Screen - Small — accessory reference",
+          "name": "FOD Screen - Small — KingTech reference",
           "summary": "Source-listed foreign-object debris screen: FOD Screen - Small. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "The \"Small\" screen is a distinct intake-protection variant; a named size is not a measured diameter. Installation, inlet geometry and the turbine generation to which it fits require a separate fitment check. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -2648,7 +2648,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "FOD Screen - Medium — accessory reference",
+          "name": "FOD Screen - Medium — KingTech reference",
           "summary": "Source-listed foreign-object debris screen: FOD Screen - Medium. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "The \"Medium\" screen is a distinct intake-protection variant; a named size is not a measured diameter. Installation, inlet geometry and the turbine generation to which it fits require a separate fitment check. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -2682,7 +2682,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "FOD Screen - Large — accessory reference",
+          "name": "FOD Screen - Large — KingTech reference",
           "summary": "Source-listed foreign-object debris screen: FOD Screen - Large. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "The \"Large\" screen is a distinct intake-protection variant; a named size is not a measured diameter. Installation, inlet geometry and the turbine generation to which it fits require a separate fitment check. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -2716,7 +2716,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "FOD Screen 260 — accessory reference",
+          "name": "FOD Screen 260 — KingTech reference",
           "summary": "Source-listed foreign-object debris screen: FOD Screen 260. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "The \"260\" screen is a distinct intake-protection variant; a named size is not a measured diameter. Installation, inlet geometry and the turbine generation to which it fits require a separate fitment check. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -2750,7 +2750,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "Data Cable G4/G4+/G5 — accessory reference",
+          "name": "Data Cable G4/G4+/G5 — KingTech reference",
           "summary": "Source-listed turbine system cable: Data Cable G4/G4+/G5. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "The original title explicitly identifies a data lead with G4, G4+ and G5 series labels. This is not the same source item as the G4/G4+ data lead or the ECU communication cables for Xicoy E/F controls. The series wording is not a tested cross-generation fitment matrix; connector details are unverified."
         },
@@ -2784,7 +2784,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "KingTech ECU G2 — accessory reference",
+          "name": "KingTech ECU G2 — KingTech reference",
           "summary": "Source-listed turbine control electronics: KingTech ECU G2. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "The original source lists KingTech ECU G2 as a control-unit item, not as a GSU display, DRM module or communication lead. G2 is retained as a title designation, without claiming later-generation compatibility, supported firmware, pin allocation or supplied cables. No BODICH manufacture or availability is asserted."
         },
@@ -2818,7 +2818,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "GSU KingTech — accessory reference",
+          "name": "GSU KingTech — KingTech reference",
           "summary": "Source-listed turbine control electronics: GSU KingTech. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "The GSU KingTech item is indexed as a ground-support/user interface rather than an engine ECU; its exact form factor and controller generation are not specified in the recorded title. It remains separate from the GSU Bluetooth module and the G2 ECU. Display type, firmware and electrical interface need source verification."
         },
@@ -2852,7 +2852,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "KingTech GSU Bluetooth Module — accessory reference",
+          "name": "KingTech GSU Bluetooth Module — KingTech reference",
           "summary": "Source-listed GSU Bluetooth accessory: KingTech GSU Bluetooth Module. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "This entry concerns a Bluetooth interface for GSU rather than an engine ECU or a physical fuel component. The source title does not establish telemetry protocol, supported firmware or client-device compatibility. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -2886,7 +2886,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "KingTech Telemetry — accessory reference",
+          "name": "KingTech Telemetry — KingTech reference",
           "summary": "Source-listed turbine telemetry device: KingTech Telemetry. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "This entry concerns a telemetry interface rather than an engine ECU or a physical fuel component. The source title does not establish telemetry protocol, supported firmware or client-device compatibility. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -2920,7 +2920,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "Fuel Filter — accessory reference",
+          "name": "Fuel Filter — KingTech reference",
           "summary": "Source-listed fuel filter: Fuel Filter. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "The supplier labels this as an inline fuel-filtration accessory, not as an entire fuel system. \"Fuel Filter\" distinguishes its function; port size, sealing material, operating pressure and interchangeable pump or engine models are not verified. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -2954,7 +2954,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "Shut-Off Valve — accessory reference",
+          "name": "Shut-Off Valve — KingTech reference",
           "summary": "Source-listed fluid shut-off valve: Shut-Off Valve. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "The supplier labels this as a shut-off component for the named fluid, not as an entire fuel system. \"Shut-Off Valve\" distinguishes its function; port size, sealing material, operating pressure and interchangeable pump or engine models are not verified. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -2988,7 +2988,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "90 Degree Fuel Festo Fitting — accessory reference",
+          "name": "90 Degree Fuel Festo Fitting — KingTech reference",
           "summary": "Source-listed angled fuel-line fitting: 90 Degree Fuel Festo Fitting. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "The supplier labels this as a 90-degree fuel-line fitting, not as an entire fuel system. \"90 Degree Fuel Festo Fitting\" distinguishes its function; port size, sealing material, operating pressure and interchangeable pump or engine models are not verified. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -3022,7 +3022,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "Engine Bracket K320 — accessory reference",
+          "name": "Engine Bracket K320 — KingTech reference",
           "summary": "Source-listed engine mounting bracket: Engine Bracket K320. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "The source identifies an engine mounting bracket for the designation printed in \"Engine Bracket K320\". This distinguishes the intended mounting family, but does not establish bolt spacing, thickness, engine revision or interchangeability. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -3056,7 +3056,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "Engine Bracket K260 — accessory reference",
+          "name": "Engine Bracket K260 — KingTech reference",
           "summary": "Source-listed engine mounting bracket: Engine Bracket K260. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "The source identifies an engine mounting bracket for the designation printed in \"Engine Bracket K260\". This distinguishes the intended mounting family, but does not establish bolt spacing, thickness, engine revision or interchangeability. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -3090,7 +3090,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "Engine Bracket K30/45 G3/G4 — accessory reference",
+          "name": "Engine Bracket K30/45 G3/G4 — KingTech reference",
           "summary": "Source-listed engine mounting bracket: Engine Bracket K30/45 G3/G4. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "The source identifies an engine mounting bracket for the designation printed in \"Engine Bracket K30/45 G3/G4\". This distinguishes the intended mounting family, but does not establish bolt spacing, thickness, engine revision or interchangeability. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -3124,7 +3124,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "Stainless Steel Bracket for K45/55/70/86 — accessory reference",
+          "name": "Stainless Steel Bracket for K45/55/70/86 — KingTech reference",
           "summary": "Source-listed engine mounting bracket: Stainless Steel Bracket for K45/55/70/86. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "The source identifies a stainless-steel mounting bracket for the designation printed in \"Stainless Steel Bracket for K45/55/70/86\". This distinguishes the intended mounting family, but does not establish bolt spacing, thickness, engine revision or interchangeability. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -3158,7 +3158,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "Stainless Steel Bracket for K60/85 — accessory reference",
+          "name": "Stainless Steel Bracket for K60/85 — KingTech reference",
           "summary": "Source-listed engine mounting bracket: Stainless Steel Bracket for K60/85. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "The source identifies a stainless-steel mounting bracket for the designation printed in \"Stainless Steel Bracket for K60/85\". This distinguishes the intended mounting family, but does not establish bolt spacing, thickness, engine revision or interchangeability. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -3192,7 +3192,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "Stainless Steel Bracket for K80/100/120/142 — accessory reference",
+          "name": "Stainless Steel Bracket for K80/100/120/142 — KingTech reference",
           "summary": "Source-listed engine mounting bracket: Stainless Steel Bracket for K80/100/120/142. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "The source identifies a stainless-steel mounting bracket for the designation printed in \"Stainless Steel Bracket for K80/100/120/142\". This distinguishes the intended mounting family, but does not establish bolt spacing, thickness, engine revision or interchangeability. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -3226,7 +3226,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "Stainless Steel Bracket for K140/160/180 — accessory reference",
+          "name": "Stainless Steel Bracket for K140/160/180 — KingTech reference",
           "summary": "Source-listed engine mounting bracket: Stainless Steel Bracket for K140/160/180. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "The source identifies a stainless-steel mounting bracket for the designation printed in \"Stainless Steel Bracket for K140/160/180\". This distinguishes the intended mounting family, but does not establish bolt spacing, thickness, engine revision or interchangeability. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -3260,7 +3260,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "Stainless Steel Bracket for K235 — accessory reference",
+          "name": "Stainless Steel Bracket for K235 — KingTech reference",
           "summary": "Source-listed engine mounting bracket: Stainless Steel Bracket for K235. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "The source identifies a stainless-steel mounting bracket for the designation printed in \"Stainless Steel Bracket for K235\". This distinguishes the intended mounting family, but does not establish bolt spacing, thickness, engine revision or interchangeability. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -3294,7 +3294,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "Starter Motor K30/45 G3 — accessory reference",
+          "name": "Starter Motor K30/45 G3 — KingTech reference",
           "summary": "Source-listed turbine starter motor: Starter Motor K30/45 G3. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "This source entry concerns the electric starter assembly rather than the other starter-system spare parts. \"Starter Motor K30/45 G3\" identifies the version or component; connector pinout, torque, dimensions and service applicability are not specified as verified data. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -3328,7 +3328,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "Starter Motor 45/70 — accessory reference",
+          "name": "Starter Motor 45/70 — KingTech reference",
           "summary": "Source-listed turbine starter motor: Starter Motor 45/70. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "This source entry concerns the electric starter assembly rather than the other starter-system spare parts. \"Starter Motor 45/70\" identifies the version or component; connector pinout, torque, dimensions and service applicability are not specified as verified data. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -3362,7 +3362,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "Starter Motor for K60/85 — accessory reference",
+          "name": "Starter Motor for K60/85 — KingTech reference",
           "summary": "Source-listed turbine starter motor: Starter Motor for K60/85. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "This source entry concerns the electric starter assembly rather than the other starter-system spare parts. \"Starter Motor for K60/85\" identifies the version or component; connector pinout, torque, dimensions and service applicability are not specified as verified data. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -3396,7 +3396,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "Start Motor K80/210 — accessory reference",
+          "name": "Start Motor K80/210 — KingTech reference",
           "summary": "Source-listed turbine starter motor: Start Motor K80/210. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "This source entry concerns the electric starter assembly rather than the other starter-system spare parts. \"Start Motor K80/210\" identifies the version or component; connector pinout, torque, dimensions and service applicability are not specified as verified data. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -3430,7 +3430,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "Starter Motor Case K45/70 — accessory reference",
+          "name": "Starter Motor Case K45/70 — KingTech reference",
           "summary": "Source-listed starter motor casing: Starter Motor Case K45/70. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "This source entry concerns the housing, not a complete starter rather than the other starter-system spare parts. \"Starter Motor Case K45/70\" identifies the version or component; connector pinout, torque, dimensions and service applicability are not specified as verified data. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -3464,7 +3464,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "Starter Motor Case K60/85 — accessory reference",
+          "name": "Starter Motor Case K60/85 — KingTech reference",
           "summary": "Source-listed starter motor casing: Starter Motor Case K60/85. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "This source entry concerns the housing, not a complete starter rather than the other starter-system spare parts. \"Starter Motor Case K60/85\" identifies the version or component; connector pinout, torque, dimensions and service applicability are not specified as verified data. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -3498,7 +3498,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "Starter Motor Case K80/210 — accessory reference",
+          "name": "Starter Motor Case K80/210 — KingTech reference",
           "summary": "Source-listed starter motor casing: Starter Motor Case K80/210. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "This source entry concerns the housing, not a complete starter rather than the other starter-system spare parts. \"Starter Motor Case K80/210\" identifies the version or component; connector pinout, torque, dimensions and service applicability are not specified as verified data. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -3532,7 +3532,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "Starter Motor Clutch — accessory reference",
+          "name": "Starter Motor Clutch — KingTech reference",
           "summary": "Source-listed starter motor clutch: Starter Motor Clutch. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "This source entry concerns the starter coupling mechanism rather than the other starter-system spare parts. \"Starter Motor Clutch\" identifies the version or component; connector pinout, torque, dimensions and service applicability are not specified as verified data. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -3566,7 +3566,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "Starter Motor K260/320 — accessory reference",
+          "name": "Starter Motor K260/320 — KingTech reference",
           "summary": "Source-listed turbine starter motor: Starter Motor K260/320. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "This source entry concerns the electric starter assembly rather than the other starter-system spare parts. \"Starter Motor K260/320\" identifies the version or component; connector pinout, torque, dimensions and service applicability are not specified as verified data. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -3600,7 +3600,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "Starter Motor Case K235/260/320 — accessory reference",
+          "name": "Starter Motor Case K235/260/320 — KingTech reference",
           "summary": "Source-listed starter motor casing: Starter Motor Case K235/260/320. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "This source entry concerns the housing, not a complete starter rather than the other starter-system spare parts. \"Starter Motor Case K235/260/320\" identifies the version or component; connector pinout, torque, dimensions and service applicability are not specified as verified data. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -3634,7 +3634,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "KingTech KP200 Pump — accessory reference",
+          "name": "KingTech KP200 Pump — KingTech reference",
           "summary": "Source-listed fuel pump: KingTech KP200 Pump. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "This is the KP200 listing within KingTech's pump family; the \"standard KP\" notation is retained as a model suffix rather than interpreted as a confirmed electrical characteristic. Flow rate, pressure, supply voltage and ECU pairing are not verified by the indexed source title. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -3668,7 +3668,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "KingTech KP300 Pump — accessory reference",
+          "name": "KingTech KP300 Pump — KingTech reference",
           "summary": "Source-listed fuel pump: KingTech KP300 Pump. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "This is the KP300 listing within KingTech's pump family; the \"standard KP\" notation is retained as a model suffix rather than interpreted as a confirmed electrical characteristic. Flow rate, pressure, supply voltage and ECU pairing are not verified by the indexed source title. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -3702,7 +3702,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "KingTech KP500 Pump — accessory reference",
+          "name": "KingTech KP500 Pump — KingTech reference",
           "summary": "Source-listed fuel pump: KingTech KP500 Pump. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "This is the KP500 listing within KingTech's pump family; the \"standard KP\" notation is retained as a model suffix rather than interpreted as a confirmed electrical characteristic. Flow rate, pressure, supply voltage and ECU pairing are not verified by the indexed source title. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -3736,7 +3736,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "KingTech KP600 Pump — accessory reference",
+          "name": "KingTech KP600 Pump — KingTech reference",
           "summary": "Source-listed fuel pump: KingTech KP600 Pump. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "This is the KP600 listing within KingTech's pump family; the \"standard KP\" notation is retained as a model suffix rather than interpreted as a confirmed electrical characteristic. Flow rate, pressure, supply voltage and ECU pairing are not verified by the indexed source title. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -3770,7 +3770,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "KingTech KP800 Pump — accessory reference",
+          "name": "KingTech KP800 Pump — KingTech reference",
           "summary": "Source-listed fuel pump: KingTech KP800 Pump. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "This is the KP800 listing within KingTech's pump family; the \"standard KP\" notation is retained as a model suffix rather than interpreted as a confirmed electrical characteristic. Flow rate, pressure, supply voltage and ECU pairing are not verified by the indexed source title. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -3804,7 +3804,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "KingTech KP300V Pump — accessory reference",
+          "name": "KingTech KP300V Pump — KingTech reference",
           "summary": "Source-listed fuel pump: KingTech KP300V Pump. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "This is the KP300V listing within KingTech's pump family; the \"V\" notation is retained as a model suffix rather than interpreted as a confirmed electrical characteristic. Flow rate, pressure, supply voltage and ECU pairing are not verified by the indexed source title. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -3838,7 +3838,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "KingTech KP500V — accessory reference",
+          "name": "KingTech KP500V — KingTech reference",
           "summary": "Source-listed fuel pump: KingTech KP500V. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "This is the KP500V listing within KingTech's pump family; the \"V\" notation is retained as a model suffix rather than interpreted as a confirmed electrical characteristic. Flow rate, pressure, supply voltage and ECU pairing are not verified by the indexed source title. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -3872,7 +3872,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "KingTech KP600V Pump — accessory reference",
+          "name": "KingTech KP600V Pump — KingTech reference",
           "summary": "Source-listed fuel pump: KingTech KP600V Pump. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "This is the KP600V listing within KingTech's pump family; the \"V\" notation is retained as a model suffix rather than interpreted as a confirmed electrical characteristic. Flow rate, pressure, supply voltage and ECU pairing are not verified by the indexed source title. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -3906,7 +3906,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "KingTech KP800V Pump — accessory reference",
+          "name": "KingTech KP800V Pump — KingTech reference",
           "summary": "Source-listed fuel pump: KingTech KP800V Pump. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "This is the KP800V listing within KingTech's pump family; the \"V\" notation is retained as a model suffix rather than interpreted as a confirmed electrical characteristic. Flow rate, pressure, supply voltage and ECU pairing are not verified by the indexed source title. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -3940,7 +3940,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "KingTech KP1200V Pump — accessory reference",
+          "name": "KingTech KP1200V Pump — KingTech reference",
           "summary": "Source-listed fuel pump: KingTech KP1200V Pump. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "This is the KP1200V listing within KingTech's pump family; the \"V\" notation is retained as a model suffix rather than interpreted as a confirmed electrical characteristic. Flow rate, pressure, supply voltage and ECU pairing are not verified by the indexed source title. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -3974,7 +3974,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "KingTech KP200BL Pump — accessory reference",
+          "name": "KingTech KP200BL Pump — KingTech reference",
           "summary": "Source-listed fuel pump: KingTech KP200BL Pump. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "This is the KP200BL listing within KingTech's pump family; the \"BL\" notation is retained as a model suffix rather than interpreted as a confirmed electrical characteristic. Flow rate, pressure, supply voltage and ECU pairing are not verified by the indexed source title. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -4008,7 +4008,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "KingTech KP300 BL Pump — accessory reference",
+          "name": "KingTech KP300 BL Pump — KingTech reference",
           "summary": "Source-listed fuel pump: KingTech KP300 BL Pump. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "This is the KP300 BL listing within KingTech's pump family; the \"BL\" notation is retained as a model suffix rather than interpreted as a confirmed electrical characteristic. Flow rate, pressure, supply voltage and ECU pairing are not verified by the indexed source title. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -4042,7 +4042,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "KingTech KP500BL Pump — accessory reference",
+          "name": "KingTech KP500BL Pump — KingTech reference",
           "summary": "Source-listed fuel pump: KingTech KP500BL Pump. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "This is the KP500BL listing within KingTech's pump family; the \"BL\" notation is retained as a model suffix rather than interpreted as a confirmed electrical characteristic. Flow rate, pressure, supply voltage and ECU pairing are not verified by the indexed source title. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -4076,7 +4076,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "KingTech KP600BL Pump — accessory reference",
+          "name": "KingTech KP600BL Pump — KingTech reference",
           "summary": "Source-listed fuel pump: KingTech KP600BL Pump. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "This is the KP600BL listing within KingTech's pump family; the \"BL\" notation is retained as a model suffix rather than interpreted as a confirmed electrical characteristic. Flow rate, pressure, supply voltage and ECU pairing are not verified by the indexed source title. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -4110,7 +4110,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "KingTech KP800BL Pump — accessory reference",
+          "name": "KingTech KP800BL Pump — KingTech reference",
           "summary": "Source-listed fuel pump: KingTech KP800BL Pump. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "This is the KP800BL listing within KingTech's pump family; the \"BL\" notation is retained as a model suffix rather than interpreted as a confirmed electrical characteristic. Flow rate, pressure, supply voltage and ECU pairing are not verified by the indexed source title. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -4144,7 +4144,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "KingTech KP1000BL — accessory reference",
+          "name": "KingTech KP1000BL — KingTech reference",
           "summary": "Source-listed fuel pump: KingTech KP1000BL. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "This is the KP1000BL listing within KingTech's pump family; the \"BL\" notation is retained as a model suffix rather than interpreted as a confirmed electrical characteristic. Flow rate, pressure, supply voltage and ECU pairing are not verified by the indexed source title. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -4178,7 +4178,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "KingTech KP1200BL Pump — accessory reference",
+          "name": "KingTech KP1200BL Pump — KingTech reference",
           "summary": "Source-listed fuel pump: KingTech KP1200BL Pump. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "This is the KP1200BL listing within KingTech's pump family; the \"BL\" notation is retained as a model suffix rather than interpreted as a confirmed electrical characteristic. Flow rate, pressure, supply voltage and ECU pairing are not verified by the indexed source title. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -4212,7 +4212,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "KingTech KP1250BL Pump — accessory reference",
+          "name": "KingTech KP1250BL Pump — KingTech reference",
           "summary": "Source-listed fuel pump: KingTech KP1250BL Pump. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "This is the KP1250BL listing within KingTech's pump family; the \"BL\" notation is retained as a model suffix rather than interpreted as a confirmed electrical characteristic. Flow rate, pressure, supply voltage and ECU pairing are not verified by the indexed source title. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -4246,7 +4246,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "KP Pump Replacement Wire/Valve Set — accessory reference",
+          "name": "KP Pump Replacement Wire/Valve Set — KingTech reference",
           "summary": "Source-listed fuel pump servicing set: KP Pump Replacement Wire/Valve Set. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "The supplier labels this as a replacement wiring and valve set for the KP pump family, not as an entire fuel system. \"KP Pump Replacement Wire/Valve Set\" distinguishes its function; port size, sealing material, operating pressure and interchangeable pump or engine models are not verified. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -4280,7 +4280,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "TP-Propeller Spacer45 — accessory reference",
+          "name": "TP-Propeller Spacer45 — KingTech reference",
           "summary": "Source-listed turboprop propeller spacer: TP-Propeller Spacer45. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "This propeller spacing item is specifically identified as \"TP-Propeller Spacer45\" in the TP accessories listing. Thread, length, material and matching propeller hub cannot be derived safely from its shorthand code. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -4314,7 +4314,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "Propeller Bolt for K45TP — accessory reference",
+          "name": "Propeller Bolt for K45TP — KingTech reference",
           "summary": "Source-listed turboprop propeller fastener: Propeller Bolt for K45TP. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "This propeller retention item is specifically identified as \"Propeller Bolt for K45TP\" in the TP accessories listing. Thread, length, material and matching propeller hub cannot be derived safely from its shorthand code. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -4348,7 +4348,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "TP-Propeller Spacer60/100 — accessory reference",
+          "name": "TP-Propeller Spacer60/100 — KingTech reference",
           "summary": "Source-listed turboprop propeller spacer: TP-Propeller Spacer60/100. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "This propeller spacing item is specifically identified as \"TP-Propeller Spacer60/100\" in the TP accessories listing. Thread, length, material and matching propeller hub cannot be derived safely from its shorthand code. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -4382,7 +4382,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "TP-Bolt75L60/100 — accessory reference",
+          "name": "TP-Bolt75L60/100 — KingTech reference",
           "summary": "Source-listed turboprop propeller fastener: TP-Bolt75L60/100. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "This propeller retention item is specifically identified as \"TP-Bolt75L60/100\" in the TP accessories listing. Thread, length, material and matching propeller hub cannot be derived safely from its shorthand code. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -4416,7 +4416,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "Fuel Solenoid Valve — accessory reference",
+          "name": "Fuel Solenoid Valve — KingTech reference",
           "summary": "Source-listed fluid shut-off valve: Fuel Solenoid Valve. The individually verified product page is retained as a distinct unpublished reference.",
           "description": "The supplier labels this as a shut-off component for the named fluid, not as an entire fuel system. \"Fuel Solenoid Valve\" distinguishes its function; port size, sealing material, operating pressure and interchangeable pump or engine models are not verified. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -4431,7 +4431,7 @@
         "groupId": "fuel-systems",
         "sourceUrl": "https://www.kingtechturbines.com/product/fuel-solenoid-valve/107",
         "sourceSubcategoryUrls": [],
-        "variantLabel": "Fuel",
+        "variantLabel": null,
         "compatibility": {
           "status": "unverified",
           "sourceLabel": null,
@@ -4448,7 +4448,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "Propane Solenoid Valve — accessory reference",
+          "name": "Propane Solenoid Valve — KingTech reference",
           "summary": "Source-listed fluid shut-off valve: Propane Solenoid Valve. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "The supplier labels this as a shut-off component for the named fluid, not as an entire fuel system. \"Propane Solenoid Valve\" distinguishes its function; port size, sealing material, operating pressure and interchangeable pump or engine models are not verified. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -4465,7 +4465,7 @@
         "sourceSubcategoryUrls": [
           "https://www.kingtechturbines.com/shop/valve/17"
         ],
-        "variantLabel": "Propane",
+        "variantLabel": null,
         "compatibility": {
           "status": "unverified",
           "sourceLabel": null,
@@ -4482,7 +4482,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "Fuel Tubing 4mm — accessory reference",
+          "name": "Fuel Tubing 4mm — KingTech reference",
           "summary": "Source-listed fuel-system tubing: Fuel Tubing 4mm. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "\"Fuel Tubing 4mm\" records a nominal size or material label from the source and stays separate from other tubing sizes. The title alone does not establish inner versus outer diameter, pressure rating, length supplied or chemical compatibility. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -4516,7 +4516,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "Fuel Tubing 6mm — accessory reference",
+          "name": "Fuel Tubing 6mm — KingTech reference",
           "summary": "Source-listed fuel-system tubing: Fuel Tubing 6mm. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "\"Fuel Tubing 6mm\" records a nominal size or material label from the source and stays separate from other tubing sizes. The title alone does not establish inner versus outer diameter, pressure rating, length supplied or chemical compatibility. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -4550,7 +4550,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "TEFLON Tubing 4mm — accessory reference",
+          "name": "TEFLON Tubing 4mm — KingTech reference",
           "summary": "Source-listed fuel-system tubing: TEFLON Tubing 4mm. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "\"TEFLON Tubing 4mm\" records a nominal size or material label from the source and stays separate from other tubing sizes. The title alone does not establish inner versus outer diameter, pressure rating, length supplied or chemical compatibility. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -4584,7 +4584,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "UAT 100 — accessory reference",
+          "name": "UAT 100 — KingTech reference",
           "summary": "Source-listed air-trap tank reference: UAT 100. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "The UAT identifier \"UAT 100\" identifies one source listing in the air-trap family, but the digits are not treated as a certified tank volume. Port dimensions, usable capacity and engine matching remain open. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -4618,7 +4618,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "UAT 150 — accessory reference",
+          "name": "UAT 150 — KingTech reference",
           "summary": "Source-listed air-trap tank reference: UAT 150. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "The UAT identifier \"UAT 150\" identifies one source listing in the air-trap family, but the digits are not treated as a certified tank volume. Port dimensions, usable capacity and engine matching remain open. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -4652,7 +4652,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "UAT 250 — accessory reference",
+          "name": "UAT 250 — KingTech reference",
           "summary": "Source-listed air-trap tank reference: UAT 250. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "The UAT identifier \"UAT 250\" identifies one source listing in the air-trap family, but the digits are not treated as a certified tank volume. Port dimensions, usable capacity and engine matching remain open. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -4686,7 +4686,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "Stainless Steel Bracket for K140/170/180/210 — accessory reference",
+          "name": "Stainless Steel Bracket for K140/170/180/210 — KingTech reference",
           "summary": "Source-listed engine mounting bracket: Stainless Steel Bracket for K140/170/180/210. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "The source identifies a stainless-steel mounting bracket for the designation printed in \"Stainless Steel Bracket for K140/170/180/210\". This distinguishes the intended mounting family, but does not establish bolt spacing, thickness, engine revision or interchangeability. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -4720,7 +4720,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "Kero Plug for K30/45 G3 and G4 — accessory reference",
+          "name": "Kero Plug for K30/45 G3 and G4 — KingTech reference",
           "summary": "Source-listed kerosene ignition plug: Kero Plug for K30/45 G3 and G4. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "The kerosene-start plug is named for the source's K30/45 G3 and G4 grouping. Plug thread, voltage, driving electronics and suitability for later revisions require manual confirmation. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -4740,7 +4740,7 @@
         "variantLabel": null,
         "compatibility": {
           "status": "source_title_only",
-          "sourceLabel": "K30/45 G3",
+          "sourceLabel": "K30/45 G3 and G4",
           "confirmedModels": []
         },
         "artBriefId": "maintenance-parts"
@@ -4754,7 +4754,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "Starter Motor Clutch O-Rings — accessory reference",
+          "name": "Starter Motor Clutch O-Rings — KingTech reference",
           "summary": "Source-listed starter clutch sealing rings: Starter Motor Clutch O-Rings. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "This source entry concerns the replacement seals for the starter clutch rather than the other starter-system spare parts. \"Starter Motor Clutch O-Rings\" identifies the version or component; connector pinout, torque, dimensions and service applicability are not specified as verified data. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -4788,7 +4788,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "FOD Screen 320 — accessory reference",
+          "name": "FOD Screen 320 — KingTech reference",
           "summary": "Source-listed foreign-object debris screen: FOD Screen 320. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "The \"320\" screen is a distinct intake-protection variant; a named size is not a measured diameter. Installation, inlet geometry and the turbine generation to which it fits require a separate fitment check. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -4822,7 +4822,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "Temp Probe - K30/45G — accessory reference",
+          "name": "Temp Probe - K30/45G — KingTech reference",
           "summary": "Source-listed temperature probe: Temp Probe - K30/45G. The individually verified product page is retained as a distinct unpublished reference.",
           "description": "The temperature-sensing item is indexed as \"Temp Probe - K30/45G\", not as an interchangeable universal probe. Sensor technology, temperature range, wiring polarity and mounting geometry are not established in the captured title. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -4840,7 +4840,7 @@
         "variantLabel": null,
         "compatibility": {
           "status": "source_title_only",
-          "sourceLabel": "K30/45",
+          "sourceLabel": "K30/45G",
           "confirmedModels": []
         },
         "artBriefId": "maintenance-parts"
@@ -4854,7 +4854,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "KingTech KP300DP Pump — accessory reference",
+          "name": "KingTech KP300DP Pump — KingTech reference",
           "summary": "Source-listed fuel pump: KingTech KP300DP Pump. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "This is the KP300DP listing within KingTech's pump family; the \"DP\" notation is retained as a model suffix rather than interpreted as a confirmed electrical characteristic. Flow rate, pressure, supply voltage and ECU pairing are not verified by the indexed source title. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -4888,7 +4888,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "KingTech KP500DP Pump — accessory reference",
+          "name": "KingTech KP500DP Pump — KingTech reference",
           "summary": "Source-listed fuel pump: KingTech KP500DP Pump. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "This is the KP500DP listing within KingTech's pump family; the \"DP\" notation is retained as a model suffix rather than interpreted as a confirmed electrical characteristic. Flow rate, pressure, supply voltage and ECU pairing are not verified by the indexed source title. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -4922,7 +4922,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "KingTech KP600DP Pump — accessory reference",
+          "name": "KingTech KP600DP Pump — KingTech reference",
           "summary": "Source-listed fuel pump: KingTech KP600DP Pump. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "This is the KP600DP listing within KingTech's pump family; the \"DP\" notation is retained as a model suffix rather than interpreted as a confirmed electrical characteristic. Flow rate, pressure, supply voltage and ECU pairing are not verified by the indexed source title. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -4956,7 +4956,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "KingTech KP800DP Pump — accessory reference",
+          "name": "KingTech KP800DP Pump — KingTech reference",
           "summary": "Source-listed fuel pump: KingTech KP800DP Pump. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "This is the KP800DP listing within KingTech's pump family; the \"DP\" notation is retained as a model suffix rather than interpreted as a confirmed electrical characteristic. Flow rate, pressure, supply voltage and ECU pairing are not verified by the indexed source title. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -4990,7 +4990,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "KingTech KP1000DP Pump — accessory reference",
+          "name": "KingTech KP1000DP Pump — KingTech reference",
           "summary": "Source-listed fuel pump: KingTech KP1000DP Pump. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "This is the KP1000DP listing within KingTech's pump family; the \"DP\" notation is retained as a model suffix rather than interpreted as a confirmed electrical characteristic. Flow rate, pressure, supply voltage and ECU pairing are not verified by the indexed source title. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -5024,7 +5024,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "KingTech KP1200DP Pump — accessory reference",
+          "name": "KingTech KP1200DP Pump — KingTech reference",
           "summary": "Source-listed fuel pump: KingTech KP1200DP Pump. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "This is the KP1200DP listing within KingTech's pump family; the \"DP\" notation is retained as a model suffix rather than interpreted as a confirmed electrical characteristic. Flow rate, pressure, supply voltage and ECU pairing are not verified by the indexed source title. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -5058,7 +5058,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "KingTech KP1250DP Pump — accessory reference",
+          "name": "KingTech KP1250DP Pump — KingTech reference",
           "summary": "Source-listed fuel pump: KingTech KP1250DP Pump. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "This is the KP1250DP listing within KingTech's pump family; the \"DP\" notation is retained as a model suffix rather than interpreted as a confirmed electrical characteristic. Flow rate, pressure, supply voltage and ECU pairing are not verified by the indexed source title. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -5092,7 +5092,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "KingTech DRM G5 — accessory reference",
+          "name": "KingTech DRM G5 — KingTech reference",
           "summary": "Source-listed turbine control electronics: KingTech DRM G5. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "This named DRM control-system entry is distinct from data leads and Bluetooth adapters. Revision, firmware, connectors and engine compatibility must be established against the actual controller manual before use. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -5126,7 +5126,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "Stainless Steel Bracket for K65 — accessory reference",
+          "name": "Stainless Steel Bracket for K65 — KingTech reference",
           "summary": "Source-listed engine mounting bracket: Stainless Steel Bracket for K65. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "The source identifies a stainless-steel mounting bracket for the designation printed in \"Stainless Steel Bracket for K65\". This distinguishes the intended mounting family, but does not establish bolt spacing, thickness, engine revision or interchangeability. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -5160,7 +5160,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "Brushless Starter Motor Assembly — accessory reference",
+          "name": "Brushless Starter Motor Assembly — KingTech reference",
           "summary": "Source-listed turbine starter motor: Brushless Starter Motor Assembly. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "This source entry concerns the electric starter assembly rather than the other starter-system spare parts. \"Brushless Starter Motor Assembly\" identifies the version or component; connector pinout, torque, dimensions and service applicability are not specified as verified data. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -5194,7 +5194,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "Fuel Tubing 8mm — accessory reference",
+          "name": "Fuel Tubing 8mm — KingTech reference",
           "summary": "Source-listed fuel-system tubing: Fuel Tubing 8mm. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "\"Fuel Tubing 8mm\" records a nominal size or material label from the source and stays separate from other tubing sizes. The title alone does not establish inner versus outer diameter, pressure rating, length supplied or chemical compatibility. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -5228,7 +5228,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "PISCO One-Way Valve — accessory reference",
+          "name": "PISCO One-Way Valve — KingTech reference",
           "summary": "Source-listed one-way fuel valve: PISCO One-Way Valve. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "The supplier labels this as a one-direction fuel-system valve, not as an entire fuel system. \"PISCO One-Way Valve\" distinguishes its function; port size, sealing material, operating pressure and interchangeable pump or engine models are not verified. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -5262,7 +5262,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "Stainless Steel Bracket for K130 — accessory reference",
+          "name": "Stainless Steel Bracket for K130 — KingTech reference",
           "summary": "Source-listed engine mounting bracket: Stainless Steel Bracket for K130. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "The source identifies a stainless-steel mounting bracket for the designation printed in \"Stainless Steel Bracket for K130\". This distinguishes the intended mounting family, but does not establish bolt spacing, thickness, engine revision or interchangeability. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -5296,7 +5296,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "KingTech KP500V+ — accessory reference",
+          "name": "KingTech KP500V+ — KingTech reference",
           "summary": "Source-listed fuel pump: KingTech KP500V+. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "This is the KP500V+ listing within KingTech's pump family; the \"V\" notation is retained as a model suffix rather than interpreted as a confirmed electrical characteristic. Flow rate, pressure, supply voltage and ECU pairing are not verified by the indexed source title. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -5330,7 +5330,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "Engine Bracket K450 — accessory reference",
+          "name": "Engine Bracket K450 — KingTech reference",
           "summary": "Source-listed engine mounting bracket: Engine Bracket K450. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "The source identifies an engine mounting bracket for the designation printed in \"Engine Bracket K450\". This distinguishes the intended mounting family, but does not establish bolt spacing, thickness, engine revision or interchangeability. This is an external reference only; BODICH does not claim to make or sell the item."
         },
@@ -5364,7 +5364,7 @@
       "model": null,
       "copy": {
         "en": {
-          "name": "Stainless Steel Bracket for K102 — accessory reference",
+          "name": "Stainless Steel Bracket for K102 — KingTech reference",
           "summary": "Source-listed engine mounting bracket: Stainless Steel Bracket for K102. The manufacturer catalogue is retained as a distinct unpublished reference.",
           "description": "The source identifies a stainless-steel mounting bracket for the designation printed in \"Stainless Steel Bracket for K102\". This distinguishes the intended mounting family, but does not establish bolt spacing, thickness, engine revision or interchangeability. This is an external reference only; BODICH does not claim to make or sell the item."
         },
