@@ -123,8 +123,8 @@ export type ReferenceOilDetails = {
 export type ReferenceBatteryDetails = {
   sourceUrl: string;
   verifiedOn: string;
-  /** Preserve the manufacturer's exact chemistry wording: LIFE is not a verified 3S/LiFePO₄ specification. */
-  chemistry: { sourceLabel: 'LIFE' };
+  /** Manufacturer's verbatim chemistry notation; never infer chemistry or cell count from the label. */
+  chemistry: { sourceLabel: string };
   cellCount: number | null;
   voltage: { value: number; unit: 'V' };
   capacity: { value: number; unit: 'mAh' };
@@ -430,7 +430,7 @@ export function validateReferenceDrafts(
     }
     if (draft.battery !== null) {
       const detail = draft.battery;
-      const batteryTitle = sourceProduct?.sourceTitle?.match(/^(\d+)mAh-(\d+(?:\.\d+)?)V LIFE Battery$/i);
+      const batteryTitle = sourceProduct?.sourceTitle?.match(/^(\d+)mAh-(\d+(?:\.\d+)?)V ([A-Za-z][A-Za-z0-9+.-]*) Battery$/);
       if (draft.itemType !== 'battery' || !sourceProduct || !detail || typeof detail !== 'object' ||
           Array.isArray(detail) ||
           !keysOnly(detail, ['sourceUrl', 'verifiedOn', 'chemistry', 'cellCount', 'voltage', 'capacity', 'connector', 'compatibleApplications', 'sourceNotes', 'artBriefId']) ||
@@ -439,7 +439,7 @@ export function validateReferenceDrafts(
           !detail.chemistry || typeof detail.chemistry !== 'object' ||
           Array.isArray(detail.chemistry) ||
           !keysOnly(detail.chemistry, ['sourceLabel']) ||
-          detail.chemistry.sourceLabel !== 'LIFE' ||
+          detail.chemistry.sourceLabel !== batteryTitle?.[3] ||
           !(detail.cellCount === null ||
             (Number.isSafeInteger(detail.cellCount) && detail.cellCount > 0)) ||
           !(detail.connector === null || nonempty(detail.connector)) ||
