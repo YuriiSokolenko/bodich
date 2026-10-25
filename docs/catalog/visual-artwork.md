@@ -26,7 +26,7 @@ The frozen supplier inventory has **132 importable source IDs**: 17 G4+, 11 G5, 
 | Warranty service | 1 | Generic document, not a BODICH warranty |
 | **Total** | **132** | All indexed by stable, unique source ID |
 
-Each brief is tied to a distinct supplier source ID, but the **main silhouettes are shared within a category**. These are per-family diagrams with a readable short source index, not distinct photographs or per-SKU design studies. A full unmodified source ID and original supplier title are printed beneath each item in the human-review contact sheets (long Square IDs are shortened only on the artwork). This is an honest documented fallback until genuinely distinct and approved product imagery is available. All family art shares the BODICH visual-study style: charcoal aerospace background, muted teal metal, copper accents and a consistent studio-like 4:3 frame.
+Each brief is tied to a distinct supplier source ID, but the **main silhouettes are shared within a category**. These are per-family diagrams with a readable short source index, not distinct photographs or per-SKU design studies. Each human-review contact sheet prints the **complete source ID** below the thumbnail (long Square IDs wrap after `KT-SQ-`, while only the in-art header uses a short index) and the **complete supplier title** in up to three lines. Source identifiers and model suffixes are never cropped from contact sheets. This is an honest documented fallback until genuinely distinct and approved product imagery is available. All family art shares the BODICH visual-study style: charcoal aerospace background, muted teal metal, copper accents and a consistent studio-like 4:3 frame.
 
 ## Sources, exports and checks
 
@@ -43,7 +43,7 @@ For every ID, running npm run catalog:art:generate exports under docs/catalog/dr
 | concept-1200.webp | 1200 × 900 | Gallery review |
 | concept-600.png | 600 × 450 | Portable fallback |
 
-The 528 rasters are **generated, not committed**: they remain under the deliberately gitignored draft-assets directory, not public/images/catalog. Website safety rules prohibit unreferenced public catalog imagery. CI uploads the exported set plus **12 category contact sheets** from visual-qa/catalog-art as the artifact named **unpublished-catalog-art-review**. Every contact-sheet thumbnail includes an external source index and a legible supplier title beneath the illustration. These contact sheets support category-by-category screenshot review; the images are not currently served on product cards.
+The 528 rasters are **generated, not committed**: they remain under the deliberately gitignored draft-assets directory, not public/images/catalog. Website safety rules prohibit unreferenced public catalog imagery. CI uploads the exported set plus **12 category contact sheets** from visual-qa/catalog-art as the artifact named **unpublished-catalog-art-review**. Every contact-sheet thumbnail includes the complete external source ID (one or two lines) and an untruncated supplier title (one to three lines) beneath the illustration; captions use the same locally authored vector glyphs as the diagrams. These contact sheets support category-by-category screenshot review; the images are not currently served on product cards.
 
 To validate offline using Node 24, run these commands in sequence:
 
@@ -53,7 +53,7 @@ To validate offline using Node 24, run these commands in sequence:
     npm run catalog:art:generate
     npm run catalog:art:check
 
-The manifest gate verifies 132/132 mapping, uniqueness, family assignment, exact source URL/title, required briefs, safety disclosures, rights status, short-index collision safety and derivative paths; negative fixtures enforce these invariants. Raster checks verify WebP/PNG decoding headers, dimensions, maximum size, private EXIF/XMP/text flags, no orphan files under the draft asset tree, and SHA-256 checks block publishing any byte-identical *renamed* unapproved draft export inside public/images/catalog. All pending artwork still requires a separate owner approval and rights proof. No fetch from the supplier's site is needed.
+The manifest gate verifies 132/132 mapping, uniqueness, family assignment, exact source URL/title, required briefs, safety disclosures, rights status, short-index collision safety, complete contact-sheet label integrity and derivative paths; negative fixtures enforce these invariants. Raster checks verify WebP/PNG decoding headers, dimensions, maximum size, private EXIF/XMP/text flags, no orphan files under the draft asset tree, and SHA-256 checks block publishing any byte-identical *renamed* unapproved draft export inside public/images/catalog. All pending artwork still requires a separate owner approval and rights proof. No fetch from the supplier's site is needed.
 
 ## Ownership, product identity and publication gates
 
