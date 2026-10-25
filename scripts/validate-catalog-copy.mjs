@@ -397,18 +397,27 @@ function selfTest(input) {
     'legacy import does not run');
   assert.equal(isEntryPoint(undefined, thisPath, undefined), false,
     'legacy no argv does not run');
+  assert.equal(canonicalArgvPath('/definitely-not-a-real-bodich-entrypoint.mjs'), undefined,
+    'legacy foreign argv should not cause an import-time ENOENT');
+  assert.equal(canonicalArgvPath('scripts/validate-catalog-copy.mjs'), thisPath,
+    'legacy real file argv canonicalized');
   console.log('Copy QA regression fixtures: ' + cases +
     ' expected failures detected, with positive disclaimer/title and module-CLI smoke tests');
 }
-// Pure predicate: Node 24.0/24.1 lack import.meta.main, so resolve fallback
-// paths canonically at the call site to support symlinked script locations.
+// Pure predicate: Node 24.0/24.1 lack import.meta.main; canonical paths
+// handle symlinked entry scripts. Non-file foreign argv remains import-safe.
 export function isEntryPoint(main, modulePath, argvPath) {
   return main ?? (Boolean(argvPath) && modulePath === argvPath);
+}
+function canonicalArgvPath(argv1) {
+  if (!argv1) return undefined;
+  const candidate = resolve(argv1);
+  return existsSync(candidate) ? realpathSync(candidate) : undefined;
 }
 const runningDirectly = import.meta.main ??
   isEntryPoint(undefined,
     realpathSync(fileURLToPath(import.meta.url)),
-    process.argv[1] ? realpathSync(resolve(process.argv[1])) : undefined);
+    canonicalArgvPath(process.argv[1]));
 if (runningDirectly) {
   const options = process.argv.slice(2);
   if (options.some((x) => !['--write-matrix', '--self-test'].includes(x)) ||
