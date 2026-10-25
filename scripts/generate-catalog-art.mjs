@@ -7,8 +7,10 @@
  * node scripts/generate-catalog-art.mjs --check
  * node scripts/generate-catalog-art.mjs --self-test
  */
-import { readFileSync, mkdirSync, existsSync, readdirSync, lstatSync } from 'node:fs';
-import { resolve, dirname } from 'node:path';
+import { readFileSync, writeFileSync, mkdirSync, mkdtempSync, rmSync, existsSync, readdirSync, lstatSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { tmpdir } from 'node:os';
+import { resolve, dirname, join, basename } from 'node:path';
 import sharp from 'sharp';
 import { inspectRaster, MAX_CATALOG_IMAGE_BYTES } from './catalog-image.mjs';
 
@@ -266,9 +268,47 @@ function svgFor(entry) {
     '<g opacity=".75">' + lines + '</g><g>' + art + '</g>' +
     '<path d="M100 845 H1100" stroke="#cd8054" stroke-width="5"/></svg>';
 }
+
+/**
+ * Publication gate: checking file names alone is insufficient because a draft
+ * may be copied or renamed. Match SHA-256 of every generated derivative against
+ * files in the real public catalog tree. A future approval needs both approved
+ * state and rights clearance in the manifest; this phase permits neither.
+ */
+function publishedDraftProblems(publicRoot, draftHashes) {
+  const errors = [];
+  const catalogDir = resolve(publicRoot, 'images/catalog');
+  if (!existsSync(catalogDir)) return errors;
+  const draftFilenames = new Set(manifest.entries.flatMap(
+    (entry) => Object.values(entry.assets).map((path) => basename(path))));
+  const walk = (dir) => {
+    for (const file of readdirSync(dir, { withFileTypes: true })) {
+      const path = resolve(dir, file.name);
+      const stats = lstatSync(path);
+      if (stats.isSymbolicLink()) {
+        errors.push('Public catalog symlink not allowed: ' + path);
+      } else if (stats.isDirectory()) {
+        walk(path);
+      } else if (stats.isFile()) {
+        const hash = createHash('sha256').update(readFileSync(path)).digest('hex');
+        const matching = draftHashes.get(hash);
+        if (matching && (matching.approved !== true || matching.rights !== 'cleared')) {
+          errors.push('Unapproved draft asset published by byte match: ' + path +
+            ' (source ' + matching.sourceId + ')');
+        } else if (draftFilenames.has(file.name) &&
+                   manifest.entries.some((item) => !item.approved)) {
+          errors.push('Reserved draft-art filename in public catalog: ' + path);
+        }
+      }
+    }
+  };
+  walk(catalogDir);
+  return errors;
+}
+
 async function inspectExports() {
   const errors = [];
-  const expected = new Set();
+  const expected = new Set(), draftHashes = new Map();
   for (const entry of manifest.entries) {
     for (const [key, [width, height, ext]] of Object.entries(sizes)) {
       const path = resolve(entry.assets[key]);
@@ -280,6 +320,7 @@ async function inspectExports() {
           errors.push('Oversized or unsafe raster: ' + path); continue;
         }
         const bytes = readFileSync(path);
+        draftHashes.set(createHash('sha256').update(bytes).digest('hex'), entry);
         const result = inspectRaster(bytes, ext);
         const metadata = await sharp(bytes).metadata();
         if (!result || result.privateMetadata || result.width !== width ||
@@ -300,6 +341,7 @@ async function inspectExports() {
     };
     walk(root);
   }
+  errors.push(...publishedDraftProblems(resolve('public'), draftHashes));
   return errors;
 }
 async function generate() {
@@ -372,7 +414,26 @@ function selfTest() {
   if (glyphProof.includes('<text ') ||
       !glyphProof.includes(vectorText('ILLUSTRATIVE DIAGRAM · NOT A PRODUCT PHOTO', 103, 787, 3, '#9bb4be')))
     throw new Error('Mandatory disclaimer is not stable vector geometry');
-  console.log('Artwork manifest and vector lettering negative fixtures passed.');
+  const temporary = mkdtempSync(join(tmpdir(), 'bodich-art-approval-test-'));
+  try {
+    const publicDir = join(temporary, 'images/catalog');
+    mkdirSync(publicDir, { recursive: true });
+    const fakeArt = Buffer.from('UNAPPROVED-CI-DRAFT-BYTES', 'utf8');
+    const digest = createHash('sha256').update(fakeArt).digest('hex');
+    const testAsset = join(publicDir, 'renamed.webp');
+    writeFileSync(testAsset, fakeArt);
+    const map = new Map([[digest, { sourceId: manifest.entries[0].sourceId,
+      approved: false, rights: 'pending' }]]);
+    if (!publishedDraftProblems(temporary, map).some((issue) =>
+      issue.includes('Unapproved draft asset published by byte match')))
+      throw new Error('Renamed draft asset bypassed public-image gate');
+    map.set(digest, { ...map.get(digest), approved: true, rights: 'cleared' });
+    if (publishedDraftProblems(temporary, map).length)
+      throw new Error('Cleared fixture asset incorrectly rejected');
+  } finally {
+    rmSync(temporary, { recursive: true, force: true });
+  }
+  console.log('Artwork manifest, publication gate and vector lettering fixtures passed.');
 }
 const errors = problems(manifest);
 if (errors.length) { console.error(errors.slice(0, 40).join('\n')); process.exit(1); }
