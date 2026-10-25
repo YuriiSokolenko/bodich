@@ -274,7 +274,7 @@ function selfTest(input) {
     x.drafts.records[1].copy.en.summary = x.drafts.records[0].copy.en.summary;
   }, 'Non-unique');
   negative('invented claim without evidence', (x) => {
-    x.drafts.records[0].copy.en.description += ' Unverified sample force is 98765 N.';
+    x.drafts.records[0].copy.en.description += ' Unverified sample force is 98,765 N.';
   }, 'Numeric copy claim');
   negative('wrong Romanian decimal format', (x) => {
     const r = first(x, 'ro', 'summary', /[0-9]+,[0-9]+ kgf/);
@@ -282,7 +282,7 @@ function selfTest(input) {
     r.copy.ro.summary = r.copy.ro.summary.replace(match[0], match[0].replace(',', '.'));
   }, 'decimal/thousands');
   negative('no-space numeric claim must be visible to scanner', (x) => {
-    x.drafts.records[0].copy.en.description += ' Invented component pressure 98765psi.';
+    x.drafts.records[0].copy.en.description += ' Invented component pressure 98,765psi.';
   }, 'Numeric copy claim');
   negative('no-space sourced quantity still invalid typography', (x) => {
     const r = first(x, 'en', 'summary', /[0-9][0-9.,]* (?:kgf|mm|V)/);
