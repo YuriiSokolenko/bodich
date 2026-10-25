@@ -48,6 +48,19 @@ jobs:
         run: npm ci
       - name: Validate Astro and TypeScript
         run: npm run check
+      - name: Generate and validate all unpublished catalog illustrations
+        run: |
+          npm run catalog:art:generate
+          npm run catalog:art:check
+      - name: Upload SKU illustration review package
+        uses: actions/upload-artifact@v4
+        with:
+          name: unpublished-catalog-art-review
+          path: |
+            docs/catalog/draft-assets/
+            visual-qa/catalog-art/
+          retention-days: 14
+          if-no-files-found: error
       - name: Build static website
         run: npm run build
       - name: Check generated localized routes
