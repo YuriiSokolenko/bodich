@@ -112,7 +112,7 @@ The source URL shown in each row is the product-level evidence anchor and preser
 | `kt-89` | [KingTech KP800V Pump](https://www.kingtechturbines.com/product/kingtech-kp800v-pump/89) | pump | `fuel-systems` | KP800V | Unverified |
 | `kt-90` | [KingTech KP1200V Pump](https://www.kingtechturbines.com/product/kingtech-kp1200v-pump/90) | pump | `fuel-systems` | KP1200V | Unverified |
 | `kt-91` | [KingTech KP200BL Pump](https://www.kingtechturbines.com/product/kingtech-kp200bl-pump/91) | pump | `fuel-systems` | KP200BL | Unverified |
-| `kt-92` | [KingTech KP300 BL Pump](https://www.kingtechturbines.com/product/kingtech-kp300-bl-pump/92) | pump | `fuel-systems` | KP300 | Unverified |
+| `kt-92` | [KingTech KP300 BL Pump](https://www.kingtechturbines.com/product/kingtech-kp300-bl-pump/92) | pump | `fuel-systems` | KP300 BL | Unverified |
 | `kt-93` | [KingTech KP500BL Pump](https://www.kingtechturbines.com/product/kingtech-kp500bl-pump/93) | pump | `fuel-systems` | KP500BL | Unverified |
 | `kt-94` | [KingTech KP600BL Pump](https://www.kingtechturbines.com/product/kingtech-kp600bl-pump/94) | pump | `fuel-systems` | KP600BL | Unverified |
 | `kt-95` | [KingTech KP800BL Pump](https://www.kingtechturbines.com/product/kingtech-kp800bl-pump/95) | pump | `fuel-systems` | KP800BL | Unverified |
@@ -150,7 +150,7 @@ The source URL shown in each row is the product-level evidence anchor and preser
 | `kt-151` | [Fuel Tubing 8mm](https://www.kingtechturbines.com/product/fuel-tubing-8mm/151) | fuel-tubing | `fuel-systems` | 8mm | Unverified |
 | `kt-sq-B6UE3Q5GGAWUC57XIETALASF` | [PISCO One-Way Valve](https://www.kingtechturbines.com/product/pisco-one-way-valve/B6UE3Q5GGAWUC57XIETALASF) | pump | `fuel-systems` | — | Unverified |
 | `kt-sq-ECX6KXRCBWRIZ2YGLCIVQAWT` | [Stainless Steel Bracket for K130](https://www.kingtechturbines.com/product/stainless-steel-bracket-for-k130/ECX6KXRCBWRIZ2YGLCIVQAWT) | engine-bracket | `mounting-hardware` | K130 | `K130` (title only) |
-| `kt-sq-LRO5A4V3ZOBXOVEKU4F3PPC3` | [KingTech KP500V+](https://www.kingtechturbines.com/product/kingtech-kp500v-/LRO5A4V3ZOBXOVEKU4F3PPC3) | pump | `fuel-systems` | KP500V | Unverified |
+| `kt-sq-LRO5A4V3ZOBXOVEKU4F3PPC3` | [KingTech KP500V+](https://www.kingtechturbines.com/product/kingtech-kp500v-/LRO5A4V3ZOBXOVEKU4F3PPC3) | pump | `fuel-systems` | KP500V+ | Unverified |
 | `kt-sq-PYRA6D5K64KITYJCJGXLZCQU` | [Engine Bracket K450](https://www.kingtechturbines.com/product/engine-bracket-k450/PYRA6D5K64KITYJCJGXLZCQU) | engine-bracket | `mounting-hardware` | K450 | `K450` (title only) |
 | `kt-sq-VCEYUYCU5FJF2GZQMXDNZXJO` | [Stainless Steel Bracket for K102](https://www.kingtechturbines.com/product/stainless-steel-bracket-for-k102/VCEYUYCU5FJF2GZQMXDNZXJO) | engine-bracket | `mounting-hardware` | K102 | `K102` (title only) |
 
