@@ -10,3 +10,4 @@ dist/
 # Reproducible, unpublished artwork exports (available as CI review artifact)
 docs/catalog/draft-assets/
 visual-qa/catalog-art/
+visual-qa/catalog-reconciliation.json
