@@ -176,7 +176,7 @@ function selfTest(input) {
   negative((x) => { x.art.entries[0].alt.ro = x.art.entries[0].alt.en; }, 'image alt');
   negative((x) => { x.matrix.items.pop(); }, 'cover 132');
   negative((x) => { x.exceptions.entries[0].value = 999; }, 'Numeric copy claim');
-  negative((x) => { x.matrix.items[1].unresolved = []; }, 'Review matrix stale');
+  negative((x) => { x.matrix.items[0].unresolved = []; }, 'Review matrix stale');
   console.log('Copy QA regression fixtures: 9 expected failures detected');
 }
 const options = process.argv.slice(2);
