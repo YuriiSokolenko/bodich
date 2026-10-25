@@ -257,7 +257,9 @@ export function validateReferenceDrafts(
           (spec.kind === 'dimension'
             ? !['diameter', 'length'].includes(spec.metric as string)
             : spec.kind === 'speed'
-              ? (spec.metric !== undefined && !['turbine', 'propeller'].includes(spec.metric))
+              ? (draft.itemType === 'turboprop'
+                  ? (spec.metric !== undefined && !['turbine', 'propeller'].includes(spec.metric))
+                  : spec.metric !== undefined)
               : spec.metric !== undefined) ||
           !Object.hasOwn(permittedSpecUnits, spec.kind) ||
           !(permittedSpecUnits[spec.kind as SpecKind] as readonly string[] | undefined)?.includes(spec.unit) ||
