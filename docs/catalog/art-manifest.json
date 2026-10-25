@@ -1,0 +1,3196 @@
+{
+  "schemaVersion": 1,
+  "purpose": "unpublished_original_diagram_fallbacks",
+  "sourceSnapshot": "docs/catalog/source-inventory.json",
+  "sourceOverrides": "docs/catalog/reference-overrides.json",
+  "rightsPolicy": "pending_company_and_brand_review",
+  "outputDimensions": {
+    "webp360": [
+      360,
+      270
+    ],
+    "webp600": [
+      600,
+      450
+    ],
+    "webp1200": [
+      1200,
+      900
+    ],
+    "png600": [
+      600,
+      450
+    ]
+  },
+  "generation": "procedural original SVG geometry rasterized with sharp; no third-party photographs, AI vendor assets, or logos",
+  "entries": [
+    {
+      "sourceId": "kt-1",
+      "sourceTitle": "KingTech K-30G4+ - DISCONTINUED",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-30g4-discontinued/1",
+      "manufacturer": "KingTech",
+      "family": "jet-g4",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Original generic axial turbine diagram with a recessed inlet, abstract radial blades, and dark warm-metal engine volume; do not imply K- or G4 dimensional fidelity. Distinguish this specific source reference with its kt-1 art index; reference KingTech K-30G4+ - DISCONTINUED is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference KingTech K-30G4+ - DISCONTINUED (kt-1); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech KingTech K-30G4+ - DISCONTINUED (kt-1); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-1/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-1/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-1/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-1/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-2",
+      "sourceTitle": "KingTech K-45G4+ DISCONTINUED",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-45g4-discontinued/2",
+      "manufacturer": "KingTech",
+      "family": "jet-g4",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Original generic axial turbine diagram with a recessed inlet, abstract radial blades, and dark warm-metal engine volume; do not imply K- or G4 dimensional fidelity. Distinguish this specific source reference with its kt-2 art index; reference KingTech K-45G4+ DISCONTINUED is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference KingTech K-45G4+ DISCONTINUED (kt-2); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech KingTech K-45G4+ DISCONTINUED (kt-2); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-2/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-2/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-2/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-2/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-3",
+      "sourceTitle": "KingTech K-55G4+ DISCONTINUED",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-55g4-discontinued/3",
+      "manufacturer": "KingTech",
+      "family": "jet-g4",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Original generic axial turbine diagram with a recessed inlet, abstract radial blades, and dark warm-metal engine volume; do not imply K- or G4 dimensional fidelity. Distinguish this specific source reference with its kt-3 art index; reference KingTech K-55G4+ DISCONTINUED is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference KingTech K-55G4+ DISCONTINUED (kt-3); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech KingTech K-55G4+ DISCONTINUED (kt-3); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-3/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-3/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-3/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-3/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-4",
+      "sourceTitle": "KingTech K-65G4+ DISCONTINUED",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-65g4-discontinued/4",
+      "manufacturer": "KingTech",
+      "family": "jet-g4",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Original generic axial turbine diagram with a recessed inlet, abstract radial blades, and dark warm-metal engine volume; do not imply K- or G4 dimensional fidelity. Distinguish this specific source reference with its kt-4 art index; reference KingTech K-65G4+ DISCONTINUED is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference KingTech K-65G4+ DISCONTINUED (kt-4); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech KingTech K-65G4+ DISCONTINUED (kt-4); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-4/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-4/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-4/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-4/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-5",
+      "sourceTitle": "KingTech K-70G4+ DISCONTINUED",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-70g4-discontinued/5",
+      "manufacturer": "KingTech",
+      "family": "jet-g4",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Original generic axial turbine diagram with a recessed inlet, abstract radial blades, and dark warm-metal engine volume; do not imply K- or G4 dimensional fidelity. Distinguish this specific source reference with its kt-5 art index; reference KingTech K-70G4+ DISCONTINUED is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference KingTech K-70G4+ DISCONTINUED (kt-5); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech KingTech K-70G4+ DISCONTINUED (kt-5); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-5/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-5/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-5/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-5/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-6",
+      "sourceTitle": "KingTech K-85G4+ DISCONTINUED",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-85g4-discontinued/6",
+      "manufacturer": "KingTech",
+      "family": "jet-g4",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Original generic axial turbine diagram with a recessed inlet, abstract radial blades, and dark warm-metal engine volume; do not imply K- or G4 dimensional fidelity. Distinguish this specific source reference with its kt-6 art index; reference KingTech K-85G4+ DISCONTINUED is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference KingTech K-85G4+ DISCONTINUED (kt-6); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech KingTech K-85G4+ DISCONTINUED (kt-6); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-6/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-6/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-6/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-6/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-7",
+      "sourceTitle": "KingTech K-102G4+",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-102g4-/7",
+      "manufacturer": "KingTech",
+      "family": "jet-g4",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Original generic axial turbine diagram with a recessed inlet, abstract radial blades, and dark warm-metal engine volume; do not imply K- or G4 dimensional fidelity. Distinguish this specific source reference with its kt-7 art index; reference KingTech K-102G4+ is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference KingTech K-102G4+ (kt-7); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech KingTech K-102G4+ (kt-7); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-7/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-7/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-7/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-7/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-8",
+      "sourceTitle": "KingTech K-130G4+",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-130g4-/8",
+      "manufacturer": "KingTech",
+      "family": "jet-g4",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Original generic axial turbine diagram with a recessed inlet, abstract radial blades, and dark warm-metal engine volume; do not imply K- or G4 dimensional fidelity. Distinguish this specific source reference with its kt-8 art index; reference KingTech K-130G4+ is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference KingTech K-130G4+ (kt-8); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech KingTech K-130G4+ (kt-8); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-8/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-8/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-8/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-8/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-9",
+      "sourceTitle": "KingTech K-142G4+",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-142g4-/9",
+      "manufacturer": "KingTech",
+      "family": "jet-g4",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Original generic axial turbine diagram with a recessed inlet, abstract radial blades, and dark warm-metal engine volume; do not imply K- or G4 dimensional fidelity. Distinguish this specific source reference with its kt-9 art index; reference KingTech K-142G4+ is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference KingTech K-142G4+ (kt-9); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech KingTech K-142G4+ (kt-9); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-9/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-9/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-9/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-9/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-10",
+      "sourceTitle": "KingTech K-160G4+",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-160g4-/10",
+      "manufacturer": "KingTech",
+      "family": "jet-g4",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Original generic axial turbine diagram with a recessed inlet, abstract radial blades, and dark warm-metal engine volume; do not imply K- or G4 dimensional fidelity. Distinguish this specific source reference with its kt-10 art index; reference KingTech K-160G4+ is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference KingTech K-160G4+ (kt-10); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech KingTech K-160G4+ (kt-10); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-10/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-10/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-10/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-10/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-11",
+      "sourceTitle": "KingTech K-180G4+",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-180g4-/11",
+      "manufacturer": "KingTech",
+      "family": "jet-g4",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Original generic axial turbine diagram with a recessed inlet, abstract radial blades, and dark warm-metal engine volume; do not imply K- or G4 dimensional fidelity. Distinguish this specific source reference with its kt-11 art index; reference KingTech K-180G4+ is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference KingTech K-180G4+ (kt-11); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech KingTech K-180G4+ (kt-11); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-11/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-11/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-11/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-11/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-12",
+      "sourceTitle": "KingTech K-210G4+",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-210g4-/12",
+      "manufacturer": "KingTech",
+      "family": "jet-g4",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Original generic axial turbine diagram with a recessed inlet, abstract radial blades, and dark warm-metal engine volume; do not imply K- or G4 dimensional fidelity. Distinguish this specific source reference with its kt-12 art index; reference KingTech K-210G4+ is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference KingTech K-210G4+ (kt-12); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech KingTech K-210G4+ (kt-12); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-12/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-12/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-12/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-12/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-13",
+      "sourceTitle": "KingTech K-235G4+",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-235g4-/13",
+      "manufacturer": "KingTech",
+      "family": "jet-g4",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Original generic axial turbine diagram with a recessed inlet, abstract radial blades, and dark warm-metal engine volume; do not imply K- or G4 dimensional fidelity. Distinguish this specific source reference with its kt-13 art index; reference KingTech K-235G4+ is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference KingTech K-235G4+ (kt-13); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech KingTech K-235G4+ (kt-13); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-13/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-13/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-13/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-13/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-14",
+      "sourceTitle": "KingTech K-260G4+",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-260g4-/14",
+      "manufacturer": "KingTech",
+      "family": "jet-g4",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Original generic axial turbine diagram with a recessed inlet, abstract radial blades, and dark warm-metal engine volume; do not imply K- or G4 dimensional fidelity. Distinguish this specific source reference with its kt-14 art index; reference KingTech K-260G4+ is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference KingTech K-260G4+ (kt-14); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech KingTech K-260G4+ (kt-14); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-14/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-14/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-14/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-14/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-15",
+      "sourceTitle": "KingTech K-320G4+",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-320g4-/15",
+      "manufacturer": "KingTech",
+      "family": "jet-g4",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Original generic axial turbine diagram with a recessed inlet, abstract radial blades, and dark warm-metal engine volume; do not imply K- or G4 dimensional fidelity. Distinguish this specific source reference with its kt-15 art index; reference KingTech K-320G4+ is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference KingTech K-320G4+ (kt-15); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech KingTech K-320G4+ (kt-15); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-15/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-15/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-15/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-15/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-16",
+      "sourceTitle": "KingTech K-450G4+ (Industrial Purchases Only, please inquire)",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-450g4-industrial-purchases-only-please-inquire-/16",
+      "manufacturer": "KingTech",
+      "family": "jet-g4",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Original generic axial turbine diagram with a recessed inlet, abstract radial blades, and dark warm-metal engine volume; do not imply K- or G4 dimensional fidelity. Distinguish this specific source reference with its kt-16 art index; reference KingTech K-450G4+ (Industrial Purchases Only, please inquire) is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference KingTech K-450G4+ (Industrial Purchases Only, please inquire) (kt-16); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech KingTech K-450G4+ (Industrial Purchases Only, please inquire) (kt-16); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-16/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-16/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-16/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-16/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-17",
+      "sourceTitle": "KingTech K-30TPG4+",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-30tpg4-/17",
+      "manufacturer": "KingTech",
+      "family": "turboprop",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Original generic turboprop category diagram with four abstract blades and a schematic turbine silhouette; blade count and geometry are not technical specifications. Distinguish this specific source reference with its kt-17 art index; reference KingTech K-30TPG4+ is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference KingTech K-30TPG4+ (kt-17); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech KingTech K-30TPG4+ (kt-17); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-17/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-17/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-17/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-17/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-18",
+      "sourceTitle": "KingTech K-45TPG4+",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-45tpg4-/18",
+      "manufacturer": "KingTech",
+      "family": "turboprop",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Original generic turboprop category diagram with four abstract blades and a schematic turbine silhouette; blade count and geometry are not technical specifications. Distinguish this specific source reference with its kt-18 art index; reference KingTech K-45TPG4+ is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference KingTech K-45TPG4+ (kt-18); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech KingTech K-45TPG4+ (kt-18); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-18/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-18/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-18/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-18/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-19",
+      "sourceTitle": "KingTech K-60TPG4+",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-60tpg4-/19",
+      "manufacturer": "KingTech",
+      "family": "turboprop",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Original generic turboprop category diagram with four abstract blades and a schematic turbine silhouette; blade count and geometry are not technical specifications. Distinguish this specific source reference with its kt-19 art index; reference KingTech K-60TPG4+ is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference KingTech K-60TPG4+ (kt-19); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech KingTech K-60TPG4+ (kt-19); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-19/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-19/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-19/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-19/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-20",
+      "sourceTitle": "KingTech K-100TPG4+",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-100tpg4-/20",
+      "manufacturer": "KingTech",
+      "family": "turboprop",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Original generic turboprop category diagram with four abstract blades and a schematic turbine silhouette; blade count and geometry are not technical specifications. Distinguish this specific source reference with its kt-20 art index; reference KingTech K-100TPG4+ is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference KingTech K-100TPG4+ (kt-20); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech KingTech K-100TPG4+ (kt-20); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-20/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-20/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-20/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-20/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-21",
+      "sourceTitle": "KingTech Special Blend Oil, 2 Gallons",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-special-blend-oil-2-gallons/21",
+      "manufacturer": "KingTech",
+      "family": "oil",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Original generic turbine-oil container silhouette with abstract droplet graphic; package shape and quantity are unknown. Distinguish this specific source reference with its kt-21 art index; reference KingTech Special Blend Oil, 2 Gallons is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference KingTech Special Blend Oil, 2 Gallons (kt-21); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech KingTech Special Blend Oil, 2 Gallons (kt-21); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-21/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-21/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-21/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-21/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-22",
+      "sourceTitle": "KingTech Special Blend Oil, 1 Gallon",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-special-blend-oil-1-gallon/22",
+      "manufacturer": "KingTech",
+      "family": "oil",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Original generic turbine-oil container silhouette with abstract droplet graphic; package shape and quantity are unknown. Distinguish this specific source reference with its kt-22 art index; reference KingTech Special Blend Oil, 1 Gallon is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference KingTech Special Blend Oil, 1 Gallon (kt-22); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech KingTech Special Blend Oil, 1 Gallon (kt-22); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-22/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-22/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-22/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-22/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-23",
+      "sourceTitle": "KingTech Special Blend Oil, 32oz",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-special-blend-oil-32oz/23",
+      "manufacturer": "KingTech",
+      "family": "oil",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Original generic turbine-oil container silhouette with abstract droplet graphic; package shape and quantity are unknown. Distinguish this specific source reference with its kt-23 art index; reference KingTech Special Blend Oil, 32oz is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference KingTech Special Blend Oil, 32oz (kt-23); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech KingTech Special Blend Oil, 32oz (kt-23); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-23/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-23/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-23/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-23/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-24",
+      "sourceTitle": "3800mAh-9.9V LIFE Battery",
+      "sourceUrl": "https://www.kingtechturbines.com/product/3800mah-9-9v-life-battery/24",
+      "manufacturer": "KingTech",
+      "family": "battery",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Original generic battery electrical-storage icon with a lightning symbol; do not infer cell count, connector, size, chemistry or fitment. Distinguish this specific source reference with its kt-24 art index; reference 3800mAh-9.9V LIFE Battery is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference 3800mAh-9.9V LIFE Battery (kt-24); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech 3800mAh-9.9V LIFE Battery (kt-24); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-24/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-24/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-24/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-24/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-25",
+      "sourceTitle": "2100mAh-9.9V LIFE Battery",
+      "sourceUrl": "https://www.kingtechturbines.com/product/2100mah-9-9v-life-battery/25",
+      "manufacturer": "KingTech",
+      "family": "battery",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Original generic battery electrical-storage icon with a lightning symbol; do not infer cell count, connector, size, chemistry or fitment. Distinguish this specific source reference with its kt-25 art index; reference 2100mAh-9.9V LIFE Battery is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference 2100mAh-9.9V LIFE Battery (kt-25); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech 2100mAh-9.9V LIFE Battery (kt-25); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-25/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-25/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-25/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-25/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-30",
+      "sourceTitle": "ECU Comm Cable",
+      "sourceUrl": "https://www.kingtechturbines.com/product/ecu-comm-cable/30",
+      "manufacturer": "KingTech",
+      "family": "accessory-ecu-controls",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract electronics-control-board diagram; not a specific ECU or product layout. Distinguish this specific source reference with its kt-30 art index; reference ECU Comm Cable is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference ECU Comm Cable (kt-30); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech ECU Comm Cable (kt-30); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-30/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-30/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-30/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-30/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-32",
+      "sourceTitle": "Power Cable",
+      "sourceUrl": "https://www.kingtechturbines.com/product/power-cable/32",
+      "manufacturer": "KingTech",
+      "family": "accessory-electrical-components",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract control/connector board diagram; plugs and wire details are not product evidence. Distinguish this specific source reference with its kt-32 art index; reference Power Cable is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference Power Cable (kt-32); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech Power Cable (kt-32); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-32/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-32/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-32/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-32/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-33",
+      "sourceTitle": "G4/G4+ Data Cable",
+      "sourceUrl": "https://www.kingtechturbines.com/product/g4-g4-data-cable/33",
+      "manufacturer": "KingTech",
+      "family": "accessory-ecu-controls",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract electronics-control-board diagram; not a specific ECU or product layout. Distinguish this specific source reference with its kt-33 art index; reference G4/G4+ Data Cable is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference G4/G4+ Data Cable (kt-33); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech G4/G4+ Data Cable (kt-33); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-33/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-33/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-33/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-33/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-35",
+      "sourceTitle": "ECU Comm Cable for E Model (Gold Xicoy ECU)",
+      "sourceUrl": "https://www.kingtechturbines.com/product/ecu-comm-cable-for-e-model-gold-xicoy-ecu-/35",
+      "manufacturer": "KingTech",
+      "family": "accessory-ecu-controls",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract electronics-control-board diagram; not a specific ECU or product layout. Distinguish this specific source reference with its kt-35 art index; reference ECU Comm Cable for E Model (Gold Xicoy ECU) is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference ECU Comm Cable for E Model (Gold Xicoy ECU) (kt-35); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech ECU Comm Cable for E Model (Gold Xicoy ECU) (kt-35); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-35/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-35/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-35/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-35/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-36",
+      "sourceTitle": "ECU Comm Cable for E/F Model (Black Xicoy ECU)",
+      "sourceUrl": "https://www.kingtechturbines.com/product/ecu-comm-cable-for-e-f-model-black-xicoy-ecu-/36",
+      "manufacturer": "KingTech",
+      "family": "accessory-ecu-controls",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract electronics-control-board diagram; not a specific ECU or product layout. Distinguish this specific source reference with its kt-36 art index; reference ECU Comm Cable for E/F Model (Black Xicoy ECU) is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference ECU Comm Cable for E/F Model (Black Xicoy ECU) (kt-36); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech ECU Comm Cable for E/F Model (Black Xicoy ECU) (kt-36); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-36/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-36/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-36/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-36/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-39",
+      "sourceTitle": "Battery/Pump Cable for KT Pump",
+      "sourceUrl": "https://www.kingtechturbines.com/product/battery-pump-cable-for-kt-pump/39",
+      "manufacturer": "KingTech",
+      "family": "accessory-electrical-components",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract control/connector board diagram; plugs and wire details are not product evidence. Distinguish this specific source reference with its kt-39 art index; reference Battery/Pump Cable for KT Pump is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference Battery/Pump Cable for KT Pump (kt-39); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech Battery/Pump Cable for KT Pump (kt-39); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-39/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-39/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-39/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-39/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-41",
+      "sourceTitle": "Battery/Pump Cable for K30/45G3",
+      "sourceUrl": "https://www.kingtechturbines.com/product/battery-pump-cable-for-k30-45g3/41",
+      "manufacturer": "KingTech",
+      "family": "accessory-electrical-components",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract control/connector board diagram; plugs and wire details are not product evidence. Distinguish this specific source reference with its kt-41 art index; reference Battery/Pump Cable for K30/45G3 is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference Battery/Pump Cable for K30/45G3 (kt-41); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech Battery/Pump Cable for K30/45G3 (kt-41); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-41/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-41/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-41/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-41/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-42",
+      "sourceTitle": "Pump Cable for G4",
+      "sourceUrl": "https://www.kingtechturbines.com/product/pump-cable-for-g4/42",
+      "manufacturer": "KingTech",
+      "family": "accessory-electrical-components",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract control/connector board diagram; plugs and wire details are not product evidence. Distinguish this specific source reference with its kt-42 art index; reference Pump Cable for G4 is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference Pump Cable for G4 (kt-42); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech Pump Cable for G4 (kt-42); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-42/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-42/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-42/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-42/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-43",
+      "sourceTitle": "Pump Cable for G4+/G5",
+      "sourceUrl": "https://www.kingtechturbines.com/product/pump-cable-for-g4-g5/43",
+      "manufacturer": "KingTech",
+      "family": "accessory-electrical-components",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract control/connector board diagram; plugs and wire details are not product evidence. Distinguish this specific source reference with its kt-43 art index; reference Pump Cable for G4+/G5 is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference Pump Cable for G4+/G5 (kt-43); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech Pump Cable for G4+/G5 (kt-43); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-43/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-43/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-43/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-43/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-44",
+      "sourceTitle": "Turbine Power Cable",
+      "sourceUrl": "https://www.kingtechturbines.com/product/turbine-power-cable/44",
+      "manufacturer": "KingTech",
+      "family": "accessory-electrical-components",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract control/connector board diagram; plugs and wire details are not product evidence. Distinguish this specific source reference with its kt-44 art index; reference Turbine Power Cable is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference Turbine Power Cable (kt-44); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech Turbine Power Cable (kt-44); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-44/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-44/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-44/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-44/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-45",
+      "sourceTitle": "G4/G4+/G5 Battery Cable",
+      "sourceUrl": "https://www.kingtechturbines.com/product/g4-g4-g5-battery-cable/45",
+      "manufacturer": "KingTech",
+      "family": "accessory-electrical-components",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract control/connector board diagram; plugs and wire details are not product evidence. Distinguish this specific source reference with its kt-45 art index; reference G4/G4+/G5 Battery Cable is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference G4/G4+/G5 Battery Cable (kt-45); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech G4/G4+/G5 Battery Cable (kt-45); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-45/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-45/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-45/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-45/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-46",
+      "sourceTitle": "FOD Screen - Small",
+      "sourceUrl": "https://www.kingtechturbines.com/product/fod-screen-small/46",
+      "manufacturer": "KingTech",
+      "family": "accessory-turbine-protection",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract protective-shield and mesh diagram; not a real cover, protective rating or fitment. Distinguish this specific source reference with its kt-46 art index; reference FOD Screen - Small is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference FOD Screen - Small (kt-46); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech FOD Screen - Small (kt-46); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-46/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-46/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-46/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-46/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-47",
+      "sourceTitle": "FOD Screen - Medium",
+      "sourceUrl": "https://www.kingtechturbines.com/product/fod-screen-medium/47",
+      "manufacturer": "KingTech",
+      "family": "accessory-turbine-protection",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract protective-shield and mesh diagram; not a real cover, protective rating or fitment. Distinguish this specific source reference with its kt-47 art index; reference FOD Screen - Medium is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference FOD Screen - Medium (kt-47); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech FOD Screen - Medium (kt-47); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-47/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-47/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-47/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-47/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-48",
+      "sourceTitle": "FOD Screen - Large",
+      "sourceUrl": "https://www.kingtechturbines.com/product/fod-screen-large/48",
+      "manufacturer": "KingTech",
+      "family": "accessory-turbine-protection",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract protective-shield and mesh diagram; not a real cover, protective rating or fitment. Distinguish this specific source reference with its kt-48 art index; reference FOD Screen - Large is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference FOD Screen - Large (kt-48); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech FOD Screen - Large (kt-48); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-48/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-48/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-48/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-48/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-49",
+      "sourceTitle": "FOD Screen 260",
+      "sourceUrl": "https://www.kingtechturbines.com/product/fod-screen-260/49",
+      "manufacturer": "KingTech",
+      "family": "accessory-turbine-protection",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract protective-shield and mesh diagram; not a real cover, protective rating or fitment. Distinguish this specific source reference with its kt-49 art index; reference FOD Screen 260 is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference FOD Screen 260 (kt-49); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech FOD Screen 260 (kt-49); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-49/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-49/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-49/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-49/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-50",
+      "sourceTitle": "Data Cable G4/G4+/G5",
+      "sourceUrl": "https://www.kingtechturbines.com/product/data-cable-g4-g4-g5/50",
+      "manufacturer": "KingTech",
+      "family": "accessory-ecu-controls",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract electronics-control-board diagram; not a specific ECU or product layout. Distinguish this specific source reference with its kt-50 art index; reference Data Cable G4/G4+/G5 is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference Data Cable G4/G4+/G5 (kt-50); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech Data Cable G4/G4+/G5 (kt-50); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-50/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-50/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-50/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-50/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-51",
+      "sourceTitle": "KingTech ECU G2",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-ecu-g2/51",
+      "manufacturer": "KingTech",
+      "family": "accessory-ecu-controls",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract electronics-control-board diagram; not a specific ECU or product layout. Distinguish this specific source reference with its kt-51 art index; reference KingTech ECU G2 is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference KingTech ECU G2 (kt-51); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech KingTech ECU G2 (kt-51); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-51/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-51/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-51/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-51/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-55",
+      "sourceTitle": "GSU KingTech",
+      "sourceUrl": "https://www.kingtechturbines.com/product/gsu-kingtech/55",
+      "manufacturer": "KingTech",
+      "family": "accessory-ecu-controls",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract electronics-control-board diagram; not a specific ECU or product layout. Distinguish this specific source reference with its kt-55 art index; reference GSU KingTech is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference GSU KingTech (kt-55); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech GSU KingTech (kt-55); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-55/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-55/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-55/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-55/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-56",
+      "sourceTitle": "KingTech GSU Bluetooth Module",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-gsu-bluetooth-module/56",
+      "manufacturer": "KingTech",
+      "family": "accessory-ecu-controls",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract electronics-control-board diagram; not a specific ECU or product layout. Distinguish this specific source reference with its kt-56 art index; reference KingTech GSU Bluetooth Module is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference KingTech GSU Bluetooth Module (kt-56); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech KingTech GSU Bluetooth Module (kt-56); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-56/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-56/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-56/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-56/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-57",
+      "sourceTitle": "KingTech Telemetry",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-telemetry/57",
+      "manufacturer": "KingTech",
+      "family": "accessory-ecu-controls",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract electronics-control-board diagram; not a specific ECU or product layout. Distinguish this specific source reference with its kt-57 art index; reference KingTech Telemetry is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference KingTech Telemetry (kt-57); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech KingTech Telemetry (kt-57); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-57/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-57/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-57/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-57/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-58",
+      "sourceTitle": "Fuel Filter",
+      "sourceUrl": "https://www.kingtechturbines.com/product/fuel-filter/58",
+      "manufacturer": "KingTech",
+      "family": "accessory-fuel-systems",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract fuel-transfer loop diagram; pipe routing, pump body and connections are illustrative only. Distinguish this specific source reference with its kt-58 art index; reference Fuel Filter is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference Fuel Filter (kt-58); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech Fuel Filter (kt-58); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-58/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-58/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-58/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-58/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-59",
+      "sourceTitle": "Shut-Off Valve",
+      "sourceUrl": "https://www.kingtechturbines.com/product/shut-off-valve/59",
+      "manufacturer": "KingTech",
+      "family": "accessory-fuel-systems",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract fuel-transfer loop diagram; pipe routing, pump body and connections are illustrative only. Distinguish this specific source reference with its kt-59 art index; reference Shut-Off Valve is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference Shut-Off Valve (kt-59); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech Shut-Off Valve (kt-59); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-59/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-59/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-59/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-59/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-60",
+      "sourceTitle": "90 Degree Fuel Festo Fitting",
+      "sourceUrl": "https://www.kingtechturbines.com/product/90-degree-fuel-festo-fitting/60",
+      "manufacturer": "KingTech",
+      "family": "accessory-fuel-systems",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract fuel-transfer loop diagram; pipe routing, pump body and connections are illustrative only. Distinguish this specific source reference with its kt-60 art index; reference 90 Degree Fuel Festo Fitting is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference 90 Degree Fuel Festo Fitting (kt-60); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech 90 Degree Fuel Festo Fitting (kt-60); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-60/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-60/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-60/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-60/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-62",
+      "sourceTitle": "Engine Bracket K320",
+      "sourceUrl": "https://www.kingtechturbines.com/product/engine-bracket-k320/62",
+      "manufacturer": "KingTech",
+      "family": "accessory-mounting-hardware",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract mounting-bracket diagram; hole placement and dimensions are invented and not a fitment guide. Distinguish this specific source reference with its kt-62 art index; reference Engine Bracket K320 is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference Engine Bracket K320 (kt-62); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech Engine Bracket K320 (kt-62); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-62/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-62/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-62/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-62/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-63",
+      "sourceTitle": "Engine Bracket K260",
+      "sourceUrl": "https://www.kingtechturbines.com/product/engine-bracket-k260/63",
+      "manufacturer": "KingTech",
+      "family": "accessory-mounting-hardware",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract mounting-bracket diagram; hole placement and dimensions are invented and not a fitment guide. Distinguish this specific source reference with its kt-63 art index; reference Engine Bracket K260 is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference Engine Bracket K260 (kt-63); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech Engine Bracket K260 (kt-63); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-63/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-63/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-63/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-63/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-65",
+      "sourceTitle": "Engine Bracket K30/45 G3/G4",
+      "sourceUrl": "https://www.kingtechturbines.com/product/engine-bracket-k30-45-g3-g4/65",
+      "manufacturer": "KingTech",
+      "family": "accessory-mounting-hardware",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract mounting-bracket diagram; hole placement and dimensions are invented and not a fitment guide. Distinguish this specific source reference with its kt-65 art index; reference Engine Bracket K30/45 G3/G4 is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference Engine Bracket K30/45 G3/G4 (kt-65); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech Engine Bracket K30/45 G3/G4 (kt-65); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-65/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-65/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-65/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-65/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-66",
+      "sourceTitle": "Stainless Steel Bracket for K45/55/70/86",
+      "sourceUrl": "https://www.kingtechturbines.com/product/stainless-steel-bracket-for-k45-55-70-86/66",
+      "manufacturer": "KingTech",
+      "family": "accessory-mounting-hardware",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract mounting-bracket diagram; hole placement and dimensions are invented and not a fitment guide. Distinguish this specific source reference with its kt-66 art index; reference Stainless Steel Bracket for K45/55/70/86 is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference Stainless Steel Bracket for K45/55/70/86 (kt-66); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech Stainless Steel Bracket for K45/55/70/86 (kt-66); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-66/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-66/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-66/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-66/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-67",
+      "sourceTitle": "Stainless Steel Bracket for K60/85",
+      "sourceUrl": "https://www.kingtechturbines.com/product/stainless-steel-bracket-for-k60-85/67",
+      "manufacturer": "KingTech",
+      "family": "accessory-mounting-hardware",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract mounting-bracket diagram; hole placement and dimensions are invented and not a fitment guide. Distinguish this specific source reference with its kt-67 art index; reference Stainless Steel Bracket for K60/85 is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference Stainless Steel Bracket for K60/85 (kt-67); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech Stainless Steel Bracket for K60/85 (kt-67); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-67/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-67/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-67/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-67/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-68",
+      "sourceTitle": "Stainless Steel Bracket for K80/100/120/142",
+      "sourceUrl": "https://www.kingtechturbines.com/product/stainless-steel-bracket-for-k80-100-120-142/68",
+      "manufacturer": "KingTech",
+      "family": "accessory-mounting-hardware",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract mounting-bracket diagram; hole placement and dimensions are invented and not a fitment guide. Distinguish this specific source reference with its kt-68 art index; reference Stainless Steel Bracket for K80/100/120/142 is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference Stainless Steel Bracket for K80/100/120/142 (kt-68); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech Stainless Steel Bracket for K80/100/120/142 (kt-68); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-68/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-68/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-68/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-68/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-69",
+      "sourceTitle": "Stainless Steel Bracket for K140/160/180",
+      "sourceUrl": "https://www.kingtechturbines.com/product/stainless-steel-bracket-for-k140-160-180/69",
+      "manufacturer": "KingTech",
+      "family": "accessory-mounting-hardware",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract mounting-bracket diagram; hole placement and dimensions are invented and not a fitment guide. Distinguish this specific source reference with its kt-69 art index; reference Stainless Steel Bracket for K140/160/180 is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference Stainless Steel Bracket for K140/160/180 (kt-69); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech Stainless Steel Bracket for K140/160/180 (kt-69); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-69/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-69/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-69/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-69/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-70",
+      "sourceTitle": "Stainless Steel Bracket for K235",
+      "sourceUrl": "https://www.kingtechturbines.com/product/stainless-steel-bracket-for-k235/70",
+      "manufacturer": "KingTech",
+      "family": "accessory-mounting-hardware",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract mounting-bracket diagram; hole placement and dimensions are invented and not a fitment guide. Distinguish this specific source reference with its kt-70 art index; reference Stainless Steel Bracket for K235 is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference Stainless Steel Bracket for K235 (kt-70); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech Stainless Steel Bracket for K235 (kt-70); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-70/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-70/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-70/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-70/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-71",
+      "sourceTitle": "Starter Motor K30/45 G3",
+      "sourceUrl": "https://www.kingtechturbines.com/product/starter-motor-k30-45-g3/71",
+      "manufacturer": "KingTech",
+      "family": "accessory-maintenance-parts",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract maintenance-tool diagram; not a depiction of a specific supplier part. Distinguish this specific source reference with its kt-71 art index; reference Starter Motor K30/45 G3 is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference Starter Motor K30/45 G3 (kt-71); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech Starter Motor K30/45 G3 (kt-71); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-71/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-71/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-71/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-71/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-72",
+      "sourceTitle": "Starter Motor 45/70",
+      "sourceUrl": "https://www.kingtechturbines.com/product/starter-motor-45-70/72",
+      "manufacturer": "KingTech",
+      "family": "accessory-maintenance-parts",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract maintenance-tool diagram; not a depiction of a specific supplier part. Distinguish this specific source reference with its kt-72 art index; reference Starter Motor 45/70 is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference Starter Motor 45/70 (kt-72); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech Starter Motor 45/70 (kt-72); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-72/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-72/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-72/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-72/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-73",
+      "sourceTitle": "Starter Motor for K60/85",
+      "sourceUrl": "https://www.kingtechturbines.com/product/starter-motor-for-k60-85/73",
+      "manufacturer": "KingTech",
+      "family": "accessory-maintenance-parts",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract maintenance-tool diagram; not a depiction of a specific supplier part. Distinguish this specific source reference with its kt-73 art index; reference Starter Motor for K60/85 is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference Starter Motor for K60/85 (kt-73); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech Starter Motor for K60/85 (kt-73); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-73/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-73/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-73/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-73/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-74",
+      "sourceTitle": "Start Motor K80/210",
+      "sourceUrl": "https://www.kingtechturbines.com/product/start-motor-k80-210/74",
+      "manufacturer": "KingTech",
+      "family": "accessory-maintenance-parts",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract maintenance-tool diagram; not a depiction of a specific supplier part. Distinguish this specific source reference with its kt-74 art index; reference Start Motor K80/210 is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference Start Motor K80/210 (kt-74); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech Start Motor K80/210 (kt-74); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-74/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-74/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-74/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-74/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-75",
+      "sourceTitle": "Starter Motor Case K45/70",
+      "sourceUrl": "https://www.kingtechturbines.com/product/starter-motor-case-k45-70/75",
+      "manufacturer": "KingTech",
+      "family": "accessory-maintenance-parts",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract maintenance-tool diagram; not a depiction of a specific supplier part. Distinguish this specific source reference with its kt-75 art index; reference Starter Motor Case K45/70 is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference Starter Motor Case K45/70 (kt-75); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech Starter Motor Case K45/70 (kt-75); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-75/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-75/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-75/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-75/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-76",
+      "sourceTitle": "Starter Motor Case K60/85",
+      "sourceUrl": "https://www.kingtechturbines.com/product/starter-motor-case-k60-85/76",
+      "manufacturer": "KingTech",
+      "family": "accessory-maintenance-parts",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract maintenance-tool diagram; not a depiction of a specific supplier part. Distinguish this specific source reference with its kt-76 art index; reference Starter Motor Case K60/85 is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference Starter Motor Case K60/85 (kt-76); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech Starter Motor Case K60/85 (kt-76); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-76/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-76/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-76/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-76/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-77",
+      "sourceTitle": "Starter Motor Case K80/210",
+      "sourceUrl": "https://www.kingtechturbines.com/product/starter-motor-case-k80-210/77",
+      "manufacturer": "KingTech",
+      "family": "accessory-maintenance-parts",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract maintenance-tool diagram; not a depiction of a specific supplier part. Distinguish this specific source reference with its kt-77 art index; reference Starter Motor Case K80/210 is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference Starter Motor Case K80/210 (kt-77); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech Starter Motor Case K80/210 (kt-77); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-77/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-77/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-77/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-77/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-78",
+      "sourceTitle": "Starter Motor Clutch",
+      "sourceUrl": "https://www.kingtechturbines.com/product/starter-motor-clutch/78",
+      "manufacturer": "KingTech",
+      "family": "accessory-maintenance-parts",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract maintenance-tool diagram; not a depiction of a specific supplier part. Distinguish this specific source reference with its kt-78 art index; reference Starter Motor Clutch is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference Starter Motor Clutch (kt-78); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech Starter Motor Clutch (kt-78); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-78/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-78/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-78/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-78/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-79",
+      "sourceTitle": "Starter Motor K260/320",
+      "sourceUrl": "https://www.kingtechturbines.com/product/starter-motor-k260-320/79",
+      "manufacturer": "KingTech",
+      "family": "accessory-maintenance-parts",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract maintenance-tool diagram; not a depiction of a specific supplier part. Distinguish this specific source reference with its kt-79 art index; reference Starter Motor K260/320 is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference Starter Motor K260/320 (kt-79); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech Starter Motor K260/320 (kt-79); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-79/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-79/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-79/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-79/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-80",
+      "sourceTitle": "Starter Motor Case K235/260/320",
+      "sourceUrl": "https://www.kingtechturbines.com/product/starter-motor-case-k235-260-320/80",
+      "manufacturer": "KingTech",
+      "family": "accessory-maintenance-parts",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract maintenance-tool diagram; not a depiction of a specific supplier part. Distinguish this specific source reference with its kt-80 art index; reference Starter Motor Case K235/260/320 is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference Starter Motor Case K235/260/320 (kt-80); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech Starter Motor Case K235/260/320 (kt-80); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-80/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-80/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-80/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-80/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-81",
+      "sourceTitle": "KingTech KP200 Pump",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp200-pump/81",
+      "manufacturer": "KingTech",
+      "family": "accessory-fuel-systems",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract fuel-transfer loop diagram; pipe routing, pump body and connections are illustrative only. Distinguish this specific source reference with its kt-81 art index; reference KingTech KP200 Pump is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference KingTech KP200 Pump (kt-81); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech KingTech KP200 Pump (kt-81); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-81/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-81/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-81/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-81/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-82",
+      "sourceTitle": "KingTech KP300 Pump",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp300-pump/82",
+      "manufacturer": "KingTech",
+      "family": "accessory-fuel-systems",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract fuel-transfer loop diagram; pipe routing, pump body and connections are illustrative only. Distinguish this specific source reference with its kt-82 art index; reference KingTech KP300 Pump is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference KingTech KP300 Pump (kt-82); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech KingTech KP300 Pump (kt-82); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-82/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-82/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-82/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-82/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-83",
+      "sourceTitle": "KingTech KP500 Pump",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp500-pump/83",
+      "manufacturer": "KingTech",
+      "family": "accessory-fuel-systems",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract fuel-transfer loop diagram; pipe routing, pump body and connections are illustrative only. Distinguish this specific source reference with its kt-83 art index; reference KingTech KP500 Pump is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference KingTech KP500 Pump (kt-83); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech KingTech KP500 Pump (kt-83); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-83/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-83/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-83/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-83/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-84",
+      "sourceTitle": "KingTech KP600 Pump",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp600-pump/84",
+      "manufacturer": "KingTech",
+      "family": "accessory-fuel-systems",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract fuel-transfer loop diagram; pipe routing, pump body and connections are illustrative only. Distinguish this specific source reference with its kt-84 art index; reference KingTech KP600 Pump is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference KingTech KP600 Pump (kt-84); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech KingTech KP600 Pump (kt-84); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-84/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-84/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-84/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-84/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-85",
+      "sourceTitle": "KingTech KP800 Pump",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp800-pump/85",
+      "manufacturer": "KingTech",
+      "family": "accessory-fuel-systems",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract fuel-transfer loop diagram; pipe routing, pump body and connections are illustrative only. Distinguish this specific source reference with its kt-85 art index; reference KingTech KP800 Pump is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference KingTech KP800 Pump (kt-85); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech KingTech KP800 Pump (kt-85); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-85/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-85/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-85/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-85/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-86",
+      "sourceTitle": "KingTech KP300V Pump",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp300v-pump/86",
+      "manufacturer": "KingTech",
+      "family": "accessory-fuel-systems",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract fuel-transfer loop diagram; pipe routing, pump body and connections are illustrative only. Distinguish this specific source reference with its kt-86 art index; reference KingTech KP300V Pump is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference KingTech KP300V Pump (kt-86); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech KingTech KP300V Pump (kt-86); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-86/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-86/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-86/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-86/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-87",
+      "sourceTitle": "KingTech KP500V",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp500v/87",
+      "manufacturer": "KingTech",
+      "family": "accessory-fuel-systems",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract fuel-transfer loop diagram; pipe routing, pump body and connections are illustrative only. Distinguish this specific source reference with its kt-87 art index; reference KingTech KP500V is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference KingTech KP500V (kt-87); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech KingTech KP500V (kt-87); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-87/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-87/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-87/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-87/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-88",
+      "sourceTitle": "KingTech KP600V Pump",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp600v-pump/88",
+      "manufacturer": "KingTech",
+      "family": "accessory-fuel-systems",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract fuel-transfer loop diagram; pipe routing, pump body and connections are illustrative only. Distinguish this specific source reference with its kt-88 art index; reference KingTech KP600V Pump is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference KingTech KP600V Pump (kt-88); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech KingTech KP600V Pump (kt-88); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-88/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-88/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-88/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-88/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-89",
+      "sourceTitle": "KingTech KP800V Pump",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp800v-pump/89",
+      "manufacturer": "KingTech",
+      "family": "accessory-fuel-systems",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract fuel-transfer loop diagram; pipe routing, pump body and connections are illustrative only. Distinguish this specific source reference with its kt-89 art index; reference KingTech KP800V Pump is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference KingTech KP800V Pump (kt-89); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech KingTech KP800V Pump (kt-89); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-89/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-89/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-89/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-89/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-90",
+      "sourceTitle": "KingTech KP1200V Pump",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp1200v-pump/90",
+      "manufacturer": "KingTech",
+      "family": "accessory-fuel-systems",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract fuel-transfer loop diagram; pipe routing, pump body and connections are illustrative only. Distinguish this specific source reference with its kt-90 art index; reference KingTech KP1200V Pump is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference KingTech KP1200V Pump (kt-90); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech KingTech KP1200V Pump (kt-90); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-90/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-90/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-90/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-90/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-91",
+      "sourceTitle": "KingTech KP200BL Pump",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp200bl-pump/91",
+      "manufacturer": "KingTech",
+      "family": "accessory-fuel-systems",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract fuel-transfer loop diagram; pipe routing, pump body and connections are illustrative only. Distinguish this specific source reference with its kt-91 art index; reference KingTech KP200BL Pump is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference KingTech KP200BL Pump (kt-91); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech KingTech KP200BL Pump (kt-91); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-91/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-91/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-91/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-91/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-92",
+      "sourceTitle": "KingTech KP300 BL Pump",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp300-bl-pump/92",
+      "manufacturer": "KingTech",
+      "family": "accessory-fuel-systems",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract fuel-transfer loop diagram; pipe routing, pump body and connections are illustrative only. Distinguish this specific source reference with its kt-92 art index; reference KingTech KP300 BL Pump is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference KingTech KP300 BL Pump (kt-92); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech KingTech KP300 BL Pump (kt-92); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-92/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-92/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-92/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-92/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-93",
+      "sourceTitle": "KingTech KP500BL Pump",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp500bl-pump/93",
+      "manufacturer": "KingTech",
+      "family": "accessory-fuel-systems",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract fuel-transfer loop diagram; pipe routing, pump body and connections are illustrative only. Distinguish this specific source reference with its kt-93 art index; reference KingTech KP500BL Pump is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference KingTech KP500BL Pump (kt-93); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech KingTech KP500BL Pump (kt-93); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-93/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-93/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-93/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-93/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-94",
+      "sourceTitle": "KingTech KP600BL Pump",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp600bl-pump/94",
+      "manufacturer": "KingTech",
+      "family": "accessory-fuel-systems",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract fuel-transfer loop diagram; pipe routing, pump body and connections are illustrative only. Distinguish this specific source reference with its kt-94 art index; reference KingTech KP600BL Pump is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference KingTech KP600BL Pump (kt-94); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech KingTech KP600BL Pump (kt-94); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-94/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-94/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-94/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-94/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-95",
+      "sourceTitle": "KingTech KP800BL Pump",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp800bl-pump/95",
+      "manufacturer": "KingTech",
+      "family": "accessory-fuel-systems",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract fuel-transfer loop diagram; pipe routing, pump body and connections are illustrative only. Distinguish this specific source reference with its kt-95 art index; reference KingTech KP800BL Pump is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference KingTech KP800BL Pump (kt-95); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech KingTech KP800BL Pump (kt-95); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-95/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-95/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-95/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-95/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-96",
+      "sourceTitle": "KingTech KP1000BL",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp1000bl/96",
+      "manufacturer": "KingTech",
+      "family": "accessory-fuel-systems",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract fuel-transfer loop diagram; pipe routing, pump body and connections are illustrative only. Distinguish this specific source reference with its kt-96 art index; reference KingTech KP1000BL is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference KingTech KP1000BL (kt-96); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech KingTech KP1000BL (kt-96); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-96/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-96/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-96/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-96/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-97",
+      "sourceTitle": "KingTech KP1200BL Pump",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp1200bl-pump/97",
+      "manufacturer": "KingTech",
+      "family": "accessory-fuel-systems",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract fuel-transfer loop diagram; pipe routing, pump body and connections are illustrative only. Distinguish this specific source reference with its kt-97 art index; reference KingTech KP1200BL Pump is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference KingTech KP1200BL Pump (kt-97); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech KingTech KP1200BL Pump (kt-97); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-97/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-97/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-97/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-97/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-98",
+      "sourceTitle": "KingTech KP1250BL Pump",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp1250bl-pump/98",
+      "manufacturer": "KingTech",
+      "family": "accessory-fuel-systems",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract fuel-transfer loop diagram; pipe routing, pump body and connections are illustrative only. Distinguish this specific source reference with its kt-98 art index; reference KingTech KP1250BL Pump is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference KingTech KP1250BL Pump (kt-98); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech KingTech KP1250BL Pump (kt-98); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-98/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-98/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-98/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-98/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-99",
+      "sourceTitle": "KP Pump Replacement Wire/Valve Set",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kp-pump-replacement-wire-valve-set/99",
+      "manufacturer": "KingTech",
+      "family": "accessory-fuel-systems",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract fuel-transfer loop diagram; pipe routing, pump body and connections are illustrative only. Distinguish this specific source reference with its kt-99 art index; reference KP Pump Replacement Wire/Valve Set is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference KP Pump Replacement Wire/Valve Set (kt-99); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech KP Pump Replacement Wire/Valve Set (kt-99); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-99/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-99/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-99/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-99/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-100",
+      "sourceTitle": "Warranty Transfer",
+      "sourceUrl": "https://www.kingtechturbines.com/product/warranty-transfer/100",
+      "manufacturer": "KingTech",
+      "family": "service",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Original document/checkmark diagram for external supplier service reference; no BODICH guarantee, coverage, or certificate implied. Distinguish this specific source reference with its kt-100 art index; reference Warranty Transfer is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference Warranty Transfer (kt-100); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech Warranty Transfer (kt-100); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-100/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-100/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-100/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-100/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-103",
+      "sourceTitle": "TP-Propeller Spacer45",
+      "sourceUrl": "https://www.kingtechturbines.com/product/tp-propeller-spacer45/103",
+      "manufacturer": "KingTech",
+      "family": "accessory-mounting-hardware",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract mounting-bracket diagram; hole placement and dimensions are invented and not a fitment guide. Distinguish this specific source reference with its kt-103 art index; reference TP-Propeller Spacer45 is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference TP-Propeller Spacer45 (kt-103); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech TP-Propeller Spacer45 (kt-103); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-103/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-103/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-103/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-103/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-104",
+      "sourceTitle": "Propeller Bolt for K45TP",
+      "sourceUrl": "https://www.kingtechturbines.com/product/propeller-bolt-for-k45tp/104",
+      "manufacturer": "KingTech",
+      "family": "accessory-mounting-hardware",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract mounting-bracket diagram; hole placement and dimensions are invented and not a fitment guide. Distinguish this specific source reference with its kt-104 art index; reference Propeller Bolt for K45TP is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference Propeller Bolt for K45TP (kt-104); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech Propeller Bolt for K45TP (kt-104); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-104/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-104/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-104/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-104/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-105",
+      "sourceTitle": "TP-Propeller Spacer60/100",
+      "sourceUrl": "https://www.kingtechturbines.com/product/tp-propeller-spacer60-100/105",
+      "manufacturer": "KingTech",
+      "family": "accessory-mounting-hardware",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract mounting-bracket diagram; hole placement and dimensions are invented and not a fitment guide. Distinguish this specific source reference with its kt-105 art index; reference TP-Propeller Spacer60/100 is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference TP-Propeller Spacer60/100 (kt-105); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech TP-Propeller Spacer60/100 (kt-105); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-105/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-105/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-105/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-105/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-106",
+      "sourceTitle": "TP-Bolt75L60/100",
+      "sourceUrl": "https://www.kingtechturbines.com/product/tp-bolt75l60-100/106",
+      "manufacturer": "KingTech",
+      "family": "accessory-mounting-hardware",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract mounting-bracket diagram; hole placement and dimensions are invented and not a fitment guide. Distinguish this specific source reference with its kt-106 art index; reference TP-Bolt75L60/100 is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference TP-Bolt75L60/100 (kt-106); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech TP-Bolt75L60/100 (kt-106); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-106/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-106/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-106/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-106/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-107",
+      "sourceTitle": "Fuel Solenoid Valve",
+      "sourceUrl": "https://www.kingtechturbines.com/product/fuel-solenoid-valve/107",
+      "manufacturer": "KingTech",
+      "family": "accessory-fuel-systems",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract fuel-transfer loop diagram; pipe routing, pump body and connections are illustrative only. Distinguish this specific source reference with its kt-107 art index; reference Fuel Solenoid Valve is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference Fuel Solenoid Valve (kt-107); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech Fuel Solenoid Valve (kt-107); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-107/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-107/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-107/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-107/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-108",
+      "sourceTitle": "Propane Solenoid Valve",
+      "sourceUrl": "https://www.kingtechturbines.com/product/propane-solenoid-valve/108",
+      "manufacturer": "KingTech",
+      "family": "accessory-fuel-systems",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract fuel-transfer loop diagram; pipe routing, pump body and connections are illustrative only. Distinguish this specific source reference with its kt-108 art index; reference Propane Solenoid Valve is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference Propane Solenoid Valve (kt-108); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech Propane Solenoid Valve (kt-108); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-108/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-108/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-108/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-108/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-112",
+      "sourceTitle": "Fuel Tubing 4mm",
+      "sourceUrl": "https://www.kingtechturbines.com/product/fuel-tubing-4mm/112",
+      "manufacturer": "KingTech",
+      "family": "accessory-fuel-systems",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract fuel-transfer loop diagram; pipe routing, pump body and connections are illustrative only. Distinguish this specific source reference with its kt-112 art index; reference Fuel Tubing 4mm is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference Fuel Tubing 4mm (kt-112); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech Fuel Tubing 4mm (kt-112); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-112/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-112/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-112/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-112/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-113",
+      "sourceTitle": "Fuel Tubing 6mm",
+      "sourceUrl": "https://www.kingtechturbines.com/product/fuel-tubing-6mm/113",
+      "manufacturer": "KingTech",
+      "family": "accessory-fuel-systems",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract fuel-transfer loop diagram; pipe routing, pump body and connections are illustrative only. Distinguish this specific source reference with its kt-113 art index; reference Fuel Tubing 6mm is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference Fuel Tubing 6mm (kt-113); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech Fuel Tubing 6mm (kt-113); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-113/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-113/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-113/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-113/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-114",
+      "sourceTitle": "TEFLON Tubing 4mm",
+      "sourceUrl": "https://www.kingtechturbines.com/product/teflon-tubing-4mm/114",
+      "manufacturer": "KingTech",
+      "family": "accessory-fuel-systems",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract fuel-transfer loop diagram; pipe routing, pump body and connections are illustrative only. Distinguish this specific source reference with its kt-114 art index; reference TEFLON Tubing 4mm is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference TEFLON Tubing 4mm (kt-114); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech TEFLON Tubing 4mm (kt-114); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-114/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-114/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-114/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-114/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-115",
+      "sourceTitle": "UAT 100",
+      "sourceUrl": "https://www.kingtechturbines.com/product/uat-100/115",
+      "manufacturer": "KingTech",
+      "family": "accessory-fuel-systems",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract fuel-transfer loop diagram; pipe routing, pump body and connections are illustrative only. Distinguish this specific source reference with its kt-115 art index; reference UAT 100 is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference UAT 100 (kt-115); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech UAT 100 (kt-115); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-115/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-115/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-115/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-115/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-116",
+      "sourceTitle": "UAT 150",
+      "sourceUrl": "https://www.kingtechturbines.com/product/uat-150/116",
+      "manufacturer": "KingTech",
+      "family": "accessory-fuel-systems",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract fuel-transfer loop diagram; pipe routing, pump body and connections are illustrative only. Distinguish this specific source reference with its kt-116 art index; reference UAT 150 is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference UAT 150 (kt-116); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech UAT 150 (kt-116); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-116/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-116/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-116/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-116/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-117",
+      "sourceTitle": "UAT 250",
+      "sourceUrl": "https://www.kingtechturbines.com/product/uat-250/117",
+      "manufacturer": "KingTech",
+      "family": "accessory-fuel-systems",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract fuel-transfer loop diagram; pipe routing, pump body and connections are illustrative only. Distinguish this specific source reference with its kt-117 art index; reference UAT 250 is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference UAT 250 (kt-117); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech UAT 250 (kt-117); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-117/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-117/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-117/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-117/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-120",
+      "sourceTitle": "KingTech K-86G4+ DISCONTINUED",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-86g4-discontinued/120",
+      "manufacturer": "KingTech",
+      "family": "jet-g4",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Original generic axial turbine diagram with a recessed inlet, abstract radial blades, and dark warm-metal engine volume; do not imply K- or G4 dimensional fidelity. Distinguish this specific source reference with its kt-120 art index; reference KingTech K-86G4+ DISCONTINUED is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference KingTech K-86G4+ DISCONTINUED (kt-120); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech KingTech K-86G4+ DISCONTINUED (kt-120); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-120/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-120/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-120/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-120/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-121",
+      "sourceTitle": "Stainless Steel Bracket for K140/170/180/210",
+      "sourceUrl": "https://www.kingtechturbines.com/product/stainless-steel-bracket-for-k140-170-180-210/121",
+      "manufacturer": "KingTech",
+      "family": "accessory-mounting-hardware",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract mounting-bracket diagram; hole placement and dimensions are invented and not a fitment guide. Distinguish this specific source reference with its kt-121 art index; reference Stainless Steel Bracket for K140/170/180/210 is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference Stainless Steel Bracket for K140/170/180/210 (kt-121); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech Stainless Steel Bracket for K140/170/180/210 (kt-121); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-121/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-121/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-121/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-121/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-122",
+      "sourceTitle": "KingTech Red Dyed Special Blend Oil, 2 Gallons",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-red-dyed-special-blend-oil-2-gallons/122",
+      "manufacturer": "KingTech",
+      "family": "oil",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Original generic turbine-oil container silhouette with abstract droplet graphic; package shape and quantity are unknown. Distinguish this specific source reference with its kt-122 art index; reference KingTech Red Dyed Special Blend Oil, 2 Gallons is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference KingTech Red Dyed Special Blend Oil, 2 Gallons (kt-122); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech KingTech Red Dyed Special Blend Oil, 2 Gallons (kt-122); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-122/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-122/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-122/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-122/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-124",
+      "sourceTitle": "Kero Plug for K30/45 G3 and G4",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kero-plug-for-k30-45-g3-and-g4/124",
+      "manufacturer": "KingTech",
+      "family": "accessory-maintenance-parts",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract maintenance-tool diagram; not a depiction of a specific supplier part. Distinguish this specific source reference with its kt-124 art index; reference Kero Plug for K30/45 G3 and G4 is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference Kero Plug for K30/45 G3 and G4 (kt-124); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech Kero Plug for K30/45 G3 and G4 (kt-124); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-124/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-124/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-124/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-124/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-125",
+      "sourceTitle": "Starter Motor Clutch O-Rings",
+      "sourceUrl": "https://www.kingtechturbines.com/product/starter-motor-clutch-o-rings/125",
+      "manufacturer": "KingTech",
+      "family": "accessory-maintenance-parts",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract maintenance-tool diagram; not a depiction of a specific supplier part. Distinguish this specific source reference with its kt-125 art index; reference Starter Motor Clutch O-Rings is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference Starter Motor Clutch O-Rings (kt-125); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech Starter Motor Clutch O-Rings (kt-125); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-125/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-125/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-125/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-125/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-126",
+      "sourceTitle": "KingTech K-86G5 DISCONTINUED",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-86g5-discontinued/126",
+      "manufacturer": "KingTech",
+      "family": "jet-g5",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Original generic axial turbine diagram with a recessed inlet, abstract radial blades, and additional radial detail; no real G5 assembly is represented. Distinguish this specific source reference with its kt-126 art index; reference KingTech K-86G5 DISCONTINUED is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference KingTech K-86G5 DISCONTINUED (kt-126); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech KingTech K-86G5 DISCONTINUED (kt-126); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-126/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-126/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-126/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-126/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-127",
+      "sourceTitle": "KingTech K-102G5",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-102g5/127",
+      "manufacturer": "KingTech",
+      "family": "jet-g5",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Original generic axial turbine diagram with a recessed inlet, abstract radial blades, and additional radial detail; no real G5 assembly is represented. Distinguish this specific source reference with its kt-127 art index; reference KingTech K-102G5 is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference KingTech K-102G5 (kt-127); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech KingTech K-102G5 (kt-127); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-127/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-127/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-127/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-127/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-128",
+      "sourceTitle": "KingTech K-130G5",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-130g5/128",
+      "manufacturer": "KingTech",
+      "family": "jet-g5",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Original generic axial turbine diagram with a recessed inlet, abstract radial blades, and additional radial detail; no real G5 assembly is represented. Distinguish this specific source reference with its kt-128 art index; reference KingTech K-130G5 is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference KingTech K-130G5 (kt-128); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech KingTech K-130G5 (kt-128); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-128/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-128/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-128/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-128/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-129",
+      "sourceTitle": "KingTech K-142G5",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-142g5/129",
+      "manufacturer": "KingTech",
+      "family": "jet-g5",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Original generic axial turbine diagram with a recessed inlet, abstract radial blades, and additional radial detail; no real G5 assembly is represented. Distinguish this specific source reference with its kt-129 art index; reference KingTech K-142G5 is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference KingTech K-142G5 (kt-129); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech KingTech K-142G5 (kt-129); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-129/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-129/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-129/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-129/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-130",
+      "sourceTitle": "KingTech K-160G5",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-160g5/130",
+      "manufacturer": "KingTech",
+      "family": "jet-g5",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Original generic axial turbine diagram with a recessed inlet, abstract radial blades, and additional radial detail; no real G5 assembly is represented. Distinguish this specific source reference with its kt-130 art index; reference KingTech K-160G5 is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference KingTech K-160G5 (kt-130); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech KingTech K-160G5 (kt-130); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-130/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-130/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-130/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-130/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-131",
+      "sourceTitle": "KingTech K-180G5",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-180g5/131",
+      "manufacturer": "KingTech",
+      "family": "jet-g5",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Original generic axial turbine diagram with a recessed inlet, abstract radial blades, and additional radial detail; no real G5 assembly is represented. Distinguish this specific source reference with its kt-131 art index; reference KingTech K-180G5 is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference KingTech K-180G5 (kt-131); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech KingTech K-180G5 (kt-131); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-131/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-131/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-131/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-131/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-132",
+      "sourceTitle": "KingTech K-210G5",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-210g5/132",
+      "manufacturer": "KingTech",
+      "family": "jet-g5",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Original generic axial turbine diagram with a recessed inlet, abstract radial blades, and additional radial detail; no real G5 assembly is represented. Distinguish this specific source reference with its kt-132 art index; reference KingTech K-210G5 is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference KingTech K-210G5 (kt-132); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech KingTech K-210G5 (kt-132); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-132/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-132/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-132/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-132/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-133",
+      "sourceTitle": "KingTech K-240G5",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-240g5/133",
+      "manufacturer": "KingTech",
+      "family": "jet-g5",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Original generic axial turbine diagram with a recessed inlet, abstract radial blades, and additional radial detail; no real G5 assembly is represented. Distinguish this specific source reference with its kt-133 art index; reference KingTech K-240G5 is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference KingTech K-240G5 (kt-133); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech KingTech K-240G5 (kt-133); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-133/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-133/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-133/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-133/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-134",
+      "sourceTitle": "KingTech K-260G5",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-260g5/134",
+      "manufacturer": "KingTech",
+      "family": "jet-g5",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Original generic axial turbine diagram with a recessed inlet, abstract radial blades, and additional radial detail; no real G5 assembly is represented. Distinguish this specific source reference with its kt-134 art index; reference KingTech K-260G5 is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference KingTech K-260G5 (kt-134); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech KingTech K-260G5 (kt-134); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-134/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-134/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-134/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-134/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-135",
+      "sourceTitle": "KingTech K-320G5",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-320g5/135",
+      "manufacturer": "KingTech",
+      "family": "jet-g5",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Original generic axial turbine diagram with a recessed inlet, abstract radial blades, and additional radial detail; no real G5 assembly is represented. Distinguish this specific source reference with its kt-135 art index; reference KingTech K-320G5 is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference KingTech K-320G5 (kt-135); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech KingTech K-320G5 (kt-135); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-135/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-135/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-135/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-135/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-136",
+      "sourceTitle": "KingTech K-450G5 (Industrial Purchases Only, please inquire)",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-450g5-industrial-purchases-only-please-inquire-/136",
+      "manufacturer": "KingTech",
+      "family": "jet-g5",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Original generic axial turbine diagram with a recessed inlet, abstract radial blades, and additional radial detail; no real G5 assembly is represented. Distinguish this specific source reference with its kt-136 art index; reference KingTech K-450G5 (Industrial Purchases Only, please inquire) is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference KingTech K-450G5 (Industrial Purchases Only, please inquire) (kt-136); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech KingTech K-450G5 (Industrial Purchases Only, please inquire) (kt-136); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-136/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-136/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-136/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-136/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-137",
+      "sourceTitle": "FOD Screen 320",
+      "sourceUrl": "https://www.kingtechturbines.com/product/fod-screen-320/137",
+      "manufacturer": "KingTech",
+      "family": "accessory-turbine-protection",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract protective-shield and mesh diagram; not a real cover, protective rating or fitment. Distinguish this specific source reference with its kt-137 art index; reference FOD Screen 320 is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference FOD Screen 320 (kt-137); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech FOD Screen 320 (kt-137); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-137/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-137/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-137/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-137/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-138",
+      "sourceTitle": "Temp Probe - K30/45G",
+      "sourceUrl": "https://www.kingtechturbines.com/product/temp-probe-k30-45g/138",
+      "manufacturer": "KingTech",
+      "family": "accessory-maintenance-parts",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract maintenance-tool diagram; not a depiction of a specific supplier part. Distinguish this specific source reference with its kt-138 art index; reference Temp Probe - K30/45G is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference Temp Probe - K30/45G (kt-138); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech Temp Probe - K30/45G (kt-138); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-138/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-138/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-138/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-138/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-139",
+      "sourceTitle": "KingTech KP300DP Pump",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp300dp-pump/139",
+      "manufacturer": "KingTech",
+      "family": "accessory-fuel-systems",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract fuel-transfer loop diagram; pipe routing, pump body and connections are illustrative only. Distinguish this specific source reference with its kt-139 art index; reference KingTech KP300DP Pump is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference KingTech KP300DP Pump (kt-139); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech KingTech KP300DP Pump (kt-139); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-139/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-139/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-139/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-139/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-140",
+      "sourceTitle": "KingTech KP500DP Pump",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp500dp-pump/140",
+      "manufacturer": "KingTech",
+      "family": "accessory-fuel-systems",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract fuel-transfer loop diagram; pipe routing, pump body and connections are illustrative only. Distinguish this specific source reference with its kt-140 art index; reference KingTech KP500DP Pump is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference KingTech KP500DP Pump (kt-140); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech KingTech KP500DP Pump (kt-140); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-140/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-140/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-140/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-140/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-141",
+      "sourceTitle": "KingTech KP600DP Pump",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp600dp-pump/141",
+      "manufacturer": "KingTech",
+      "family": "accessory-fuel-systems",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract fuel-transfer loop diagram; pipe routing, pump body and connections are illustrative only. Distinguish this specific source reference with its kt-141 art index; reference KingTech KP600DP Pump is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference KingTech KP600DP Pump (kt-141); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech KingTech KP600DP Pump (kt-141); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-141/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-141/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-141/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-141/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-142",
+      "sourceTitle": "KingTech KP800DP Pump",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp800dp-pump/142",
+      "manufacturer": "KingTech",
+      "family": "accessory-fuel-systems",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract fuel-transfer loop diagram; pipe routing, pump body and connections are illustrative only. Distinguish this specific source reference with its kt-142 art index; reference KingTech KP800DP Pump is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference KingTech KP800DP Pump (kt-142); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech KingTech KP800DP Pump (kt-142); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-142/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-142/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-142/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-142/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-143",
+      "sourceTitle": "KingTech KP1000DP Pump",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp1000dp-pump/143",
+      "manufacturer": "KingTech",
+      "family": "accessory-fuel-systems",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract fuel-transfer loop diagram; pipe routing, pump body and connections are illustrative only. Distinguish this specific source reference with its kt-143 art index; reference KingTech KP1000DP Pump is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference KingTech KP1000DP Pump (kt-143); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech KingTech KP1000DP Pump (kt-143); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-143/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-143/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-143/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-143/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-144",
+      "sourceTitle": "KingTech KP1200DP Pump",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp1200dp-pump/144",
+      "manufacturer": "KingTech",
+      "family": "accessory-fuel-systems",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract fuel-transfer loop diagram; pipe routing, pump body and connections are illustrative only. Distinguish this specific source reference with its kt-144 art index; reference KingTech KP1200DP Pump is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference KingTech KP1200DP Pump (kt-144); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech KingTech KP1200DP Pump (kt-144); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-144/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-144/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-144/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-144/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-145",
+      "sourceTitle": "KingTech KP1250DP Pump",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp1250dp-pump/145",
+      "manufacturer": "KingTech",
+      "family": "accessory-fuel-systems",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract fuel-transfer loop diagram; pipe routing, pump body and connections are illustrative only. Distinguish this specific source reference with its kt-145 art index; reference KingTech KP1250DP Pump is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference KingTech KP1250DP Pump (kt-145); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech KingTech KP1250DP Pump (kt-145); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-145/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-145/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-145/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-145/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-146",
+      "sourceTitle": "KingTech DRM G5",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-drm-g5/146",
+      "manufacturer": "KingTech",
+      "family": "accessory-ecu-controls",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract electronics-control-board diagram; not a specific ECU or product layout. Distinguish this specific source reference with its kt-146 art index; reference KingTech DRM G5 is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference KingTech DRM G5 (kt-146); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech KingTech DRM G5 (kt-146); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-146/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-146/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-146/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-146/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-148",
+      "sourceTitle": "Stainless Steel Bracket for K65",
+      "sourceUrl": "https://www.kingtechturbines.com/product/stainless-steel-bracket-for-k65/148",
+      "manufacturer": "KingTech",
+      "family": "accessory-mounting-hardware",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract mounting-bracket diagram; hole placement and dimensions are invented and not a fitment guide. Distinguish this specific source reference with its kt-148 art index; reference Stainless Steel Bracket for K65 is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference Stainless Steel Bracket for K65 (kt-148); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech Stainless Steel Bracket for K65 (kt-148); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-148/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-148/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-148/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-148/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-149",
+      "sourceTitle": "Brushless Starter Motor Assembly",
+      "sourceUrl": "https://www.kingtechturbines.com/product/brushless-starter-motor-assembly/149",
+      "manufacturer": "KingTech",
+      "family": "accessory-maintenance-parts",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract maintenance-tool diagram; not a depiction of a specific supplier part. Distinguish this specific source reference with its kt-149 art index; reference Brushless Starter Motor Assembly is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference Brushless Starter Motor Assembly (kt-149); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech Brushless Starter Motor Assembly (kt-149); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-149/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-149/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-149/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-149/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-151",
+      "sourceTitle": "Fuel Tubing 8mm",
+      "sourceUrl": "https://www.kingtechturbines.com/product/fuel-tubing-8mm/151",
+      "manufacturer": "KingTech",
+      "family": "accessory-fuel-systems",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract fuel-transfer loop diagram; pipe routing, pump body and connections are illustrative only. Distinguish this specific source reference with its kt-151 art index; reference Fuel Tubing 8mm is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference Fuel Tubing 8mm (kt-151); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech Fuel Tubing 8mm (kt-151); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-151/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-151/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-151/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-151/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-sq-B6UE3Q5GGAWUC57XIETALASF",
+      "sourceTitle": "PISCO One-Way Valve",
+      "sourceUrl": "https://www.kingtechturbines.com/product/pisco-one-way-valve/B6UE3Q5GGAWUC57XIETALASF",
+      "manufacturer": "KingTech",
+      "family": "accessory-fuel-systems",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract fuel-transfer loop diagram; pipe routing, pump body and connections are illustrative only. Distinguish this specific source reference with its kt-sq-B6UE3Q5GGAWUC57XIETALASF art index; reference PISCO One-Way Valve is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference PISCO One-Way Valve (kt-sq-B6UE3Q5GGAWUC57XIETALASF); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech PISCO One-Way Valve (kt-sq-B6UE3Q5GGAWUC57XIETALASF); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-sq-B6UE3Q5GGAWUC57XIETALASF/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-sq-B6UE3Q5GGAWUC57XIETALASF/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-sq-B6UE3Q5GGAWUC57XIETALASF/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-sq-B6UE3Q5GGAWUC57XIETALASF/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-sq-ECX6KXRCBWRIZ2YGLCIVQAWT",
+      "sourceTitle": "Stainless Steel Bracket for K130",
+      "sourceUrl": "https://www.kingtechturbines.com/product/stainless-steel-bracket-for-k130/ECX6KXRCBWRIZ2YGLCIVQAWT",
+      "manufacturer": "KingTech",
+      "family": "accessory-mounting-hardware",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract mounting-bracket diagram; hole placement and dimensions are invented and not a fitment guide. Distinguish this specific source reference with its kt-sq-ECX6KXRCBWRIZ2YGLCIVQAWT art index; reference Stainless Steel Bracket for K130 is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference Stainless Steel Bracket for K130 (kt-sq-ECX6KXRCBWRIZ2YGLCIVQAWT); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech Stainless Steel Bracket for K130 (kt-sq-ECX6KXRCBWRIZ2YGLCIVQAWT); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-sq-ECX6KXRCBWRIZ2YGLCIVQAWT/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-sq-ECX6KXRCBWRIZ2YGLCIVQAWT/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-sq-ECX6KXRCBWRIZ2YGLCIVQAWT/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-sq-ECX6KXRCBWRIZ2YGLCIVQAWT/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-sq-LRO5A4V3ZOBXOVEKU4F3PPC3",
+      "sourceTitle": "KingTech KP500V+",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp500v-/LRO5A4V3ZOBXOVEKU4F3PPC3",
+      "manufacturer": "KingTech",
+      "family": "accessory-fuel-systems",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract fuel-transfer loop diagram; pipe routing, pump body and connections are illustrative only. Distinguish this specific source reference with its kt-sq-LRO5A4V3ZOBXOVEKU4F3PPC3 art index; reference KingTech KP500V+ is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference KingTech KP500V+ (kt-sq-LRO5A4V3ZOBXOVEKU4F3PPC3); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech KingTech KP500V+ (kt-sq-LRO5A4V3ZOBXOVEKU4F3PPC3); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-sq-LRO5A4V3ZOBXOVEKU4F3PPC3/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-sq-LRO5A4V3ZOBXOVEKU4F3PPC3/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-sq-LRO5A4V3ZOBXOVEKU4F3PPC3/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-sq-LRO5A4V3ZOBXOVEKU4F3PPC3/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-sq-PYRA6D5K64KITYJCJGXLZCQU",
+      "sourceTitle": "Engine Bracket K450",
+      "sourceUrl": "https://www.kingtechturbines.com/product/engine-bracket-k450/PYRA6D5K64KITYJCJGXLZCQU",
+      "manufacturer": "KingTech",
+      "family": "accessory-mounting-hardware",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract mounting-bracket diagram; hole placement and dimensions are invented and not a fitment guide. Distinguish this specific source reference with its kt-sq-PYRA6D5K64KITYJCJGXLZCQU art index; reference Engine Bracket K450 is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference Engine Bracket K450 (kt-sq-PYRA6D5K64KITYJCJGXLZCQU); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech Engine Bracket K450 (kt-sq-PYRA6D5K64KITYJCJGXLZCQU); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-sq-PYRA6D5K64KITYJCJGXLZCQU/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-sq-PYRA6D5K64KITYJCJGXLZCQU/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-sq-PYRA6D5K64KITYJCJGXLZCQU/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-sq-PYRA6D5K64KITYJCJGXLZCQU/concept-600.png"
+      }
+    },
+    {
+      "sourceId": "kt-sq-VCEYUYCU5FJF2GZQMXDNZXJO",
+      "sourceTitle": "Stainless Steel Bracket for K102",
+      "sourceUrl": "https://www.kingtechturbines.com/product/stainless-steel-bracket-for-k102/VCEYUYCU5FJF2GZQMXDNZXJO",
+      "manufacturer": "KingTech",
+      "family": "accessory-mounting-hardware",
+      "kind": "original_diagram",
+      "status": "documented_illustrative_fallback",
+      "approved": false,
+      "rights": "pending",
+      "isProductPhoto": false,
+      "brief": "Abstract mounting-bracket diagram; hole placement and dimensions are invented and not a fitment guide. Distinguish this specific source reference with its kt-sq-VCEYUYCU5FJF2GZQMXDNZXJO art index; reference Stainless Steel Bracket for K102 is external research, not a BODICH-made item.",
+      "alt": {
+        "en": "Illustrative BODICH category diagram for external KingTech reference Stainless Steel Bracket for K102 (kt-sq-VCEYUYCU5FJF2GZQMXDNZXJO); not an actual product photograph or verified model shape.",
+        "ro": "Diagramă ilustrativă BODICH pentru referința externă KingTech Stainless Steel Bracket for K102 (kt-sq-VCEYUYCU5FJF2GZQMXDNZXJO); nu este o imagine a produsului real sau o reprezentare tehnică verificată."
+      },
+      "provenance": "scripts/generate-catalog-art.mjs",
+      "assets": {
+        "webp360": "docs/catalog/draft-assets/kt-sq-VCEYUYCU5FJF2GZQMXDNZXJO/concept-360.webp",
+        "webp600": "docs/catalog/draft-assets/kt-sq-VCEYUYCU5FJF2GZQMXDNZXJO/concept-600.webp",
+        "webp1200": "docs/catalog/draft-assets/kt-sq-VCEYUYCU5FJF2GZQMXDNZXJO/concept-1200.webp",
+        "png600": "docs/catalog/draft-assets/kt-sq-VCEYUYCU5FJF2GZQMXDNZXJO/concept-600.png"
+      }
+    }
+  ]
+}
