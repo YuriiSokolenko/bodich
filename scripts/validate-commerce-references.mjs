@@ -172,55 +172,157 @@ if (drafts) {
   problems.push(...commerceProblems(source, drafts));
 }
 if (process.argv.includes('--self-test') && drafts) {
-  const reject = (description, values, text) => {
-    if (!commerceProblems(...values).some((error) => error.toLowerCase().includes(text.toLowerCase())))
-      problems.push('Negative fixture accepted: ' + description);
+  // Pin ONE exact regression diagnostic per mutation. Broad substring checks
+  // can pass when an unrelated guard happens to fail for the same mutation.
+  const reject = (description, values, expected) => {
+    const actual = commerceProblems(...values);
+    if (!actual.includes(expected))
+      problems.push('Negative fixture accepted: ' + description +
+        ' (expected exact error: ' + expected + '; got: ' + JSON.stringify(actual) + ')');
   };
   const warranty = drafts.find((d) => d.sourceId === WARRANTY_ID);
   const replaceWarranty = (change) => drafts.map((d) =>
     d.sourceId === WARRANTY_ID ? change(structuredClone(d)) : d);
-  reject('warranty offer enabled',
-    [source, replaceWarranty((d) => { d.warranty.legalApproval = 'approved'; return d; })],
-    'metadata');
-  reject('warranty changed into engine',
-    [source, replaceWarranty((d) => { d.itemType = 'turbojet'; return d; })],
-    'service');
-  reject('missing Romanian disclaimer',
-    [source, replaceWarranty((d) => { d.copy.ro.description = 'Serviciu de la KingTech, acum disponibil pentru achiziție fără condiții.'; return d; })],
-    'disclaimer');
-  reject('gift checkout exposed',
-    [source, drafts, [{ ...externalReferenceServices[0], checkoutUrl: GIFT_CHECKOUT }]],
-    'digital gift-card');
+  const changedWarranty = (change) => [source, replaceWarranty(change)];
+  const originalGift = externalReferenceServices[0];
+  const changedGift = (change) => {
+    const gift = structuredClone(originalGift);
+    change(gift);
+    return [source, drafts, [gift]];
+  };
+  const removedExclusion = (id) => {
+    const copy = structuredClone(source);
+    copy.exclusions = copy.exclusions.filter((entry) => entry.sectionId !== id);
+    return [copy, drafts];
+  };
+
+  reject('warranty approval enabled',
+    changedWarranty((d) => { d.warranty.legalApproval = 'approved'; return d; }),
+    'Warranty source-brand/legal reference metadata is missing or changed');
+  reject('warranty transformed into engine',
+    changedWarranty((d) => { d.itemType = 'turbojet'; return d; }),
+    'Warranty Transfer must stay one KingTech service, not a turbine');
+  reject('warranty included physical specifications',
+    changedWarranty((d) => { d.specs = [{ kind: 'mass', value: 1, unit: 'kg' }]; return d; }),
+    'Warranty reference was accidentally made commercial or physical');
+  reject('missing warranty Romanian disclaimer',
+    changedWarranty((d) => {
+      d.copy.ro.description = 'Serviciul extern KingTech este disponibil pentru achiziționare imediată.';
+      return d;
+    }),
+    'Warranty EN/RO information-only disclaimer or copy missing');
+  for (const property of ['priceUsd', 'amount', 'cost', 'sku', 'coupon', 'checkoutUrl']) {
+    reject('warranty unknown commerce property: ' + property,
+      changedWarranty((d) => { d[property] = '100'; return d; }),
+      'Warranty draft contains unsupported commerce fields');
+    reject('gift unknown commerce property: ' + property,
+      changedGift((d) => { d[property] = '100'; }),
+      'Gift Card contains unsupported commerce fields or external checkout links');
+  }
+  reject('warranty metadata injected price',
+    changedWarranty((d) => { d.warranty.priceUsd = 100; return d; }),
+    'Warranty draft contains unsupported commerce fields');
+
+  for (const value of ['2026-02-30', '2099-01-01', 'not-a-date']) {
+    reject('invalid/future warranty review date ' + value,
+      changedWarranty((d) => { d.warranty.reviewedOn = value; return d; }),
+      'Warranty source-brand/legal reference metadata is missing or changed');
+  }
+  if (commerceProblems(...changedWarranty((d) => {
+    d.warranty.reviewedOn = '2026-10-24';
+    return d;
+  })).length)
+    problems.push('Legitimate review date update was incorrectly rejected');
+
+  reject('warranty source URL rewritten',
+    changedWarranty((d) => { d.source.url = HOME_URL; return d; }),
+    'Source provenance or historical status was rewritten: ' + WARRANTY_ID);
+  reject('warranty supplier title rewritten',
+    changedWarranty((d) => { d.source.title = 'BODICH Warranty'; return d; }),
+    'Source provenance or historical status was rewritten: ' + WARRANTY_ID);
+  reject('warranty supplier manufacturer invented',
+    changedWarranty((d) => { d.source.manufacturer = 'BODICH'; return d; }),
+    'Source provenance or historical status was rewritten: ' + WARRANTY_ID);
+  reject('warranty historical status overwritten',
+    changedWarranty((d) => { d.source.status = 'discontinued'; return d; }),
+    'Source provenance or historical status was rewritten: ' + WARRANTY_ID);
+
+  reject('gift checkout injected in description with query string',
+    changedGift((d) => { d.copy.en.description +=
+      ' https://app.squareup.com/gift/CA5XP82NMZYB7/order/?ref=bodich'; }),
+    'Gift Card contains unsupported commerce fields or external checkout links');
   reject('gift legal gate bypassed',
-    [source, drafts, [{ ...externalReferenceServices[0], legalApproval: 'approved' }]],
-    'digital gift-card');
+    changedGift((d) => { d.legalApproval = 'approved'; }),
+    'Gift Card legal approval gate is invalid');
+  reject('gift RO disclaimer deleted',
+    changedGift((d) => { d.copy.ro.description =
+      'Acest card digital este acum disponibil pentru cumpărare în magazinul nostru.'; }),
+    'Gift Card EN/RO information-only text is incomplete');
+  reject('gift RO locale unknown commerce field',
+    changedGift((d) => { d.copy.ro.checkoutUrl = GIFT_CHECKOUT; }),
+    'Gift Card contains unsupported commerce fields or external checkout links');
+  reject('gift reference turned into product',
+    changedGift((d) => { d.itemType = 'turbojet'; }),
+    'Gift Card external digital identity is invalid');
   reject('gift present in confirmed products',
-    [source, drafts, externalReferenceServices, [{ id: externalReferenceServices[0].referenceId }]],
-    'leaked');
-  const noPromo = structuredClone(source);
-  noPromo.exclusions = noPromo.exclusions.filter((e) => e.sectionId !== 'promotional-items');
-  reject('removed out-of-scope exclusion', [noPromo, drafts], 'exception');
-  const duplicate = [...drafts, structuredClone(warranty)];
-  reject('duplicated warranty SKU', [source, duplicate], 'Duplicate');
+    [source, drafts, externalReferenceServices, [{ id: originalGift.referenceId }]],
+    'Service or digital reference leaked into confirmed public products');
+
+  reject('removed out-of-scope promotional exclusion',
+    removedExclusion('promotional-items'),
+    'Missing out-of-scope or unavailable source exception: promotional-items');
+  reject('removed 404 battery exclusion',
+    removedExclusion('batteries'),
+    'Missing out-of-scope or unavailable source exception: batteries');
+  reject('removed external gift exception',
+    removedExclusion('gift-card'),
+    'Gift Card is an external checkout exception, never a store SKU');
+
+  const fakeGiftSku = structuredClone(source);
+  fakeGiftSku.products[0].sourceCategoryIds.push('gift-card');
+  reject('gift card misclassified as shop SKU', [fakeGiftSku, drafts],
+    'Gift Card is an external checkout exception, never a store SKU');
+  reject('duplicate warranty source draft', [source, [...drafts, structuredClone(warranty)]],
+    'Duplicate or missing source identities in reference drafts');
+
   const fakeDiscount = structuredClone(source);
   fakeDiscount.products.find((p) => p.id === WARRANTY_ID).sourceCategoryIds.push('discounted');
   fakeDiscount.sections.find((s) => s.id === 'discounted').discoveredCount = 1;
   fakeDiscount.sections.find((s) => s.id === 'discounted').crossListedCount = 1;
-  reject('discounted non-engine service', [fakeDiscount, drafts], 'Discount');
-  const positive = structuredClone(source);
-  const existing = positive.products.find((p) => p.sourceCategoryIds.includes('g4'));
-  existing.sourceCategoryIds.push('discounted');
-  positive.sections.find((s) => s.id === 'discounted').discoveredCount = 1;
-  positive.sections.find((s) => s.id === 'discounted').crossListedCount = 1;
-  const related = buildReferenceDrafts(positive, overrides);
-  const one = discountedReferenceDrafts(related);
-  if (one.length !== 1 || one[0] !== related.find((d) => d.sourceId === existing.id) ||
-      commerceProblems(positive, related).length)
-    problems.push('Cross-listed engine did not stay the same unique reference object');
+  reject('discounted non-engine service', [fakeDiscount, drafts],
+    'Discount listing creates an invalid or duplicate engine: ' + WARRANTY_ID);
+
+  // G4+, G5 and TP may be cross-listed as discounted, but a source ID
+  // and derived draft identity must never be multiplied.
+  for (const section of engineSections) {
+    const positive = structuredClone(source);
+    const existing = positive.products.find((p) => p.sourceCategoryIds.includes(section));
+    if (!existing) { problems.push('Missing primary section fixture: ' + section); continue; }
+    existing.sourceCategoryIds.push('discounted');
+    positive.sections.find((s) => s.id === 'discounted').discoveredCount = 1;
+    positive.sections.find((s) => s.id === 'discounted').crossListedCount = 1;
+    const related = buildReferenceDrafts(positive, overrides);
+    const one = discountedReferenceDrafts(related);
+    if (one.length !== 1 || one[0] !== related.find((d) => d.sourceId === existing.id) ||
+        new Set(related.map((d) => d.sourceId)).size !== related.length ||
+        commerceProblems(positive, related).length)
+      problems.push('Cross-listed ' + section + ' engine was duplicated or rejected');
+  }
   const discountOnly = structuredClone(source);
   discountOnly.products[0].sourceCategoryIds = ['discounted'];
   try { buildReferenceDrafts(discountOnly, overrides); problems.push('Discount-only orphan was accepted as SKU'); }
-  catch { /* correct: cannot invent the original engine category */ }
+  catch { /* correct: no original engine category to inherit */ }
+
+  // Documentation quotes the *stored* name and summary, not a parallel draft.
+  const ledger = readFileSync('docs/catalog/commerce-reference-evidence.md', 'utf8');
+  for (const record of [warranty, originalGift]) {
+    for (const locale of ['en', 'ro']) {
+      const copy = record.copy[locale];
+      if (!ledger.includes('> **' + copy.name + '** ' + copy.summary))
+        problems.push('Documentation drifted from ' + locale + ' reference copy: ' +
+          (record.sourceId || record.referenceId));
+    }
+  }
 }
 if (process.argv.some((arg) => arg.startsWith('--') && arg !== '--self-test'))
   problems.push('Unknown argument: expected optional --self-test');
