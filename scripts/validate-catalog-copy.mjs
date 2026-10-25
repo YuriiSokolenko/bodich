@@ -34,18 +34,24 @@ const negationPrefix = {
   en: /(?:^|[^\p{L}])(?:not|no|never|is not|are not|isn't|aren't|cannot|can't)(?:\s+(?:is|are|be|yet|currently|longer)){0,3}\s*$/iu,
   ro: /(?:^|[^\p{L}])(?:nu|nici|niciun|nicio|fără)(?:\s+(?:este|sunt|mai|încă|momentan|se|află)){0,3}\s*$/iu,
 };
-// Return the actual first violation to give copywriters a concrete field and phrase.
-function findUnapprovedPromotion(copy, lang) {
+// Identify every actionable claim instead of forcing a fix-and-rerun cycle.
+// Purchase imperatives cannot be excused by a nearby "no longer" cue.
+const purchaseImperative = {
+  en: /^(?:order now|buy now)$/iu,
+  ro: /^(?:comandă acum|cumpără acum)$/iu,
+};
+function findUnapprovedPromotions(copy, lang) {
+  const violations = [];
   for (const field of fields) {
     const value = copy[field];
     for (const match of value.matchAll(salesPhrases[lang])) {
       const before = value.slice(0, match.index);
       const clause = before.split(/[.!?;,:\n]/u).at(-1).slice(-80);
-      if (!negationPrefix[lang].test(clause))
-        return { field, phrase: match[0] };
+      if (purchaseImperative[lang].test(match[0]) || !negationPrefix[lang].test(clause))
+        violations.push({ field, phrase: match[0] });
     }
   }
-  return null;
+  return violations;
 }
 const sortUnique = (xs) => [...new Set(xs)].sort();
 const keyFor = (x) => x.sourceId + '/' + x.value + '/' + x.unit;
@@ -206,8 +212,7 @@ export function validate(input, { checkMatrix = true } = {}) {
             fail('Romanian diacritics missing in ' + id + '/ro/' + field);
         }
       }
-      const promotion = findUnapprovedPromotion(copy, lang);
-      if (promotion)
+      for (const promotion of findUnapprovedPromotions(copy, lang))
         fail('Unapproved commercial claims: ' + id + '/' + lang + '/' +
           promotion.field + ': ' + JSON.stringify(promotion.phrase));
       if (typeof alt !== 'string' || alt.length < 85 || alt.length > 260 ||
@@ -284,8 +289,9 @@ function selfTest(input) {
     const fixture = structuredClone(input);
     mutate(fixture);
     const errors = validate(fixture, { checkMatrix });
-    assert(errors.some((e) => e.includes(phrase)),
-      label + ': expected ' + phrase + ', got ' + errors.join('; '));
+    for (const expected of (Array.isArray(phrase) ? phrase : [phrase]))
+      assert(errors.some((e) => e.includes(expected)),
+        label + ': expected ' + expected + ', got ' + errors.join('; '));
     cases++;
   };
   const first = (fixture, lang, field, expression) => {
@@ -386,6 +392,12 @@ function selfTest(input) {
   negative('commercial error identifies the exact field and phrase', (x) => {
     x.drafts.records[0].copy.en.description += ' Ready to ship.';
   }, 'en/description: "Ready to ship"');
+  negative('multiple commercial violations all reported', (x) => {
+    x.drafts.records[0].copy.en.description += ' Buy now. Ready to ship.';
+  }, ['en/description: "Buy now"', 'en/description: "Ready to ship"']);
+  negative('no longer cannot suppress a purchase imperative', (x) => {
+    x.drafts.records[0].copy.en.description += ' Wait no longer order now.';
+  }, 'en/description: "order now"');
   negative('additional English shipping estimate', (x) => {
     x.drafts.records[0].copy.en.description += ' Ships within 2 business days.';
   }, 'Unapproved commercial claims');
