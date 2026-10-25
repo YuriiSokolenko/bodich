@@ -26,11 +26,13 @@ const salesPhrases = {
   en: /(?<![\p{L}])(?:order now|buy now|ships today|free shipping|free delivery|guaranteed delivery|warranty included|guaranteed by BODICH|in stock at BODICH|in stock now|ready to ship|ships within [0-9]+ (?:business )?days?|available for immediate delivery|sale price|special offer)(?![\p{L}])/giu,
   ro: /(?<![\p{L}])(?:comandă acum|cumpără acum|expediere astăzi|expediem astăzi|livrare gratuită|livrare garantată|livrăm în [0-9]+ zile|garanție inclusă|garantat(?:ă|e|i)? de BODICH|în stoc la BODICH|pe stoc|disponibil acum|disponibil(?:ă)? pentru livrare imediată|preț promoțional|ofertă specială)(?![\p{L}])/giu,
 };
-// Conservative local negation cue immediately preceding a promotional phrase.
-// This is an editorial heuristic, NOT a linguistic/legal review or full NLP.
+// A negator must immediately govern the phrase (allow only auxiliary adverbs
+// and verbs between them). Arbitrary words can turn a negative disclaimer into
+// an affirmative marketing promise: "not a drill and order now" is still banned.
+// This conservative lexical rule is not a linguistic or legal review.
 const negationPrefix = {
-  en: /(?:^|[^\p{L}])(?:not|no|never|is not|are not|isn't|aren't|cannot|can't)(?:\s+[\p{L}]+){0,3}\s*$/iu,
-  ro: /(?:^|[^\p{L}])(?:nu|nici|niciun|nicio|fără)(?:\s+[\p{L}]+){0,3}\s*$/iu,
+  en: /(?:^|[^\p{L}])(?:not|no|never|is not|are not|isn't|aren't|cannot|can't)(?:\s+(?:is|are|be|yet|currently)){0,3}\s*$/iu,
+  ro: /(?:^|[^\p{L}])(?:nu|nici|niciun|nicio|fără)(?:\s+(?:este|sunt|mai|încă)){0,3}\s*$/iu,
 };
 function hasUnapprovedPromotion(copy, lang) {
   for (const field of fields) {
@@ -405,6 +407,15 @@ function selfTest(input) {
     ' Situația pe stocul furnizorului este necunoscută.';
   assert.deepEqual(validate(supplierInventory), [],
     'pe stocul must not match pe stoc as an incomplete word');
+  negative('negation cannot leak past sentence boundary', (x) => {
+    x.drafts.records[0].copy.en.description += ' Not in stock now. Ready to ship.';
+  }, 'Unapproved commercial claims');
+  negative('negation cannot leak past a comma', (x) => {
+    x.drafts.records[0].copy.en.description += ' No hidden fees, order now.';
+  }, 'Unapproved commercial claims');
+  negative('free words after negation cannot hide a sales pitch', (x) => {
+    x.drafts.records[0].copy.en.description += ' Not only available but in stock now.';
+  }, 'Unapproved commercial claims');
   // Importing the module must not parse foreign argv, emit output or rewrite the matrix.
   const before = readFileSync(paths.matrix, 'utf8');
   const imported = spawnSync(process.execPath,
@@ -445,6 +456,12 @@ function selfTest(input) {
         'legacy argv symlink resolves to the script realpath');
       assert.equal(isEntryPoint(undefined, thisPath, canonicalArgvPath(linked)), true,
         'legacy direct-entry symlink must run the CLI');
+      const linkedCli = spawnSync(process.execPath, [linked, '--not-an-option'],
+        { encoding: 'utf8', cwd: process.cwd() });
+      assert.notEqual(linkedCli.status, 0,
+        'symlinked CLI must reject unknown arguments, not silently exit 0');
+      assert.match(linkedCli.stderr, /Use one of --write-matrix or --self-test/,
+        'symlinked entrypoint must run CLI option validation');
     }
   } finally {
     rmSync(tempDir, { recursive: true, force: true });
