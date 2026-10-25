@@ -5398,13 +5398,13 @@
       "copy": {
         "en": {
           "name": "KingTech Special Blend Oil — 2 gallons",
-          "summary": "A two-gallon source-listed container size of KingTech special-blend turbine engine oil, held here as an unpublished reference.",
-          "description": "The KingTech manufacturer storefront identifies this as the two-gallon size of its special-blend turbine engine lubricant. The source description calls the oil V3.1 and full synthetic with KingTech additives. This record preserves the manufacturer's original gallon label without assuming a regional volume conversion or a number of separate containers. Shipping terms and availability belong only to the source seller; BODICH has not approved this item for sale."
+          "summary": "KingTech Special Blend turbine engine oil in a two-gallon size, listed separately from the manufacturer's other oil presentations.",
+          "description": "KingTech lists this Special Blend turbine engine oil with a source size label of 2 Gallons. This listing is distinct from the one-gallon and 32oz sizes and from the separate red-dyed oil entry. The original unit wording is retained as printed, without a regional unit conversion or an assumed count of individual containers."
         },
         "ro": {
           "name": "Ulei KingTech Special Blend pentru turbine — 2 galoane",
-          "summary": "Varianta de 2 galoane a uleiului special KingTech pentru motoare cu turbină, consemnată numai ca referință nepublicată.",
-          "description": "Magazinul producătorului prezintă această variantă cu volumul înscris de 2 galoane, destinată lubrifierii motoarelor cu turbină. În descrierea sursei apare denumirea V3.1, cu formulă integral sintetică și aditivi KingTech. Păstrăm unitatea originală fără o conversie presupusă și fără să deducem câte recipiente sunt incluse. Condițiile de livrare și disponibilitatea furnizorului nu reprezintă o ofertă BODICH."
+          "summary": "Ulei KingTech Special Blend pentru motoare cu turbină, prezentat în varianta de 2 galoane, distinctă de celelalte volume din catalog.",
+          "description": "KingTech listează acest ulei Special Blend pentru motoare cu turbină cu indicația originală de 2 galoane. Este o poziție distinctă de prezentările de 1 galon și 32oz, precum și de uleiul colorat în roșu. Unitatea este păstrată conform denumirii sursei, fără o conversie regională sau presupuneri despre numărul de recipiente."
         }
       },
       "specs": [],
@@ -5421,7 +5421,9 @@
         "blend": "special_blend",
         "sourceNotes": [
           "Source label gives total quantity, not a confirmed container count.",
-          "Source-side shipping, price and stock are not BODICH policies."
+          "Source-side shipping, price and stock are not BODICH policies.",
+          "Composition, V3.1 version and additive claims are not established by the six-SKU source ledger; do not copy them into product descriptions until individually evidenced.",
+          "Current approval, stock, regional volume interpretation and publication status are separate metadata, not product copy."
         ],
         "artBriefId": "kt-21"
       },
@@ -5434,13 +5436,13 @@
       "copy": {
         "en": {
           "name": "KingTech Special Blend Oil — 1 gallon",
-          "summary": "One-gallon listing of KingTech special-blend oil for turbine engines; recorded as a supplier research reference, not BODICH stock.",
-          "description": "This is the one-gallon listing in KingTech's engine-oil section, distinct from the two-gallon and 32oz entries. The manufacturer's oil description identifies the special blend as turbine-engine lubricant; formulation notes require editorial verification for this particular listing. No count of individual bottles, metric conversion, seller delivery promise or compatibility with a specific engine is inferred. The BODICH website does not currently offer this reference for purchase."
+          "summary": "KingTech Special Blend turbine oil supplied under a one-gallon source label, distinct from its other listed sizes.",
+          "description": "This KingTech Special Blend turbine engine oil entry has a one-gallon label on its original catalog page. The one-gallon presentation has its own product identity alongside separately listed two-gallon and 32oz presentations. The gallon wording reproduces the original catalog size; it does not establish a regional conversion or the number of physical containers."
         },
         "ro": {
           "name": "Ulei KingTech Special Blend pentru turbine — 1 galon",
-          "summary": "Prezentarea de 1 galon a uleiului KingTech Special Blend pentru turbine, înregistrată ca referință externă, nu ca stoc BODICH.",
-          "description": "Această poziție este listată separat în secțiunea de uleiuri KingTech, cu volumul original de 1 galon; nu este aceeași poziție cu variantele de 2 galoane sau 32oz. Este identificată drept lubrifiant pentru motoare cu turbină, însă detaliile formulei pentru această prezentare necesită verificare editorială. Nu deducem numărul de recipiente, o conversie în litri, compatibilități precise sau condiții de livrare BODICH. Articolul nu este disponibil pentru cumpărare pe site-ul nostru."
+          "summary": "Ulei KingTech Special Blend pentru motoare cu turbină, cu volumul sursă de 1 galon, listat separat de celelalte prezentări.",
+          "description": "Această poziție KingTech Special Blend pentru motoare cu turbină are în catalog indicația de 1 galon. Prezentarea este individualizată față de cele de 2 galoane și 32oz, fiecare având propria fișă în sursă. Menționarea galonului reproduce dimensiunea din catalog, fără a preciza o conversie regională ori numărul de recipiente fizice."
         }
       },
       "specs": [],
@@ -5457,7 +5459,9 @@
         "blend": "special_blend",
         "sourceNotes": [
           "Source label gives total quantity, not a confirmed container count.",
-          "Source-side shipping, price and stock are not BODICH policies."
+          "Source-side shipping, price and stock are not BODICH policies.",
+          "Composition, V3.1 version and additive claims are not established by the six-SKU source ledger; do not copy them into product descriptions until individually evidenced.",
+          "Current approval, stock, regional volume interpretation and publication status are separate metadata, not product copy."
         ],
         "artBriefId": "kt-22"
       },
@@ -5470,13 +5474,13 @@
       "copy": {
         "en": {
           "name": "KingTech Special Blend Oil — 32oz",
-          "summary": "Source-labeled 32oz KingTech turbine-oil variant, preserved without guessing whether the label uses fluid or weight ounces.",
-          "description": "The KingTech storefront lists a separate Special Blend Oil item marked 32oz. Its description identifies turbine engine oil V3.1 and a full-synthetic formulation. The exact source label is retained as 32oz because that listing does not unambiguously specify the ounce convention; no volume-to-litre conversion is asserted here. The packaging count is likewise unverified. This unpublished research draft is not a BODICH stock or resale claim."
+          "summary": "KingTech Special Blend turbine engine oil in the separate 32oz catalog size, reproduced with the original unit wording.",
+          "description": "KingTech lists this Special Blend turbine engine oil as a separate 32oz presentation. The size is retained exactly as shown in the original title, without treating the ounce abbreviation as a verified mass or fluid-volume convention. This presentation is distinct from the one-gallon and two-gallon standard-blend entries."
         },
         "ro": {
           "name": "Ulei KingTech Special Blend pentru turbine — 32oz",
-          "summary": "Variantă KingTech pentru turbine etichetată 32oz în sursă, fără interpretarea neverificată a tipului de uncie.",
-          "description": "Magazinul KingTech prezintă separat varianta Special Blend Oil, marcată 32oz. Descrierea indică ulei pentru motoare cu turbină, versiunea V3.1, cu formulă integral sintetică. Păstrăm notația 32oz exact ca în catalogul original, întrucât tipul de uncie nu este clarificat; nu o convertim în litri. Nici numărul de recipiente nu este confirmat. Aceasta este o fișă de cercetare nepublicată, nu un produs aflat în stocul sau oferta BODICH."
+          "summary": "Ulei KingTech Special Blend pentru motoare cu turbină, în prezentarea distinctă de 32oz, păstrată în unitatea originală.",
+          "description": "KingTech listează separat acest ulei Special Blend pentru motoare cu turbină în varianta denumită 32oz. Notația este păstrată întocmai ca în titlul original, fără a interpreta uncia drept unitate de masă sau de volum lichid. Această prezentare se deosebește de variantele standard de 1 galon și 2 galoane."
         }
       },
       "specs": [],
@@ -5493,7 +5497,9 @@
         "blend": "special_blend",
         "sourceNotes": [
           "The 32oz title does not specify fluid vs weight ounces; metric conversion withheld.",
-          "Source-side shipping, price and stock are not BODICH policies."
+          "Source-side shipping, price and stock are not BODICH policies.",
+          "Composition, V3.1 version and additive claims are not established by the six-SKU source ledger; do not copy them into product descriptions until individually evidenced.",
+          "Current approval, stock, regional volume interpretation and publication status are separate metadata, not product copy."
         ],
         "artBriefId": "kt-23"
       },
@@ -5506,13 +5512,13 @@
       "copy": {
         "en": {
           "name": "KingTech Red Dyed Special Blend Oil — 2 gallons",
-          "summary": "Distinct two-gallon red-dyed KingTech special-blend oil listing, maintained separately from the standard two-gallon variant.",
-          "description": "The original KingTech catalog names a red-dyed version of its special-blend turbine engine oil in the two-gallon size. The dye designation is part of the actual supplier item identity and should not be collapsed into the standard two-gallon listing. Apart from what the manufacturer states, no change in oil performance, viscosity or compatibility is implied by the colour. The source size is retained in gallons and this record remains an unpublished BODICH editorial draft."
+          "summary": "KingTech red-dyed Special Blend turbine engine oil, separately listed in a two-gallon presentation.",
+          "description": "The KingTech catalog identifies a red-dyed Special Blend turbine engine oil in a two-gallon size. The red-dyed designation distinguishes this product record from the separate standard two-gallon oil entry. Its title supplies a colour designation and size, rather than independent evidence of a difference in viscosity, engine suitability or performance."
         },
         "ro": {
           "name": "Ulei KingTech Special Blend colorat în roșu — 2 galoane",
-          "summary": "Ulei KingTech Special Blend colorat în roșu, 2 galoane, listat ca poziție distinctă față de varianta standard.",
-          "description": "Catalogul KingTech conține o poziție separată pentru uleiul de turbină Special Blend colorat în roșu, în prezentarea de 2 galoane. Mențiunea despre colorant diferențiază produsul de varianta standard, dar nu dovedește o altă vâscozitate, performanță ori compatibilitate. Volumul este păstrat în unitatea folosită de sursă, fără conversie regională presupusă. Fișa rămâne un proiect editorial nepublicat și nu constituie o ofertă comercială BODICH."
+          "summary": "Ulei KingTech Special Blend pentru motoare cu turbină, colorat în roșu și listat separat în prezentarea de 2 galoane.",
+          "description": "Catalogul KingTech identifică separat un ulei Special Blend pentru motoare cu turbină, colorat în roșu, în prezentarea de 2 galoane. Mențiunea despre colorant diferențiază această poziție de uleiul standard de același volum. Denumirea oferă informații despre culoare și volum, nu despre diferențe de vâscozitate, compatibilitate sau performanță."
         }
       },
       "specs": [],
@@ -5529,7 +5535,9 @@
         "blend": "red_dyed_special_blend",
         "sourceNotes": [
           "Red Dyed is an original-source product distinction; performance equivalence unverified.",
-          "Source-side shipping, price and stock are not BODICH policies."
+          "Source-side shipping, price and stock are not BODICH policies.",
+          "Composition, V3.1 version and additive claims are not established by the six-SKU source ledger; do not copy them into product descriptions until individually evidenced.",
+          "Current approval, stock, regional volume interpretation and publication status are separate metadata, not product copy."
         ],
         "artBriefId": "kt-122"
       },
@@ -5541,14 +5549,14 @@
       "slug": "life-battery-3800mah-9-9v",
       "copy": {
         "en": {
-          "name": "3800mAh-9.9V LIFE Battery — KingTech source listing",
-          "summary": "LiFe-labeled battery listed by KingTech at 9.9 V and 3800 mAh; connectors, cell configuration and engine fitment need verification.",
-          "description": "KingTech's battery section lists a 3800 mAh battery with a nominal 9.9 V marking and the chemistry label LIFE. These numbers are reproduced from its individual product title rather than assumed from a different retailer's battery. The official listing has not established a specific cell count, connector configuration, or compatible engine models for this draft. Such fields remain explicitly unknown. This is an unpublished external-source reference, not a BODICH battery or a promise of operating safety."
+          "name": "LIFE battery — 3800 mAh, 9.9 V",
+          "summary": "The KingTech battery catalog lists a LIFE-marked battery with a stated 3800 mAh capacity and 9.9 V voltage.",
+          "description": "This KingTech battery listing uses the source designation LIFE and specifies 3800 mAh and 9.9 V in its title. It is a separate catalog item from the LIFE battery marked 2100 mAh. The original markings identify the listed electrical ratings; they do not by themselves specify a plug, internal cell configuration or the requirements of any particular turbine system."
         },
         "ro": {
-          "name": "Acumulator LiFe 3800 mAh, 9,9 V — referință KingTech",
-          "summary": "Acumulator cu marcaj LiFe, de 9,9 V și 3800 mAh în catalogul KingTech; conectorii și compatibilitatea necesită verificare.",
-          "description": "În secțiunea KingTech pentru acumulatori apare varianta marcată LIFE, cu tensiunea nominală indicată de 9,9 V și capacitatea de 3800 mAh. Aceste date provin din titlul produsului original, nu din fișa altui comerciant. Numărul de celule, tipul conectorului și modelele de turbină compatibile nu sunt confirmate pentru această fișă; câmpurile respective rămân necunoscute. Înregistrarea este o referință externă nepublicată, nu un acumulator oferit de BODICH sau o garanție de siguranță."
+          "name": "Acumulator LIFE — 3800 mAh, 9,9 V",
+          "summary": "Catalogul KingTech include un acumulator cu marcajul LIFE și valorile declarate de 3800 mAh și 9,9 V.",
+          "description": "Această poziție din catalogul KingTech poartă denumirea sursă LIFE și menționează 3800 mAh și 9,9 V. Este o poziție diferită de acumulatorul LIFE cu capacitatea înscrisă de 2100 mAh. Marcajele originale prezintă valorile electrice listate, dar nu determină singure conectorul, configurația internă a celulelor sau cerințele unui anumit sistem cu turbină."
         }
       },
       "specs": [
@@ -5570,7 +5578,10 @@
       "battery": {
         "sourceUrl": "https://www.kingtechturbines.com/product/3800mah-9-9v-life-battery/24",
         "verifiedOn": "2026-10-25",
-        "chemistry": "LiFe",
+        "chemistry": {
+          "sourceLabel": "LIFE",
+          "family": "LiFe"
+        },
         "cellCount": null,
         "voltage": {
           "value": 9.9,
@@ -5584,7 +5595,9 @@
         "compatibleApplications": [],
         "sourceNotes": [
           "LIFE, voltage and capacity are original source-title labels; detailed chemistry documentation remains review-needed.",
-          "No confirmed connector, cell count or specific engine compatibility from the manufacturer product title."
+          "No confirmed connector, cell count or specific engine compatibility from the manufacturer product title.",
+          "The original uppercase LIFE chemistry notation is preserved; the LiFe family label alone does not establish exact cell construction or a 3S count.",
+          "Publication and safety verification status belong to metadata, not customer-facing copy."
         ],
         "artBriefId": "kt-24"
       },
@@ -5596,14 +5609,14 @@
       "slug": "life-battery-2100mah-9-9v",
       "copy": {
         "en": {
-          "name": "2100mAh-9.9V LIFE Battery — KingTech source listing",
-          "summary": "Separate 2100 mAh, 9.9 V LiFe-labeled battery listing; no connector type or supported-engine claim has been established.",
-          "description": "This original KingTech listing describes a LIFE battery with 2100 mAh capacity and a 9.9 V nominal marking. It is a distinct reference from the 3800 mAh item, not a selectable option invented by BODICH. The title provides no verifiable connector, battery cell count or exact engine application; none is inserted from a third-party lookalike. Charging, shipping, longevity and safe use must be checked against original technical documentation before any real product listing."
+          "name": "LIFE battery — 2100 mAh, 9.9 V",
+          "summary": "A separately listed LIFE-marked KingTech catalog battery with stated values of 2100 mAh and 9.9 V.",
+          "description": "KingTech lists this LIFE-marked battery with a 2100 mAh capacity and 9.9 V voltage in the original product title. The capacity differentiates it from the separate 3800 mAh listing. These source-title values describe the electrical markings of the item and do not identify its physical connector, cell arrangement or suitability for any individual turbine-engine installation."
         },
         "ro": {
-          "name": "Acumulator LiFe 2100 mAh, 9,9 V — referință KingTech",
-          "summary": "Poziție distinctă din sursa KingTech pentru un acumulator LiFe de 2100 mAh și 9,9 V, fără conector sau modele compatibile confirmate.",
-          "description": "Produsul apare separat în catalogul KingTech sub denumirea LIFE Battery, cu capacitatea de 2100 mAh și tensiunea nominală înscrisă de 9,9 V. Nu este o opțiune inventată pentru acumulatorul de 3800 mAh. Titlul original nu permite confirmarea conectorului, a numărului de celule sau a modelelor exacte de motor; nu transferăm asemenea caracteristici de la alte mărci. Instrucțiunile de încărcare, livrare și utilizare trebuie verificate în documentația tehnică înainte de orice publicare."
+          "name": "Acumulator LIFE — 2100 mAh, 9,9 V",
+          "summary": "Acumulator cu marcajul LIFE, listat separat în catalogul KingTech cu valorile declarate de 2100 mAh și 9,9 V.",
+          "description": "KingTech listează acest acumulator sub denumirea LIFE, cu capacitatea indicată de 2100 mAh și tensiunea de 9,9 V în titlul original. Capacitatea îl diferențiază de poziția distinctă de 3800 mAh. Aceste valori identifică marcajele electrice din catalog, fără să stabilească tipul conectorului, dispunerea celulelor sau adecvarea pentru o anumită instalație cu turbină."
         }
       },
       "specs": [
@@ -5625,7 +5638,10 @@
       "battery": {
         "sourceUrl": "https://www.kingtechturbines.com/product/2100mah-9-9v-life-battery/25",
         "verifiedOn": "2026-10-25",
-        "chemistry": "LiFe",
+        "chemistry": {
+          "sourceLabel": "LIFE",
+          "family": "LiFe"
+        },
         "cellCount": null,
         "voltage": {
           "value": 9.9,
@@ -5639,7 +5655,9 @@
         "compatibleApplications": [],
         "sourceNotes": [
           "LIFE, voltage and capacity are original source-title labels; detailed chemistry documentation remains review-needed.",
-          "No confirmed connector, cell count or specific engine compatibility from the manufacturer product title."
+          "No confirmed connector, cell count or specific engine compatibility from the manufacturer product title.",
+          "The original uppercase LIFE chemistry notation is preserved; the LiFe family label alone does not establish exact cell construction or a 3S count.",
+          "Publication and safety verification status belong to metadata, not customer-facing copy."
         ],
         "artBriefId": "kt-25"
       },
