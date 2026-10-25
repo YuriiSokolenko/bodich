@@ -26,11 +26,11 @@ The 2026-10-23 source audit found **no Discounted Turbines category-listed produ
 
 **EN reference excerpt (exact name and summary)**
 
-> **KingTech Warranty Transfer — reference only** An unpublished record of a KingTech warranty-transfer service; BODICH does not offer a warranty purchase or transfer.
+> **KingTech Warranty Transfer — reference only** — An unpublished record of a KingTech warranty-transfer service; BODICH does not offer a warranty purchase or transfer.
 
 **RO reference excerpt (exact name and summary)**
 
-> **Transfer de garanție KingTech — doar referință** Înregistrare nepublicată a unui serviciu KingTech de transfer al garanției; BODICH nu oferă cumpărarea sau transferul garanției.
+> **Transfer de garanție KingTech — doar referință** — Înregistrare nepublicată a unui serviciu KingTech de transfer al garanției; BODICH nu oferă cumpărarea sau transferul garanției.
 
 The full EN/RO summary and original authored explanation are stored in the `kt-100` editorial override, not in public `confirmedProducts`.
 
@@ -42,11 +42,11 @@ The full EN/RO summary and original authored explanation are stored in the `kt-1
 
 **EN reference excerpt (exact name and summary)**
 
-> **KingTech Gift Card — external reference only** A supplier-linked digital gift card, recorded for catalog research; BODICH does not sell or issue gift cards.
+> **KingTech Gift Card — external reference only** — A supplier-linked digital gift card, recorded for catalog research; BODICH does not sell or issue gift cards.
 
 **RO reference excerpt (exact name and summary)**
 
-> **Card cadou KingTech — doar referință externă** Card cadou digital de la furnizor, documentat doar pentru catalog; BODICH nu vinde și nu emite carduri cadou.
+> **Card cadou KingTech — doar referință externă** — Card cadou digital de la furnizor, documentat doar pentru catalog; BODICH nu vinde și nu emite carduri cadou.
 
 These are **internal draft/reference descriptions**, not retail cards. Both languages and the exact quoted name/summary excerpts are checked by the offline validator. Supplier Square checkout must never be injected into a BODICH purchase link.
 
@@ -65,6 +65,6 @@ The four verified direct-only accessory references (32, 33, 107, 138) are alread
 
 Run `npm run catalog:source:check` (included in `npm run check` and CI). `scripts/validate-commerce-references.mjs` validates: unique source IDs; source URLs/title/manufacturer/historical status; a derived discount grouping only over G4+/G5/TP; one service warranty record with KingTech attribution and explicit EN/RO disclaimers; exactly one externally referenced digital Gift Card with no purchasable SKU; existing promotional/unavailable-product exclusions; and no commercial publication of either nonphysical entity.
 
-`node scripts/validate-commerce-references.mjs --self-test` covers **positive synthetic cross-listing for G4+, G5 and TP** (identity-preserving membership) and exact-error negative fixtures for warranty approval, historic source URL/title/manufacturer/status tampering, invalid/future review dates, missing EN/RO disclaimers, unapproved commerce-field injection, leaked Square URLs (including nested query links), Gift Card promotion/public SKU leakage, duplicate warranty records, discount-only orphan/non-engine membership and removed gift/promotion/battery exclusions. The evidence excerpt fixture rejects documentation that diverges from the stored EN/RO names or summaries.
+`node scripts/validate-commerce-references.mjs --self-test` covers **positive synthetic cross-listing for G4+, G5 and TP** (identity-preserving membership) and exact-error negative fixtures for warranty approval, historic source URL/title/manufacturer/status tampering, invalid/future review dates, missing EN/RO disclaimers, unapproved commerce-field injection, leaked Square URLs (including nested query links), Gift Card promotion/public SKU leakage, duplicate warranty records, discount-only orphan/non-engine membership and removed gift/promotion/battery exclusions. The evidence excerpt fixture checks all stored EN/RO names and summaries and includes an intentionally corrupted Romanian quote to verify that documentation drift is detected. A separate negative fixture rejects unsupported future collection tags.
 
 Future releases still require **BODICH company and legal approval**, rights review, separate reviewed commercial content, payment/compliance handling and a deliberate public-catalog migration. This task deliberately creates **no public routes, prices, checkout, gift-code issuance or warranty purchase**.
