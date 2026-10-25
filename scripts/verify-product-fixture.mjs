@@ -59,6 +59,9 @@ try {
         ro: { name: 'Turbină de test CI', summary: 'Conținut de test, nepublicabil.' },
       },
       image: {
+        kind: 'original_diagram',
+        rights: 'cleared',
+        rightsEvidence: 'CI-FIXTURE-NOT-PUBLISHED',
         src: '/images/catalog/ci-fixture.png',
         alt: { en: 'CI test graphic', ro: 'Grafic de test CI' },
         width: 1,
@@ -125,6 +128,8 @@ try {
   const controlListing = html('ro', 'accessories', 'ecu-controls');
 
   assertContains(engineListing, 'data-product-card="ci-fixture-engine"', 'EN engine category');
+  assertContains(engineListing, 'data-concept-disclosure', 'Concept disclosure on product card');
+  assertContains(engineListing, 'Illustrative visualization', 'Visible EN card disclaimer');
   assertContains(engineListing, 'href="/bodich-preview/en/products/turbine-engines/ci-fixture-engine/"', 'EN engine link');
   assertContains(controlListing, 'href="/bodich-preview/ro/accessories/ecu-controls/ci-fixture-ecu/"', 'RO control link');
 
@@ -132,9 +137,11 @@ try {
   assertContains(engineEn, 'CI fixture turbine', 'EN product detail');
   assertContains(engineEn, 'alt="CI test graphic"', 'EN product photo alt');
   assertContains(engineEn, 'src="/bodich-preview/images/catalog/ci-fixture.png"', 'EN product photo URL');
+  assertContains(engineEn, 'Illustrative visualization', 'EN concept disclosure');
   assertContains(engineEn, 'href="/bodich-preview/ro/products/turbine-engines/ci-fixture-engine/"', 'EN language switch');
   assertContains(engineEn, 'href="https://example.invalid/bodich-preview/en/products/turbine-engines/ci-fixture-engine/"', 'EN canonical');
   assertContains(engineRo, 'Turbină de test CI', 'RO product detail');
+  assertContains(engineRo, 'Vizualizare ilustrativă', 'Visible RO product disclaimer');
   assertContains(engineRo, 'alt="Grafic de test CI"', 'RO product photo alt');
   assertContains(engineRo, 'href="/bodich-preview/en/products/turbine-engines/ci-fixture-engine/"', 'RO language switch');
   assertContains(ecuEn, 'data-product-no-image', 'EN no-image fallback');

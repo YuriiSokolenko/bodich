@@ -103,6 +103,12 @@ export interface ConfirmedCatalogProduct {
   categoryId: CatalogCategoryId;
   copy: Record<Locale, { name: string; summary: string }>;
   image?: {
+    /** Concept art must have a visible localized disclosure; photography needs identity evidence. */
+    kind: 'original_concept' | 'original_diagram' | 'product_photo';
+    rights: 'cleared';
+    rightsEvidence: string;
+    /** Required only when publishing a genuine photograph of a specific product. */
+    identityEvidence?: string;
     src: string;
     alt: Record<Locale, string>;
     width: number;

@@ -19,15 +19,22 @@ const copy = product.copy[locale];
   class="group relative flex h-full min-w-0 min-h-80 flex-col overflow-hidden rounded-control border border-bodich-border bg-bodich-panel/80 transition-colors hover:border-bodich-accent-hover hover:bg-bodich-panel-raised focus-within:outline-3 focus-within:outline-offset-4 focus-within:outline-bodich-accent-hover"
 >
   {product.image ? (
-    <img
-      src={productImageHref(product.image.src)}
-      alt={product.image.alt[locale]}
-      width={product.image.width}
-      height={product.image.height}
-      loading="lazy"
-      decoding="async"
-      class="aspect-[4/3] w-full bg-bodich-canvas object-contain"
-    />
+    <figure class="relative">
+      <img
+        src={productImageHref(product.image.src)}
+        alt={product.image.alt[locale]}
+        width={product.image.width}
+        height={product.image.height}
+        loading="lazy"
+        decoding="async"
+        class="aspect-[4/3] w-full bg-bodich-canvas object-contain"
+      />
+      {product.image.kind !== 'product_photo' && (
+        <figcaption data-concept-disclosure class="relative z-10 border-b border-bodich-border bg-bodich-canvas px-4 py-2 text-xs font-semibold leading-5 text-bodich-muted">
+          {t.catalogIllustrativeImageNotice}
+        </figcaption>
+      )}
+    </figure>
   ) : (
     <div data-product-no-image class="flex aspect-[4/3] items-center justify-center border-b border-bodich-border bg-bodich-canvas/60 p-6">
       <span class="max-w-56 text-center text-sm leading-6 text-bodich-muted">{t.catalogImageUnavailable}</span>

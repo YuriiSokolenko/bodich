@@ -27,6 +27,14 @@ function validateImage(image, label, report = fail, publicRoot = resolve('public
     report('Product "' + label + '" has an invalid image object');
     return;
   }
+  if (!['original_concept', 'original_diagram', 'product_photo'].includes(image.kind))
+    report('Product "' + label + '" must identify image kind');
+  if (image.rights !== 'cleared' || !nonempty(image.rightsEvidence))
+    report('Product "' + label + '" requires approved image rights evidence');
+  if (image.kind === 'product_photo' && !nonempty(image.identityEvidence))
+    report('Product "' + label + '" product photo requires manufacturer/model identity evidence');
+  if (image.kind !== 'product_photo' && image.identityEvidence !== undefined)
+    report('Product "' + label + '" concept cannot claim verified photograph identity');
   for (const locale of locales) {
     if (!nonempty(image.alt?.[locale]))
       report('Product "' + label + '" requires a non-empty ' + locale + ' image alt');
@@ -148,7 +156,7 @@ if (intakeCandidate) {
   }
   checkExtraKeys(intakeCandidate.verification, ['sourceReference', 'confirmedOn'], 'product.verification');
   if (intakeCandidate.image !== undefined) {
-    checkExtraKeys(intakeCandidate.image, ['src', 'alt', 'width', 'height'], 'product.image');
+    checkExtraKeys(intakeCandidate.image, ['src', 'alt', 'width', 'height', 'kind', 'rights', 'rightsEvidence', 'identityEvidence'], 'product.image');
     checkExtraKeys(intakeCandidate.image?.alt, ['en', 'ro'], 'product.image.alt');
   }
 }
