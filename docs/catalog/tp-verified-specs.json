@@ -1,0 +1,202 @@
+{
+  "schemaVersion": 1,
+  "purpose": "original_kingtech_tp_2026_10_25_specification_snapshot",
+  "checkedOn": "2026-10-25",
+  "records": [
+    {
+      "sourceId": "kt-17",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-30tpg4-/17",
+      "specs": [
+        {
+          "kind": "dimension",
+          "metric": "length",
+          "value": 276.5,
+          "unit": "mm"
+        },
+        {
+          "kind": "mass",
+          "value": 1200,
+          "unit": "g"
+        },
+        {
+          "kind": "speed",
+          "metric": "turbine",
+          "value": 230000,
+          "unit": "rpm"
+        },
+        {
+          "kind": "fuel_consumption",
+          "value": 145,
+          "unit": "g/min"
+        }
+      ],
+      "propellers": [
+        {
+          "blades": 3,
+          "diameterInches": 18,
+          "pitchInches": 12
+        },
+        {
+          "blades": 3,
+          "diameterInches": 18,
+          "pitchInches": 16
+        }
+      ],
+      "fuelTypes": [
+        "jet_a1",
+        "kerosene"
+      ],
+      "pumpModel": "KP200BL"
+    },
+    {
+      "sourceId": "kt-18",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-45tpg4-/18",
+      "specs": [
+        {
+          "kind": "dimension",
+          "metric": "length",
+          "value": 316,
+          "unit": "mm"
+        },
+        {
+          "kind": "mass",
+          "value": 1800,
+          "unit": "g"
+        },
+        {
+          "kind": "speed",
+          "metric": "turbine",
+          "value": 170000,
+          "unit": "rpm"
+        },
+        {
+          "kind": "fuel_consumption",
+          "value": 220,
+          "unit": "g/min"
+        },
+        {
+          "kind": "power",
+          "value": 5.2,
+          "unit": "kW"
+        },
+        {
+          "kind": "temperature",
+          "value": 700,
+          "unit": "°C"
+        }
+      ],
+      "propellers": [
+        {
+          "blades": 3,
+          "diameterInches": 22,
+          "pitchInches": 12
+        }
+      ],
+      "fuelTypes": [
+        "diesel",
+        "jet_a1",
+        "kerosene"
+      ]
+    },
+    {
+      "sourceId": "kt-19",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-60tpg4-/19",
+      "specs": [
+        {
+          "kind": "dimension",
+          "metric": "length",
+          "value": 362,
+          "unit": "mm"
+        },
+        {
+          "kind": "mass",
+          "value": 2400,
+          "unit": "g"
+        },
+        {
+          "kind": "speed",
+          "metric": "turbine",
+          "value": 160000,
+          "unit": "rpm"
+        },
+        {
+          "kind": "fuel_consumption",
+          "value": 240,
+          "unit": "g/min"
+        },
+        {
+          "kind": "power",
+          "value": 7.3,
+          "unit": "kW"
+        },
+        {
+          "kind": "temperature",
+          "value": 700,
+          "unit": "°C"
+        }
+      ],
+      "propellers": [
+        {
+          "blades": 3,
+          "diameterInches": 24,
+          "pitchInches": 20
+        }
+      ],
+      "fuelTypes": [
+        "diesel",
+        "jet_a1",
+        "kerosene"
+      ]
+    },
+    {
+      "sourceId": "kt-20",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-100tpg4-/20",
+      "specs": [
+        {
+          "kind": "dimension",
+          "metric": "length",
+          "value": 384.55,
+          "unit": "mm"
+        },
+        {
+          "kind": "mass",
+          "value": 3500,
+          "unit": "g"
+        },
+        {
+          "kind": "speed",
+          "metric": "turbine",
+          "value": 135000,
+          "unit": "rpm"
+        },
+        {
+          "kind": "fuel_consumption",
+          "value": 360,
+          "unit": "g/min"
+        },
+        {
+          "kind": "power",
+          "value": 13,
+          "unit": "kW"
+        },
+        {
+          "kind": "temperature",
+          "value": 700,
+          "unit": "°C"
+        }
+      ],
+      "propellers": [
+        {
+          "blades": 3,
+          "diameterInches": 26,
+          "pitchInches": 20
+        }
+      ],
+      "fuelTypes": [
+        "diesel",
+        "jet_a1",
+        "kerosene"
+      ]
+    }
+  ]
+}
