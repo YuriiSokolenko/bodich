@@ -6,3 +6,7 @@ dist/
 !.env.example
 .DS_Store
 *.log
+
+# Reproducible, unpublished artwork exports (available as CI review artifact)
+docs/catalog/draft-assets/
+visual-qa/catalog-art/
