@@ -401,7 +401,9 @@ function tpDraftProblems(inventory, drafts) {
       issues.push('TP must remain unpublished draft without images: ' + source.id);
     for (const locale of ['en','ro']) {
       const c = d.copy?.[locale];
-      if (!c || ![c.name,c.summary,c.description].every((v) => typeof v === 'string' && v.trim().length >= 65))
+      if (!c || typeof c.name !== 'string' || c.name.trim().length < 25 ||
+          typeof c.summary !== 'string' || c.summary.trim().length < 65 ||
+          typeof c.description !== 'string' || c.description.trim().length < 150)
         issues.push('Incomplete TP ' + locale + ' copy: ' + source.id);
     }
     const fields = d.specs.map((p) => p.kind + (p.metric ? ':' + p.metric : ''));
