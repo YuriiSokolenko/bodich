@@ -313,16 +313,28 @@ if (process.argv.includes('--self-test') && drafts) {
   try { buildReferenceDrafts(discountOnly, overrides); problems.push('Discount-only orphan was accepted as SKU'); }
   catch { /* correct: no original engine category to inherit */ }
 
-  // Documentation quotes the *stored* name and summary, not a parallel draft.
+  // An extra tag is a distinct error from a mismatched discounted membership.
+  const unknownTag = drafts.map((d) => d.sourceId === WARRANTY_ID ?
+    { ...d, collectionTags: ['future-collection'] } : d);
+  if (!validateReferenceDrafts(source, overrides, unknownTag)
+      .includes('Unsupported reference collection tag: ' + WARRANTY_ID))
+    problems.push('Unsupported collection tag escaped shared reference validation');
+
+  // The ledger uses the source draft names/summaries rather than parallel copy.
+  // A deliberate mutation must fail too, proving this fixture exercises drift.
   const ledger = readFileSync('docs/catalog/commerce-reference-evidence.md', 'utf8');
-  for (const record of [warranty, originalGift]) {
-    for (const locale of ['en', 'ro']) {
-      const copy = record.copy[locale];
-      if (!ledger.includes('> **' + copy.name + '** ' + copy.summary))
-        problems.push('Documentation drifted from ' + locale + ' reference copy: ' +
-          (record.sourceId || record.referenceId));
-    }
-  }
+  const records = [warranty, originalGift];
+  const excerpt = (record, locale) =>
+    '> **' + record.copy[locale].name + '** — ' + record.copy[locale].summary;
+  const ledgerCopyProblems = (content) => records.flatMap((record) =>
+    ['en', 'ro'].filter((locale) => !content.includes(excerpt(record, locale)))
+      .map((locale) => 'Documentation drifted from ' + locale + ' reference copy: ' +
+        (record.sourceId || record.referenceId)));
+  problems.push(...ledgerCopyProblems(ledger));
+  const altered = ledger.replace(excerpt(warranty, 'ro'), '> **Incorrect reference** — Incorrect summary');
+  if (altered === ledger ||
+      !ledgerCopyProblems(altered).includes('Documentation drifted from ro reference copy: ' + WARRANTY_ID))
+    problems.push('Documentation drift regression fixture did not reject altered RO excerpt');
 }
 if (process.argv.some((arg) => arg.startsWith('--') && arg !== '--self-test'))
   problems.push('Unknown argument: expected optional --self-test');
