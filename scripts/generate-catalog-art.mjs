@@ -7,7 +7,7 @@
  * node scripts/generate-catalog-art.mjs --check
  * node scripts/generate-catalog-art.mjs --self-test
  */
-import { readFileSync, mkdirSync, existsSync, readdirSync, statSync } from 'node:fs';
+import { readFileSync, mkdirSync, existsSync, readdirSync, lstatSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import sharp from 'sharp';
 import { inspectRaster, MAX_CATALOG_IMAGE_BYTES } from './catalog-image.mjs';
@@ -49,11 +49,15 @@ function problems(data) {
       data.entries?.length !== inventory.products.length) errors.push('Manifest schema or count mismatch');
   const originals = new Map(inventory.products.map((item) => [item.id, item]));
   const drafts = new Map(overrides.records.map((item) => [item.sourceId, item]));
-  const seen = new Set(), pathSet = new Set();
+  const seen = new Set(), pathSet = new Set(), visibleIndices = new Set();
   for (const entry of data.entries ?? []) {
     if (!entry || !/^kt-(?:[1-9][0-9]*|sq-[A-Z0-9]+)$/.test(entry.sourceId) ||
         seen.has(entry.sourceId)) { errors.push('Duplicate or invalid art source ID'); continue; }
     seen.add(entry.sourceId);
+    const visibleId = displayIndex(entry.sourceId);
+    if (visibleIndices.has(visibleId) || visibleId.length > 9)
+      errors.push('Unusable or duplicated short visual index: ' + entry.sourceId);
+    visibleIndices.add(visibleId);
     const source = originals.get(entry.sourceId), draft = drafts.get(entry.sourceId);
     if (!source || !draft || entry.sourceTitle !== source.sourceTitle ||
         entry.sourceUrl !== source.canonicalUrl ||
@@ -62,7 +66,7 @@ function problems(data) {
     if (entry.status !== 'documented_illustrative_fallback' || entry.rights !== 'pending' ||
         entry.kind !== 'original_diagram' || entry.approved !== false ||
         entry.isProductPhoto !== false || entry.manufacturer !== 'KingTech' ||
-        entry.brief?.length < 25 ||
+        !(typeof entry.brief === 'string' && entry.brief.trim().length >= 25) ||
         !entry.alt?.en?.startsWith('Illustrative') ||
         !entry.alt?.ro?.startsWith('Diagramă ilustrativă') ||
         !entry.alt?.en?.includes('not an actual') ||
@@ -82,6 +86,77 @@ function problems(data) {
     errors.push('Not all importable source SKUs have an honest fallback');
   return errors;
 }
+
+/**
+ * Tiny project-authored 5x7 vector alphabet; no system font/librsvg text shaping.
+ * Raster output may still differ by libvips build, but glyph shapes do not.
+ */
+const glyphRows = {
+  A:'01110/10001/10001/11111/10001/10001/10001',
+  B:'11110/10001/10001/11110/10001/10001/11110',
+  C:'01111/10000/10000/10000/10000/10000/01111',
+  D:'11110/10001/10001/10001/10001/10001/11110',
+  E:'11111/10000/10000/11110/10000/10000/11111',
+  F:'11111/10000/10000/11110/10000/10000/10000',
+  G:'01111/10000/10000/10111/10001/10001/01110',
+  H:'10001/10001/10001/11111/10001/10001/10001',
+  I:'11111/00100/00100/00100/00100/00100/11111',
+  J:'00111/00010/00010/00010/10010/10010/01100',
+  K:'10001/10010/10100/11000/10100/10010/10001',
+  L:'10000/10000/10000/10000/10000/10000/11111',
+  M:'10001/11011/10101/10101/10001/10001/10001',
+  N:'10001/11001/10101/10011/10001/10001/10001',
+  O:'01110/10001/10001/10001/10001/10001/01110',
+  P:'11110/10001/10001/11110/10000/10000/10000',
+  Q:'01110/10001/10001/10001/10101/10010/01101',
+  R:'11110/10001/10001/11110/10100/10010/10001',
+  S:'01111/10000/10000/01110/00001/00001/11110',
+  T:'11111/00100/00100/00100/00100/00100/00100',
+  U:'10001/10001/10001/10001/10001/10001/01110',
+  V:'10001/10001/10001/10001/10001/01010/00100',
+  W:'10001/10001/10001/10101/10101/10101/01010',
+  X:'10001/10001/01010/00100/01010/10001/10001',
+  Y:'10001/10001/01010/00100/00100/00100/00100',
+  Z:'11111/00001/00010/00100/01000/10000/11111',
+  '0':'01110/10001/10011/10101/11001/10001/01110',
+  '1':'00100/01100/00100/00100/00100/00100/01110',
+  '2':'01110/10001/00001/00010/00100/01000/11111',
+  '3':'11110/00001/00001/01110/00001/00001/11110',
+  '4':'00010/00110/01010/10010/11111/00010/00010',
+  '5':'11111/10000/10000/11110/00001/00001/11110',
+  '6':'01110/10000/10000/11110/10001/10001/01110',
+  '7':'11111/00001/00010/00100/01000/01000/01000',
+  '8':'01110/10001/10001/01110/10001/10001/01110',
+  '9':'01110/10001/10001/01111/00001/00001/01110',
+  '/':'00001/00001/00010/00100/01000/10000/10000',
+  '-':'00000/00000/00000/11111/00000/00000/00000',
+  '.':'00000/00000/00000/00000/00000/01100/01100',
+  '+':'00000/00100/00100/11111/00100/00100/00000',
+  '·':'00000/00000/00000/00100/00000/00000/00000',
+  ' ':'00000/00000/00000/00000/00000/00000/00000',
+};
+const glyphs = Object.fromEntries(Object.entries(glyphRows).map(([key, rows]) => [key, rows.split('/')]));
+function vectorText(value, x, y, scale, fill = '#e4ecf1') {
+  const text = String(value).toUpperCase();
+  let path = '';
+  for (let i = 0; i < text.length; i++) {
+    const rows = glyphs[text[i]] ?? glyphs[' '];
+    for (let row = 0; row < 7; row++) {
+      for (let col = 0; col < 5; col++) {
+        if (rows[row][col] === '1') {
+          const xx = x + (i * 6 + col) * scale, yy = y + row * scale;
+          path += 'M' + xx + ' ' + yy + 'h' + scale + 'v' + scale + 'h-' + scale + 'z';
+        }
+      }
+    }
+  }
+  return '<path fill="' + fill + '" d="' + path + '"/>';
+}
+/** Preserve the full ID in the manifest; print only an unambiguous short index. */
+function displayIndex(id) {
+  return id.startsWith('kt-sq-') ? 'SQ-' + id.slice(-6) : id.toUpperCase();
+}
+
 function seedFor(text) {
   let n = 2166136261;
   for (const char of text) n = Math.imul(n ^ char.charCodeAt(0), 16777619);
@@ -178,18 +253,17 @@ function svgFor(entry) {
     lines += line(xx, 260 + i * 61, xx + 45 + i * 10, 260 + i * 61,
       i % 2 ? '#355263' : '#436e75', 3);
   }
-  const serial = entry.sourceId.toUpperCase();
+  const serial = displayIndex(entry.sourceId);
   return '<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900" viewBox="0 0 1200 900">' +
     '<rect width="1200" height="900" fill="#0b1422"/>' +
     '<path d="M0 0 H1200 V900 H0 Z" fill="none" stroke="#344959" stroke-width="30"/>' +
     '<path d="M100 187 H1100 M100 698 H1100" stroke="#324c5d" stroke-width="5"/>' +
     '<rect x="100" y="117" width="16" height="35" fill="#d48958"/>' +
-    '<g font-family="DejaVu Sans, sans-serif" fill="#e4ecf1">' +
-    '<text x="140" y="151" font-size="31" font-weight="bold">BODICH / VISUAL STUDY</text>' +
-    '<text x="103" y="754" font-size="31" font-weight="bold">' + label + '</text>' +
-    '<text x="103" y="809" font-size="25" fill="#9bb4be">ILLUSTRATIVE DIAGRAM · NOT A PRODUCT PHOTO</text>' +
-    '<text x="1018" y="153" text-anchor="end" font-size="30" fill="#d68a59">' + serial + '</text>' +
-    '</g><g opacity=".75">' + lines + '</g><g>' + art + '</g>' +
+    vectorText('BODICH / VISUAL STUDY', 140, 116, 4) +
+    vectorText(label, 103, 724, 4) +
+    vectorText('ILLUSTRATIVE DIAGRAM · NOT A PRODUCT PHOTO', 103, 787, 3, '#9bb4be') +
+    vectorText(serial, 865, 116, 4, '#d68a59') +
+    '<g opacity=".75">' + lines + '</g><g>' + art + '</g>' +
     '<path d="M100 845 H1100" stroke="#cd8054" stroke-width="5"/></svg>';
 }
 async function inspectExports() {
@@ -201,7 +275,7 @@ async function inspectExports() {
       expected.add(path);
       if (!existsSync(path)) { errors.push('Missing raster: ' + entry.sourceId + '/' + key); continue; }
       try {
-        const stat = statSync(path);
+        const stat = lstatSync(path);
         if (!stat.isFile() || stat.isSymbolicLink() || stat.size > MAX_CATALOG_IMAGE_BYTES) {
           errors.push('Oversized or unsafe raster: ' + path); continue;
         }
@@ -247,18 +321,27 @@ async function generate() {
   }
   // Visual category review sheets: a human can inspect EVERY reference thumbnail.
   for (const [family, entries] of byFamily) {
-    const columns = 4, width = 300, height = 225, rows = Math.ceil(entries.length / columns);
+    const columns = 4, width = 360, height = 270, footer = 64;
+    const rows = Math.ceil(entries.length / columns), cellHeight = height + footer;
     const images = [];
     for (let i = 0; i < entries.length; i++) {
-      images.push({ input: await sharp(readFileSync(entries[i].assets.webp360))
-        .resize({ width, height, fit: 'fill' }).toBuffer(),
-        top: Math.floor(i / columns) * height, left: (i % columns) * width });
+      const entry = entries[i], left = (i % columns) * width;
+      const top = Math.floor(i / columns) * cellHeight;
+      images.push({ input: readFileSync(entry.assets.webp360), top, left });
+      // An external-source index and title BELOW the illustration, never a product badge.
+      const title = (entry.sourceTitle ?? 'UNTITLED REFERENCE')
+        .toUpperCase().replace(/[^A-Z0-9 +/.-]/g, ' ').slice(0, 27);
+      const caption = '<svg xmlns="http://www.w3.org/2000/svg" width="360" height="64">' +
+        '<rect width="360" height="64" fill="#182b39"/>' +
+        vectorText(displayIndex(entry.sourceId), 12, 8, 3, '#edb082') +
+        vectorText(title, 12, 38, 2, '#deebef') + '</svg>';
+      images.push({ input: Buffer.from(caption, 'utf8'), top: top + height, left });
     }
-    await sharp({ create: { width: columns * width, height: rows * height,
+    await sharp({ create: { width: columns * width, height: rows * cellHeight,
       channels: 4, background: '#0b1422' } }).composite(images)
       .png({ compressionLevel: 9 }).toFile(resolve(boardRoot, family + '.png'));
   }
-  console.log('Generated ' + manifest.entries.length + ' distinct category diagrams, ' +
+  console.log('Generated ' + manifest.entries.length + ' indexed family diagrams, ' +
     (manifest.entries.length * Object.keys(sizes).length) + ' raster derivatives and ' +
     byFamily.size + ' category review sheets.');
 }
@@ -272,13 +355,24 @@ function selfTest() {
     (m) => { m.entries[0].assets.webp600 = 'public/images/catalog/unsafe.webp'; },
     (m) => { m.entries[0].family = 'accessory-mounting-hardware'; },
     (m) => { m.entries[0].alt.ro = ''; },
+    (m) => { delete m.entries[0].brief; },
+    (m) => { m.entries[0].brief = '   '; },
   ];
   for (const mutate of cases) {
     const m = clone();
     mutate(m);
     if (!problems(m).length) throw new Error('Negative artwork fixture escaped');
   }
-  console.log('Artwork manifest negative fixtures passed.');
+  for (const entry of manifest.entries) {
+    const printed = displayIndex(entry.sourceId);
+    if (printed.length > 9 || !svgFor(entry).includes(vectorText(printed, 865, 116, 4, '#d68a59')))
+      throw new Error('Visual index overflow / missing vector index: ' + entry.sourceId);
+  }
+  const glyphProof = svgFor(manifest.entries[0]);
+  if (glyphProof.includes('<text ') ||
+      !glyphProof.includes(vectorText('ILLUSTRATIVE DIAGRAM · NOT A PRODUCT PHOTO', 103, 787, 3, '#9bb4be')))
+    throw new Error('Mandatory disclaimer is not stable vector geometry');
+  console.log('Artwork manifest and vector lettering negative fixtures passed.');
 }
 const errors = problems(manifest);
 if (errors.length) { console.error(errors.slice(0, 40).join('\n')); process.exit(1); }
