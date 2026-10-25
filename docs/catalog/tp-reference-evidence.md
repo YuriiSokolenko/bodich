@@ -1,6 +1,6 @@
 # KingTech TP reference intake — issue #29
 
-**Verified against KingTech's own TP category and product listings on 2026-10-25.** Research only. This is not BODICH inventory, product photography, technical certification, availability or an offer to sell.
+**Spot-checked against the indexed primary KingTech TP item specifications on 2026-10-25.** This is a manually transcribed snapshot, not a live feed or independently certified hardware revision. Research only. This is not BODICH inventory, product photography, technical certification, availability or an offer to sell.
 
 ## Inventory parity
 
@@ -17,7 +17,7 @@ Source status **unknown** is not a statement of availability. TP product metadat
 
 ## Per-product source-transcribed measurements
 
-Each structured measurement carries its corresponding **KingTech item URL** and `verifiedOn: 2026-10-25`. There are **22** measured fields, and **five propeller-size recommendations** (two for K-30). Values below are not inferred from turbojet thrust, nozzle dimensions or generic G4 engine templates.
+Each structured measurement carries its corresponding **KingTech item URL** and `verifiedOn: 2026-10-25`. The **2026-10-25 snapshot** contains 22 numeric fields and five propeller-size recommendations (two for K-30); these counts are audit totals for the frozen records, not future automatic catalog totals. Values below are not inferred from turbojet thrust, nozzle dimensions or generic G4 engine templates.
 
 | Source ID | Length (mm) | Mass (g) | Turbine max (rpm) | Listed power (kW) | EGT max (°C) | Fuel (g/min) | Three-blade propeller recommendation (inches) |
 |---|---:|---:|---:|---:|---:|---:|---|
@@ -25,6 +25,10 @@ Each structured measurement carries its corresponding **KingTech item URL** and 
 | `kt-18` | 316 | 1,800 | 170,000 | 5.2 | 700 | 220 | 22 × 12 |
 | `kt-19` | 362 | 2,400 | 160,000 | 7.3 | 700 | 240 | 24 × 20 |
 | `kt-20` | 384.55 | 3,500 | 135,000 | 13 | 700 | 360 | 26 × 20 |
+
+**Independent value review and regression pinning:** On 2026-10-25 the 22 captured numeric fields were manually compared with search-indexed text from the four original KingTech pages linked above. The documented baseline [`tp-verified-specs.json`](./tp-verified-specs.json) records the manufacturer URL, 22 values with units and axis qualifiers, five propeller recommendations, fuel options and the named pump. The offline guard compares every draft numeric value/unit/axis against that snapshot, rather than only checking presence and a matching URL. This is a **change-detection guard**, not a live manufacturer scraper: coordinated edits of the baseline and overlay must trigger a new human review of primary sources.
+
+**Version and interpretation caveats:** K-100's live product listing pairs **13 kW** with **6,200 rpm** but does not explicitly say the RPM is the output/propeller shaft speed. Hence it is *not* entered as an independent speed measurement. Older published KingTech G4+ manual copies can differ from current item pages: for example, an archival manual lists K-100 at 2,850 g and 140,000 turbine rpm, and K-45 consumption at 180 g/min, versus the primary-site snapshot's 3,500 g, 135,000 turbine rpm, and 220 g/min respectively. These differences may represent revisions; **do not claim interchangeability** or a factory-confirmed revision without an explicit document linking serial/revision. The snapshot follows the current manufacturer item pages without silently mixing historical numbers.
 
 **Meaning of units:** `rpm` values are explicitly **turbine** speeds, not propeller-shaft speeds. `g/min` measures **fuel mass flow**, not L/h; no density conversion is supported. `power` stores the manufacturer's reported power number without guessing an output-shaft measurement standard. The manufacturer gives all four unit weights without an unambiguous bare-engine versus equipped-assembly definition; each is stored with `scope: not_stated`. None of the four product pages provides a verified gearbox reduction ratio, so `gearboxRatio` stays absent. **No turbine thrust, turbine diameter, or propeller shaft speed** is inherited from G4+ or G5.
 
@@ -45,8 +49,6 @@ The reviewed listings do not establish a complete TP package component list. Alt
 | Brushless fuel pump | pompă de combustibil fără perii | Specific model identified only for K-30 |
 | Exhaust gas temperature (EGT) | temperatura gazelor de evacuare | K-30 not supplied |
 | Fuel mass flow | consum masic de combustibil | `g/min`, not volume per hour |
-| Data Relay Module (DRM) | modul de retransmisie a datelor (DRM) | Not asserted included per TP SKU |
-| Ground Support Unit (GSU) | unitate de asistență la sol (GSU) | Not asserted included per TP SKU |
 
 ## BODICH-original illustration briefs (unpublished)
 
@@ -61,4 +63,4 @@ These are *new illustrative directions only*, not KingTech photographs or dimens
 
 The four `approval: draft` records live solely in `reference-overrides.json`; `src/catalog/reference.ts` is deliberately excluded from public Astro routes. The separate public `confirmedProducts` array remains untouched. Website category/product routes are generated **only** for company-confirmed BODICH items, so no external KingTech TP detail page is published at this intake stage. This is intentional under the #26 publication boundary; company-authorized pages and any actual product photos must be addressed after #33–#35.
 
-The offline `npm run catalog:source:check` gate enforces one-to-one TP source coverage, distinct slugs, model identity, correct category, nonempty EN/RO text, source-specified speed axes, no thrust-only jet defaults, propeller sizes, fuel identity and no unverified gearbox/components; negative fixtures reject lost source IDs, translation omissions, premature approval/images, invalid prop geometry and turbojet contamination.
+The offline `npm run catalog:source:check` gate enforces source-ID coverage, distinct slugs, model identity, bilingual text, TP-only speed axes and numeric agreement with the separately reviewed manufacturer snapshot. Negative fixtures reject unreviewed changed values and units, wrong provenance, missing source items, translation omissions, premature approval/images, unexpected propeller sizes or pump model, unverified gearbox/components, wrong mass scope and TP shaft metadata on jet-only models.
