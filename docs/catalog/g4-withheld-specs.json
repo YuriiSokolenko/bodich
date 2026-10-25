@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "purpose": "unpublished_g4_conflicting_specs_quarantine",
+  "records": [
+    {
+      "sourceId": "kt-1",
+      "fields": [
+        "thrust"
+      ],
+      "reason": "Original source quotes 3 kgf+ rather than an exact nominal thrust; no precise value can be recorded."
+    },
+    {
+      "sourceId": "kt-9",
+      "fields": [
+        "dimension:diameter",
+        "dimension:length",
+        "speed",
+        "temperature"
+      ],
+      "reason": "Regional distributors disagree on geometry, maximum RPM and exhaust temperature; factory revision not confirmed."
+    },
+    {
+      "sourceId": "kt-11",
+      "fields": [
+        "temperature"
+      ],
+      "reason": "US KingTech 750 °C differs from KingTech GCC 700 °C."
+    },
+    {
+      "sourceId": "kt-12",
+      "fields": [
+        "speed",
+        "temperature",
+        "fuel_consumption"
+      ],
+      "reason": "US and KingTech GCC have conflicting RPM, EGT and mass-flow tables."
+    },
+    {
+      "sourceId": "kt-14",
+      "fields": [
+        "temperature"
+      ],
+      "reason": "US KingTech 750 °C differs from KingTech GCC 700 °C."
+    },
+    {
+      "sourceId": "kt-15",
+      "fields": [
+        "temperature"
+      ],
+      "reason": "BGD Tech 730 °C differs from KingTech GCC 700 °C."
+    },
+    {
+      "sourceId": "kt-120",
+      "fields": [
+        "thrust",
+        "dimension:diameter",
+        "temperature",
+        "fuel_consumption"
+      ],
+      "reason": "AerobatX and earlier Taiwan KingTech tables disagree on K-86 G4+ revision thrust, housing diameter, EGT and fuel flow."
+    }
+  ]
+}
