@@ -1,5 +1,7 @@
 # Verified catalog intake
 
+See [Issue #34: bilingual copy and editorial QA](./copy-style-guide.md) for the EN/RO glossary, evidence-linked numeric claim exceptions, 132-SKU review matrix and pending Romanian native-speaker/legal sign-off. All source drafts remain unpublished.
+
 See [Issue #33: original illustration fallbacks and 132-SKU artwork manifest](./visual-artwork.md) for the unpublished procedural WebP/PNG review pipeline, rights gates and EN/RO alternative text. These visuals are **not** photographs and none are company-approved or part of the public product catalog.
 
 ## Unpublished KingTech reference catalog (Issue #26)
