@@ -2246,12 +2246,12 @@
         "en": {
           "name": "ECU Comm Cable — accessory reference",
           "summary": "Source-listed turbine system cable: ECU Comm Cable. The manufacturer catalogue is retained as a distinct unpublished reference.",
-          "description": "The name associates this lead with control-data communication and distinguishes it from the other ECU, pump and power cables listed separately. Connector keying, length, pinout and electrical load are not asserted without a detailed verified source. This is an external reference only; BODICH does not claim to make or sell the item."
+          "description": "The standard ECU communication-cable listing provides no generation or connector code in its title. It must therefore stay distinct from separately named G4/G5 data leads and the two color-identified Xicoy E/F variants; no pinout or length is asserted. This external reference is not a BODICH product."
         },
         "ro": {
           "name": "Cablu pentru sistemul turbinei — ECU Comm Cable (referință KingTech)",
           "summary": "Fișă de referință pentru cablu pentru sistemul turbinei: ECU Comm Cable. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
-          "description": "Denumirea asociază acest cablu cu comunicația de date a controlerului și îl distinge de cablurile ECU, de pompă și de alimentare listate separat. Nu sunt declarate forma mufelor, lungimea, pinout-ul ori sarcina electrică fără dovezi tehnice verificate. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+          "description": "Poziția pentru cablul general de comunicație ECU nu precizează generația ori codul mufei în titlu. Ea rămâne separată de cablurile de date G4/G5 și de cele două variante Xicoy E/F identificate prin culoarea ECU; nu sunt confirmate pinout-ul sau lungimea. Referința nu este un produs BODICH."
         }
       },
       "specs": [],
@@ -2280,12 +2280,12 @@
         "en": {
           "name": "Power Cable — accessory reference",
           "summary": "Source-listed turbine system cable: Power Cable. The individually verified product page is retained as a distinct unpublished reference.",
-          "description": "The name associates this lead with turbine electrical feed and distinguishes it from the other ECU, pump and power cables listed separately. Connector keying, length, pinout and electrical load are not asserted without a detailed verified source. This is an external reference only; BODICH does not claim to make or sell the item."
+          "description": "The direct-only source page identifies a general power cable without a model, connector or voltage in its title. It is retained separately from the nested-category Turbine Power Cable and the explicitly named G4/G4+/G5 battery lead. Electrical rating and pin arrangement are unknown; no BODICH offer is implied."
         },
         "ro": {
           "name": "Cablu pentru sistemul turbinei — Power Cable (referință KingTech)",
           "summary": "Fișă de referință pentru cablu pentru sistemul turbinei: Power Cable. Articolul din pagina individuală verificată este păstrat separat, fără publicare.",
-          "description": "Denumirea asociază acest cablu cu alimentarea electrică a turbinei și îl distinge de cablurile ECU, de pompă și de alimentare listate separat. Nu sunt declarate forma mufelor, lungimea, pinout-ul ori sarcina electrică fără dovezi tehnice verificate. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+          "description": "Pagina sursă verificată separat numește un cablu de alimentare general, fără model, mufă sau tensiune în titlu. Este păstrat separat de Turbine Power Cable din subcategoria oficială și de cablul de baterie G4/G4+/G5. Valorile electrice și configurația pinilor sunt necunoscute; nu există ofertă BODICH."
         }
       },
       "specs": [],
@@ -2312,12 +2312,12 @@
         "en": {
           "name": "G4/G4+ Data Cable — accessory reference",
           "summary": "Source-listed turbine system cable: G4/G4+ Data Cable. The individually verified product page is retained as a distinct unpublished reference.",
-          "description": "The name associates this lead with control-data communication and distinguishes it from the other ECU, pump and power cables listed separately. Connector keying, length, pinout and electrical load are not asserted without a detailed verified source. This is an external reference only; BODICH does not claim to make or sell the item."
+          "description": "The G4/G4+ wording appears literally in this separately indexed data-cable title. It distinguishes the original item from the later G4/G4+/G5 data-cable listing, but does not prove plug or protocol compatibility with every controller revision. Pinout and cable length remain unknown; this is not BODICH stock."
         },
         "ro": {
           "name": "Cablu pentru sistemul turbinei — G4/G4+ Data Cable (referință KingTech)",
           "summary": "Fișă de referință pentru cablu pentru sistemul turbinei: G4/G4+ Data Cable. Articolul din pagina individuală verificată este păstrat separat, fără publicare.",
-          "description": "Denumirea asociază acest cablu cu comunicația de date a controlerului și îl distinge de cablurile ECU, de pompă și de alimentare listate separat. Nu sunt declarate forma mufelor, lungimea, pinout-ul ori sarcina electrică fără dovezi tehnice verificate. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+          "description": "Titlul acestui cablu de date menționează explicit G4/G4+. Este o poziție diferită de cablul denumit G4/G4+/G5, însă nu certifică tipul mufei sau protocolul pentru toate reviziile de controler. Pinout-ul și lungimea rămân necunoscute; nu este stoc BODICH."
         }
       },
       "specs": [],
@@ -2344,12 +2344,12 @@
         "en": {
           "name": "ECU Comm Cable for E Model (Gold Xicoy ECU) — accessory reference",
           "summary": "Source-listed turbine system cable: ECU Comm Cable for E Model (Gold Xicoy ECU). The manufacturer catalogue is retained as a distinct unpublished reference.",
-          "description": "The name associates this lead with control-data communication and distinguishes it from the other ECU, pump and power cables listed separately. Connector keying, length, pinout and electrical load are not asserted without a detailed verified source. This is an external reference only; BODICH does not claim to make or sell the item."
+          "description": "The supplier distinguishes this ECU communication lead specifically by the E-model designation and gold Xicoy ECU description. The housing color is only a source-title identifier, not a measured connector standard; compatibility with a different Xicoy controller is not assumed. No BODICH sales claim is made."
         },
         "ro": {
           "name": "Cablu pentru sistemul turbinei — ECU Comm Cable for E Model (Gold Xicoy ECU) (referință KingTech)",
           "summary": "Fișă de referință pentru cablu pentru sistemul turbinei: ECU Comm Cable for E Model (Gold Xicoy ECU). Articolul din catalogul producătorului este păstrat separat, fără publicare.",
-          "description": "Denumirea asociază acest cablu cu comunicația de date a controlerului și îl distinge de cablurile ECU, de pompă și de alimentare listate separat. Nu sunt declarate forma mufelor, lungimea, pinout-ul ori sarcina electrică fără dovezi tehnice verificate. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+          "description": "Furnizorul distinge acest cablu de comunicație ECU prin denumirea modelului E și descrierea controlerului Xicoy auriu. Culoarea carcasei este doar o etichetă din titlul sursei, nu un standard verificat de mufă; nu presupunem potrivirea cu alte controlere Xicoy. Nu reprezintă o ofertă BODICH."
         }
       },
       "specs": [],
@@ -2378,12 +2378,12 @@
         "en": {
           "name": "ECU Comm Cable for E/F Model (Black Xicoy ECU) — accessory reference",
           "summary": "Source-listed turbine system cable: ECU Comm Cable for E/F Model (Black Xicoy ECU). The manufacturer catalogue is retained as a distinct unpublished reference.",
-          "description": "The name associates this lead with control-data communication and distinguishes it from the other ECU, pump and power cables listed separately. Connector keying, length, pinout and electrical load are not asserted without a detailed verified source. This is an external reference only; BODICH does not claim to make or sell the item."
+          "description": "This ECU communication cable is titled for E/F models with the black Xicoy ECU, separate from the gold E-model cable. Color and model family are transcribed without asserting the exact pins, protocol or interchangeability between black and gold controller versions. It is a research reference, not a BODICH offer."
         },
         "ro": {
           "name": "Cablu pentru sistemul turbinei — ECU Comm Cable for E/F Model (Black Xicoy ECU) (referință KingTech)",
           "summary": "Fișă de referință pentru cablu pentru sistemul turbinei: ECU Comm Cable for E/F Model (Black Xicoy ECU). Articolul din catalogul producătorului este păstrat separat, fără publicare.",
-          "description": "Denumirea asociază acest cablu cu comunicația de date a controlerului și îl distinge de cablurile ECU, de pompă și de alimentare listate separat. Nu sunt declarate forma mufelor, lungimea, pinout-ul ori sarcina electrică fără dovezi tehnice verificate. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+          "description": "Acest cablu de comunicație ECU este descris pentru modelele E/F cu unitate Xicoy neagră, separat de cablul modelului E cu ECU auriu. Culoarea și familia sunt preluate din titlu fără a declara pinii, protocolul sau interschimbabilitatea celor două controlere. Este o referință, nu o ofertă BODICH."
         }
       },
       "specs": [],
@@ -2548,12 +2548,12 @@
         "en": {
           "name": "Turbine Power Cable — accessory reference",
           "summary": "Source-listed turbine system cable: Turbine Power Cable. The manufacturer catalogue is retained as a distinct unpublished reference.",
-          "description": "The name associates this lead with turbine electrical feed and distinguishes it from the other ECU, pump and power cables listed separately. Connector keying, length, pinout and electrical load are not asserted without a detailed verified source. This is an external reference only; BODICH does not claim to make or sell the item."
+          "description": "This source-category item is explicitly called Turbine Power Cable, rather than the direct-only generic Power Cable or the G4/G4+/G5 Battery Cable. No conclusion about shared connectors, cable gauge, current capacity or safe substitution is drawn from the similar names. This is an external reference only."
         },
         "ro": {
           "name": "Cablu pentru sistemul turbinei — Turbine Power Cable (referință KingTech)",
           "summary": "Fișă de referință pentru cablu pentru sistemul turbinei: Turbine Power Cable. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
-          "description": "Denumirea asociază acest cablu cu alimentarea electrică a turbinei și îl distinge de cablurile ECU, de pompă și de alimentare listate separat. Nu sunt declarate forma mufelor, lungimea, pinout-ul ori sarcina electrică fără dovezi tehnice verificate. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+          "description": "Poziția din subcategoria sursei se numește Turbine Power Cable, nu Power Cable de pe pagina directă și nici cablul de baterie G4/G4+/G5. Denumirile apropiate nu dovedesc mufe comune, secțiunea conductorului, curentul admis sau posibilitatea de substituire. Este doar o referință externă."
         }
       },
       "specs": [],
@@ -2752,12 +2752,12 @@
         "en": {
           "name": "Data Cable G4/G4+/G5 — accessory reference",
           "summary": "Source-listed turbine system cable: Data Cable G4/G4+/G5. The manufacturer catalogue is retained as a distinct unpublished reference.",
-          "description": "The name associates this lead with control-data communication and distinguishes it from the other ECU, pump and power cables listed separately. Connector keying, length, pinout and electrical load are not asserted without a detailed verified source. This is an external reference only; BODICH does not claim to make or sell the item."
+          "description": "The original title explicitly identifies a data lead with G4, G4+ and G5 series labels. This is not the same source item as the G4/G4+ data lead or the ECU communication cables for Xicoy E/F controls. The series wording is not a tested cross-generation fitment matrix; connector details are unverified."
         },
         "ro": {
           "name": "Cablu pentru sistemul turbinei — Data Cable G4/G4+/G5 (referință KingTech)",
           "summary": "Fișă de referință pentru cablu pentru sistemul turbinei: Data Cable G4/G4+/G5. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
-          "description": "Denumirea asociază acest cablu cu comunicația de date a controlerului și îl distinge de cablurile ECU, de pompă și de alimentare listate separat. Nu sunt declarate forma mufelor, lungimea, pinout-ul ori sarcina electrică fără dovezi tehnice verificate. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+          "description": "Titlul original identifică un cablu de date cu indicatoarele de serie G4, G4+ și G5. Poziția este distinctă de cablul G4/G4+ și de cablurile ECU pentru controlerele Xicoy E/F. Denumirea seriilor nu constituie o matrice de compatibilitate testată; detaliile conectorului nu sunt verificate."
         }
       },
       "specs": [],
@@ -2786,12 +2786,12 @@
         "en": {
           "name": "KingTech ECU G2 — accessory reference",
           "summary": "Source-listed turbine control electronics: KingTech ECU G2. The manufacturer catalogue is retained as a distinct unpublished reference.",
-          "description": "This named ECU|GSU control-system entry is distinct from data leads and Bluetooth adapters. Revision, firmware, connectors and engine compatibility must be established against the actual controller manual before use. This is an external reference only; BODICH does not claim to make or sell the item."
+          "description": "The original source lists KingTech ECU G2 as a control-unit item, not as a GSU display, DRM module or communication lead. G2 is retained as a title designation, without claiming later-generation compatibility, supported firmware, pin allocation or supplied cables. No BODICH manufacture or availability is asserted."
         },
         "ro": {
           "name": "Echipament electronic de control — KingTech ECU G2 (referință KingTech)",
           "summary": "Fișă de referință pentru echipament electronic de control: KingTech ECU G2. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
-          "description": "Acest echipament ECU/GSU apare separat de cablurile de date și adaptoarele Bluetooth. Revizia, firmware-ul, conectorii și compatibilitatea cu motoarele trebuie stabilite din manualul controlerului înainte de utilizare. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+          "description": "Sursa listează KingTech ECU G2 ca unitate de control, nu ca afișaj GSU, modul DRM sau cablu de comunicație. G2 este păstrat ca identificator din titlu, fără a afirma compatibilitatea cu generații ulterioare, firmware-ul suportat, pinii sau cablurile incluse. Nu se declară producție ori disponibilitate BODICH."
         }
       },
       "specs": [],
@@ -2820,12 +2820,12 @@
         "en": {
           "name": "GSU KingTech — accessory reference",
           "summary": "Source-listed turbine control electronics: GSU KingTech. The manufacturer catalogue is retained as a distinct unpublished reference.",
-          "description": "This named ECU|GSU control-system entry is distinct from data leads and Bluetooth adapters. Revision, firmware, connectors and engine compatibility must be established against the actual controller manual before use. This is an external reference only; BODICH does not claim to make or sell the item."
+          "description": "The GSU KingTech item is indexed as a ground-support/user interface rather than an engine ECU; its exact form factor and controller generation are not specified in the recorded title. It remains separate from the GSU Bluetooth module and the G2 ECU. Display type, firmware and electrical interface need source verification."
         },
         "ro": {
           "name": "Echipament electronic de control — GSU KingTech (referință KingTech)",
           "summary": "Fișă de referință pentru echipament electronic de control: GSU KingTech. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
-          "description": "Acest echipament ECU/GSU apare separat de cablurile de date și adaptoarele Bluetooth. Revizia, firmware-ul, conectorii și compatibilitatea cu motoarele trebuie stabilite din manualul controlerului înainte de utilizare. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+          "description": "Articolul GSU KingTech este indexat ca interfață de utilizator și operare la sol, nu ca ECU de motor; forma constructivă și generația controlerului nu sunt precizate în titlul înregistrat. Rămâne separat de modulul Bluetooth GSU și de ECU G2. Ecranul, firmware-ul și interfața electrică necesită verificare."
         }
       },
       "specs": [],
