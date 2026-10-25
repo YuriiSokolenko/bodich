@@ -51,6 +51,11 @@ const productPath = `${category.id}/${product.slug}`;
               decoding="async"
               class="h-auto w-full object-contain"
             />
+            {product.image.kind !== 'product_photo' && (
+              <figcaption data-concept-disclosure class="mt-4 border-t border-bodich-border pt-3 text-sm font-semibold leading-6 text-bodich-muted">
+                {t.catalogIllustrativeImageNotice}
+              </figcaption>
+            )}
           </figure>
         ) : (
           <div data-product-no-image class="flex min-h-64 items-center justify-center rounded-control border border-bodich-border bg-bodich-panel/80 p-8">
