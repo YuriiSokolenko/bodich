@@ -5649,6 +5649,34 @@
       },
       "images": [],
       "approval": "draft"
+    },
+    {
+      "sourceId": "kt-100",
+      "slug": "kingtech-warranty-transfer-reference",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "KingTech Warranty Transfer — reference only",
+          "summary": "An unpublished record of a KingTech warranty-transfer service; BODICH does not offer a warranty purchase or transfer.",
+          "description": "This KingTech Warranty Purchase source listing is a service reference, not a physical turbine. It records only the supplier's historic listing identity. BODICH makes no warranty duration, coverage, eligibility, transfer, return, payment or fulfillment promise. Any future offering requires separate company and legal approval."
+        },
+        "ro": {
+          "name": "Transfer de garanție KingTech — doar referință",
+          "summary": "Înregistrare nepublicată a unui serviciu KingTech de transfer al garanției; BODICH nu oferă cumpărarea sau transferul garanției.",
+          "description": "Această listare din secțiunea KingTech Warranty Purchase reprezintă un serviciu, nu o turbină fizică. Păstrăm doar identitatea înregistrării de la furnizor. BODICH nu promite durata sau acoperirea garanției, eligibilitate, transfer, retur, plată ori prestarea serviciului. Orice ofertă viitoare necesită aprobare distinctă din partea companiei și a departamentului juridic."
+        }
+      },
+      "specs": [],
+      "images": [],
+      "approval": "draft",
+      "warranty": {
+        "kind": "warranty_transfer",
+        "sourceUrl": "https://www.kingtechturbines.com/product/warranty-transfer/100",
+        "sourceBrand": "KingTech Turbines",
+        "reviewedOn": "2026-10-25",
+        "offerStatus": "reference_only",
+        "legalApproval": "pending"
+      }
     }
   ]
 }
