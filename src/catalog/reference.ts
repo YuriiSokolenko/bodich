@@ -133,6 +133,57 @@ export type ReferenceBatteryDetails = {
   sourceNotes: string[];
   artBriefId: string;
 };
+/** Draft-only, source-attributed service; not an engine or BODICH warranty offer. */
+export type ReferenceWarrantyDetails = {
+  kind: 'warranty_transfer';
+  sourceUrl: string;
+  sourceBrand: 'KingTech Turbines';
+  reviewedOn: string;
+  offerStatus: 'reference_only';
+  legalApproval: 'pending';
+};
+
+/**
+ * Digital Gift Card is NOT a Square /product SKU. Its external checkout is
+ * retained only in the source inventory for evidence, never as an action here.
+ */
+export type ExternalReferenceService = {
+  referenceId: string;
+  sourceSection: 'gift-card';
+  itemType: 'digital';
+  sourceBrand: 'KingTech Turbines';
+  sourceUrl: string;
+  approval: 'draft';
+  offerStatus: 'reference_only';
+  legalApproval: 'pending';
+  copy: Record<Locale, ReferenceCopy>;
+};
+
+export const externalReferenceServices: readonly ExternalReferenceService[] = [
+  {
+    referenceId: 'kingtech-gift-card-external',
+    sourceSection: 'gift-card',
+    itemType: 'digital',
+    sourceBrand: 'KingTech Turbines',
+    sourceUrl: 'https://www.kingtechturbines.com/',
+    approval: 'draft',
+    offerStatus: 'reference_only',
+    legalApproval: 'pending',
+    copy: {
+      en: {
+        name: 'KingTech Gift Card — external reference only',
+        summary: 'A supplier-linked digital gift card, recorded for catalog research; BODICH does not sell or issue gift cards.',
+        description: 'The KingTech source links to a separate Square gift-card checkout, not to an engine or a unique shop SKU. This is information only: BODICH offers no gift codes, voucher redemption, credit, delivery or return terms. A future program would require separate company and legal approval.',
+      },
+      ro: {
+        name: 'Card cadou KingTech — doar referință externă',
+        summary: 'Card cadou digital de la furnizor, documentat doar pentru catalog; BODICH nu vinde și nu emite carduri cadou.',
+        description: 'Sursa KingTech trimite către un sistem Square extern, nu către un motor sau un SKU propriu. Aceasta este doar o referință: BODICH nu oferă coduri cadou, răscumpărare, credit, livrare sau drepturi de retur. Un program viitor ar necesita aprobări separate din partea companiei și a departamentului juridic.',
+      },
+    },
+  },
+];
+
 export type SourceInventoryProduct = {
   id: string;
   sourceTitle: string | null;
@@ -155,6 +206,7 @@ export type ReferenceOverride = {
   accessory?: ReferenceAccessoryDetails;
   oil?: ReferenceOilDetails;
   battery?: ReferenceBatteryDetails;
+  warranty?: ReferenceWarrantyDetails;
   images?: ReferenceImage[];
   approval?: ReferenceApproval;
 };
@@ -175,6 +227,7 @@ export type ReferenceDraft = {
   accessory: ReferenceAccessoryDetails | null;
   oil: ReferenceOilDetails | null;
   battery: ReferenceBatteryDetails | null;
+  warranty: ReferenceWarrantyDetails | null;
   images: ReferenceImage[];
   approval: ReferenceApproval;
   source: {
@@ -224,6 +277,7 @@ export function buildReferenceDrafts(inventory: SourceInventory, overrides: Refe
       accessory: edit?.accessory ?? null,
       oil: edit?.oil ?? null,
       battery: edit?.battery ?? null,
+      warranty: edit?.warranty ?? null,
       images: edit?.images ?? [],
       approval: edit?.approval ?? 'research',
       source: {
@@ -234,6 +288,11 @@ export function buildReferenceDrafts(inventory: SourceInventory, overrides: Refe
       },
     };
   });
+}
+
+/** View over existing turbine records, not a copy or new product identity. */
+export function discountedReferenceDrafts(drafts: readonly ReferenceDraft[]): ReferenceDraft[] {
+  return drafts.filter((draft) => draft.collectionTags.includes('discounted'));
 }
 
 const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -277,7 +336,7 @@ export function validateReferenceDrafts(
   const edited = new Set<string>();
   for (const edit of overrides.records) {
     if (!edit || typeof edit !== 'object' || Array.isArray(edit)) { fail('Invalid editorial record'); continue; }
-    if (!keysOnly(edit, ['sourceId', 'slug', 'model', 'copy', 'specs', 'turboprop', 'accessory', 'oil', 'battery', 'images', 'approval']))
+    if (!keysOnly(edit, ['sourceId', 'slug', 'model', 'copy', 'specs', 'turboprop', 'accessory', 'oil', 'battery', 'warranty', 'images', 'approval']))
       fail('Unknown editorial field for ' + edit.sourceId);
     if (!sourceIds.has(edit.sourceId)) fail('Editorial record references unknown source: ' + edit.sourceId);
     if (edited.has(edit.sourceId)) fail('Duplicate editorial override: ' + edit.sourceId);
@@ -298,6 +357,8 @@ export function validateReferenceDrafts(
       fail('Invalid oil metadata: ' + edit.sourceId);
     if (edit.battery !== undefined && (!edit.battery || typeof edit.battery !== 'object' || Array.isArray(edit.battery)))
       fail('Invalid battery metadata: ' + edit.sourceId);
+    if (edit.warranty !== undefined && (!edit.warranty || typeof edit.warranty !== 'object' || Array.isArray(edit.warranty)))
+      fail('Invalid warranty metadata: ' + edit.sourceId);
     if (edit.images !== undefined && !Array.isArray(edit.images)) fail('Images must be an array: ' + edit.sourceId);
   }
   if (drafts.length !== inventory.products.length) fail('Draft/reference coverage lost source rows');
@@ -313,7 +374,9 @@ export function validateReferenceDrafts(
         referenceTaxonomy[section].category !== draft.categoryId) fail('Mismatched item type or category: ' + draft.sourceId);
     if (draft.source.sections.some((s) => s !== 'discounted' && !isKnownSection(s)))
       fail('Unknown reference section: ' + draft.sourceId);
-    if (draft.collectionTags.includes('discounted') !== draft.source.sections.includes('discounted'))
+    if (draft.collectionTags.includes('discounted') !== draft.source.sections.includes('discounted') ||
+        draft.collectionTags.some((tag) => tag !== 'discounted') ||
+        (draft.collectionTags.includes('discounted') && !['turbojet', 'turboprop'].includes(draft.itemType)))
       fail('Incorrect discount tag: ' + draft.sourceId);
     if (!['research', 'draft', 'editorial_review', 'company_approved'].includes(draft.approval))
       fail('Invalid approval state: ' + draft.sourceId);
@@ -460,6 +523,20 @@ export function validateReferenceDrafts(
             spec.value === (kind === 'voltage' ? detail.voltage.value : detail.capacity.value) &&
             spec.sourceUrl === sourceProduct.canonicalUrl).length === 1))
         fail('Invalid/unsourced battery metadata: ' + draft.sourceId);
+    }
+    if (draft.itemType !== 'service' && draft.warranty !== null)
+      fail('Non-service reference contains warranty metadata: ' + draft.sourceId);
+    if (draft.warranty !== null) {
+      const detail = draft.warranty;
+      if (draft.itemType !== 'service' || !sourceProduct || !detail ||
+          typeof detail !== 'object' || Array.isArray(detail) ||
+          !keysOnly(detail, ['kind', 'sourceUrl', 'sourceBrand', 'reviewedOn', 'offerStatus', 'legalApproval']) ||
+          detail.kind !== 'warranty_transfer' ||
+          detail.sourceUrl !== sourceProduct.canonicalUrl ||
+          detail.sourceBrand !== 'KingTech Turbines' ||
+          !validEvidenceUrl(detail.sourceUrl) || !validVerificationDate(detail.reviewedOn) ||
+          detail.offerStatus !== 'reference_only' || detail.legalApproval !== 'pending')
+        fail('Invalid/unapproved warranty metadata: ' + draft.sourceId);
     }
     if (!Array.isArray(draft.images)) { fail('Invalid images: ' + draft.sourceId); continue; }
     for (const img of draft.images) {
