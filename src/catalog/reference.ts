@@ -78,6 +78,18 @@ export const referenceAccessoryGroups = [
 ] as const;
 export type ReferenceAccessoryGroup = (typeof referenceAccessoryGroups)[number];
 /**
+ * Extract one COMPLETE source-title model qualifier (not verified fitment).
+ * Model-family shorthand is preserved verbatim; do not expand e.g. K30/45G.
+ * A bare numeric code such as 45/70 is a variant hint, not fitment evidence.
+ * This deliberately excludes fluid words such as "Fuel" and "Propane".
+ */
+export function accessoryTitleQualifier(title: string | null): string | null {
+  if (!title) return null;
+  const qualifier = title.match(/\b(?:K\d{2,3}(?:\/\d{2,3})*(?:TP)?(?:\s*G(?:\d\+?(?:\/G\d\+?)*)?)?(?:\s+and\s+G\d\+?)?|G\d\+?(?:\/G\d\+?)*|E\/F Model|E Model|KT Pump)/i);
+  return qualifier?.[0] ?? null;
+}
+
+/**
  * Source-title labels are NOT tested fitments. Never expand a title's K/G
  * shorthand into a normalized model list without detailed manufacturer proof.
  */
@@ -340,7 +352,9 @@ export function validateReferenceDrafts(
           accessory.sourceSubcategoryUrls.some((url, i) => url !== source.subcategoryUrls[i]) ||
           !(accessory.variantLabel === null ||
             (nonempty(accessory.variantLabel) && !!source.sourceTitle &&
-              source.sourceTitle.includes(accessory.variantLabel))) ||
+              source.sourceTitle.includes(accessory.variantLabel) &&
+              !/^(fuel|propane|oil|valve|pump|cable|motor)$/i.test(accessory.variantLabel))) ||
+          (compatibility?.sourceLabel !== accessoryTitleQualifier(source.sourceTitle)) ||
           !compatibility || typeof compatibility !== 'object' || Array.isArray(compatibility) ||
           !keysOnly(compatibility, ['status', 'sourceLabel', 'confirmedModels']) ||
           !['unverified', 'source_title_only'].includes(compatibility.status) ||
@@ -348,7 +362,7 @@ export function validateReferenceDrafts(
           (compatibility.status === 'unverified' && compatibility.sourceLabel !== null) ||
           (compatibility.status === 'source_title_only' &&
             (!nonempty(compatibility.sourceLabel) || !source.sourceTitle ||
-              !source.sourceTitle.includes(compatibility.sourceLabel))))
+              compatibility.sourceLabel !== accessoryTitleQualifier(source.sourceTitle))))
         fail('Invalid/unsourced accessory metadata: ' + draft.sourceId);
     }
     if (!Array.isArray(draft.images)) { fail('Invalid images: ' + draft.sourceId); continue; }
