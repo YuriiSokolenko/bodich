@@ -27,7 +27,7 @@ function unsafeReferenceImports(source, importer) {
     const absoluteTarget = specifier.startsWith('.') ? resolve(dirname(importer), withoutExtension) : '';
     if (absoluteTarget === sourceRef ||
         /(?:^|\/)catalog\/reference$/.test(withoutExtension) ||
-        /(?:^|\/)(?:source-inventory|reference-overrides)(?:\.json)?$/.test(specifier)) {
+        /(?:^|\/)(?:source-inventory|reference-overrides|g4-withheld-specs)(?:\.json)?$/.test(specifier)) {
       restricted.push(specifier);
     }
   }
@@ -430,6 +430,22 @@ if (process.argv.includes('--self-test')) {
       images: [sampleImage()] }]);
     if (validateReferenceDrafts(doc, pendingDraft, buildReferenceDrafts(doc, pendingDraft)).length)
       errors.push('Valid source-ID-scoped unpublished image was rejected');
+    // Schema-level mass scope validation rejects invalid variants and
+    // scope attached to non-mass measurements.
+    const illegalScope = [
+      candidate([{ sourceId: one.id, specs: [{
+        kind: 'mass', value: 500, unit: 'g', scope: 'with_brackets_guess',
+        sourceUrl: one.canonicalUrl, verifiedOn: doc.capturedAt,
+      }] }]),
+      candidate([{ sourceId: one.id, specs: [{
+        kind: 'thrust', value: 5, unit: 'kgf', scope: 'bare_engine',
+        sourceUrl: one.canonicalUrl, verifiedOn: doc.capturedAt,
+      }] }]),
+    ];
+    for (const entry of illegalScope) {
+      if (!validateReferenceDrafts(doc, entry, buildReferenceDrafts(doc, entry)).length)
+        errors.push('Invalid reference mass scope accepted by schema');
+    }
     const badOverlays = [
       candidate([{ sourceId: one.id, slug: 'Broken_UPPERCASE' }]),
       candidate([{ sourceId: one.id, approval: 'published' }]),
@@ -588,6 +604,7 @@ if (process.argv.includes('--self-test')) {
       "export * from './reference';",
       "import('./reference.ts')",
       "import '../../docs/catalog/source-inventory.json'",
+      "import '../../docs/catalog/g4-withheld-specs.json'",
       "const source = require('../../docs/catalog/reference-overrides.json')",
     ];
     for (const example of forbidden) {
