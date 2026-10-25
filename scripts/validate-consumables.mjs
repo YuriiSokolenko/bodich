@@ -162,6 +162,25 @@ if (process.argv.includes('--self-test')) {
   expectRejected('original LIFE chemistry label lost', mutate('kt-24', (d) => ({
     ...d, battery: { ...d.battery, chemistry: { sourceLabel: 'LiFe' } },
   })));
+  // Shared schema must follow the literal title, not hard-code this issue's LIFE baseline.
+  // The issue-specific audit MUST still reject a changed 2026-10-23 snapshot.
+  const newChemistryInventory = structuredClone(inventory);
+  newChemistryInventory.products.find((p) => p.id === 'kt-24').sourceTitle =
+    '3800mAh-9.9V LIPO Battery';
+  const newChemistryOverrides = structuredClone(overrides);
+  newChemistryOverrides.records.find((d) => d.sourceId === 'kt-24').battery.chemistry.sourceLabel = 'LIPO';
+  const newChemistryDrafts = buildReferenceDrafts(newChemistryInventory, newChemistryOverrides);
+  if (validateReferenceDrafts(newChemistryInventory, newChemistryOverrides, newChemistryDrafts).length)
+    errors.push('Shared schema rejected chemistry wording faithfully copied from a new source title');
+  if (!check(newChemistryInventory, newChemistryDrafts, newChemistryOverrides, ledger).length)
+    errors.push('Issue #31 baseline accepted an invented chemistry variant');
+  const mismatchedChemistry = mutate('kt-24', (d) => ({
+    ...d, battery: { ...d.battery, chemistry: { sourceLabel: 'LiFe' } },
+  }));
+  if (!validateReferenceDrafts(inventory, overrides, mismatchedChemistry)
+      .some((e) => e.includes('Invalid/unsourced battery metadata')))
+    errors.push('Shared validator missed mismatched title chemistry');
+
   const alteredLedger = ledger.replace(/(\| kt-23 \|[^\n]*)\n/, '');
   if (!check(inventory, drafts, overrides, alteredLedger).some((s) => s.includes('ledger')))
     errors.push('Negative fixture escaped: removed evidence row');
