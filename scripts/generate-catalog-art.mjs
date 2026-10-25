@@ -164,7 +164,7 @@ function displayIndex(id) {
 
 
 const REVIEW_CAPTION_WIDTH = 360;
-const REVIEW_CAPTION_HEIGHT = 114;
+const REVIEW_CAPTION_HEIGHT = 134;
 const REVIEW_CHARS_PER_LINE = 27;
 const REVIEW_TITLE_LINES = 3;
 
@@ -184,17 +184,25 @@ function reviewTitleLines(sourceTitle) {
     throw new Error('Source title cannot fit without truncation: ' + sourceTitle);
   return lines;
 }
+/** Full Square IDs wrap after the prefix, retaining every original character. */
+function reviewIdLines(id) {
+  const full = id.toUpperCase();
+  const lines = full.length <= REVIEW_CHARS_PER_LINE ? [full] :
+    full.startsWith('KT-SQ-') ? ['KT-SQ-', full.slice(6)] : [full];
+  if (lines.length > 2 || lines.some((line) => line.length > REVIEW_CHARS_PER_LINE) ||
+      lines.join('') !== full)
+    throw new Error('Full source ID cannot fit caption: ' + full);
+  return lines;
+}
 function contactSheetCaption(entry) {
-  const fullId = entry.sourceId.toUpperCase();
-  if (fullId.length > REVIEW_CHARS_PER_LINE)
-    throw new Error('Full source ID cannot fit caption: ' + fullId);
+  const idLines = reviewIdLines(entry.sourceId);
   const titleLines = reviewTitleLines(entry.sourceTitle);
   return '<svg xmlns="http://www.w3.org/2000/svg" width="' + REVIEW_CAPTION_WIDTH +
     '" height="' + REVIEW_CAPTION_HEIGHT + '">' +
     '<rect width="' + REVIEW_CAPTION_WIDTH + '" height="' + REVIEW_CAPTION_HEIGHT +
     '" fill="#182b39"/>' +
-    vectorText(fullId, 12, 8, 2, '#edb082') +
-    titleLines.map((line, index) => vectorText(line, 12, 38 + index * 24, 2, '#deebef')).join('') +
+    idLines.map((line, index) => vectorText(line, 12, 8 + index * 21, 2, '#edb082')).join('') +
+    titleLines.map((line, index) => vectorText(line, 12, 54 + index * 24, 2, '#deebef')).join('') +
     '</svg>';
 }
 
@@ -451,16 +459,19 @@ function selfTest() {
     if (expectedLines.join(' ') !== entry.sourceTitle.toUpperCase().trim().replace(/\s+/g, ' '))
       throw new Error('Source title was truncated or reordered in review caption: ' + entry.sourceId);
     const caption = contactSheetCaption(entry);
-    if (!caption.includes(vectorText(entry.sourceId.toUpperCase(), 12, 8, 2, '#edb082')) ||
+    if (reviewIdLines(entry.sourceId).join('') !== entry.sourceId.toUpperCase() ||
+        reviewIdLines(entry.sourceId).some((line, i) =>
+          !caption.includes(vectorText(line, 12, 8 + i * 21, 2, '#edb082'))) ||
         expectedLines.some((line, i) => !caption.includes(
-          vectorText(line, 12, 38 + i * 24, 2, '#deebef'))))
+          vectorText(line, 12, 54 + i * 24, 2, '#deebef'))))
       throw new Error('Missing full source ID or title in review caption: ' + entry.sourceId);
   }
   const mounting = manifest.entries.filter((entry) => entry.family === 'accessory-mounting-hardware');
   const captionIdentifiers = new Set(mounting.map((entry) => entry.sourceId));
   if (captionIdentifiers.size !== mounting.length ||
-      mounting.some((entry) => !contactSheetCaption(entry).includes(
-        vectorText(entry.sourceId.toUpperCase(), 12, 8, 2, '#edb082'))))
+      mounting.some((entry) => reviewIdLines(entry.sourceId).some((line, i) =>
+        !contactSheetCaption(entry).includes(
+          vectorText(line, 12, 8 + i * 21, 2, '#edb082')))))
     throw new Error('Mounting hardware contact sheets lack distinct full reference IDs');
   const glyphProof = svgFor(manifest.entries[0]);
   if (glyphProof.includes('<text ') ||
