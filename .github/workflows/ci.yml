@@ -73,6 +73,7 @@ jobs:
           done
           # Derive expectations from the real typed taxonomy, never a second hard-coded list.
           node scripts/validate-catalog.mjs --routes dist
+          npm run catalog:reconcile:routes
       - name: Smoke-test non-root base path
         env:
           ASTRO_BASE: /bodich-preview
