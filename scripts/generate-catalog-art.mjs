@@ -8,6 +8,7 @@
  * node scripts/generate-catalog-art.mjs --self-test
  */
 import { readFileSync, writeFileSync, mkdirSync, mkdtempSync, rmSync, existsSync, readdirSync, lstatSync } from 'node:fs';
+import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { tmpdir } from 'node:os';
 import { resolve, dirname, join, basename } from 'node:path';
@@ -60,6 +61,12 @@ function problems(data) {
     if (visibleIndices.has(visibleId) || visibleId.length > 9)
       errors.push('Unusable or duplicated short visual index: ' + entry.sourceId);
     visibleIndices.add(visibleId);
+    // Fail manifest validation before any rasterization if supplier text cannot render.
+    const unsupported = [...String(entry.sourceTitle ?? '').toUpperCase()]
+      .filter((character) => !glyphs[character]);
+    if (unsupported.length)
+      errors.push('Unsupported supplier title glyph(s) ' +
+        [...new Set(unsupported)].join(', ') + ': ' + entry.sourceId);
     const source = originals.get(entry.sourceId), draft = drafts.get(entry.sourceId);
     if (!source || !draft || entry.sourceTitle !== source.sourceTitle ||
         entry.sourceUrl !== source.canonicalUrl ||
@@ -145,7 +152,9 @@ function vectorText(value, x, y, scale, fill = '#e4ecf1') {
   const text = String(value).toUpperCase();
   let path = '';
   for (let i = 0; i < text.length; i++) {
-    const rows = glyphs[text[i]] ?? glyphs[' '];
+    const rows = glyphs[text[i]];
+    if (!rows) throw new Error('Unsupported vector glyph: ' + JSON.stringify(text[i]) +
+      ' in ' + JSON.stringify(text));
     for (let row = 0; row < 7; row++) {
       for (let col = 0; col < 5; col++) {
         if (rows[row][col] === '1') {
@@ -449,6 +458,28 @@ function selfTest() {
     mutate(m);
     if (!problems(m).length) throw new Error('Negative artwork fixture escaped');
   }
+  // Never silently drop an unknown title character (including punctuation).
+  for (const character of ['&', '%', ':', '"', '€']) {
+    assert.throws(
+      () => vectorText('TEST ' + character, 12, 8, 2),
+      (error) => error instanceof Error &&
+        error.message.includes('Unsupported vector glyph') &&
+        error.message.includes(character),
+      'Unsupported vector glyph must reject ' + character,
+    );
+    assert.throws(
+      () => contactSheetCaption({ ...manifest.entries[0],
+        sourceTitle: 'Model ' + character + ' suffix' }),
+      /Unsupported vector glyph/,
+      'Supplier title must not silently lose ' + character,
+    );
+    const mutated = clone();
+    mutated.entries[0].sourceTitle += character;
+    assert(problems(mutated).some((error) => error.includes('Unsupported supplier title glyph')),
+      'Manifest validation must reject unsupported character ' + character);
+  }
+  // Supported punctuation and blanks render consistently without throwing.
+  assert.doesNotThrow(() => vectorText('MODEL K-30/45 G4+ (REV. 2), A·B', 0, 0, 2));
   for (const entry of manifest.entries) {
     const printed = displayIndex(entry.sourceId);
     if (printed.length > 9 || !svgFor(entry).includes(vectorText(printed, 865, 116, 4, '#d68a59')))
