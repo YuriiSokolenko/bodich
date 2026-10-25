@@ -188,6 +188,13 @@ const file = resolve('docs/catalog/source-inventory.json');
 let doc;
 try { doc = JSON.parse(readFileSync(file, 'utf8')); }
 catch (e) { console.error('Source inventory missing or invalid: ' + e.message); process.exit(1); }
+let g4Withheld;
+try {
+  g4Withheld = JSON.parse(readFileSync(resolve('docs/catalog/g4-withheld-specs.json'), 'utf8'));
+} catch (error) {
+  console.error('G4+ quarantine file missing or invalid: ' + error.message);
+  process.exit(1);
+}
 
 /**
  * Issue #27: enforce complete unpublished editorial coverage for every real G5
@@ -248,57 +255,90 @@ function g5DraftProblems(inventory, drafts) {
  * bilingual reference, even when the model has vanished from featured listings.
  * Do not turn incomplete or disputed supplier numbers into precise spec fields.
  */
-function g4DraftProblems(inventory, drafts) {
+/**
+ * A single review-controlled source for specs withheld from G4+.
+ * Schema checking ensures an accidental typo cannot disable the quarantine.
+ */
+const g4AllowedFields = new Set([
+  'thrust', 'mass', 'speed', 'temperature', 'fuel_consumption',
+  'dimension:diameter', 'dimension:length',
+]);
+function g4QuarantineProblems(inventory, policy) {
+  const errors = [];
+  if (!policy || policy.schemaVersion !== 1 ||
+      policy.purpose !== 'unpublished_g4_conflicting_specs_quarantine' ||
+      !Array.isArray(policy.records) ||
+      Object.keys(policy).some((k) => !['schemaVersion','purpose','records'].includes(k)))
+    return ['Invalid G4+ quarantine policy schema'];
+  const known = new Set(inventory.products.filter((p) => p.sourceCategoryIds.includes('g4')).map((p) => p.id));
+  const ids = new Set();
+  for (const record of policy.records) {
+    if (!record || typeof record !== 'object' || Array.isArray(record)) {
+      errors.push('Invalid G4+ quarantine entry');
+      continue;
+    }
+    if (Object.keys(record).some((k) => !['sourceId','fields','reason'].includes(k)) ||
+        !known.has(record.sourceId) || ids.has(record.sourceId) ||
+        typeof record.reason !== 'string' || record.reason.trim().length < 25 ||
+        !Array.isArray(record.fields) || record.fields.length === 0 ||
+        record.fields.some((field) => !g4AllowedFields.has(field)) ||
+        new Set(record.fields).size !== record.fields.length)
+      errors.push('Invalid/duplicate G4+ quarantine entry: ' + record.sourceId);
+    ids.add(record.sourceId);
+  }
+  return errors;
+}
+const g4SpecField = (spec) => spec.kind + (spec.kind === 'dimension' ? ':' + spec.metric : '');
+function g4DraftProblems(inventory, drafts, policy = g4Withheld) {
   const errors = [];
   const sourceG4 = inventory.products.filter((p) => p.sourceCategoryIds.includes('g4'));
   const grouped = drafts.filter((d) => d.categoryId === 'g4-plus');
   if (sourceG4.length !== grouped.length)
     errors.push('G4+ category coverage differs from unique G4 source inventory');
+  const statusCounts = Object.fromEntries(['discontinued','industrial_only','unknown'].map(
+    (status) => [status, sourceG4.filter((p) => p.sourceStatus === status).length]));
+  if (statusCounts.discontinued !== 7 || statusCounts.industrial_only !== 1 ||
+      statusCounts.unknown !== 9)
+    errors.push('G4+ source lifecycle distribution changed; reassess 7/1/9 claims');
   const byId = new Map(drafts.map((d) => [d.sourceId, d]));
+  const quarantined = new Map(policy.records.map((entry) => [entry.sourceId, new Set(entry.fields)]));
   for (const source of sourceG4) {
     const d = byId.get(source.id);
     if (!d || d.categoryId !== 'g4-plus') {
       errors.push('Missing G4+ reference draft: ' + source.id);
       continue;
     }
-    const nameModel = source.sourceTitle?.match(/K-(\d+)G4\+/i);
-    const expectedModel = nameModel ? 'K-' + nameModel[1] + 'G4+' : null;
-    const expectedSlug = nameModel ? 'kingtech-k-' + nameModel[1] + 'g4-plus' : null;
+    const sourceModel = source.sourceTitle?.match(/K-(\d+)G4\+/i);
+    const expectedModel = sourceModel ? 'K-' + sourceModel[1] + 'G4+' : null;
+    const expectedSlug = sourceModel ? 'kingtech-k-' + sourceModel[1] + 'g4-plus' : null;
     if (!expectedModel || d.model !== expectedModel || d.slug !== expectedSlug ||
         d.source.manufacturer !== 'KingTech' || d.itemType !== 'turbojet' ||
         d.source.url !== source.canonicalUrl)
       errors.push('Incorrect G4+ model identity/category: ' + source.id);
-    if (d.approval === 'research')
-      errors.push('Unedited G4+ reference: ' + source.id);
-    for (const locale of ['en', 'ro']) {
+    // Later approval/image tasks must explicitly revise this intake-phase gate.
+    if (d.approval !== 'draft' || !Array.isArray(d.images) || d.images.length !== 0)
+      errors.push('G4+ must remain unpublished draft with no images: ' + source.id);
+    for (const locale of ['en','ro']) {
       const copy = d.copy?.[locale];
-      if (!copy || ![copy.name, copy.summary, copy.description].every(
+      if (!copy || ![copy.name,copy.summary,copy.description].every(
         (s) => typeof s === 'string' && s.replace(/\s+/g, ' ').trim().length >= 25
       )) errors.push('Incomplete G4+ ' + locale + ' draft copy: ' + source.id);
     }
-    const kinds = new Set(d.specs.map((s) => s.kind));
-    for (const kind of ['mass', 'speed', 'fuel_consumption', 'dimension']) {
-      // K-210G4+ speed/fuel values differ across named KingTech regional pages.
-      if (!kinds.has(kind) && !(source.id === 'kt-12' && ['speed', 'fuel_consumption'].includes(kind)))
-        errors.push('Missing G4+ technical kind ' + kind + ': ' + source.id);
+    const fields = d.specs.map(g4SpecField), present = new Set(fields);
+    const withheld = quarantined.get(source.id) ?? new Set();
+    if (present.size !== fields.length || fields.some((f) => !g4AllowedFields.has(f)))
+      errors.push('Duplicate/unexpected G4+ technical field: ' + source.id);
+    for (const field of withheld) {
+      if (present.has(field)) errors.push('Withheld G4+ technical field ' + field + ': ' + source.id);
     }
-    // The K-30 source gives "3kg+" and no exact nominal thrust.
-    if (source.id !== 'kt-1' && !kinds.has('thrust'))
-      errors.push('Missing G4+ technical kind thrust: ' + source.id);
-    if (source.id === 'kt-1' && kinds.has('thrust'))
-      errors.push('Inexact K-30G4+ thrust must not be stored as nominal: ' + source.id);
-    for (const metric of ['diameter', 'length']) {
-      if (!d.specs.some((s) => s.kind === 'dimension' && s.metric === metric))
-        errors.push('Missing G4+ dimension ' + metric + ': ' + source.id);
+    // A baseline field is mandatory unless its absence is explicitly justified.
+    for (const field of ['thrust','mass','speed','fuel_consumption','dimension:diameter','dimension:length']) {
+      if (!present.has(field) && !withheld.has(field))
+        errors.push('Missing G4+ technical field ' + field + ': ' + source.id);
     }
-    // Several regional references conflict on EGT; do not silently
-    // select the US or regional number without a factory revision record.
-    if (['kt-9', 'kt-11', 'kt-12', 'kt-14', 'kt-15'].includes(source.id) &&
-        kinds.has('temperature'))
-      errors.push('Conflicting G4+ EGT must remain unset: ' + source.id);
-    if (source.id === 'kt-12' &&
-        (kinds.has('speed') || kinds.has('fuel_consumption')))
-      errors.push('Conflicting K-210G4+ speed/fuel values must remain unset: ' + source.id);
+    const mass = d.specs.filter((s) => s.kind === 'mass');
+    if (mass.length !== 1 || !['bare_engine','assembly_with_integrated_hardware','not_stated'].includes(mass[0].scope))
+      errors.push('G4+ engine mass requires explicit measurement scope: ' + source.id);
     if (source.sourceStatus === 'discontinued' &&
         (!/discontinued/i.test(d.copy?.en?.name || '') ||
          !/retras/i.test(d.copy?.ro?.name || '')))
@@ -323,6 +363,7 @@ try {
   drafts = buildReferenceDrafts(doc, draftOverrides);
   errors.push(...validateReferenceDrafts(doc, draftOverrides, drafts).map((e) => 'Reference drafts: ' + e));
   errors.push(...g5DraftProblems(doc, drafts).map((e) => 'G5 coverage: ' + e));
+  errors.push(...g4QuarantineProblems(doc, g4Withheld).map((e) => 'G4+ policy: ' + e));
   errors.push(...g4DraftProblems(doc, drafts).map((e) => 'G4+ coverage: ' + e));
 } catch (error) {
   errors.push('Cannot derive unpublished reference catalog: ' + error.message);
@@ -495,34 +536,52 @@ if (process.argv.includes('--self-test')) {
     } : d);
     if (!g4DraftProblems(doc, brokenIndustrialStatus).some((e) => e.includes('industrial restriction')))
       errors.push('Industrial-only G4+ restriction lost without a failing regression');
-    const fictionalG4Thrust = drafts.map((d) => d.sourceId === 'kt-1' ? {
-      ...d, specs: [...d.specs, { kind: 'thrust', value: 3, unit: 'kgf',
-        sourceUrl: d.source.url, verifiedOn: doc.capturedAt }],
+    const promoted = drafts.map((d) => d.sourceId === 'kt-2' ?
+      { ...d, approval: 'company_approved' } : d);
+    if (!g4DraftProblems(doc, promoted).some((e) => e.includes('must remain unpublished')))
+      errors.push('G4+ approval promotion bypassed draft-only gate');
+    const imaged = drafts.map((d) => d.sourceId === 'kt-2' ?
+      { ...d, images: [{ path: 'docs/catalog/draft-assets/kt-2/concept.webp' }] } : d);
+    if (!g4DraftProblems(doc, imaged).some((e) => e.includes('must remain unpublished')))
+      errors.push('G4+ draft acquired an image without failing gate');
+    const massScopeMissing = drafts.map((d) => d.sourceId === 'kt-2' ? {
+      ...d, specs: d.specs.map((s) => s.kind === 'mass' ? { ...s, scope: undefined } : s),
     } : d);
-    if (!g4DraftProblems(doc, fictionalG4Thrust).some((e) => e.includes('Inexact K-30G4+')))
-      errors.push('Ambiguous archived G4+ thrust was accepted as exact');
-    for (const disputedId of ['kt-9', 'kt-11', 'kt-12', 'kt-14', 'kt-15']) {
-      const disputedG4Temp = drafts.map((d) => d.sourceId === disputedId ? {
-        ...d, specs: [...d.specs, { kind: 'temperature', value: 700, unit: '°C',
-          sourceUrl: d.source.url, verifiedOn: doc.capturedAt }],
-      } : d);
-      if (!g4DraftProblems(doc, disputedG4Temp).some((e) => e.includes('Conflicting G4+ EGT')))
-        errors.push('Disputed G4+ EGT bypassed regression guard: ' + disputedId);
+    if (!g4DraftProblems(doc, massScopeMissing).some((e) => e.includes('requires explicit measurement scope')))
+      errors.push('Unscoped G4+ mass bypassed comparison guard');
+    const changedStatus = structuredClone(doc);
+    changedStatus.products.find((p) => p.id === 'kt-2').sourceStatus = 'unknown';
+    if (!g4DraftProblems(changedStatus, drafts).some((e) => e.includes('distribution changed')))
+      errors.push('Changed G4+ lifecycle distribution bypassed status guard');
+    for (const invalidPolicy of [
+      { ...g4Withheld, schemaVersion: 2 },
+      { ...g4Withheld, records: [...g4Withheld.records, {
+        sourceId: 'kt-2', fields: ['dimension:height'], reason: 'Unsupported axis must fail before checking records',
+      }] },
+      { ...g4Withheld, records: [...g4Withheld.records, g4Withheld.records[0]] },
+      { ...g4Withheld, records: [...g4Withheld.records, {
+        sourceId: 'fictional-999', fields: ['thrust'], reason: 'Unknown source identity is not allowed in this policy',
+      }] },
+    ]) {
+      if (!g4QuarantineProblems(doc, invalidPolicy).length)
+        errors.push('Invalid G4+ quarantine policy passed self-test');
     }
-
-    for (const kind of ['speed', 'fuel_consumption']) {
-      const spec = kind === 'speed' ? {
-        kind, value: 121000, unit: 'rpm',
-      } : {
-        kind, value: 620, unit: 'g/min',
-      };
-      const disputedK210 = drafts.map((d) => d.sourceId === 'kt-12' ? {
-        ...d, specs: [...d.specs, {
-          ...spec, sourceUrl: d.source.url, verifiedOn: doc.capturedAt,
-        }],
-      } : d);
-      if (!g4DraftProblems(doc, disputedK210).some((e) => e.includes('Conflicting K-210G4+')))
-        errors.push('Contradictory K-210G4+ ' + kind + ' bypassed regression');
+    // Derive every conflict injection from the exact same policy as production.
+    const injectedSpec = (field, d) => {
+      const [kind, metric] = field.split(':');
+      const units = { thrust: 'kgf', mass: 'g', speed: 'rpm',
+        temperature: '°C', fuel_consumption: 'g/min', dimension: 'mm' };
+      return { kind, ...(metric ? { metric } : {}), value: 100,
+        unit: units[kind], sourceUrl: d.source.url, verifiedOn: doc.capturedAt };
+    };
+    for (const entry of g4Withheld.records) {
+      for (const field of entry.fields) {
+        const injected = drafts.map((d) => d.sourceId === entry.sourceId ? {
+          ...d, specs: [...d.specs, injectedSpec(field, d)],
+        } : d);
+        if (!g4DraftProblems(doc, injected).some((e) => e.includes('Withheld G4+ technical field ' + field)))
+          errors.push('Withheld G4+ field escaped negative fixture: ' + entry.sourceId + ' ' + field);
+      }
     }
     const importer = resolve('src/catalog/index.ts');
     const forbidden = [
