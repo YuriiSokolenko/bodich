@@ -4010,12 +4010,12 @@
         "en": {
           "name": "KingTech KP300 BL Pump — accessory reference",
           "summary": "Source-listed fuel pump: KingTech KP300 BL Pump. The manufacturer catalogue is retained as a distinct unpublished reference.",
-          "description": "This is the KP300 listing within KingTech's pump family; the \"BL\" notation is retained as a model suffix rather than interpreted as a confirmed electrical characteristic. Flow rate, pressure, supply voltage and ECU pairing are not verified by the indexed source title. This is an external reference only; BODICH does not claim to make or sell the item."
+          "description": "This is the KP300 BL listing within KingTech's pump family; the \"BL\" notation is retained as a model suffix rather than interpreted as a confirmed electrical characteristic. Flow rate, pressure, supply voltage and ECU pairing are not verified by the indexed source title. This is an external reference only; BODICH does not claim to make or sell the item."
         },
         "ro": {
           "name": "Pompă de combustibil — KingTech KP300 BL Pump (referință KingTech)",
           "summary": "Fișă de referință pentru pompă de combustibil: KingTech KP300 BL Pump. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
-          "description": "Aceasta este poziția KP300 din familia de pompe KingTech; notația „BL” este păstrată ca sufix de model, nu interpretată drept caracteristică electrică verificată. Debitul, presiunea, tensiunea de alimentare și asocierea cu ECU nu sunt confirmate de titlul sursei. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+          "description": "Aceasta este poziția KP300 BL din familia de pompe KingTech; notația „BL” este păstrată ca sufix de model, nu interpretată drept caracteristică electrică verificată. Debitul, presiunea, tensiunea de alimentare și asocierea cu ECU nu sunt confirmate de titlul sursei. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
         }
       },
       "specs": [],
@@ -4025,7 +4025,7 @@
         "sourceSubcategoryUrls": [
           "https://www.kingtechturbines.com/shop/pump/12"
         ],
-        "variantLabel": "KP300",
+        "variantLabel": "KP300 BL",
         "compatibility": {
           "status": "unverified",
           "sourceLabel": null,
@@ -5298,12 +5298,12 @@
         "en": {
           "name": "KingTech KP500V+ — accessory reference",
           "summary": "Source-listed fuel pump: KingTech KP500V+. The manufacturer catalogue is retained as a distinct unpublished reference.",
-          "description": "This is the KP500V listing within KingTech's pump family; the \"V\" notation is retained as a model suffix rather than interpreted as a confirmed electrical characteristic. Flow rate, pressure, supply voltage and ECU pairing are not verified by the indexed source title. This is an external reference only; BODICH does not claim to make or sell the item."
+          "description": "This is the KP500V+ listing within KingTech's pump family; the \"V\" notation is retained as a model suffix rather than interpreted as a confirmed electrical characteristic. Flow rate, pressure, supply voltage and ECU pairing are not verified by the indexed source title. This is an external reference only; BODICH does not claim to make or sell the item."
         },
         "ro": {
           "name": "Pompă de combustibil — KingTech KP500V+ (referință KingTech)",
           "summary": "Fișă de referință pentru pompă de combustibil: KingTech KP500V+. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
-          "description": "Aceasta este poziția KP500V din familia de pompe KingTech; notația „V” este păstrată ca sufix de model, nu interpretată drept caracteristică electrică verificată. Debitul, presiunea, tensiunea de alimentare și asocierea cu ECU nu sunt confirmate de titlul sursei. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+          "description": "Aceasta este poziția KP500V+ din familia de pompe KingTech; notația „V” este păstrată ca sufix de model, nu interpretată drept caracteristică electrică verificată. Debitul, presiunea, tensiunea de alimentare și asocierea cu ECU nu sunt confirmate de titlul sursei. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
         }
       },
       "specs": [],
@@ -5313,7 +5313,7 @@
         "sourceSubcategoryUrls": [
           "https://www.kingtechturbines.com/shop/pump/12"
         ],
-        "variantLabel": "KP500V",
+        "variantLabel": "KP500V+",
         "compatibility": {
           "status": "unverified",
           "sourceLabel": null,
