@@ -71,6 +71,30 @@ export type ReferenceTurbopropDetails = {
   gearboxRatio?: number;
 };
 
+/** Unpublished grouping: no public product category or route is created. */
+export const referenceAccessoryGroups = [
+  'ecu-controls', 'electrical-components', 'fuel-systems',
+  'mounting-hardware', 'turbine-protection', 'maintenance-parts',
+] as const;
+export type ReferenceAccessoryGroup = (typeof referenceAccessoryGroups)[number];
+/**
+ * Source-title labels are NOT tested fitments. Never expand a title's K/G
+ * shorthand into a normalized model list without detailed manufacturer proof.
+ */
+export type ReferenceAccessoryDetails = {
+  groupId: ReferenceAccessoryGroup;
+  sourceUrl: string;
+  sourceSubcategoryUrls: string[];
+  variantLabel: string | null;
+  compatibility: {
+    status: 'unverified' | 'source_title_only';
+    sourceLabel: string | null;
+    /** Intentionally empty until original-source technical fitment review. */
+    confirmedModels: string[];
+  };
+  /** Corresponding BODICH-original proposed artwork direction in documentation. */
+  artBriefId: ReferenceAccessoryGroup;
+};
 export type SourceInventoryProduct = {
   id: string;
   sourceTitle: string | null;
@@ -80,6 +104,7 @@ export type SourceInventoryProduct = {
   sourceStatus: SourceStatus;
   capturedAt: string;
   evidenceUrls: string[];
+  subcategoryUrls: string[];
 };
 export type SourceInventory = { products: SourceInventoryProduct[] };
 export type ReferenceOverride = {
@@ -89,6 +114,7 @@ export type ReferenceOverride = {
   copy?: Record<Locale, ReferenceCopy | null>;
   specs?: ReferenceSpec[];
   turboprop?: ReferenceTurbopropDetails;
+  accessory?: ReferenceAccessoryDetails;
   images?: ReferenceImage[];
   approval?: ReferenceApproval;
 };
@@ -106,6 +132,7 @@ export type ReferenceDraft = {
   copy: Record<Locale, ReferenceCopy | null>;
   specs: ReferenceSpec[];
   turboprop: ReferenceTurbopropDetails | null;
+  accessory: ReferenceAccessoryDetails | null;
   images: ReferenceImage[];
   approval: ReferenceApproval;
   source: {
@@ -152,6 +179,7 @@ export function buildReferenceDrafts(inventory: SourceInventory, overrides: Refe
       copy: edit?.copy ?? { en: null, ro: null },
       specs: edit?.specs ?? [],
       turboprop: edit?.turboprop ?? null,
+      accessory: edit?.accessory ?? null,
       images: edit?.images ?? [],
       approval: edit?.approval ?? 'research',
       source: {
@@ -205,7 +233,7 @@ export function validateReferenceDrafts(
   const edited = new Set<string>();
   for (const edit of overrides.records) {
     if (!edit || typeof edit !== 'object' || Array.isArray(edit)) { fail('Invalid editorial record'); continue; }
-    if (!keysOnly(edit, ['sourceId', 'slug', 'model', 'copy', 'specs', 'turboprop', 'images', 'approval']))
+    if (!keysOnly(edit, ['sourceId', 'slug', 'model', 'copy', 'specs', 'turboprop', 'accessory', 'images', 'approval']))
       fail('Unknown editorial field for ' + edit.sourceId);
     if (!sourceIds.has(edit.sourceId)) fail('Editorial record references unknown source: ' + edit.sourceId);
     if (edited.has(edit.sourceId)) fail('Duplicate editorial override: ' + edit.sourceId);
@@ -220,6 +248,8 @@ export function validateReferenceDrafts(
     if (edit.specs !== undefined && !Array.isArray(edit.specs)) fail('Specifications must be an array: ' + edit.sourceId);
     if (edit.turboprop !== undefined && (!edit.turboprop || typeof edit.turboprop !== 'object' || Array.isArray(edit.turboprop)))
       fail('Invalid turboprop metadata: ' + edit.sourceId);
+    if (edit.accessory !== undefined && (!edit.accessory || typeof edit.accessory !== 'object' ||
+        Array.isArray(edit.accessory))) fail('Invalid accessory metadata: ' + edit.sourceId);
     if (edit.images !== undefined && !Array.isArray(edit.images)) fail('Images must be an array: ' + edit.sourceId);
   }
   if (drafts.length !== inventory.products.length) fail('Draft/reference coverage lost source rows');
@@ -291,6 +321,35 @@ export function validateReferenceDrafts(
             tp.includedComponents.length === 0 || !tp.includedComponents.every(nonempty))) ||
           (tp.gearboxRatio !== undefined && (!Number.isFinite(tp.gearboxRatio) || tp.gearboxRatio <= 0)))
         fail('Invalid or unsourced TP metadata: ' + draft.sourceId);
+    }
+    const accessory = draft.accessory;
+    if (draft.itemType !== 'accessory' && accessory !== null)
+      fail('Non-accessory record contains accessory metadata: ' + draft.sourceId);
+    if (accessory !== null) {
+      const source = inventory.products.find((p) => p.id === draft.sourceId);
+      const compatibility = accessory?.compatibility;
+      if (draft.itemType !== 'accessory' || !accessory || typeof accessory !== 'object' ||
+          Array.isArray(accessory) ||
+          !keysOnly(accessory, ['groupId', 'sourceUrl', 'sourceSubcategoryUrls',
+            'variantLabel', 'compatibility', 'artBriefId']) ||
+          !referenceAccessoryGroups.includes(accessory.groupId) ||
+          accessory.artBriefId !== accessory.groupId ||
+          !source || accessory.sourceUrl !== source.canonicalUrl ||
+          !Array.isArray(accessory.sourceSubcategoryUrls) ||
+          accessory.sourceSubcategoryUrls.length !== source.subcategoryUrls.length ||
+          accessory.sourceSubcategoryUrls.some((url, i) => url !== source.subcategoryUrls[i]) ||
+          !(accessory.variantLabel === null ||
+            (nonempty(accessory.variantLabel) && !!source.sourceTitle &&
+              source.sourceTitle.includes(accessory.variantLabel))) ||
+          !compatibility || typeof compatibility !== 'object' || Array.isArray(compatibility) ||
+          !keysOnly(compatibility, ['status', 'sourceLabel', 'confirmedModels']) ||
+          !['unverified', 'source_title_only'].includes(compatibility.status) ||
+          !Array.isArray(compatibility.confirmedModels) || compatibility.confirmedModels.length !== 0 ||
+          (compatibility.status === 'unverified' && compatibility.sourceLabel !== null) ||
+          (compatibility.status === 'source_title_only' &&
+            (!nonempty(compatibility.sourceLabel) || !source.sourceTitle ||
+              !source.sourceTitle.includes(compatibility.sourceLabel))))
+        fail('Invalid/unsourced accessory metadata: ' + draft.sourceId);
     }
     if (!Array.isArray(draft.images)) { fail('Invalid images: ' + draft.sourceId); continue; }
     for (const img of draft.images) {
