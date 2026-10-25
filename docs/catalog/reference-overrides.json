@@ -5663,7 +5663,7 @@
         "ro": {
           "name": "Transfer de garanție KingTech — doar referință",
           "summary": "Înregistrare nepublicată a unui serviciu KingTech de transfer al garanției; BODICH nu oferă cumpărarea sau transferul garanției.",
-          "description": "Această listare din secțiunea KingTech Warranty Purchase reprezintă un serviciu, nu o turbină fizică. Păstrăm doar identitatea înregistrării de la furnizor. BODICH nu promite durata sau acoperirea garanției, eligibilitate, transfer, retur, plată ori prestarea serviciului. Orice ofertă viitoare necesită aprobare distinctă din partea companiei și a departamentului juridic."
+          "description": "Această listare din secțiunea KingTech Warranty Purchase reprezintă un serviciu, nu o turbină fizică. Păstrăm doar identitatea înregistrării de la furnizor. BODICH nu oferă nicio garanție privind durata, acoperirea, eligibilitatea pentru transfer, drepturile de retur sau prestarea serviciului și nu acceptă plăți pentru acesta. Orice ofertă viitoare necesită aprobare distinctă din partea companiei și a departamentului juridic."
         }
       },
       "specs": [],
