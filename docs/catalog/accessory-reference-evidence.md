@@ -4,7 +4,7 @@
 
 ## Inventory parity and acceptance
 
-The original site presents **89 accessory listings across 14 nested source categories** and no stand-alone results at the umbrella accessories category. Four independently confirmed product URLs (IDs 32, 33, 107 and 138) are **direct-only**, making **93 unique accessory product IDs**. Each has exactly one source-linked, unpublished editorial override in [reference-overrides.json](./reference-overrides.json). The 28 Pump listings and 13 Engine Bracket listings include five modern opaque Square identifiers; these remain separate IDs rather than being dropped or merged into approximate variants. The captured snapshot has no duplicate cross-listing, but the source category URL arrays are preserved for future cross-listed items.
+The original site presents **89 accessory listings across 14 nested source categories** and no stand-alone results at the umbrella accessories category. Four independently confirmed product URLs (IDs 32, 33, 107 and 138) are **direct-only**, making **93 unique accessory product IDs**. Each has exactly one source-linked, unpublished editorial override in [reference-overrides.json](./reference-overrides.json). The Pump subcategory has 28 listings: 26 KP-series pump listings, one KP replacement wire/valve set (kt-99) and one PISCO one-way valve. Of five opaque Square identifiers, three are brackets (K102, K130 and K450), one is the KP500V+ pump, and one is the PISCO valve. All retain separate source IDs. The captured snapshot has no duplicate cross-listing, but the source category URL arrays are preserved for future cross-listed items.
 
 | Unpublished BODICH reference group | Items |
 |---|---:|
@@ -20,10 +20,10 @@ These six are **unpublished editorial groups**, not new live sales routes. Exter
 
 ### Source facts and explicitly unknown information
 
-- The **variant label** is an exact literal fragment of the manufacturer's source title (for example `KP300DP`, `4mm`, `K260` or `G4/G4+`). A model suffix is not decoded as voltage, controller type, performance or physical interchangeability. Numbered UAT models do **not** establish litres or millilitres.
-- The **compatibility status** is `source_title_only` when a literal designation appears in the source title, otherwise `unverified`. `confirmedModels: []` intentionally remains empty in **all 93 records**. A title such as “for K45/55/70/86” is saved *as printed*, **not expanded** into verified generation-specific model support.
+- The **variant label** is a literal SKU/model, physical size or numbered family selector from the source title (for example `KP300DP`, `4mm`, `K260`, `45/70` or `G4/G4+`). Generic fluid/function terms such as “Fuel” or “Propane” are not variants and receive `null`. Bare numeric starter codes such as `45/70` are **variant hints only**, not verified model-fitment labels; a prefixed `K45/70` is retained as a **title-only** family qualifier, not verified compatibility. Suffixes are not decoded as voltage, controller type, performance or interchangeability. Numbered UAT models do **not** establish litres or millilitres.
+- The **compatibility status** is `source_title_only` only when the complete K/G generation label, E/E-F model label or KT Pump qualifier is present as a source-title designation, otherwise `unverified`. The stored `sourceLabel` must equal the **complete parsed qualifier**; truncated fragments (e.g. `K30/45 G3` when the title says `K30/45 G3 and G4`, or `K30/45` when the title says `K30/45G`) fail offline validation. `confirmedModels: []` intentionally remains empty for **all 93 records**. A title such as “for K45/55/70/86” is retained *as printed*, **not expanded** into verified generation-specific model support.
 - No detailed original-source evidence independently established connector pinouts, pressure/flow ratings, voltage, actual hose ID/OD, bracket hole geometry, exact dimensions, pack quantity, or complete model fitment for these records. Numeric `specs` remain empty instead of fabricating manufacturer measurements. Every record links the exact original product URL; source-title text is the only imported product fact.
-- Each of 93 records carries original English and Romanian draft names, summaries and component-aware detail descriptions. Product links and human-readable titles remain attributed to KingTech; descriptions are newly written, not copied. All records have `approval: "draft"`, `images: []`. Company content review and artwork rights clearance follow issues #33–#35, and `confirmedProducts` remains empty.
+- Each of 93 records carries original English and Romanian draft names, summaries and component-aware detail descriptions. Product links and titles remain attributed to KingTech in both languages; descriptions are newly written, not copied. The pump family shares a provisional technical-review template differentiated by the actual SKU code and suffix; the duplicate-description guard catches verbatim collisions, **not** all boilerplate. Independent copyediting of repeated family structures remains part of #34. All records have `approval: "draft"`, `images: []`. Company content review and artwork rights clearance follow issues #33–#35, and `confirmedProducts` remains empty.
 
 ### Original BODICH artwork directions (not supplied imagery)
 
@@ -124,8 +124,8 @@ The source URL shown in each row is the product-level evidence anchor and preser
 | `kt-104` | [Propeller Bolt for K45TP](https://www.kingtechturbines.com/product/propeller-bolt-for-k45tp/104) | tp-model-accessories | `mounting-hardware` | — | `K45TP` (title only) |
 | `kt-105` | [TP-Propeller Spacer60/100](https://www.kingtechturbines.com/product/tp-propeller-spacer60-100/105) | tp-model-accessories | `mounting-hardware` | Spacer60/100 | Unverified |
 | `kt-106` | [TP-Bolt75L60/100](https://www.kingtechturbines.com/product/tp-bolt75l60-100/106) | tp-model-accessories | `mounting-hardware` | Bolt75L60/100 | Unverified |
-| `kt-107` | [Fuel Solenoid Valve](https://www.kingtechturbines.com/product/fuel-solenoid-valve/107) | Direct-only | `fuel-systems` | Fuel | Unverified |
-| `kt-108` | [Propane Solenoid Valve](https://www.kingtechturbines.com/product/propane-solenoid-valve/108) | valve | `fuel-systems` | Propane | Unverified |
+| `kt-107` | [Fuel Solenoid Valve](https://www.kingtechturbines.com/product/fuel-solenoid-valve/107) | Direct-only | `fuel-systems` | — | Unverified |
+| `kt-108` | [Propane Solenoid Valve](https://www.kingtechturbines.com/product/propane-solenoid-valve/108) | valve | `fuel-systems` | — | Unverified |
 | `kt-112` | [Fuel Tubing 4mm](https://www.kingtechturbines.com/product/fuel-tubing-4mm/112) | fuel-tubing | `fuel-systems` | 4mm | Unverified |
 | `kt-113` | [Fuel Tubing 6mm](https://www.kingtechturbines.com/product/fuel-tubing-6mm/113) | fuel-tubing | `fuel-systems` | 6mm | Unverified |
 | `kt-114` | [TEFLON Tubing 4mm](https://www.kingtechturbines.com/product/teflon-tubing-4mm/114) | fuel-tubing | `fuel-systems` | 4mm | Unverified |
@@ -133,10 +133,10 @@ The source URL shown in each row is the product-level evidence anchor and preser
 | `kt-116` | [UAT 150](https://www.kingtechturbines.com/product/uat-150/116) | UAT | `fuel-systems` | UAT 150 | Unverified |
 | `kt-117` | [UAT 250](https://www.kingtechturbines.com/product/uat-250/117) | UAT | `fuel-systems` | UAT 250 | Unverified |
 | `kt-121` | [Stainless Steel Bracket for K140/170/180/210](https://www.kingtechturbines.com/product/stainless-steel-bracket-for-k140-170-180-210/121) | engine-bracket | `mounting-hardware` | K140/170/180/210 | `K140/170/180/210` (title only) |
-| `kt-124` | [Kero Plug for K30/45 G3 and G4](https://www.kingtechturbines.com/product/kero-plug-for-k30-45-g3-and-g4/124) | kero-plug | `maintenance-parts` | — | `K30/45 G3` (title only) |
+| `kt-124` | [Kero Plug for K30/45 G3 and G4](https://www.kingtechturbines.com/product/kero-plug-for-k30-45-g3-and-g4/124) | kero-plug | `maintenance-parts` | — | `K30/45 G3 and G4` (title only) |
 | `kt-125` | [Starter Motor Clutch O-Rings](https://www.kingtechturbines.com/product/starter-motor-clutch-o-rings/125) | starter-motor | `maintenance-parts` | — | Unverified |
 | `kt-137` | [FOD Screen 320](https://www.kingtechturbines.com/product/fod-screen-320/137) | fod-screen | `turbine-protection` | 320 | Unverified |
-| `kt-138` | [Temp Probe - K30/45G](https://www.kingtechturbines.com/product/temp-probe-k30-45g/138) | Direct-only | `maintenance-parts` | — | `K30/45` (title only) |
+| `kt-138` | [Temp Probe - K30/45G](https://www.kingtechturbines.com/product/temp-probe-k30-45g/138) | Direct-only | `maintenance-parts` | — | `K30/45G` (title only) |
 | `kt-139` | [KingTech KP300DP Pump](https://www.kingtechturbines.com/product/kingtech-kp300dp-pump/139) | pump | `fuel-systems` | KP300DP | Unverified |
 | `kt-140` | [KingTech KP500DP Pump](https://www.kingtechturbines.com/product/kingtech-kp500dp-pump/140) | pump | `fuel-systems` | KP500DP | Unverified |
 | `kt-141` | [KingTech KP600DP Pump](https://www.kingtechturbines.com/product/kingtech-kp600dp-pump/141) | pump | `fuel-systems` | KP600DP | Unverified |
