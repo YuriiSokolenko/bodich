@@ -188,11 +188,12 @@ const file = resolve('docs/catalog/source-inventory.json');
 let doc;
 try { doc = JSON.parse(readFileSync(file, 'utf8')); }
 catch (e) { console.error('Source inventory missing or invalid: ' + e.message); process.exit(1); }
-let g4Withheld;
+let g4Withheld, tpVerified;
 try {
   g4Withheld = JSON.parse(readFileSync(resolve('docs/catalog/g4-withheld-specs.json'), 'utf8'));
+  tpVerified = JSON.parse(readFileSync(resolve('docs/catalog/tp-verified-specs.json'), 'utf8'));
 } catch (error) {
-  console.error('G4+ quarantine file missing or invalid: ' + error.message);
+  console.error('Reference evidence file missing or invalid: ' + error.message);
   process.exit(1);
 }
 
@@ -371,18 +372,71 @@ function g4DraftProblems(inventory, drafts, policy = g4Withheld) {
   return errors;
 }
 
+/**
+ * TP source snapshot is a manually transcribed, reviewable manufacturer evidence
+ * baseline separate from the editorial JSON. This guards against accidental
+ * numeric drift; it is NOT an independent live scrape or proof of a factory
+ * revision. Changes to numeric values, fuels, propellers or models require
+ * source re-check and coordinated update of the snapshot and draft.
+ */
+function tpSnapshotProblems(inventory, snapshot) {
+  const issues = [];
+  if (!snapshot || snapshot.schemaVersion !== 1 ||
+      snapshot.purpose !== 'original_kingtech_tp_2026_10_25_specification_snapshot' ||
+      snapshot.checkedOn !== '2026-10-25' ||
+      !Array.isArray(snapshot.records) ||
+      Object.keys(snapshot).some((k) => !['schemaVersion','purpose','checkedOn','records'].includes(k)))
+    return ['Invalid TP manufacturer evidence snapshot schema'];
+  const original = inventory.products.filter((p) => p.sourceCategoryIds.includes('tp'));
+  const expected = new Map(original.map((p) => [p.id, p.canonicalUrl]));
+  const seen = new Set();
+  if (snapshot.records.length !== original.length) issues.push('TP evidence snapshot coverage mismatch');
+  for (const row of snapshot.records) {
+    if (!row || typeof row !== 'object' || Array.isArray(row) ||
+        Object.keys(row).some((k) => !['sourceId','sourceUrl','specs','propellers','fuelTypes','pumpModel'].includes(k)) ||
+        !expected.has(row.sourceId) || row.sourceUrl !== expected.get(row.sourceId) ||
+        seen.has(row.sourceId)) {
+      issues.push('Invalid TP snapshot identity or source URL: ' + row?.sourceId);
+      continue;
+    }
+    seen.add(row.sourceId);
+    if (!Array.isArray(row.specs) || !Array.isArray(row.propellers) ||
+        !Array.isArray(row.fuelTypes) || row.propellers.length < 1 ||
+        row.fuelTypes.length < 1) {
+      issues.push('Incomplete TP snapshot fields: ' + row.sourceId);
+      continue;
+    }
+    const keys = row.specs.map((x) => x.kind + (x.metric ? ':' + x.metric : ''));
+    if (new Set(keys).size !== keys.length ||
+        row.specs.some((x) => !x || typeof x !== 'object' || Array.isArray(x) ||
+          Object.keys(x).some((k) => !['kind','metric','value','unit'].includes(k)) ||
+          !['dimension:length','mass','speed:turbine','fuel_consumption','power','temperature'].includes(
+            x.kind + (x.metric ? ':' + x.metric : '')) ||
+          !Number.isFinite(x.value) || x.value <= 0 || typeof x.unit !== 'string') ||
+        row.propellers.some((x) => !x || typeof x !== 'object' || Array.isArray(x) ||
+          Object.keys(x).some((k) => !['blades','diameterInches','pitchInches'].includes(k)) ||
+          !Number.isSafeInteger(x.blades) || x.blades <= 0 ||
+          !Number.isFinite(x.diameterInches) || x.diameterInches <= 0 ||
+          !Number.isFinite(x.pitchInches) || x.pitchInches <= 0) ||
+        row.fuelTypes.some((v) => !['diesel','jet_a1','kerosene'].includes(v)) ||
+        new Set(row.fuelTypes).size !== row.fuelTypes.length ||
+        (row.pumpModel !== undefined && (typeof row.pumpModel !== 'string' || !row.pumpModel.trim())))
+      issues.push('Invalid TP evidence snapshot technical values: ' + row.sourceId);
+  }
+  if (seen.size !== expected.size) issues.push('Incomplete TP evidence snapshot source IDs');
+  return issues;
+}
 /** #29: all TP source IDs are editorial drafts, not published BODICH stock. */
-function tpDraftProblems(inventory, drafts) {
+function tpDraftProblems(inventory, drafts, snapshot = tpVerified) {
   const issues = [];
   const sources = inventory.products.filter((p) => p.sourceCategoryIds.includes('tp'));
   const group = drafts.filter((d) => d.categoryId === 'turboprop');
   if (sources.length !== 4 || group.length !== sources.length)
     issues.push('TP category coverage differs from four manufacturer source SKUs');
   const lookup = new Map(group.map((d) => [d.sourceId, d]));
-  const propellerSizes = new Map([
-    ['kt-17', ['3:18:12','3:18:16']], ['kt-18', ['3:22:12']],
-    ['kt-19', ['3:24:20']], ['kt-20', ['3:26:20']],
-  ]);
+  const sourceData = new Map(snapshot.records.map((row) => [row.sourceId, row]));
+  const propellerSizes = new Map(snapshot.records.map((row) =>
+    [row.sourceId, row.propellers.map((p) => p.blades + ':' + p.diameterInches + ':' + p.pitchInches)]));
   if (sources.some((s) => !propellerSizes.has(s.id)))
     issues.push('Unknown TP source ID; verify source inventory before importing another model');
   const slugs = new Set();
@@ -419,15 +473,21 @@ function tpDraftProblems(inventory, drafts) {
       issues.push('K-30TP unverified power/EGT must remain unknown');
     if (d.specs.some((p) => p.sourceUrl !== source.canonicalUrl))
       issues.push('TP technical value lacks original item provenance: ' + source.id);
+    const baseline = sourceData.get(source.id);
+    const normalized = (specs) => specs.map((sp) => [
+      sp.kind, sp.metric ?? null, sp.value, sp.unit,
+    ]).sort((a, b) => JSON.stringify(a).localeCompare(JSON.stringify(b)));
+    if (!baseline || JSON.stringify(normalized(d.specs)) !== JSON.stringify(normalized(baseline.specs)))
+      issues.push('TP measurements differ from verified source snapshot: ' + source.id);
     if (!d.specs.some((p) => p.kind === 'mass' && p.scope === 'not_stated'))
       issues.push('TP mass scope must be explicitly unknown: ' + source.id);
     const tp = d.turboprop;
-    if (!tp || tp.sourceUrl !== source.canonicalUrl || !Array.isArray(tp.propellers) ||
+    if (!tp || !baseline || tp.sourceUrl !== source.canonicalUrl || !Array.isArray(tp.propellers) ||
         tp.propellers.map((p) => p.blades + ':' + p.diameterInches + ':' + p.pitchInches).sort().join(',') !==
           (propellerSizes.get(source.id) ?? []).slice().sort().join(',') ||
-        !Array.isArray(tp.fuelTypes) || tp.fuelTypes.length !== (source.id === 'kt-17' ? 2 : 3) ||
-        tp.fuelTypes.some((x) => !(source.id === 'kt-17' ? ['jet_a1','kerosene'] : ['diesel','jet_a1','kerosene']).includes(x)) ||
-        (source.id === 'kt-17' ? tp.pumpModel !== 'KP200BL' : tp.pumpModel !== undefined) ||
+        !Array.isArray(tp.fuelTypes) || tp.fuelTypes.length !== baseline.fuelTypes.length ||
+        tp.fuelTypes.some((x) => !baseline.fuelTypes.includes(x)) ||
+        tp.pumpModel !== baseline.pumpModel ||
         tp.gearboxRatio !== undefined || tp.includedComponents !== undefined)
       issues.push('TP verified propeller/fuel/pump or unknown-gearbox mismatch: ' + source.id);
   }
@@ -448,7 +508,9 @@ try {
   errors.push(...g5DraftProblems(doc, drafts).map((e) => 'G5 coverage: ' + e));
   errors.push(...g4QuarantineProblems(doc, g4Withheld).map((e) => 'G4+ policy: ' + e));
   errors.push(...g4DraftProblems(doc, drafts).map((e) => 'G4+ coverage: ' + e));
-  errors.push(...tpDraftProblems(doc, drafts).map((e) => 'TP coverage: ' + e));
+  errors.push(...tpSnapshotProblems(doc, tpVerified).map((e) => 'TP snapshot: ' + e));
+  if (!tpSnapshotProblems(doc, tpVerified).length)
+    errors.push(...tpDraftProblems(doc, drafts).map((e) => 'TP coverage: ' + e));
 } catch (error) {
   errors.push('Cannot derive unpublished reference catalog: ' + error.message);
 }
