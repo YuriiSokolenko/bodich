@@ -6,7 +6,9 @@
  * node scripts/reconcile-catalog-release.mjs [--check | --self-test | --routes dist]
  * Writes visual-qa/catalog-reconciliation.json for CI review artifacts.
  */
-import { mkdirSync, readFileSync, readdirSync, writeFileSync, existsSync } from 'node:fs';
+import { mkdirSync, readFileSync, readdirSync, writeFileSync, existsSync, mkdtempSync, rmSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { buildReferenceDrafts, discountedReferenceDrafts, externalReferenceServices, primaryReferenceSection, referenceTaxonomy } from '../src/catalog/reference.ts';
 import { catalogCategories, confirmedProducts } from '../src/catalog/data.ts';
@@ -19,7 +21,90 @@ const copyMatrix = load('docs/catalog/copy-review-matrix.json');
 const nonempty = (s) => typeof s === 'string' && Boolean(s.trim());
 const sorted = (array) => [...array].sort((a, b) => a.localeCompare(b, 'en'));
 const counts = (values) => Object.fromEntries(sorted([...new Set(values)]).map((v) => [v, values.filter((w) => w === v).length]));
+// Frozen, independently reviewable 2026-10-23 supplier snapshot.
+// Deliberate source refreshes MUST review/change this pin in a separate source-audit change.
+const SNAPSHOT_BASELINE = {
+  "sourceManifestGitBlobSha": "b1af06e0d35cd5b22599009ccf63ce41b6443418",
+  "capturedAt": "2026-10-23",
+  "uniqueSkus": 132,
+  "categoryListed": 128,
+  "directVerifiedUnlisted": 4,
+  "sectionCounts": {
+    "g5": {
+      "discovered": 11,
+      "reported": 11,
+      "crossListed": 0
+    },
+    "g4": {
+      "discovered": 17,
+      "reported": 17,
+      "crossListed": 0
+    },
+    "tp": {
+      "discovered": 4,
+      "reported": 4,
+      "crossListed": 0
+    },
+    "discounted": {
+      "discovered": 0,
+      "reported": 0,
+      "crossListed": 0
+    },
+    "warranty": {
+      "discovered": 1,
+      "reported": 1,
+      "crossListed": 0
+    },
+    "oil": {
+      "discovered": 4,
+      "reported": 4,
+      "crossListed": 0
+    },
+    "batteries": {
+      "discovered": 2,
+      "reported": 2,
+      "crossListed": 0
+    },
+    "accessories": {
+      "discovered": 93,
+      "reported": 0,
+      "crossListed": 0
+    },
+    "gift-card": {
+      "discovered": 0,
+      "reported": null,
+      "crossListed": 0
+    }
+  },
+  "exclusionEvidence": [
+    "batteries|https://www.kingtechturbines.com/product/850mah-9-9v-life-battery/27",
+    "gift-card|https://www.kingtechturbines.com/",
+    "promotional-items|https://www.kingtechturbines.com/shop/promotional-items/9"
+  ]
+};
+
+function snapshotChecksumProblems() {
+  const raw = readFileSync('docs/catalog/source-inventory.json');
+  const actual = createHash('sha1').update('blob ' + raw.length + '\0').update(raw).digest('hex');
+  return actual === SNAPSHOT_BASELINE.sourceManifestGitBlobSha ? [] :
+    ['Source inventory snapshot changed: review source evidence and explicitly update frozen baseline'];
+}
+
 const output = resolve('visual-qa/catalog-reconciliation.json');
+
+function discountCollectionProblems(drafts, discounted) {
+  const originals = new Map(drafts.map((d) => [d.sourceId, d]));
+  const errors = [], seen = new Set();
+  for (const item of discounted) {
+    if (!originals.has(item.sourceId) || originals.get(item.sourceId) !== item)
+      errors.push('Discount tag cloned a reference SKU: ' + item.sourceId);
+    if (seen.has(item.sourceId)) errors.push('Discount collection duplicated a SKU: ' + item.sourceId);
+    seen.add(item.sourceId);
+  }
+  if (discounted.length !== drafts.filter((d) => d.collectionTags.includes('discounted')).length)
+    errors.push('Discount collection lost members');
+  return errors;
+}
 
 function reconcile({ source, edits, artwork, copy, published, external }) {
   const errors = [];
@@ -38,9 +123,16 @@ function reconcile({ source, edits, artwork, copy, published, external }) {
   const draftEdits = unique(edits.records, 'sourceId', 'editorial draft');
   const artworks = unique(artwork.entries, 'sourceId', 'illustration');
   const reviews = unique(copy.items, 'sourceId', 'copy review');
+  if (sources.size !== SNAPSHOT_BASELINE.uniqueSkus || source.products.length !== SNAPSHOT_BASELINE.uniqueSkus)
+    fail('Frozen source SKU count drift: expected ' + SNAPSHOT_BASELINE.uniqueSkus);
+  if (source.capturedAt !== SNAPSHOT_BASELINE.capturedAt)
+    fail('Frozen source capture date drift');
+  const listed = source.products.filter((p) => p.sourceDiscovery === 'category_listing').length;
+  const direct = source.products.filter((p) => p.sourceDiscovery === 'direct_verified_unlisted').length;
+  if (listed !== SNAPSHOT_BASELINE.categoryListed || direct !== SNAPSHOT_BASELINE.directVerifiedUnlisted)
+    fail('Frozen listed/direct-only source totals drift');
   const slugs = new Set();
   const assetPaths = new Set();
-  const issues = [];
   const rows = [];
   const lifecycle = [];
   const sectionCounts = [];
@@ -53,10 +145,12 @@ function reconcile({ source, edits, artwork, copy, published, external }) {
 
   for (const [id, sourceItem] of sources) {
     const edit = draftEdits.get(id), image = artworks.get(id), review = reviews.get(id);
-    const section = primaryReferenceSection(sourceItem.sourceCategoryIds);
+    const memberships = Array.isArray(sourceItem.sourceCategoryIds) ? sourceItem.sourceCategoryIds : [];
+    if (!Array.isArray(sourceItem.sourceCategoryIds)) fail('Invalid source category memberships: ' + id);
+    const section = primaryReferenceSection(memberships);
     if (!section || !Object.hasOwn(referenceTaxonomy, section))
       fail('Unknown/ambiguous primary source category: ' + id);
-    if (sourceItem.sourceCategoryIds.includes('discounted') &&
+    if (memberships.includes('discounted') &&
         !['g4', 'g5', 'tp'].includes(section)) fail('Non-engine discounted membership: ' + id);
     if (!edit) fail('Silently missing editorial draft: ' + id);
     if (!image) fail('Silently missing original-art manifest entry: ' + id);
@@ -127,7 +221,7 @@ function reconcile({ source, edits, artwork, copy, published, external }) {
     rows.push({
       sourceId: id,
       sourceCategory: section,
-      sourceCategoryIds: sourceItem.sourceCategoryIds,
+      sourceCategoryIds: memberships,
       sourceUrl: sourceItem.canonicalUrl,
       supplierLifecycle: sourceItem.sourceStatus,
       discovery: sourceItem.sourceDiscovery,
@@ -151,7 +245,11 @@ function reconcile({ source, edits, artwork, copy, published, external }) {
 
   const sourceSections = unique(source.sections, 'id', 'source section');
   for (const [id, section] of sourceSections) {
-    const members = [...sources.values()].filter((item) => item.sourceCategoryIds.includes(id));
+    const members = [...sources.values()].filter((item) => Array.isArray(item.sourceCategoryIds) && item.sourceCategoryIds.includes(id));
+    const pinned = SNAPSHOT_BASELINE.sectionCounts[id];
+    if (!pinned || section.discoveredCount !== pinned.discovered ||
+        section.reportedCount !== pinned.reported || section.crossListedCount !== pinned.crossListed)
+      fail('Frozen source section counts drift: ' + id);
     if (section.discoveredCount !== members.length ||
         section.crossListedCount !== members.filter((p) => p.sourceCategoryIds.length > 1).length)
       fail('Source category or sale cross-listing count mismatch: ' + id);
@@ -182,10 +280,13 @@ function reconcile({ source, edits, artwork, copy, published, external }) {
     disposition: 'explicit_source_exclusion_or_hold',
   }));
   for (const item of exceptions) {
-    if (!nonempty(item.reason) || !nonempty(item.evidenceUrl) || !sourceSections.has(item.section) &&
-        item.section !== 'promotional-items')
+    if (!nonempty(item.reason) || !nonempty(item.evidenceUrl) ||
+        (!sourceSections.has(item.section) && item.section !== 'promotional-items'))
       fail('Undocumented source exclusion/hold: ' + item.section);
   }
+  const exceptionPins = sorted(exceptions.map((x) => x.section + '|' + x.evidenceUrl));
+  if (JSON.stringify(exceptionPins) !== JSON.stringify(SNAPSHOT_BASELINE.exclusionEvidence))
+    fail('Frozen source exclusion count/identity drift');
   if (!exceptions.some((x) => x.section === 'gift-card') ||
       !exceptions.some((x) => x.section === 'promotional-items') ||
       !exceptions.some((x) => x.section === 'batteries'))
@@ -206,9 +307,7 @@ function reconcile({ source, edits, artwork, copy, published, external }) {
     const discounted = discountedReferenceDrafts(drafts);
     if (drafts.length !== sources.size || new Set(drafts.map((x) => x.sourceId)).size !== sources.size)
       fail('Reference model lost unique source SKU identities');
-    for (const item of discounted)
-      if (drafts.find((x) => x.sourceId === item.sourceId) !== item)
-        fail('Discount tag cloned a reference SKU: ' + item.sourceId);
+    errors.push(...discountCollectionProblems(drafts, discounted));
     discountedCount = discounted.length;
   } catch (error) { fail('Cannot derive unique draft references: ' + error.message); }
 
@@ -319,6 +418,7 @@ const { report, errors } = reconcile({
   source: inventory, edits: overlays, artwork: art, copy: copyMatrix,
   published: confirmedProducts, external: externalReferenceServices,
 });
+errors.push(...snapshotChecksumProblems());
 if (mode === '--routes') errors.push(...routeProblems(process.argv[3] ?? 'dist', confirmedProducts));
 report.errors = errors;
 report.verdict = errors.length ? 'failed' : 'blocked_pending_company_and_legal_approval';
