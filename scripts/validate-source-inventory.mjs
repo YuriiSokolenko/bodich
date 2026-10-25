@@ -277,7 +277,17 @@ function g4QuarantineProblems(inventory, policy) {
       errors.push('Invalid G4+ quarantine entry');
       continue;
     }
-    if (Object.keys(record).some((k) => !['sourceId','fields','reason'].includes(k)) ||
+    if (Object.keys(record).some((k) => !['sourceId','fields','reason','proseForbidden'].includes(k)) ||
+        !record.proseForbidden || typeof record.proseForbidden !== 'object' ||
+        Array.isArray(record.proseForbidden) ||
+        Object.keys(record.proseForbidden).some((locale) => !['en','ro'].includes(locale)) ||
+        !['en','ro'].every((locale) =>
+          Array.isArray(record.proseForbidden?.[locale]) &&
+          record.proseForbidden[locale].length > 0 &&
+          record.proseForbidden[locale].every((token) =>
+            typeof token === 'string' && token.trim().length >= 5 && token.trim() === token) &&
+          new Set(record.proseForbidden[locale].map((token) => token.toLowerCase())).size ===
+            record.proseForbidden[locale].length) ||
         !known.has(record.sourceId) || ids.has(record.sourceId) ||
         typeof record.reason !== 'string' || record.reason.trim().length < 25 ||
         !Array.isArray(record.fields) || record.fields.length === 0 ||
@@ -315,7 +325,8 @@ function g4DraftProblems(inventory, drafts, policy = g4Withheld) {
         d.source.manufacturer !== 'KingTech' || d.itemType !== 'turbojet' ||
         d.source.url !== source.canonicalUrl)
       errors.push('Incorrect G4+ model identity/category: ' + source.id);
-    // Later approval/image tasks must explicitly revise this intake-phase gate.
+    // Tasks #33 (imagery), #34 (copy) and #35 (approvals) must explicitly
+    // revise this intake-phase draft/no-image gate after separate company review.
     if (d.approval !== 'draft' || !Array.isArray(d.images) || d.images.length !== 0)
       errors.push('G4+ must remain unpublished draft with no images: ' + source.id);
     for (const locale of ['en','ro']) {
@@ -323,6 +334,15 @@ function g4DraftProblems(inventory, drafts, policy = g4Withheld) {
       if (!copy || ![copy.name,copy.summary,copy.description].every(
         (s) => typeof s === 'string' && s.replace(/\s+/g, ' ').trim().length >= 25
       )) errors.push('Incomplete G4+ ' + locale + ' draft copy: ' + source.id);
+      // A quarantine cannot be bypassed by repeating the selected numeric
+      // value in prose rather than structured technical fields. The tokens
+      // are locale-specific and intentional qualified notes may remain
+      // (e.g. K-30 source says 3 kgf+ without asserting exact thrust).
+      for (const token of policy.records.find((r) => r.sourceId === source.id)?.proseForbidden?.[locale] ?? []) {
+        if ([copy?.name, copy?.summary, copy?.description].some(
+          (paragraph) => typeof paragraph === 'string' && paragraph.toLowerCase().includes(token.toLowerCase())
+        )) errors.push('Withheld G4+ prose literal ' + locale + ' ' + token + ': ' + source.id);
+      }
     }
     const fields = d.specs.map(g4SpecField), present = new Set(fields);
     const withheld = quarantined.get(source.id) ?? new Set();
@@ -571,6 +591,8 @@ if (process.argv.includes('--self-test')) {
       errors.push('Changed G4+ lifecycle distribution bypassed status guard');
     for (const invalidPolicy of [
       { ...g4Withheld, schemaVersion: 2 },
+      { ...g4Withheld, records: [{ ...g4Withheld.records[0], proseForbidden: { en: ['example'] } }, ...g4Withheld.records.slice(1)] },
+      { ...g4Withheld, records: [{ ...g4Withheld.records[0], proseForbidden: { en: ['example'], ro: ['example'], de: ['extra'] } }, ...g4Withheld.records.slice(1)] },
       { ...g4Withheld, records: [...g4Withheld.records, {
         sourceId: 'kt-2', fields: ['dimension:height'], reason: 'Unsupported axis must fail before checking records',
       }] },
@@ -581,6 +603,25 @@ if (process.argv.includes('--self-test')) {
     ]) {
       if (!g4QuarantineProblems(doc, invalidPolicy).length)
         errors.push('Invalid G4+ quarantine policy passed self-test');
+    }
+
+    // Localized negative fixtures prohibit writing a disputed numeric value
+    // back into description/summary without restoring the guarded spec.
+    for (const entry of g4Withheld.records) {
+      for (const locale of ['en', 'ro']) {
+        for (const literal of entry.proseForbidden[locale]) {
+          const injectedProse = drafts.map((d) => d.sourceId === entry.sourceId ? {
+            ...d, copy: { ...d.copy,
+              [locale]: { ...d.copy[locale],
+                description: d.copy[locale].description + ' ' + literal,
+              },
+            },
+          } : d);
+          if (!g4DraftProblems(doc, injectedProse).some((e) =>
+            e.includes('Withheld G4+ prose literal ' + locale + ' ' + literal)))
+            errors.push('Disputed G4+ localized prose bypassed guard: ' + entry.sourceId + ' ' + locale);
+        }
+      }
     }
     // Derive every conflict injection from the exact same policy as production.
     const injectedSpec = (field, d) => {
