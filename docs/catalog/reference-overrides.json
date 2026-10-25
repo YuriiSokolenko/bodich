@@ -2237,6 +2237,3160 @@
       },
       "images": [],
       "approval": "draft"
+    },
+    {
+      "sourceId": "kt-30",
+      "slug": "kingtech-accessory-30",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "ECU Comm Cable — KingTech reference",
+          "summary": "Source-listed turbine system cable: ECU Comm Cable. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "The standard ECU communication-cable listing provides no generation or connector code in its title. It must therefore stay distinct from separately named G4/G5 data leads and the two color-identified Xicoy E/F variants; no pinout or length is asserted. This external reference is not a BODICH product."
+        },
+        "ro": {
+          "name": "Cablu pentru sistemul turbinei — ECU Comm Cable (referință KingTech)",
+          "summary": "Fișă de referință pentru cablu pentru sistemul turbinei: ECU Comm Cable. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Poziția pentru cablul general de comunicație ECU nu precizează generația ori codul mufei în titlu. Ea rămâne separată de cablurile de date G4/G5 și de cele două variante Xicoy E/F identificate prin culoarea ECU; nu sunt confirmate pinout-ul sau lungimea. Referința nu este un produs BODICH."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "ecu-controls",
+        "sourceUrl": "https://www.kingtechturbines.com/product/ecu-comm-cable/30",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/ecu-comm-cable/20"
+        ],
+        "variantLabel": null,
+        "compatibility": {
+          "status": "unverified",
+          "sourceLabel": null,
+          "confirmedModels": []
+        },
+        "artBriefId": "ecu-controls"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-32",
+      "slug": "kingtech-accessory-32",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "Power Cable — KingTech reference",
+          "summary": "Source-listed turbine system cable: Power Cable. The individually verified product page is retained as a distinct unpublished reference.",
+          "description": "The direct-only source page identifies a general power cable without a model, connector or voltage in its title. It is retained separately from the nested-category Turbine Power Cable and the explicitly named G4/G4+/G5 battery lead. Electrical rating and pin arrangement are unknown; no BODICH offer is implied."
+        },
+        "ro": {
+          "name": "Cablu pentru sistemul turbinei — Power Cable (referință KingTech)",
+          "summary": "Fișă de referință pentru cablu pentru sistemul turbinei: Power Cable. Articolul din pagina individuală verificată este păstrat separat, fără publicare.",
+          "description": "Pagina sursă verificată separat numește un cablu de alimentare general, fără model, mufă sau tensiune în titlu. Este păstrat separat de Turbine Power Cable din subcategoria oficială și de cablul de baterie G4/G4+/G5. Valorile electrice și configurația pinilor sunt necunoscute; nu există ofertă BODICH."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "electrical-components",
+        "sourceUrl": "https://www.kingtechturbines.com/product/power-cable/32",
+        "sourceSubcategoryUrls": [],
+        "variantLabel": null,
+        "compatibility": {
+          "status": "unverified",
+          "sourceLabel": null,
+          "confirmedModels": []
+        },
+        "artBriefId": "electrical-components"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-33",
+      "slug": "kingtech-accessory-33",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "G4/G4+ Data Cable — KingTech reference",
+          "summary": "Source-listed turbine system cable: G4/G4+ Data Cable. The individually verified product page is retained as a distinct unpublished reference.",
+          "description": "The G4/G4+ wording appears literally in this separately indexed data-cable title. It distinguishes the original item from the later G4/G4+/G5 data-cable listing, but does not prove plug or protocol compatibility with every controller revision. Pinout and cable length remain unknown; this is not BODICH stock."
+        },
+        "ro": {
+          "name": "Cablu pentru sistemul turbinei — G4/G4+ Data Cable (referință KingTech)",
+          "summary": "Fișă de referință pentru cablu pentru sistemul turbinei: G4/G4+ Data Cable. Articolul din pagina individuală verificată este păstrat separat, fără publicare.",
+          "description": "Titlul acestui cablu de date menționează explicit G4/G4+. Este o poziție diferită de cablul denumit G4/G4+/G5, însă nu certifică tipul mufei sau protocolul pentru toate reviziile de controler. Pinout-ul și lungimea rămân necunoscute; nu este stoc BODICH."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "ecu-controls",
+        "sourceUrl": "https://www.kingtechturbines.com/product/g4-g4-data-cable/33",
+        "sourceSubcategoryUrls": [],
+        "variantLabel": "G4/G4+",
+        "compatibility": {
+          "status": "source_title_only",
+          "sourceLabel": "G4/G4+",
+          "confirmedModels": []
+        },
+        "artBriefId": "ecu-controls"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-35",
+      "slug": "kingtech-accessory-35",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "ECU Comm Cable for E Model (Gold Xicoy ECU) — KingTech reference",
+          "summary": "Source-listed turbine system cable: ECU Comm Cable for E Model (Gold Xicoy ECU). The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "The supplier distinguishes this ECU communication lead specifically by the E-model designation and gold Xicoy ECU description. The housing color is only a source-title identifier, not a measured connector standard; compatibility with a different Xicoy controller is not assumed. No BODICH sales claim is made."
+        },
+        "ro": {
+          "name": "Cablu pentru sistemul turbinei — ECU Comm Cable for E Model (Gold Xicoy ECU) (referință KingTech)",
+          "summary": "Fișă de referință pentru cablu pentru sistemul turbinei: ECU Comm Cable for E Model (Gold Xicoy ECU). Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Furnizorul distinge acest cablu de comunicație ECU prin denumirea modelului E și descrierea controlerului Xicoy auriu. Culoarea carcasei este doar o etichetă din titlul sursei, nu un standard verificat de mufă; nu presupunem potrivirea cu alte controlere Xicoy. Nu reprezintă o ofertă BODICH."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "ecu-controls",
+        "sourceUrl": "https://www.kingtechturbines.com/product/ecu-comm-cable-for-e-model-gold-xicoy-ecu-/35",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/ecu-comm-cable/20"
+        ],
+        "variantLabel": "E Model",
+        "compatibility": {
+          "status": "source_title_only",
+          "sourceLabel": "E Model",
+          "confirmedModels": []
+        },
+        "artBriefId": "ecu-controls"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-36",
+      "slug": "kingtech-accessory-36",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "ECU Comm Cable for E/F Model (Black Xicoy ECU) — KingTech reference",
+          "summary": "Source-listed turbine system cable: ECU Comm Cable for E/F Model (Black Xicoy ECU). The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "This ECU communication cable is titled for E/F models with the black Xicoy ECU, separate from the gold E-model cable. Color and model family are transcribed without asserting the exact pins, protocol or interchangeability between black and gold controller versions. It is a research reference, not a BODICH offer."
+        },
+        "ro": {
+          "name": "Cablu pentru sistemul turbinei — ECU Comm Cable for E/F Model (Black Xicoy ECU) (referință KingTech)",
+          "summary": "Fișă de referință pentru cablu pentru sistemul turbinei: ECU Comm Cable for E/F Model (Black Xicoy ECU). Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Acest cablu de comunicație ECU este descris pentru modelele E/F cu unitate Xicoy neagră, separat de cablul modelului E cu ECU auriu. Culoarea și familia sunt preluate din titlu fără a declara pinii, protocolul sau interschimbabilitatea celor două controlere. Este o referință, nu o ofertă BODICH."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "ecu-controls",
+        "sourceUrl": "https://www.kingtechturbines.com/product/ecu-comm-cable-for-e-f-model-black-xicoy-ecu-/36",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/ecu-comm-cable/20"
+        ],
+        "variantLabel": "E/F Model",
+        "compatibility": {
+          "status": "source_title_only",
+          "sourceLabel": "E/F Model",
+          "confirmedModels": []
+        },
+        "artBriefId": "ecu-controls"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-39",
+      "slug": "kingtech-accessory-39",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "Battery/Pump Cable for KT Pump — KingTech reference",
+          "summary": "Source-listed fuel pump: Battery/Pump Cable for KT Pump. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "This is the Battery/Pump Cable for KT Pump listing within KingTech's pump family; the \"standard KP\" notation is retained as a model suffix rather than interpreted as a confirmed electrical characteristic. Flow rate, pressure, supply voltage and ECU pairing are not verified by the indexed source title. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Pompă de combustibil — Battery/Pump Cable for KT Pump (referință KingTech)",
+          "summary": "Fișă de referință pentru pompă de combustibil: Battery/Pump Cable for KT Pump. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Aceasta este poziția Battery/Pump Cable for KT Pump din familia de pompe KingTech; notația „standard KP” este păstrată ca sufix de model, nu interpretată drept caracteristică electrică verificată. Debitul, presiunea, tensiunea de alimentare și asocierea cu ECU nu sunt confirmate de titlul sursei. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "electrical-components",
+        "sourceUrl": "https://www.kingtechturbines.com/product/battery-pump-cable-for-kt-pump/39",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/pump-cable/21"
+        ],
+        "variantLabel": null,
+        "compatibility": {
+          "status": "source_title_only",
+          "sourceLabel": "KT Pump",
+          "confirmedModels": []
+        },
+        "artBriefId": "electrical-components"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-41",
+      "slug": "kingtech-accessory-41",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "Battery/Pump Cable for K30/45G3 — KingTech reference",
+          "summary": "Source-listed fuel pump: Battery/Pump Cable for K30/45G3. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "This is the Battery/Pump Cable for K30/45G3 listing within KingTech's pump family; the \"standard KP\" notation is retained as a model suffix rather than interpreted as a confirmed electrical characteristic. Flow rate, pressure, supply voltage and ECU pairing are not verified by the indexed source title. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Pompă de combustibil — Battery/Pump Cable for K30/45G3 (referință KingTech)",
+          "summary": "Fișă de referință pentru pompă de combustibil: Battery/Pump Cable for K30/45G3. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Aceasta este poziția Battery/Pump Cable for K30/45G3 din familia de pompe KingTech; notația „standard KP” este păstrată ca sufix de model, nu interpretată drept caracteristică electrică verificată. Debitul, presiunea, tensiunea de alimentare și asocierea cu ECU nu sunt confirmate de titlul sursei. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "electrical-components",
+        "sourceUrl": "https://www.kingtechturbines.com/product/battery-pump-cable-for-k30-45g3/41",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/pump-cable/21"
+        ],
+        "variantLabel": null,
+        "compatibility": {
+          "status": "source_title_only",
+          "sourceLabel": "K30/45G3",
+          "confirmedModels": []
+        },
+        "artBriefId": "electrical-components"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-42",
+      "slug": "kingtech-accessory-42",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "Pump Cable for G4 — KingTech reference",
+          "summary": "Source-listed fuel pump: Pump Cable for G4. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "This is the Pump Cable for G4 listing within KingTech's pump family; the \"standard KP\" notation is retained as a model suffix rather than interpreted as a confirmed electrical characteristic. Flow rate, pressure, supply voltage and ECU pairing are not verified by the indexed source title. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Pompă de combustibil — Pump Cable for G4 (referință KingTech)",
+          "summary": "Fișă de referință pentru pompă de combustibil: Pump Cable for G4. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Aceasta este poziția Pump Cable for G4 din familia de pompe KingTech; notația „standard KP” este păstrată ca sufix de model, nu interpretată drept caracteristică electrică verificată. Debitul, presiunea, tensiunea de alimentare și asocierea cu ECU nu sunt confirmate de titlul sursei. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "electrical-components",
+        "sourceUrl": "https://www.kingtechturbines.com/product/pump-cable-for-g4/42",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/pump-cable/21"
+        ],
+        "variantLabel": null,
+        "compatibility": {
+          "status": "source_title_only",
+          "sourceLabel": "G4",
+          "confirmedModels": []
+        },
+        "artBriefId": "electrical-components"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-43",
+      "slug": "kingtech-accessory-43",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "Pump Cable for G4+/G5 — KingTech reference",
+          "summary": "Source-listed fuel pump: Pump Cable for G4+/G5. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "This is the Pump Cable for G4+/G5 listing within KingTech's pump family; the \"standard KP\" notation is retained as a model suffix rather than interpreted as a confirmed electrical characteristic. Flow rate, pressure, supply voltage and ECU pairing are not verified by the indexed source title. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Pompă de combustibil — Pump Cable for G4+/G5 (referință KingTech)",
+          "summary": "Fișă de referință pentru pompă de combustibil: Pump Cable for G4+/G5. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Aceasta este poziția Pump Cable for G4+/G5 din familia de pompe KingTech; notația „standard KP” este păstrată ca sufix de model, nu interpretată drept caracteristică electrică verificată. Debitul, presiunea, tensiunea de alimentare și asocierea cu ECU nu sunt confirmate de titlul sursei. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "electrical-components",
+        "sourceUrl": "https://www.kingtechturbines.com/product/pump-cable-for-g4-g5/43",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/pump-cable/21"
+        ],
+        "variantLabel": null,
+        "compatibility": {
+          "status": "source_title_only",
+          "sourceLabel": "G4+/G5",
+          "confirmedModels": []
+        },
+        "artBriefId": "electrical-components"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-44",
+      "slug": "kingtech-accessory-44",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "Turbine Power Cable — KingTech reference",
+          "summary": "Source-listed turbine system cable: Turbine Power Cable. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "This source-category item is explicitly called Turbine Power Cable, rather than the direct-only generic Power Cable or the G4/G4+/G5 Battery Cable. No conclusion about shared connectors, cable gauge, current capacity or safe substitution is drawn from the similar names. This is an external reference only."
+        },
+        "ro": {
+          "name": "Cablu pentru sistemul turbinei — Turbine Power Cable (referință KingTech)",
+          "summary": "Fișă de referință pentru cablu pentru sistemul turbinei: Turbine Power Cable. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Poziția din subcategoria sursei se numește Turbine Power Cable, nu Power Cable de pe pagina directă și nici cablul de baterie G4/G4+/G5. Denumirile apropiate nu dovedesc mufe comune, secțiunea conductorului, curentul admis sau posibilitatea de substituire. Este doar o referință externă."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "electrical-components",
+        "sourceUrl": "https://www.kingtechturbines.com/product/turbine-power-cable/44",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/turbine-power-cable/22"
+        ],
+        "variantLabel": null,
+        "compatibility": {
+          "status": "unverified",
+          "sourceLabel": null,
+          "confirmedModels": []
+        },
+        "artBriefId": "electrical-components"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-45",
+      "slug": "kingtech-accessory-45",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "G4/G4+/G5 Battery Cable — KingTech reference",
+          "summary": "Source-listed turbine system cable: G4/G4+/G5 Battery Cable. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "The name associates this lead with battery feed and distinguishes it from the other ECU, pump and power cables listed separately. Connector keying, length, pinout and electrical load are not asserted without a detailed verified source. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Cablu pentru sistemul turbinei — G4/G4+/G5 Battery Cable (referință KingTech)",
+          "summary": "Fișă de referință pentru cablu pentru sistemul turbinei: G4/G4+/G5 Battery Cable. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Denumirea asociază acest cablu cu alimentarea din baterie și îl distinge de cablurile ECU, de pompă și de alimentare listate separat. Nu sunt declarate forma mufelor, lungimea, pinout-ul ori sarcina electrică fără dovezi tehnice verificate. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "electrical-components",
+        "sourceUrl": "https://www.kingtechturbines.com/product/g4-g4-g5-battery-cable/45",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/turbine-power-cable/22"
+        ],
+        "variantLabel": "G4/G4+/G5",
+        "compatibility": {
+          "status": "source_title_only",
+          "sourceLabel": "G4/G4+/G5",
+          "confirmedModels": []
+        },
+        "artBriefId": "electrical-components"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-46",
+      "slug": "kingtech-accessory-46",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "FOD Screen - Small — KingTech reference",
+          "summary": "Source-listed foreign-object debris screen: FOD Screen - Small. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "The \"Small\" screen is a distinct intake-protection variant; a named size is not a measured diameter. Installation, inlet geometry and the turbine generation to which it fits require a separate fitment check. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Sită de protecție la obiecte străine — FOD Screen - Small (referință KingTech)",
+          "summary": "Fișă de referință pentru sită de protecție la obiecte străine: FOD Screen - Small. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Sita „Small” reprezintă o variantă distinctă de protecție a admisiei; mărimea din denumire nu este un diametru măsurat. Montajul, geometria admisiei și generația compatibilă a turbinei necesită verificare separată. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "turbine-protection",
+        "sourceUrl": "https://www.kingtechturbines.com/product/fod-screen-small/46",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/fod-screen/11"
+        ],
+        "variantLabel": "Small",
+        "compatibility": {
+          "status": "unverified",
+          "sourceLabel": null,
+          "confirmedModels": []
+        },
+        "artBriefId": "turbine-protection"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-47",
+      "slug": "kingtech-accessory-47",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "FOD Screen - Medium — KingTech reference",
+          "summary": "Source-listed foreign-object debris screen: FOD Screen - Medium. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "The \"Medium\" screen is a distinct intake-protection variant; a named size is not a measured diameter. Installation, inlet geometry and the turbine generation to which it fits require a separate fitment check. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Sită de protecție la obiecte străine — FOD Screen - Medium (referință KingTech)",
+          "summary": "Fișă de referință pentru sită de protecție la obiecte străine: FOD Screen - Medium. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Sita „Medium” reprezintă o variantă distinctă de protecție a admisiei; mărimea din denumire nu este un diametru măsurat. Montajul, geometria admisiei și generația compatibilă a turbinei necesită verificare separată. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "turbine-protection",
+        "sourceUrl": "https://www.kingtechturbines.com/product/fod-screen-medium/47",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/fod-screen/11"
+        ],
+        "variantLabel": "Medium",
+        "compatibility": {
+          "status": "unverified",
+          "sourceLabel": null,
+          "confirmedModels": []
+        },
+        "artBriefId": "turbine-protection"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-48",
+      "slug": "kingtech-accessory-48",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "FOD Screen - Large — KingTech reference",
+          "summary": "Source-listed foreign-object debris screen: FOD Screen - Large. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "The \"Large\" screen is a distinct intake-protection variant; a named size is not a measured diameter. Installation, inlet geometry and the turbine generation to which it fits require a separate fitment check. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Sită de protecție la obiecte străine — FOD Screen - Large (referință KingTech)",
+          "summary": "Fișă de referință pentru sită de protecție la obiecte străine: FOD Screen - Large. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Sita „Large” reprezintă o variantă distinctă de protecție a admisiei; mărimea din denumire nu este un diametru măsurat. Montajul, geometria admisiei și generația compatibilă a turbinei necesită verificare separată. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "turbine-protection",
+        "sourceUrl": "https://www.kingtechturbines.com/product/fod-screen-large/48",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/fod-screen/11"
+        ],
+        "variantLabel": "Large",
+        "compatibility": {
+          "status": "unverified",
+          "sourceLabel": null,
+          "confirmedModels": []
+        },
+        "artBriefId": "turbine-protection"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-49",
+      "slug": "kingtech-accessory-49",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "FOD Screen 260 — KingTech reference",
+          "summary": "Source-listed foreign-object debris screen: FOD Screen 260. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "The \"260\" screen is a distinct intake-protection variant; a named size is not a measured diameter. Installation, inlet geometry and the turbine generation to which it fits require a separate fitment check. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Sită de protecție la obiecte străine — FOD Screen 260 (referință KingTech)",
+          "summary": "Fișă de referință pentru sită de protecție la obiecte străine: FOD Screen 260. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Sita „260” reprezintă o variantă distinctă de protecție a admisiei; mărimea din denumire nu este un diametru măsurat. Montajul, geometria admisiei și generația compatibilă a turbinei necesită verificare separată. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "turbine-protection",
+        "sourceUrl": "https://www.kingtechturbines.com/product/fod-screen-260/49",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/fod-screen/11"
+        ],
+        "variantLabel": "260",
+        "compatibility": {
+          "status": "unverified",
+          "sourceLabel": null,
+          "confirmedModels": []
+        },
+        "artBriefId": "turbine-protection"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-50",
+      "slug": "kingtech-accessory-50",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "Data Cable G4/G4+/G5 — KingTech reference",
+          "summary": "Source-listed turbine system cable: Data Cable G4/G4+/G5. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "The original title explicitly identifies a data lead with G4, G4+ and G5 series labels. This is not the same source item as the G4/G4+ data lead or the ECU communication cables for Xicoy E/F controls. The series wording is not a tested cross-generation fitment matrix; connector details are unverified."
+        },
+        "ro": {
+          "name": "Cablu pentru sistemul turbinei — Data Cable G4/G4+/G5 (referință KingTech)",
+          "summary": "Fișă de referință pentru cablu pentru sistemul turbinei: Data Cable G4/G4+/G5. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Titlul original identifică un cablu de date cu indicatoarele de serie G4, G4+ și G5. Poziția este distinctă de cablul G4/G4+ și de cablurile ECU pentru controlerele Xicoy E/F. Denumirea seriilor nu constituie o matrice de compatibilitate testată; detaliile conectorului nu sunt verificate."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "ecu-controls",
+        "sourceUrl": "https://www.kingtechturbines.com/product/data-cable-g4-g4-g5/50",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/ecu-comm-cable/20"
+        ],
+        "variantLabel": "G4/G4+/G5",
+        "compatibility": {
+          "status": "source_title_only",
+          "sourceLabel": "G4/G4+/G5",
+          "confirmedModels": []
+        },
+        "artBriefId": "ecu-controls"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-51",
+      "slug": "kingtech-accessory-51",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "KingTech ECU G2 — KingTech reference",
+          "summary": "Source-listed turbine control electronics: KingTech ECU G2. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "The original source lists KingTech ECU G2 as a control-unit item, not as a GSU display, DRM module or communication lead. G2 is retained as a title designation, without claiming later-generation compatibility, supported firmware, pin allocation or supplied cables. No BODICH manufacture or availability is asserted."
+        },
+        "ro": {
+          "name": "Echipament electronic de control — KingTech ECU G2 (referință KingTech)",
+          "summary": "Fișă de referință pentru echipament electronic de control: KingTech ECU G2. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Sursa listează KingTech ECU G2 ca unitate de control, nu ca afișaj GSU, modul DRM sau cablu de comunicație. G2 este păstrat ca identificator din titlu, fără a afirma compatibilitatea cu generații ulterioare, firmware-ul suportat, pinii sau cablurile incluse. Nu se declară producție ori disponibilitate BODICH."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "ecu-controls",
+        "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-ecu-g2/51",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/ecu-and-gsu/13"
+        ],
+        "variantLabel": "G2",
+        "compatibility": {
+          "status": "source_title_only",
+          "sourceLabel": "G2",
+          "confirmedModels": []
+        },
+        "artBriefId": "ecu-controls"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-55",
+      "slug": "kingtech-accessory-55",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "GSU KingTech — KingTech reference",
+          "summary": "Source-listed turbine control electronics: GSU KingTech. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "The GSU KingTech item is indexed as a ground-support/user interface rather than an engine ECU; its exact form factor and controller generation are not specified in the recorded title. It remains separate from the GSU Bluetooth module and the G2 ECU. Display type, firmware and electrical interface need source verification."
+        },
+        "ro": {
+          "name": "Echipament electronic de control — GSU KingTech (referință KingTech)",
+          "summary": "Fișă de referință pentru echipament electronic de control: GSU KingTech. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Articolul GSU KingTech este indexat ca interfață de utilizator și operare la sol, nu ca ECU de motor; forma constructivă și generația controlerului nu sunt precizate în titlul înregistrat. Rămâne separat de modulul Bluetooth GSU și de ECU G2. Ecranul, firmware-ul și interfața electrică necesită verificare."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "ecu-controls",
+        "sourceUrl": "https://www.kingtechturbines.com/product/gsu-kingtech/55",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/ecu-and-gsu/13"
+        ],
+        "variantLabel": null,
+        "compatibility": {
+          "status": "unverified",
+          "sourceLabel": null,
+          "confirmedModels": []
+        },
+        "artBriefId": "ecu-controls"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-56",
+      "slug": "kingtech-accessory-56",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "KingTech GSU Bluetooth Module — KingTech reference",
+          "summary": "Source-listed GSU Bluetooth accessory: KingTech GSU Bluetooth Module. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "This entry concerns a Bluetooth interface for GSU rather than an engine ECU or a physical fuel component. The source title does not establish telemetry protocol, supported firmware or client-device compatibility. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Accesoriu Bluetooth pentru GSU — KingTech GSU Bluetooth Module (referință KingTech)",
+          "summary": "Fișă de referință pentru accesoriu Bluetooth pentru GSU: KingTech GSU Bluetooth Module. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Poziția privește o interfață Bluetooth pentru GSU, nu ECU-ul motorului și nici o piesă de combustibil. Titlul nu certifică protocolul, firmware-ul suportat sau compatibilitatea dispozitivelor. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "ecu-controls",
+        "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-gsu-bluetooth-module/56",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/other-accessories/23"
+        ],
+        "variantLabel": null,
+        "compatibility": {
+          "status": "unverified",
+          "sourceLabel": null,
+          "confirmedModels": []
+        },
+        "artBriefId": "ecu-controls"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-57",
+      "slug": "kingtech-accessory-57",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "KingTech Telemetry — KingTech reference",
+          "summary": "Source-listed turbine telemetry device: KingTech Telemetry. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "This entry concerns a telemetry interface rather than an engine ECU or a physical fuel component. The source title does not establish telemetry protocol, supported firmware or client-device compatibility. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Modul de telemetrie — KingTech Telemetry (referință KingTech)",
+          "summary": "Fișă de referință pentru modul de telemetrie: KingTech Telemetry. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Poziția privește o interfață de telemetrie, nu ECU-ul motorului și nici o piesă de combustibil. Titlul nu certifică protocolul, firmware-ul suportat sau compatibilitatea dispozitivelor. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "ecu-controls",
+        "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-telemetry/57",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/other-accessories/23"
+        ],
+        "variantLabel": null,
+        "compatibility": {
+          "status": "unverified",
+          "sourceLabel": null,
+          "confirmedModels": []
+        },
+        "artBriefId": "ecu-controls"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-58",
+      "slug": "kingtech-accessory-58",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "Fuel Filter — KingTech reference",
+          "summary": "Source-listed fuel filter: Fuel Filter. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "The supplier labels this as an inline fuel-filtration accessory, not as an entire fuel system. \"Fuel Filter\" distinguishes its function; port size, sealing material, operating pressure and interchangeable pump or engine models are not verified. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Filtru de combustibil — Fuel Filter (referință KingTech)",
+          "summary": "Fișă de referință pentru filtru de combustibil: Fuel Filter. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Furnizorul descrie un accesoriu de filtrare a combustibilului, nu întregul sistem de alimentare. „Fuel Filter” delimitează funcția; racordurile, materialul garniturilor, presiunea și modelele de pompe ori motoare interschimbabile nu sunt confirmate. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "fuel-systems",
+        "sourceUrl": "https://www.kingtechturbines.com/product/fuel-filter/58",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/other-accessories/23"
+        ],
+        "variantLabel": null,
+        "compatibility": {
+          "status": "unverified",
+          "sourceLabel": null,
+          "confirmedModels": []
+        },
+        "artBriefId": "fuel-systems"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-59",
+      "slug": "kingtech-accessory-59",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "Shut-Off Valve — KingTech reference",
+          "summary": "Source-listed fluid shut-off valve: Shut-Off Valve. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "The supplier labels this as a shut-off component for the named fluid, not as an entire fuel system. \"Shut-Off Valve\" distinguishes its function; port size, sealing material, operating pressure and interchangeable pump or engine models are not verified. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Supapă de închidere — Shut-Off Valve (referință KingTech)",
+          "summary": "Fișă de referință pentru supapă de închidere: Shut-Off Valve. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Furnizorul descrie un element de oprire pentru fluidul numit, nu întregul sistem de alimentare. „Shut-Off Valve” delimitează funcția; racordurile, materialul garniturilor, presiunea și modelele de pompe ori motoare interschimbabile nu sunt confirmate. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "fuel-systems",
+        "sourceUrl": "https://www.kingtechturbines.com/product/shut-off-valve/59",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/other-accessories/23"
+        ],
+        "variantLabel": null,
+        "compatibility": {
+          "status": "unverified",
+          "sourceLabel": null,
+          "confirmedModels": []
+        },
+        "artBriefId": "fuel-systems"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-60",
+      "slug": "kingtech-accessory-60",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "90 Degree Fuel Festo Fitting — KingTech reference",
+          "summary": "Source-listed angled fuel-line fitting: 90 Degree Fuel Festo Fitting. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "The supplier labels this as a 90-degree fuel-line fitting, not as an entire fuel system. \"90 Degree Fuel Festo Fitting\" distinguishes its function; port size, sealing material, operating pressure and interchangeable pump or engine models are not verified. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Racord cotit pentru combustibil — 90 Degree Fuel Festo Fitting (referință KingTech)",
+          "summary": "Fișă de referință pentru racord cotit pentru combustibil: 90 Degree Fuel Festo Fitting. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Furnizorul descrie un racord cotit la 90° pentru conducta de combustibil, nu întregul sistem de alimentare. „90 Degree Fuel Festo Fitting” delimitează funcția; racordurile, materialul garniturilor, presiunea și modelele de pompe ori motoare interschimbabile nu sunt confirmate. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "fuel-systems",
+        "sourceUrl": "https://www.kingtechturbines.com/product/90-degree-fuel-festo-fitting/60",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/other-accessories/23"
+        ],
+        "variantLabel": null,
+        "compatibility": {
+          "status": "unverified",
+          "sourceLabel": null,
+          "confirmedModels": []
+        },
+        "artBriefId": "fuel-systems"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-62",
+      "slug": "kingtech-accessory-62",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "Engine Bracket K320 — KingTech reference",
+          "summary": "Source-listed engine mounting bracket: Engine Bracket K320. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "The source identifies an engine mounting bracket for the designation printed in \"Engine Bracket K320\". This distinguishes the intended mounting family, but does not establish bolt spacing, thickness, engine revision or interchangeability. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Suport de fixare a motorului — Engine Bracket K320 (referință KingTech)",
+          "summary": "Fișă de referință pentru suport de fixare a motorului: Engine Bracket K320. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Sursa indică un suport de montaj pentru motor cu identificarea din „Engine Bracket K320”. Aceasta diferențiază familia de montaj, fără să confirme distanța dintre găuri, grosimea, revizia motorului sau interschimbabilitatea. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "mounting-hardware",
+        "sourceUrl": "https://www.kingtechturbines.com/product/engine-bracket-k320/62",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/engine-bracket/24"
+        ],
+        "variantLabel": "K320",
+        "compatibility": {
+          "status": "source_title_only",
+          "sourceLabel": "K320",
+          "confirmedModels": []
+        },
+        "artBriefId": "mounting-hardware"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-63",
+      "slug": "kingtech-accessory-63",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "Engine Bracket K260 — KingTech reference",
+          "summary": "Source-listed engine mounting bracket: Engine Bracket K260. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "The source identifies an engine mounting bracket for the designation printed in \"Engine Bracket K260\". This distinguishes the intended mounting family, but does not establish bolt spacing, thickness, engine revision or interchangeability. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Suport de fixare a motorului — Engine Bracket K260 (referință KingTech)",
+          "summary": "Fișă de referință pentru suport de fixare a motorului: Engine Bracket K260. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Sursa indică un suport de montaj pentru motor cu identificarea din „Engine Bracket K260”. Aceasta diferențiază familia de montaj, fără să confirme distanța dintre găuri, grosimea, revizia motorului sau interschimbabilitatea. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "mounting-hardware",
+        "sourceUrl": "https://www.kingtechturbines.com/product/engine-bracket-k260/63",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/engine-bracket/24"
+        ],
+        "variantLabel": "K260",
+        "compatibility": {
+          "status": "source_title_only",
+          "sourceLabel": "K260",
+          "confirmedModels": []
+        },
+        "artBriefId": "mounting-hardware"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-65",
+      "slug": "kingtech-accessory-65",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "Engine Bracket K30/45 G3/G4 — KingTech reference",
+          "summary": "Source-listed engine mounting bracket: Engine Bracket K30/45 G3/G4. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "The source identifies an engine mounting bracket for the designation printed in \"Engine Bracket K30/45 G3/G4\". This distinguishes the intended mounting family, but does not establish bolt spacing, thickness, engine revision or interchangeability. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Suport de fixare a motorului — Engine Bracket K30/45 G3/G4 (referință KingTech)",
+          "summary": "Fișă de referință pentru suport de fixare a motorului: Engine Bracket K30/45 G3/G4. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Sursa indică un suport de montaj pentru motor cu identificarea din „Engine Bracket K30/45 G3/G4”. Aceasta diferențiază familia de montaj, fără să confirme distanța dintre găuri, grosimea, revizia motorului sau interschimbabilitatea. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "mounting-hardware",
+        "sourceUrl": "https://www.kingtechturbines.com/product/engine-bracket-k30-45-g3-g4/65",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/engine-bracket/24"
+        ],
+        "variantLabel": "K30/45 G3/G4",
+        "compatibility": {
+          "status": "source_title_only",
+          "sourceLabel": "K30/45 G3/G4",
+          "confirmedModels": []
+        },
+        "artBriefId": "mounting-hardware"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-66",
+      "slug": "kingtech-accessory-66",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "Stainless Steel Bracket for K45/55/70/86 — KingTech reference",
+          "summary": "Source-listed engine mounting bracket: Stainless Steel Bracket for K45/55/70/86. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "The source identifies a stainless-steel mounting bracket for the designation printed in \"Stainless Steel Bracket for K45/55/70/86\". This distinguishes the intended mounting family, but does not establish bolt spacing, thickness, engine revision or interchangeability. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Suport de fixare a motorului — Stainless Steel Bracket for K45/55/70/86 (referință KingTech)",
+          "summary": "Fișă de referință pentru suport de fixare a motorului: Stainless Steel Bracket for K45/55/70/86. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Sursa indică un suport de montaj din oțel inoxidabil cu identificarea din „Stainless Steel Bracket for K45/55/70/86”. Aceasta diferențiază familia de montaj, fără să confirme distanța dintre găuri, grosimea, revizia motorului sau interschimbabilitatea. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "mounting-hardware",
+        "sourceUrl": "https://www.kingtechturbines.com/product/stainless-steel-bracket-for-k45-55-70-86/66",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/engine-bracket/24"
+        ],
+        "variantLabel": "K45/55/70/86",
+        "compatibility": {
+          "status": "source_title_only",
+          "sourceLabel": "K45/55/70/86",
+          "confirmedModels": []
+        },
+        "artBriefId": "mounting-hardware"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-67",
+      "slug": "kingtech-accessory-67",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "Stainless Steel Bracket for K60/85 — KingTech reference",
+          "summary": "Source-listed engine mounting bracket: Stainless Steel Bracket for K60/85. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "The source identifies a stainless-steel mounting bracket for the designation printed in \"Stainless Steel Bracket for K60/85\". This distinguishes the intended mounting family, but does not establish bolt spacing, thickness, engine revision or interchangeability. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Suport de fixare a motorului — Stainless Steel Bracket for K60/85 (referință KingTech)",
+          "summary": "Fișă de referință pentru suport de fixare a motorului: Stainless Steel Bracket for K60/85. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Sursa indică un suport de montaj din oțel inoxidabil cu identificarea din „Stainless Steel Bracket for K60/85”. Aceasta diferențiază familia de montaj, fără să confirme distanța dintre găuri, grosimea, revizia motorului sau interschimbabilitatea. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "mounting-hardware",
+        "sourceUrl": "https://www.kingtechturbines.com/product/stainless-steel-bracket-for-k60-85/67",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/engine-bracket/24"
+        ],
+        "variantLabel": "K60/85",
+        "compatibility": {
+          "status": "source_title_only",
+          "sourceLabel": "K60/85",
+          "confirmedModels": []
+        },
+        "artBriefId": "mounting-hardware"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-68",
+      "slug": "kingtech-accessory-68",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "Stainless Steel Bracket for K80/100/120/142 — KingTech reference",
+          "summary": "Source-listed engine mounting bracket: Stainless Steel Bracket for K80/100/120/142. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "The source identifies a stainless-steel mounting bracket for the designation printed in \"Stainless Steel Bracket for K80/100/120/142\". This distinguishes the intended mounting family, but does not establish bolt spacing, thickness, engine revision or interchangeability. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Suport de fixare a motorului — Stainless Steel Bracket for K80/100/120/142 (referință KingTech)",
+          "summary": "Fișă de referință pentru suport de fixare a motorului: Stainless Steel Bracket for K80/100/120/142. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Sursa indică un suport de montaj din oțel inoxidabil cu identificarea din „Stainless Steel Bracket for K80/100/120/142”. Aceasta diferențiază familia de montaj, fără să confirme distanța dintre găuri, grosimea, revizia motorului sau interschimbabilitatea. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "mounting-hardware",
+        "sourceUrl": "https://www.kingtechturbines.com/product/stainless-steel-bracket-for-k80-100-120-142/68",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/engine-bracket/24"
+        ],
+        "variantLabel": "K80/100/120/142",
+        "compatibility": {
+          "status": "source_title_only",
+          "sourceLabel": "K80/100/120/142",
+          "confirmedModels": []
+        },
+        "artBriefId": "mounting-hardware"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-69",
+      "slug": "kingtech-accessory-69",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "Stainless Steel Bracket for K140/160/180 — KingTech reference",
+          "summary": "Source-listed engine mounting bracket: Stainless Steel Bracket for K140/160/180. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "The source identifies a stainless-steel mounting bracket for the designation printed in \"Stainless Steel Bracket for K140/160/180\". This distinguishes the intended mounting family, but does not establish bolt spacing, thickness, engine revision or interchangeability. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Suport de fixare a motorului — Stainless Steel Bracket for K140/160/180 (referință KingTech)",
+          "summary": "Fișă de referință pentru suport de fixare a motorului: Stainless Steel Bracket for K140/160/180. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Sursa indică un suport de montaj din oțel inoxidabil cu identificarea din „Stainless Steel Bracket for K140/160/180”. Aceasta diferențiază familia de montaj, fără să confirme distanța dintre găuri, grosimea, revizia motorului sau interschimbabilitatea. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "mounting-hardware",
+        "sourceUrl": "https://www.kingtechturbines.com/product/stainless-steel-bracket-for-k140-160-180/69",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/engine-bracket/24"
+        ],
+        "variantLabel": "K140/160/180",
+        "compatibility": {
+          "status": "source_title_only",
+          "sourceLabel": "K140/160/180",
+          "confirmedModels": []
+        },
+        "artBriefId": "mounting-hardware"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-70",
+      "slug": "kingtech-accessory-70",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "Stainless Steel Bracket for K235 — KingTech reference",
+          "summary": "Source-listed engine mounting bracket: Stainless Steel Bracket for K235. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "The source identifies a stainless-steel mounting bracket for the designation printed in \"Stainless Steel Bracket for K235\". This distinguishes the intended mounting family, but does not establish bolt spacing, thickness, engine revision or interchangeability. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Suport de fixare a motorului — Stainless Steel Bracket for K235 (referință KingTech)",
+          "summary": "Fișă de referință pentru suport de fixare a motorului: Stainless Steel Bracket for K235. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Sursa indică un suport de montaj din oțel inoxidabil cu identificarea din „Stainless Steel Bracket for K235”. Aceasta diferențiază familia de montaj, fără să confirme distanța dintre găuri, grosimea, revizia motorului sau interschimbabilitatea. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "mounting-hardware",
+        "sourceUrl": "https://www.kingtechturbines.com/product/stainless-steel-bracket-for-k235/70",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/engine-bracket/24"
+        ],
+        "variantLabel": "K235",
+        "compatibility": {
+          "status": "source_title_only",
+          "sourceLabel": "K235",
+          "confirmedModels": []
+        },
+        "artBriefId": "mounting-hardware"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-71",
+      "slug": "kingtech-accessory-71",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "Starter Motor K30/45 G3 — KingTech reference",
+          "summary": "Source-listed turbine starter motor: Starter Motor K30/45 G3. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "This source entry concerns the electric starter assembly rather than the other starter-system spare parts. \"Starter Motor K30/45 G3\" identifies the version or component; connector pinout, torque, dimensions and service applicability are not specified as verified data. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Motor de pornire a turbinei — Starter Motor K30/45 G3 (referință KingTech)",
+          "summary": "Fișă de referință pentru motor de pornire a turbinei: Starter Motor K30/45 G3. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Această poziție privește ansamblul electric de pornire, nu celelalte piese ale sistemului de pornire. Denumirea „Starter Motor K30/45 G3” identifică versiunea sau componenta; configurația pinilor, cuplul, dimensiunile și aplicabilitatea în service nu sunt confirmate. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "maintenance-parts",
+        "sourceUrl": "https://www.kingtechturbines.com/product/starter-motor-k30-45-g3/71",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/starter-motor/15"
+        ],
+        "variantLabel": "K30/45 G3",
+        "compatibility": {
+          "status": "source_title_only",
+          "sourceLabel": "K30/45 G3",
+          "confirmedModels": []
+        },
+        "artBriefId": "maintenance-parts"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-72",
+      "slug": "kingtech-accessory-72",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "Starter Motor 45/70 — KingTech reference",
+          "summary": "Source-listed turbine starter motor: Starter Motor 45/70. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "This source entry concerns the electric starter assembly rather than the other starter-system spare parts. \"Starter Motor 45/70\" identifies the version or component; connector pinout, torque, dimensions and service applicability are not specified as verified data. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Motor de pornire a turbinei — Starter Motor 45/70 (referință KingTech)",
+          "summary": "Fișă de referință pentru motor de pornire a turbinei: Starter Motor 45/70. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Această poziție privește ansamblul electric de pornire, nu celelalte piese ale sistemului de pornire. Denumirea „Starter Motor 45/70” identifică versiunea sau componenta; configurația pinilor, cuplul, dimensiunile și aplicabilitatea în service nu sunt confirmate. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "maintenance-parts",
+        "sourceUrl": "https://www.kingtechturbines.com/product/starter-motor-45-70/72",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/starter-motor/15"
+        ],
+        "variantLabel": "45/70",
+        "compatibility": {
+          "status": "unverified",
+          "sourceLabel": null,
+          "confirmedModels": []
+        },
+        "artBriefId": "maintenance-parts"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-73",
+      "slug": "kingtech-accessory-73",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "Starter Motor for K60/85 — KingTech reference",
+          "summary": "Source-listed turbine starter motor: Starter Motor for K60/85. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "This source entry concerns the electric starter assembly rather than the other starter-system spare parts. \"Starter Motor for K60/85\" identifies the version or component; connector pinout, torque, dimensions and service applicability are not specified as verified data. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Motor de pornire a turbinei — Starter Motor for K60/85 (referință KingTech)",
+          "summary": "Fișă de referință pentru motor de pornire a turbinei: Starter Motor for K60/85. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Această poziție privește ansamblul electric de pornire, nu celelalte piese ale sistemului de pornire. Denumirea „Starter Motor for K60/85” identifică versiunea sau componenta; configurația pinilor, cuplul, dimensiunile și aplicabilitatea în service nu sunt confirmate. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "maintenance-parts",
+        "sourceUrl": "https://www.kingtechturbines.com/product/starter-motor-for-k60-85/73",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/starter-motor/15"
+        ],
+        "variantLabel": "K60/85",
+        "compatibility": {
+          "status": "source_title_only",
+          "sourceLabel": "K60/85",
+          "confirmedModels": []
+        },
+        "artBriefId": "maintenance-parts"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-74",
+      "slug": "kingtech-accessory-74",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "Start Motor K80/210 — KingTech reference",
+          "summary": "Source-listed turbine starter motor: Start Motor K80/210. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "This source entry concerns the electric starter assembly rather than the other starter-system spare parts. \"Start Motor K80/210\" identifies the version or component; connector pinout, torque, dimensions and service applicability are not specified as verified data. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Motor de pornire a turbinei — Start Motor K80/210 (referință KingTech)",
+          "summary": "Fișă de referință pentru motor de pornire a turbinei: Start Motor K80/210. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Această poziție privește ansamblul electric de pornire, nu celelalte piese ale sistemului de pornire. Denumirea „Start Motor K80/210” identifică versiunea sau componenta; configurația pinilor, cuplul, dimensiunile și aplicabilitatea în service nu sunt confirmate. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "maintenance-parts",
+        "sourceUrl": "https://www.kingtechturbines.com/product/start-motor-k80-210/74",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/starter-motor/15"
+        ],
+        "variantLabel": "K80/210",
+        "compatibility": {
+          "status": "source_title_only",
+          "sourceLabel": "K80/210",
+          "confirmedModels": []
+        },
+        "artBriefId": "maintenance-parts"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-75",
+      "slug": "kingtech-accessory-75",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "Starter Motor Case K45/70 — KingTech reference",
+          "summary": "Source-listed starter motor casing: Starter Motor Case K45/70. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "This source entry concerns the housing, not a complete starter rather than the other starter-system spare parts. \"Starter Motor Case K45/70\" identifies the version or component; connector pinout, torque, dimensions and service applicability are not specified as verified data. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Carcasă a motorului de pornire — Starter Motor Case K45/70 (referință KingTech)",
+          "summary": "Fișă de referință pentru carcasă a motorului de pornire: Starter Motor Case K45/70. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Această poziție privește carcasa, nu un demaror complet, nu celelalte piese ale sistemului de pornire. Denumirea „Starter Motor Case K45/70” identifică versiunea sau componenta; configurația pinilor, cuplul, dimensiunile și aplicabilitatea în service nu sunt confirmate. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "maintenance-parts",
+        "sourceUrl": "https://www.kingtechturbines.com/product/starter-motor-case-k45-70/75",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/starter-motor/15"
+        ],
+        "variantLabel": "K45/70",
+        "compatibility": {
+          "status": "source_title_only",
+          "sourceLabel": "K45/70",
+          "confirmedModels": []
+        },
+        "artBriefId": "maintenance-parts"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-76",
+      "slug": "kingtech-accessory-76",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "Starter Motor Case K60/85 — KingTech reference",
+          "summary": "Source-listed starter motor casing: Starter Motor Case K60/85. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "This source entry concerns the housing, not a complete starter rather than the other starter-system spare parts. \"Starter Motor Case K60/85\" identifies the version or component; connector pinout, torque, dimensions and service applicability are not specified as verified data. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Carcasă a motorului de pornire — Starter Motor Case K60/85 (referință KingTech)",
+          "summary": "Fișă de referință pentru carcasă a motorului de pornire: Starter Motor Case K60/85. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Această poziție privește carcasa, nu un demaror complet, nu celelalte piese ale sistemului de pornire. Denumirea „Starter Motor Case K60/85” identifică versiunea sau componenta; configurația pinilor, cuplul, dimensiunile și aplicabilitatea în service nu sunt confirmate. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "maintenance-parts",
+        "sourceUrl": "https://www.kingtechturbines.com/product/starter-motor-case-k60-85/76",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/starter-motor/15"
+        ],
+        "variantLabel": "K60/85",
+        "compatibility": {
+          "status": "source_title_only",
+          "sourceLabel": "K60/85",
+          "confirmedModels": []
+        },
+        "artBriefId": "maintenance-parts"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-77",
+      "slug": "kingtech-accessory-77",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "Starter Motor Case K80/210 — KingTech reference",
+          "summary": "Source-listed starter motor casing: Starter Motor Case K80/210. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "This source entry concerns the housing, not a complete starter rather than the other starter-system spare parts. \"Starter Motor Case K80/210\" identifies the version or component; connector pinout, torque, dimensions and service applicability are not specified as verified data. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Carcasă a motorului de pornire — Starter Motor Case K80/210 (referință KingTech)",
+          "summary": "Fișă de referință pentru carcasă a motorului de pornire: Starter Motor Case K80/210. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Această poziție privește carcasa, nu un demaror complet, nu celelalte piese ale sistemului de pornire. Denumirea „Starter Motor Case K80/210” identifică versiunea sau componenta; configurația pinilor, cuplul, dimensiunile și aplicabilitatea în service nu sunt confirmate. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "maintenance-parts",
+        "sourceUrl": "https://www.kingtechturbines.com/product/starter-motor-case-k80-210/77",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/starter-motor/15"
+        ],
+        "variantLabel": "K80/210",
+        "compatibility": {
+          "status": "source_title_only",
+          "sourceLabel": "K80/210",
+          "confirmedModels": []
+        },
+        "artBriefId": "maintenance-parts"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-78",
+      "slug": "kingtech-accessory-78",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "Starter Motor Clutch — KingTech reference",
+          "summary": "Source-listed starter motor clutch: Starter Motor Clutch. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "This source entry concerns the starter coupling mechanism rather than the other starter-system spare parts. \"Starter Motor Clutch\" identifies the version or component; connector pinout, torque, dimensions and service applicability are not specified as verified data. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Ambreiaj al motorului de pornire — Starter Motor Clutch (referință KingTech)",
+          "summary": "Fișă de referință pentru ambreiaj al motorului de pornire: Starter Motor Clutch. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Această poziție privește mecanismul de cuplare al demarorului, nu celelalte piese ale sistemului de pornire. Denumirea „Starter Motor Clutch” identifică versiunea sau componenta; configurația pinilor, cuplul, dimensiunile și aplicabilitatea în service nu sunt confirmate. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "maintenance-parts",
+        "sourceUrl": "https://www.kingtechturbines.com/product/starter-motor-clutch/78",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/starter-motor/15"
+        ],
+        "variantLabel": null,
+        "compatibility": {
+          "status": "unverified",
+          "sourceLabel": null,
+          "confirmedModels": []
+        },
+        "artBriefId": "maintenance-parts"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-79",
+      "slug": "kingtech-accessory-79",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "Starter Motor K260/320 — KingTech reference",
+          "summary": "Source-listed turbine starter motor: Starter Motor K260/320. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "This source entry concerns the electric starter assembly rather than the other starter-system spare parts. \"Starter Motor K260/320\" identifies the version or component; connector pinout, torque, dimensions and service applicability are not specified as verified data. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Motor de pornire a turbinei — Starter Motor K260/320 (referință KingTech)",
+          "summary": "Fișă de referință pentru motor de pornire a turbinei: Starter Motor K260/320. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Această poziție privește ansamblul electric de pornire, nu celelalte piese ale sistemului de pornire. Denumirea „Starter Motor K260/320” identifică versiunea sau componenta; configurația pinilor, cuplul, dimensiunile și aplicabilitatea în service nu sunt confirmate. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "maintenance-parts",
+        "sourceUrl": "https://www.kingtechturbines.com/product/starter-motor-k260-320/79",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/starter-motor/15"
+        ],
+        "variantLabel": "K260/320",
+        "compatibility": {
+          "status": "source_title_only",
+          "sourceLabel": "K260/320",
+          "confirmedModels": []
+        },
+        "artBriefId": "maintenance-parts"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-80",
+      "slug": "kingtech-accessory-80",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "Starter Motor Case K235/260/320 — KingTech reference",
+          "summary": "Source-listed starter motor casing: Starter Motor Case K235/260/320. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "This source entry concerns the housing, not a complete starter rather than the other starter-system spare parts. \"Starter Motor Case K235/260/320\" identifies the version or component; connector pinout, torque, dimensions and service applicability are not specified as verified data. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Carcasă a motorului de pornire — Starter Motor Case K235/260/320 (referință KingTech)",
+          "summary": "Fișă de referință pentru carcasă a motorului de pornire: Starter Motor Case K235/260/320. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Această poziție privește carcasa, nu un demaror complet, nu celelalte piese ale sistemului de pornire. Denumirea „Starter Motor Case K235/260/320” identifică versiunea sau componenta; configurația pinilor, cuplul, dimensiunile și aplicabilitatea în service nu sunt confirmate. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "maintenance-parts",
+        "sourceUrl": "https://www.kingtechturbines.com/product/starter-motor-case-k235-260-320/80",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/starter-motor/15"
+        ],
+        "variantLabel": "K235/260/320",
+        "compatibility": {
+          "status": "source_title_only",
+          "sourceLabel": "K235/260/320",
+          "confirmedModels": []
+        },
+        "artBriefId": "maintenance-parts"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-81",
+      "slug": "kingtech-accessory-81",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "KingTech KP200 Pump — KingTech reference",
+          "summary": "Source-listed fuel pump: KingTech KP200 Pump. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "This is the KP200 listing within KingTech's pump family; the \"standard KP\" notation is retained as a model suffix rather than interpreted as a confirmed electrical characteristic. Flow rate, pressure, supply voltage and ECU pairing are not verified by the indexed source title. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Pompă de combustibil — KingTech KP200 Pump (referință KingTech)",
+          "summary": "Fișă de referință pentru pompă de combustibil: KingTech KP200 Pump. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Aceasta este poziția KP200 din familia de pompe KingTech; notația „standard KP” este păstrată ca sufix de model, nu interpretată drept caracteristică electrică verificată. Debitul, presiunea, tensiunea de alimentare și asocierea cu ECU nu sunt confirmate de titlul sursei. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "fuel-systems",
+        "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp200-pump/81",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/pump/12"
+        ],
+        "variantLabel": "KP200",
+        "compatibility": {
+          "status": "unverified",
+          "sourceLabel": null,
+          "confirmedModels": []
+        },
+        "artBriefId": "fuel-systems"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-82",
+      "slug": "kingtech-accessory-82",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "KingTech KP300 Pump — KingTech reference",
+          "summary": "Source-listed fuel pump: KingTech KP300 Pump. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "This is the KP300 listing within KingTech's pump family; the \"standard KP\" notation is retained as a model suffix rather than interpreted as a confirmed electrical characteristic. Flow rate, pressure, supply voltage and ECU pairing are not verified by the indexed source title. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Pompă de combustibil — KingTech KP300 Pump (referință KingTech)",
+          "summary": "Fișă de referință pentru pompă de combustibil: KingTech KP300 Pump. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Aceasta este poziția KP300 din familia de pompe KingTech; notația „standard KP” este păstrată ca sufix de model, nu interpretată drept caracteristică electrică verificată. Debitul, presiunea, tensiunea de alimentare și asocierea cu ECU nu sunt confirmate de titlul sursei. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "fuel-systems",
+        "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp300-pump/82",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/pump/12"
+        ],
+        "variantLabel": "KP300",
+        "compatibility": {
+          "status": "unverified",
+          "sourceLabel": null,
+          "confirmedModels": []
+        },
+        "artBriefId": "fuel-systems"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-83",
+      "slug": "kingtech-accessory-83",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "KingTech KP500 Pump — KingTech reference",
+          "summary": "Source-listed fuel pump: KingTech KP500 Pump. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "This is the KP500 listing within KingTech's pump family; the \"standard KP\" notation is retained as a model suffix rather than interpreted as a confirmed electrical characteristic. Flow rate, pressure, supply voltage and ECU pairing are not verified by the indexed source title. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Pompă de combustibil — KingTech KP500 Pump (referință KingTech)",
+          "summary": "Fișă de referință pentru pompă de combustibil: KingTech KP500 Pump. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Aceasta este poziția KP500 din familia de pompe KingTech; notația „standard KP” este păstrată ca sufix de model, nu interpretată drept caracteristică electrică verificată. Debitul, presiunea, tensiunea de alimentare și asocierea cu ECU nu sunt confirmate de titlul sursei. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "fuel-systems",
+        "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp500-pump/83",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/pump/12"
+        ],
+        "variantLabel": "KP500",
+        "compatibility": {
+          "status": "unverified",
+          "sourceLabel": null,
+          "confirmedModels": []
+        },
+        "artBriefId": "fuel-systems"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-84",
+      "slug": "kingtech-accessory-84",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "KingTech KP600 Pump — KingTech reference",
+          "summary": "Source-listed fuel pump: KingTech KP600 Pump. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "This is the KP600 listing within KingTech's pump family; the \"standard KP\" notation is retained as a model suffix rather than interpreted as a confirmed electrical characteristic. Flow rate, pressure, supply voltage and ECU pairing are not verified by the indexed source title. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Pompă de combustibil — KingTech KP600 Pump (referință KingTech)",
+          "summary": "Fișă de referință pentru pompă de combustibil: KingTech KP600 Pump. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Aceasta este poziția KP600 din familia de pompe KingTech; notația „standard KP” este păstrată ca sufix de model, nu interpretată drept caracteristică electrică verificată. Debitul, presiunea, tensiunea de alimentare și asocierea cu ECU nu sunt confirmate de titlul sursei. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "fuel-systems",
+        "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp600-pump/84",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/pump/12"
+        ],
+        "variantLabel": "KP600",
+        "compatibility": {
+          "status": "unverified",
+          "sourceLabel": null,
+          "confirmedModels": []
+        },
+        "artBriefId": "fuel-systems"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-85",
+      "slug": "kingtech-accessory-85",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "KingTech KP800 Pump — KingTech reference",
+          "summary": "Source-listed fuel pump: KingTech KP800 Pump. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "This is the KP800 listing within KingTech's pump family; the \"standard KP\" notation is retained as a model suffix rather than interpreted as a confirmed electrical characteristic. Flow rate, pressure, supply voltage and ECU pairing are not verified by the indexed source title. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Pompă de combustibil — KingTech KP800 Pump (referință KingTech)",
+          "summary": "Fișă de referință pentru pompă de combustibil: KingTech KP800 Pump. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Aceasta este poziția KP800 din familia de pompe KingTech; notația „standard KP” este păstrată ca sufix de model, nu interpretată drept caracteristică electrică verificată. Debitul, presiunea, tensiunea de alimentare și asocierea cu ECU nu sunt confirmate de titlul sursei. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "fuel-systems",
+        "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp800-pump/85",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/pump/12"
+        ],
+        "variantLabel": "KP800",
+        "compatibility": {
+          "status": "unverified",
+          "sourceLabel": null,
+          "confirmedModels": []
+        },
+        "artBriefId": "fuel-systems"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-86",
+      "slug": "kingtech-accessory-86",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "KingTech KP300V Pump — KingTech reference",
+          "summary": "Source-listed fuel pump: KingTech KP300V Pump. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "This is the KP300V listing within KingTech's pump family; the \"V\" notation is retained as a model suffix rather than interpreted as a confirmed electrical characteristic. Flow rate, pressure, supply voltage and ECU pairing are not verified by the indexed source title. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Pompă de combustibil — KingTech KP300V Pump (referință KingTech)",
+          "summary": "Fișă de referință pentru pompă de combustibil: KingTech KP300V Pump. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Aceasta este poziția KP300V din familia de pompe KingTech; notația „V” este păstrată ca sufix de model, nu interpretată drept caracteristică electrică verificată. Debitul, presiunea, tensiunea de alimentare și asocierea cu ECU nu sunt confirmate de titlul sursei. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "fuel-systems",
+        "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp300v-pump/86",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/pump/12"
+        ],
+        "variantLabel": "KP300V",
+        "compatibility": {
+          "status": "unverified",
+          "sourceLabel": null,
+          "confirmedModels": []
+        },
+        "artBriefId": "fuel-systems"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-87",
+      "slug": "kingtech-accessory-87",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "KingTech KP500V — KingTech reference",
+          "summary": "Source-listed fuel pump: KingTech KP500V. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "This is the KP500V listing within KingTech's pump family; the \"V\" notation is retained as a model suffix rather than interpreted as a confirmed electrical characteristic. Flow rate, pressure, supply voltage and ECU pairing are not verified by the indexed source title. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Pompă de combustibil — KingTech KP500V (referință KingTech)",
+          "summary": "Fișă de referință pentru pompă de combustibil: KingTech KP500V. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Aceasta este poziția KP500V din familia de pompe KingTech; notația „V” este păstrată ca sufix de model, nu interpretată drept caracteristică electrică verificată. Debitul, presiunea, tensiunea de alimentare și asocierea cu ECU nu sunt confirmate de titlul sursei. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "fuel-systems",
+        "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp500v/87",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/pump/12"
+        ],
+        "variantLabel": "KP500V",
+        "compatibility": {
+          "status": "unverified",
+          "sourceLabel": null,
+          "confirmedModels": []
+        },
+        "artBriefId": "fuel-systems"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-88",
+      "slug": "kingtech-accessory-88",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "KingTech KP600V Pump — KingTech reference",
+          "summary": "Source-listed fuel pump: KingTech KP600V Pump. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "This is the KP600V listing within KingTech's pump family; the \"V\" notation is retained as a model suffix rather than interpreted as a confirmed electrical characteristic. Flow rate, pressure, supply voltage and ECU pairing are not verified by the indexed source title. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Pompă de combustibil — KingTech KP600V Pump (referință KingTech)",
+          "summary": "Fișă de referință pentru pompă de combustibil: KingTech KP600V Pump. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Aceasta este poziția KP600V din familia de pompe KingTech; notația „V” este păstrată ca sufix de model, nu interpretată drept caracteristică electrică verificată. Debitul, presiunea, tensiunea de alimentare și asocierea cu ECU nu sunt confirmate de titlul sursei. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "fuel-systems",
+        "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp600v-pump/88",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/pump/12"
+        ],
+        "variantLabel": "KP600V",
+        "compatibility": {
+          "status": "unverified",
+          "sourceLabel": null,
+          "confirmedModels": []
+        },
+        "artBriefId": "fuel-systems"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-89",
+      "slug": "kingtech-accessory-89",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "KingTech KP800V Pump — KingTech reference",
+          "summary": "Source-listed fuel pump: KingTech KP800V Pump. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "This is the KP800V listing within KingTech's pump family; the \"V\" notation is retained as a model suffix rather than interpreted as a confirmed electrical characteristic. Flow rate, pressure, supply voltage and ECU pairing are not verified by the indexed source title. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Pompă de combustibil — KingTech KP800V Pump (referință KingTech)",
+          "summary": "Fișă de referință pentru pompă de combustibil: KingTech KP800V Pump. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Aceasta este poziția KP800V din familia de pompe KingTech; notația „V” este păstrată ca sufix de model, nu interpretată drept caracteristică electrică verificată. Debitul, presiunea, tensiunea de alimentare și asocierea cu ECU nu sunt confirmate de titlul sursei. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "fuel-systems",
+        "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp800v-pump/89",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/pump/12"
+        ],
+        "variantLabel": "KP800V",
+        "compatibility": {
+          "status": "unverified",
+          "sourceLabel": null,
+          "confirmedModels": []
+        },
+        "artBriefId": "fuel-systems"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-90",
+      "slug": "kingtech-accessory-90",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "KingTech KP1200V Pump — KingTech reference",
+          "summary": "Source-listed fuel pump: KingTech KP1200V Pump. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "This is the KP1200V listing within KingTech's pump family; the \"V\" notation is retained as a model suffix rather than interpreted as a confirmed electrical characteristic. Flow rate, pressure, supply voltage and ECU pairing are not verified by the indexed source title. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Pompă de combustibil — KingTech KP1200V Pump (referință KingTech)",
+          "summary": "Fișă de referință pentru pompă de combustibil: KingTech KP1200V Pump. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Aceasta este poziția KP1200V din familia de pompe KingTech; notația „V” este păstrată ca sufix de model, nu interpretată drept caracteristică electrică verificată. Debitul, presiunea, tensiunea de alimentare și asocierea cu ECU nu sunt confirmate de titlul sursei. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "fuel-systems",
+        "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp1200v-pump/90",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/pump/12"
+        ],
+        "variantLabel": "KP1200V",
+        "compatibility": {
+          "status": "unverified",
+          "sourceLabel": null,
+          "confirmedModels": []
+        },
+        "artBriefId": "fuel-systems"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-91",
+      "slug": "kingtech-accessory-91",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "KingTech KP200BL Pump — KingTech reference",
+          "summary": "Source-listed fuel pump: KingTech KP200BL Pump. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "This is the KP200BL listing within KingTech's pump family; the \"BL\" notation is retained as a model suffix rather than interpreted as a confirmed electrical characteristic. Flow rate, pressure, supply voltage and ECU pairing are not verified by the indexed source title. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Pompă de combustibil — KingTech KP200BL Pump (referință KingTech)",
+          "summary": "Fișă de referință pentru pompă de combustibil: KingTech KP200BL Pump. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Aceasta este poziția KP200BL din familia de pompe KingTech; notația „BL” este păstrată ca sufix de model, nu interpretată drept caracteristică electrică verificată. Debitul, presiunea, tensiunea de alimentare și asocierea cu ECU nu sunt confirmate de titlul sursei. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "fuel-systems",
+        "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp200bl-pump/91",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/pump/12"
+        ],
+        "variantLabel": "KP200BL",
+        "compatibility": {
+          "status": "unverified",
+          "sourceLabel": null,
+          "confirmedModels": []
+        },
+        "artBriefId": "fuel-systems"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-92",
+      "slug": "kingtech-accessory-92",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "KingTech KP300 BL Pump — KingTech reference",
+          "summary": "Source-listed fuel pump: KingTech KP300 BL Pump. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "This is the KP300 BL listing within KingTech's pump family; the \"BL\" notation is retained as a model suffix rather than interpreted as a confirmed electrical characteristic. Flow rate, pressure, supply voltage and ECU pairing are not verified by the indexed source title. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Pompă de combustibil — KingTech KP300 BL Pump (referință KingTech)",
+          "summary": "Fișă de referință pentru pompă de combustibil: KingTech KP300 BL Pump. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Aceasta este poziția KP300 BL din familia de pompe KingTech; notația „BL” este păstrată ca sufix de model, nu interpretată drept caracteristică electrică verificată. Debitul, presiunea, tensiunea de alimentare și asocierea cu ECU nu sunt confirmate de titlul sursei. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "fuel-systems",
+        "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp300-bl-pump/92",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/pump/12"
+        ],
+        "variantLabel": "KP300 BL",
+        "compatibility": {
+          "status": "unverified",
+          "sourceLabel": null,
+          "confirmedModels": []
+        },
+        "artBriefId": "fuel-systems"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-93",
+      "slug": "kingtech-accessory-93",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "KingTech KP500BL Pump — KingTech reference",
+          "summary": "Source-listed fuel pump: KingTech KP500BL Pump. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "This is the KP500BL listing within KingTech's pump family; the \"BL\" notation is retained as a model suffix rather than interpreted as a confirmed electrical characteristic. Flow rate, pressure, supply voltage and ECU pairing are not verified by the indexed source title. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Pompă de combustibil — KingTech KP500BL Pump (referință KingTech)",
+          "summary": "Fișă de referință pentru pompă de combustibil: KingTech KP500BL Pump. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Aceasta este poziția KP500BL din familia de pompe KingTech; notația „BL” este păstrată ca sufix de model, nu interpretată drept caracteristică electrică verificată. Debitul, presiunea, tensiunea de alimentare și asocierea cu ECU nu sunt confirmate de titlul sursei. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "fuel-systems",
+        "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp500bl-pump/93",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/pump/12"
+        ],
+        "variantLabel": "KP500BL",
+        "compatibility": {
+          "status": "unverified",
+          "sourceLabel": null,
+          "confirmedModels": []
+        },
+        "artBriefId": "fuel-systems"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-94",
+      "slug": "kingtech-accessory-94",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "KingTech KP600BL Pump — KingTech reference",
+          "summary": "Source-listed fuel pump: KingTech KP600BL Pump. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "This is the KP600BL listing within KingTech's pump family; the \"BL\" notation is retained as a model suffix rather than interpreted as a confirmed electrical characteristic. Flow rate, pressure, supply voltage and ECU pairing are not verified by the indexed source title. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Pompă de combustibil — KingTech KP600BL Pump (referință KingTech)",
+          "summary": "Fișă de referință pentru pompă de combustibil: KingTech KP600BL Pump. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Aceasta este poziția KP600BL din familia de pompe KingTech; notația „BL” este păstrată ca sufix de model, nu interpretată drept caracteristică electrică verificată. Debitul, presiunea, tensiunea de alimentare și asocierea cu ECU nu sunt confirmate de titlul sursei. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "fuel-systems",
+        "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp600bl-pump/94",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/pump/12"
+        ],
+        "variantLabel": "KP600BL",
+        "compatibility": {
+          "status": "unverified",
+          "sourceLabel": null,
+          "confirmedModels": []
+        },
+        "artBriefId": "fuel-systems"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-95",
+      "slug": "kingtech-accessory-95",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "KingTech KP800BL Pump — KingTech reference",
+          "summary": "Source-listed fuel pump: KingTech KP800BL Pump. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "This is the KP800BL listing within KingTech's pump family; the \"BL\" notation is retained as a model suffix rather than interpreted as a confirmed electrical characteristic. Flow rate, pressure, supply voltage and ECU pairing are not verified by the indexed source title. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Pompă de combustibil — KingTech KP800BL Pump (referință KingTech)",
+          "summary": "Fișă de referință pentru pompă de combustibil: KingTech KP800BL Pump. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Aceasta este poziția KP800BL din familia de pompe KingTech; notația „BL” este păstrată ca sufix de model, nu interpretată drept caracteristică electrică verificată. Debitul, presiunea, tensiunea de alimentare și asocierea cu ECU nu sunt confirmate de titlul sursei. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "fuel-systems",
+        "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp800bl-pump/95",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/pump/12"
+        ],
+        "variantLabel": "KP800BL",
+        "compatibility": {
+          "status": "unverified",
+          "sourceLabel": null,
+          "confirmedModels": []
+        },
+        "artBriefId": "fuel-systems"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-96",
+      "slug": "kingtech-accessory-96",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "KingTech KP1000BL — KingTech reference",
+          "summary": "Source-listed fuel pump: KingTech KP1000BL. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "This is the KP1000BL listing within KingTech's pump family; the \"BL\" notation is retained as a model suffix rather than interpreted as a confirmed electrical characteristic. Flow rate, pressure, supply voltage and ECU pairing are not verified by the indexed source title. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Pompă de combustibil — KingTech KP1000BL (referință KingTech)",
+          "summary": "Fișă de referință pentru pompă de combustibil: KingTech KP1000BL. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Aceasta este poziția KP1000BL din familia de pompe KingTech; notația „BL” este păstrată ca sufix de model, nu interpretată drept caracteristică electrică verificată. Debitul, presiunea, tensiunea de alimentare și asocierea cu ECU nu sunt confirmate de titlul sursei. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "fuel-systems",
+        "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp1000bl/96",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/pump/12"
+        ],
+        "variantLabel": "KP1000BL",
+        "compatibility": {
+          "status": "unverified",
+          "sourceLabel": null,
+          "confirmedModels": []
+        },
+        "artBriefId": "fuel-systems"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-97",
+      "slug": "kingtech-accessory-97",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "KingTech KP1200BL Pump — KingTech reference",
+          "summary": "Source-listed fuel pump: KingTech KP1200BL Pump. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "This is the KP1200BL listing within KingTech's pump family; the \"BL\" notation is retained as a model suffix rather than interpreted as a confirmed electrical characteristic. Flow rate, pressure, supply voltage and ECU pairing are not verified by the indexed source title. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Pompă de combustibil — KingTech KP1200BL Pump (referință KingTech)",
+          "summary": "Fișă de referință pentru pompă de combustibil: KingTech KP1200BL Pump. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Aceasta este poziția KP1200BL din familia de pompe KingTech; notația „BL” este păstrată ca sufix de model, nu interpretată drept caracteristică electrică verificată. Debitul, presiunea, tensiunea de alimentare și asocierea cu ECU nu sunt confirmate de titlul sursei. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "fuel-systems",
+        "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp1200bl-pump/97",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/pump/12"
+        ],
+        "variantLabel": "KP1200BL",
+        "compatibility": {
+          "status": "unverified",
+          "sourceLabel": null,
+          "confirmedModels": []
+        },
+        "artBriefId": "fuel-systems"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-98",
+      "slug": "kingtech-accessory-98",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "KingTech KP1250BL Pump — KingTech reference",
+          "summary": "Source-listed fuel pump: KingTech KP1250BL Pump. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "This is the KP1250BL listing within KingTech's pump family; the \"BL\" notation is retained as a model suffix rather than interpreted as a confirmed electrical characteristic. Flow rate, pressure, supply voltage and ECU pairing are not verified by the indexed source title. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Pompă de combustibil — KingTech KP1250BL Pump (referință KingTech)",
+          "summary": "Fișă de referință pentru pompă de combustibil: KingTech KP1250BL Pump. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Aceasta este poziția KP1250BL din familia de pompe KingTech; notația „BL” este păstrată ca sufix de model, nu interpretată drept caracteristică electrică verificată. Debitul, presiunea, tensiunea de alimentare și asocierea cu ECU nu sunt confirmate de titlul sursei. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "fuel-systems",
+        "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp1250bl-pump/98",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/pump/12"
+        ],
+        "variantLabel": "KP1250BL",
+        "compatibility": {
+          "status": "unverified",
+          "sourceLabel": null,
+          "confirmedModels": []
+        },
+        "artBriefId": "fuel-systems"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-99",
+      "slug": "kingtech-accessory-99",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "KP Pump Replacement Wire/Valve Set — KingTech reference",
+          "summary": "Source-listed fuel pump servicing set: KP Pump Replacement Wire/Valve Set. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "The supplier labels this as a replacement wiring and valve set for the KP pump family, not as an entire fuel system. \"KP Pump Replacement Wire/Valve Set\" distinguishes its function; port size, sealing material, operating pressure and interchangeable pump or engine models are not verified. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Set pentru întreținerea pompei — KP Pump Replacement Wire/Valve Set (referință KingTech)",
+          "summary": "Fișă de referință pentru set pentru întreținerea pompei: KP Pump Replacement Wire/Valve Set. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Furnizorul descrie un set de cablaj și supapă de schimb pentru familia KP, nu întregul sistem de alimentare. „KP Pump Replacement Wire/Valve Set” delimitează funcția; racordurile, materialul garniturilor, presiunea și modelele de pompe ori motoare interschimbabile nu sunt confirmate. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "fuel-systems",
+        "sourceUrl": "https://www.kingtechturbines.com/product/kp-pump-replacement-wire-valve-set/99",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/pump/12"
+        ],
+        "variantLabel": null,
+        "compatibility": {
+          "status": "unverified",
+          "sourceLabel": null,
+          "confirmedModels": []
+        },
+        "artBriefId": "fuel-systems"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-103",
+      "slug": "kingtech-accessory-103",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "TP-Propeller Spacer45 — KingTech reference",
+          "summary": "Source-listed turboprop propeller spacer: TP-Propeller Spacer45. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "This propeller spacing item is specifically identified as \"TP-Propeller Spacer45\" in the TP accessories listing. Thread, length, material and matching propeller hub cannot be derived safely from its shorthand code. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Distanțier de elice turbopropulsoare — TP-Propeller Spacer45 (referință KingTech)",
+          "summary": "Fișă de referință pentru distanțier de elice turbopropulsoare: TP-Propeller Spacer45. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Acest element de distanțare a elicei este indicat ca „TP-Propeller Spacer45” în lista accesoriilor TP. Filetul, lungimea, materialul și butucul de elice potrivit nu pot fi deduse sigur din codul prescurtat. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "mounting-hardware",
+        "sourceUrl": "https://www.kingtechturbines.com/product/tp-propeller-spacer45/103",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/tp-model-accessories/19"
+        ],
+        "variantLabel": "Spacer45",
+        "compatibility": {
+          "status": "unverified",
+          "sourceLabel": null,
+          "confirmedModels": []
+        },
+        "artBriefId": "mounting-hardware"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-104",
+      "slug": "kingtech-accessory-104",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "Propeller Bolt for K45TP — KingTech reference",
+          "summary": "Source-listed turboprop propeller fastener: Propeller Bolt for K45TP. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "This propeller retention item is specifically identified as \"Propeller Bolt for K45TP\" in the TP accessories listing. Thread, length, material and matching propeller hub cannot be derived safely from its shorthand code. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Șurub de fixare pentru elice — Propeller Bolt for K45TP (referință KingTech)",
+          "summary": "Fișă de referință pentru șurub de fixare pentru elice: Propeller Bolt for K45TP. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Acest element de fixare a elicei este indicat ca „Propeller Bolt for K45TP” în lista accesoriilor TP. Filetul, lungimea, materialul și butucul de elice potrivit nu pot fi deduse sigur din codul prescurtat. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "mounting-hardware",
+        "sourceUrl": "https://www.kingtechturbines.com/product/propeller-bolt-for-k45tp/104",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/tp-model-accessories/19"
+        ],
+        "variantLabel": null,
+        "compatibility": {
+          "status": "source_title_only",
+          "sourceLabel": "K45TP",
+          "confirmedModels": []
+        },
+        "artBriefId": "mounting-hardware"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-105",
+      "slug": "kingtech-accessory-105",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "TP-Propeller Spacer60/100 — KingTech reference",
+          "summary": "Source-listed turboprop propeller spacer: TP-Propeller Spacer60/100. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "This propeller spacing item is specifically identified as \"TP-Propeller Spacer60/100\" in the TP accessories listing. Thread, length, material and matching propeller hub cannot be derived safely from its shorthand code. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Distanțier de elice turbopropulsoare — TP-Propeller Spacer60/100 (referință KingTech)",
+          "summary": "Fișă de referință pentru distanțier de elice turbopropulsoare: TP-Propeller Spacer60/100. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Acest element de distanțare a elicei este indicat ca „TP-Propeller Spacer60/100” în lista accesoriilor TP. Filetul, lungimea, materialul și butucul de elice potrivit nu pot fi deduse sigur din codul prescurtat. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "mounting-hardware",
+        "sourceUrl": "https://www.kingtechturbines.com/product/tp-propeller-spacer60-100/105",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/tp-model-accessories/19"
+        ],
+        "variantLabel": "Spacer60/100",
+        "compatibility": {
+          "status": "unverified",
+          "sourceLabel": null,
+          "confirmedModels": []
+        },
+        "artBriefId": "mounting-hardware"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-106",
+      "slug": "kingtech-accessory-106",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "TP-Bolt75L60/100 — KingTech reference",
+          "summary": "Source-listed turboprop propeller fastener: TP-Bolt75L60/100. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "This propeller retention item is specifically identified as \"TP-Bolt75L60/100\" in the TP accessories listing. Thread, length, material and matching propeller hub cannot be derived safely from its shorthand code. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Șurub de fixare pentru elice — TP-Bolt75L60/100 (referință KingTech)",
+          "summary": "Fișă de referință pentru șurub de fixare pentru elice: TP-Bolt75L60/100. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Acest element de fixare a elicei este indicat ca „TP-Bolt75L60/100” în lista accesoriilor TP. Filetul, lungimea, materialul și butucul de elice potrivit nu pot fi deduse sigur din codul prescurtat. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "mounting-hardware",
+        "sourceUrl": "https://www.kingtechturbines.com/product/tp-bolt75l60-100/106",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/tp-model-accessories/19"
+        ],
+        "variantLabel": "Bolt75L60/100",
+        "compatibility": {
+          "status": "unverified",
+          "sourceLabel": null,
+          "confirmedModels": []
+        },
+        "artBriefId": "mounting-hardware"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-107",
+      "slug": "kingtech-accessory-107",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "Fuel Solenoid Valve — KingTech reference",
+          "summary": "Source-listed fluid shut-off valve: Fuel Solenoid Valve. The individually verified product page is retained as a distinct unpublished reference.",
+          "description": "The supplier labels this as a shut-off component for the named fluid, not as an entire fuel system. \"Fuel Solenoid Valve\" distinguishes its function; port size, sealing material, operating pressure and interchangeable pump or engine models are not verified. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Supapă de închidere — Fuel Solenoid Valve (referință KingTech)",
+          "summary": "Fișă de referință pentru supapă de închidere: Fuel Solenoid Valve. Articolul din pagina individuală verificată este păstrat separat, fără publicare.",
+          "description": "Furnizorul descrie un element de oprire pentru fluidul numit, nu întregul sistem de alimentare. „Fuel Solenoid Valve” delimitează funcția; racordurile, materialul garniturilor, presiunea și modelele de pompe ori motoare interschimbabile nu sunt confirmate. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "fuel-systems",
+        "sourceUrl": "https://www.kingtechturbines.com/product/fuel-solenoid-valve/107",
+        "sourceSubcategoryUrls": [],
+        "variantLabel": null,
+        "compatibility": {
+          "status": "unverified",
+          "sourceLabel": null,
+          "confirmedModels": []
+        },
+        "artBriefId": "fuel-systems"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-108",
+      "slug": "kingtech-accessory-108",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "Propane Solenoid Valve — KingTech reference",
+          "summary": "Source-listed fluid shut-off valve: Propane Solenoid Valve. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "The supplier labels this as a shut-off component for the named fluid, not as an entire fuel system. \"Propane Solenoid Valve\" distinguishes its function; port size, sealing material, operating pressure and interchangeable pump or engine models are not verified. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Supapă de închidere — Propane Solenoid Valve (referință KingTech)",
+          "summary": "Fișă de referință pentru supapă de închidere: Propane Solenoid Valve. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Furnizorul descrie un element de oprire pentru fluidul numit, nu întregul sistem de alimentare. „Propane Solenoid Valve” delimitează funcția; racordurile, materialul garniturilor, presiunea și modelele de pompe ori motoare interschimbabile nu sunt confirmate. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "fuel-systems",
+        "sourceUrl": "https://www.kingtechturbines.com/product/propane-solenoid-valve/108",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/valve/17"
+        ],
+        "variantLabel": null,
+        "compatibility": {
+          "status": "unverified",
+          "sourceLabel": null,
+          "confirmedModels": []
+        },
+        "artBriefId": "fuel-systems"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-112",
+      "slug": "kingtech-accessory-112",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "Fuel Tubing 4mm — KingTech reference",
+          "summary": "Source-listed fuel-system tubing: Fuel Tubing 4mm. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "\"Fuel Tubing 4mm\" records a nominal size or material label from the source and stays separate from other tubing sizes. The title alone does not establish inner versus outer diameter, pressure rating, length supplied or chemical compatibility. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Tubulatură pentru combustibil — Fuel Tubing 4mm (referință KingTech)",
+          "summary": "Fișă de referință pentru tubulatură pentru combustibil: Fuel Tubing 4mm. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "„Fuel Tubing 4mm” păstrează mărimea nominală ori materialul menționat de sursă și rămâne separat de alte dimensiuni de tub. Titlul nu precizează diametrul interior sau exterior, presiunea admisă, lungimea livrată ori compatibilitatea chimică. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "fuel-systems",
+        "sourceUrl": "https://www.kingtechturbines.com/product/fuel-tubing-4mm/112",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/fuel-tubing/26"
+        ],
+        "variantLabel": "4mm",
+        "compatibility": {
+          "status": "unverified",
+          "sourceLabel": null,
+          "confirmedModels": []
+        },
+        "artBriefId": "fuel-systems"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-113",
+      "slug": "kingtech-accessory-113",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "Fuel Tubing 6mm — KingTech reference",
+          "summary": "Source-listed fuel-system tubing: Fuel Tubing 6mm. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "\"Fuel Tubing 6mm\" records a nominal size or material label from the source and stays separate from other tubing sizes. The title alone does not establish inner versus outer diameter, pressure rating, length supplied or chemical compatibility. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Tubulatură pentru combustibil — Fuel Tubing 6mm (referință KingTech)",
+          "summary": "Fișă de referință pentru tubulatură pentru combustibil: Fuel Tubing 6mm. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "„Fuel Tubing 6mm” păstrează mărimea nominală ori materialul menționat de sursă și rămâne separat de alte dimensiuni de tub. Titlul nu precizează diametrul interior sau exterior, presiunea admisă, lungimea livrată ori compatibilitatea chimică. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "fuel-systems",
+        "sourceUrl": "https://www.kingtechturbines.com/product/fuel-tubing-6mm/113",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/fuel-tubing/26"
+        ],
+        "variantLabel": "6mm",
+        "compatibility": {
+          "status": "unverified",
+          "sourceLabel": null,
+          "confirmedModels": []
+        },
+        "artBriefId": "fuel-systems"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-114",
+      "slug": "kingtech-accessory-114",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "TEFLON Tubing 4mm — KingTech reference",
+          "summary": "Source-listed fuel-system tubing: TEFLON Tubing 4mm. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "\"TEFLON Tubing 4mm\" records a nominal size or material label from the source and stays separate from other tubing sizes. The title alone does not establish inner versus outer diameter, pressure rating, length supplied or chemical compatibility. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Tubulatură pentru combustibil — TEFLON Tubing 4mm (referință KingTech)",
+          "summary": "Fișă de referință pentru tubulatură pentru combustibil: TEFLON Tubing 4mm. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "„TEFLON Tubing 4mm” păstrează mărimea nominală ori materialul menționat de sursă și rămâne separat de alte dimensiuni de tub. Titlul nu precizează diametrul interior sau exterior, presiunea admisă, lungimea livrată ori compatibilitatea chimică. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "fuel-systems",
+        "sourceUrl": "https://www.kingtechturbines.com/product/teflon-tubing-4mm/114",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/fuel-tubing/26"
+        ],
+        "variantLabel": "4mm",
+        "compatibility": {
+          "status": "unverified",
+          "sourceLabel": null,
+          "confirmedModels": []
+        },
+        "artBriefId": "fuel-systems"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-115",
+      "slug": "kingtech-accessory-115",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "UAT 100 — KingTech reference",
+          "summary": "Source-listed air-trap tank reference: UAT 100. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "The UAT identifier \"UAT 100\" identifies one source listing in the air-trap family, but the digits are not treated as a certified tank volume. Port dimensions, usable capacity and engine matching remain open. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Rezervor de separare a aerului — UAT 100 (referință KingTech)",
+          "summary": "Fișă de referință pentru rezervor de separare a aerului: UAT 100. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Identificatorul UAT „UAT 100” desemnează o poziție din familia separatoarelor de aer, însă cifrele nu sunt considerate volum certificat. Dimensiunile racordurilor, capacitatea utilizabilă și asocierea cu motoarele rămân de verificat. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "fuel-systems",
+        "sourceUrl": "https://www.kingtechturbines.com/product/uat-100/115",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/UAT/27"
+        ],
+        "variantLabel": "UAT 100",
+        "compatibility": {
+          "status": "unverified",
+          "sourceLabel": null,
+          "confirmedModels": []
+        },
+        "artBriefId": "fuel-systems"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-116",
+      "slug": "kingtech-accessory-116",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "UAT 150 — KingTech reference",
+          "summary": "Source-listed air-trap tank reference: UAT 150. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "The UAT identifier \"UAT 150\" identifies one source listing in the air-trap family, but the digits are not treated as a certified tank volume. Port dimensions, usable capacity and engine matching remain open. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Rezervor de separare a aerului — UAT 150 (referință KingTech)",
+          "summary": "Fișă de referință pentru rezervor de separare a aerului: UAT 150. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Identificatorul UAT „UAT 150” desemnează o poziție din familia separatoarelor de aer, însă cifrele nu sunt considerate volum certificat. Dimensiunile racordurilor, capacitatea utilizabilă și asocierea cu motoarele rămân de verificat. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "fuel-systems",
+        "sourceUrl": "https://www.kingtechturbines.com/product/uat-150/116",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/UAT/27"
+        ],
+        "variantLabel": "UAT 150",
+        "compatibility": {
+          "status": "unverified",
+          "sourceLabel": null,
+          "confirmedModels": []
+        },
+        "artBriefId": "fuel-systems"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-117",
+      "slug": "kingtech-accessory-117",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "UAT 250 — KingTech reference",
+          "summary": "Source-listed air-trap tank reference: UAT 250. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "The UAT identifier \"UAT 250\" identifies one source listing in the air-trap family, but the digits are not treated as a certified tank volume. Port dimensions, usable capacity and engine matching remain open. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Rezervor de separare a aerului — UAT 250 (referință KingTech)",
+          "summary": "Fișă de referință pentru rezervor de separare a aerului: UAT 250. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Identificatorul UAT „UAT 250” desemnează o poziție din familia separatoarelor de aer, însă cifrele nu sunt considerate volum certificat. Dimensiunile racordurilor, capacitatea utilizabilă și asocierea cu motoarele rămân de verificat. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "fuel-systems",
+        "sourceUrl": "https://www.kingtechturbines.com/product/uat-250/117",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/UAT/27"
+        ],
+        "variantLabel": "UAT 250",
+        "compatibility": {
+          "status": "unverified",
+          "sourceLabel": null,
+          "confirmedModels": []
+        },
+        "artBriefId": "fuel-systems"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-121",
+      "slug": "kingtech-accessory-121",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "Stainless Steel Bracket for K140/170/180/210 — KingTech reference",
+          "summary": "Source-listed engine mounting bracket: Stainless Steel Bracket for K140/170/180/210. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "The source identifies a stainless-steel mounting bracket for the designation printed in \"Stainless Steel Bracket for K140/170/180/210\". This distinguishes the intended mounting family, but does not establish bolt spacing, thickness, engine revision or interchangeability. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Suport de fixare a motorului — Stainless Steel Bracket for K140/170/180/210 (referință KingTech)",
+          "summary": "Fișă de referință pentru suport de fixare a motorului: Stainless Steel Bracket for K140/170/180/210. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Sursa indică un suport de montaj din oțel inoxidabil cu identificarea din „Stainless Steel Bracket for K140/170/180/210”. Aceasta diferențiază familia de montaj, fără să confirme distanța dintre găuri, grosimea, revizia motorului sau interschimbabilitatea. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "mounting-hardware",
+        "sourceUrl": "https://www.kingtechturbines.com/product/stainless-steel-bracket-for-k140-170-180-210/121",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/engine-bracket/24"
+        ],
+        "variantLabel": "K140/170/180/210",
+        "compatibility": {
+          "status": "source_title_only",
+          "sourceLabel": "K140/170/180/210",
+          "confirmedModels": []
+        },
+        "artBriefId": "mounting-hardware"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-124",
+      "slug": "kingtech-accessory-124",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "Kero Plug for K30/45 G3 and G4 — KingTech reference",
+          "summary": "Source-listed kerosene ignition plug: Kero Plug for K30/45 G3 and G4. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "The kerosene-start plug is named for the source's K30/45 G3 and G4 grouping. Plug thread, voltage, driving electronics and suitability for later revisions require manual confirmation. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Bujie de aprindere pentru kerosen — Kero Plug for K30/45 G3 and G4 (referință KingTech)",
+          "summary": "Fișă de referință pentru bujie de aprindere pentru kerosen: Kero Plug for K30/45 G3 and G4. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Bujia pentru pornire cu kerosen este denumită pentru gruparea K30/45 G3 și G4 din sursă. Filetul, tensiunea, electronica de comandă și potrivirea cu revizii ulterioare cer confirmare din manual. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "maintenance-parts",
+        "sourceUrl": "https://www.kingtechturbines.com/product/kero-plug-for-k30-45-g3-and-g4/124",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/kero-plug/28"
+        ],
+        "variantLabel": null,
+        "compatibility": {
+          "status": "source_title_only",
+          "sourceLabel": "K30/45 G3 and G4",
+          "confirmedModels": []
+        },
+        "artBriefId": "maintenance-parts"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-125",
+      "slug": "kingtech-accessory-125",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "Starter Motor Clutch O-Rings — KingTech reference",
+          "summary": "Source-listed starter clutch sealing rings: Starter Motor Clutch O-Rings. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "This source entry concerns the replacement seals for the starter clutch rather than the other starter-system spare parts. \"Starter Motor Clutch O-Rings\" identifies the version or component; connector pinout, torque, dimensions and service applicability are not specified as verified data. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Garnituri O-ring pentru ambreiajul demarorului — Starter Motor Clutch O-Rings (referință KingTech)",
+          "summary": "Fișă de referință pentru garnituri O-ring pentru ambreiajul demarorului: Starter Motor Clutch O-Rings. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Această poziție privește garniturile de schimb ale ambreiajului de pornire, nu celelalte piese ale sistemului de pornire. Denumirea „Starter Motor Clutch O-Rings” identifică versiunea sau componenta; configurația pinilor, cuplul, dimensiunile și aplicabilitatea în service nu sunt confirmate. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "maintenance-parts",
+        "sourceUrl": "https://www.kingtechturbines.com/product/starter-motor-clutch-o-rings/125",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/starter-motor/15"
+        ],
+        "variantLabel": null,
+        "compatibility": {
+          "status": "unverified",
+          "sourceLabel": null,
+          "confirmedModels": []
+        },
+        "artBriefId": "maintenance-parts"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-137",
+      "slug": "kingtech-accessory-137",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "FOD Screen 320 — KingTech reference",
+          "summary": "Source-listed foreign-object debris screen: FOD Screen 320. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "The \"320\" screen is a distinct intake-protection variant; a named size is not a measured diameter. Installation, inlet geometry and the turbine generation to which it fits require a separate fitment check. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Sită de protecție la obiecte străine — FOD Screen 320 (referință KingTech)",
+          "summary": "Fișă de referință pentru sită de protecție la obiecte străine: FOD Screen 320. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Sita „320” reprezintă o variantă distinctă de protecție a admisiei; mărimea din denumire nu este un diametru măsurat. Montajul, geometria admisiei și generația compatibilă a turbinei necesită verificare separată. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "turbine-protection",
+        "sourceUrl": "https://www.kingtechturbines.com/product/fod-screen-320/137",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/fod-screen/11"
+        ],
+        "variantLabel": "320",
+        "compatibility": {
+          "status": "unverified",
+          "sourceLabel": null,
+          "confirmedModels": []
+        },
+        "artBriefId": "turbine-protection"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-138",
+      "slug": "kingtech-accessory-138",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "Temp Probe - K30/45G — KingTech reference",
+          "summary": "Source-listed temperature probe: Temp Probe - K30/45G. The individually verified product page is retained as a distinct unpublished reference.",
+          "description": "The temperature-sensing item is indexed as \"Temp Probe - K30/45G\", not as an interchangeable universal probe. Sensor technology, temperature range, wiring polarity and mounting geometry are not established in the captured title. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Sondă de temperatură — Temp Probe - K30/45G (referință KingTech)",
+          "summary": "Fișă de referință pentru sondă de temperatură: Temp Probe - K30/45G. Articolul din pagina individuală verificată este păstrat separat, fără publicare.",
+          "description": "Sonda de măsurare a temperaturii este indexată ca „Temp Probe - K30/45G”, nu ca senzor universal interschimbabil. Tehnologia senzorului, intervalul de temperatură, polaritatea și geometria montajului nu reies din titlul capturat. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "maintenance-parts",
+        "sourceUrl": "https://www.kingtechturbines.com/product/temp-probe-k30-45g/138",
+        "sourceSubcategoryUrls": [],
+        "variantLabel": null,
+        "compatibility": {
+          "status": "source_title_only",
+          "sourceLabel": "K30/45G",
+          "confirmedModels": []
+        },
+        "artBriefId": "maintenance-parts"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-139",
+      "slug": "kingtech-accessory-139",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "KingTech KP300DP Pump — KingTech reference",
+          "summary": "Source-listed fuel pump: KingTech KP300DP Pump. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "This is the KP300DP listing within KingTech's pump family; the \"DP\" notation is retained as a model suffix rather than interpreted as a confirmed electrical characteristic. Flow rate, pressure, supply voltage and ECU pairing are not verified by the indexed source title. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Pompă de combustibil — KingTech KP300DP Pump (referință KingTech)",
+          "summary": "Fișă de referință pentru pompă de combustibil: KingTech KP300DP Pump. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Aceasta este poziția KP300DP din familia de pompe KingTech; notația „DP” este păstrată ca sufix de model, nu interpretată drept caracteristică electrică verificată. Debitul, presiunea, tensiunea de alimentare și asocierea cu ECU nu sunt confirmate de titlul sursei. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "fuel-systems",
+        "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp300dp-pump/139",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/pump/12"
+        ],
+        "variantLabel": "KP300DP",
+        "compatibility": {
+          "status": "unverified",
+          "sourceLabel": null,
+          "confirmedModels": []
+        },
+        "artBriefId": "fuel-systems"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-140",
+      "slug": "kingtech-accessory-140",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "KingTech KP500DP Pump — KingTech reference",
+          "summary": "Source-listed fuel pump: KingTech KP500DP Pump. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "This is the KP500DP listing within KingTech's pump family; the \"DP\" notation is retained as a model suffix rather than interpreted as a confirmed electrical characteristic. Flow rate, pressure, supply voltage and ECU pairing are not verified by the indexed source title. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Pompă de combustibil — KingTech KP500DP Pump (referință KingTech)",
+          "summary": "Fișă de referință pentru pompă de combustibil: KingTech KP500DP Pump. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Aceasta este poziția KP500DP din familia de pompe KingTech; notația „DP” este păstrată ca sufix de model, nu interpretată drept caracteristică electrică verificată. Debitul, presiunea, tensiunea de alimentare și asocierea cu ECU nu sunt confirmate de titlul sursei. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "fuel-systems",
+        "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp500dp-pump/140",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/pump/12"
+        ],
+        "variantLabel": "KP500DP",
+        "compatibility": {
+          "status": "unverified",
+          "sourceLabel": null,
+          "confirmedModels": []
+        },
+        "artBriefId": "fuel-systems"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-141",
+      "slug": "kingtech-accessory-141",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "KingTech KP600DP Pump — KingTech reference",
+          "summary": "Source-listed fuel pump: KingTech KP600DP Pump. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "This is the KP600DP listing within KingTech's pump family; the \"DP\" notation is retained as a model suffix rather than interpreted as a confirmed electrical characteristic. Flow rate, pressure, supply voltage and ECU pairing are not verified by the indexed source title. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Pompă de combustibil — KingTech KP600DP Pump (referință KingTech)",
+          "summary": "Fișă de referință pentru pompă de combustibil: KingTech KP600DP Pump. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Aceasta este poziția KP600DP din familia de pompe KingTech; notația „DP” este păstrată ca sufix de model, nu interpretată drept caracteristică electrică verificată. Debitul, presiunea, tensiunea de alimentare și asocierea cu ECU nu sunt confirmate de titlul sursei. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "fuel-systems",
+        "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp600dp-pump/141",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/pump/12"
+        ],
+        "variantLabel": "KP600DP",
+        "compatibility": {
+          "status": "unverified",
+          "sourceLabel": null,
+          "confirmedModels": []
+        },
+        "artBriefId": "fuel-systems"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-142",
+      "slug": "kingtech-accessory-142",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "KingTech KP800DP Pump — KingTech reference",
+          "summary": "Source-listed fuel pump: KingTech KP800DP Pump. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "This is the KP800DP listing within KingTech's pump family; the \"DP\" notation is retained as a model suffix rather than interpreted as a confirmed electrical characteristic. Flow rate, pressure, supply voltage and ECU pairing are not verified by the indexed source title. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Pompă de combustibil — KingTech KP800DP Pump (referință KingTech)",
+          "summary": "Fișă de referință pentru pompă de combustibil: KingTech KP800DP Pump. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Aceasta este poziția KP800DP din familia de pompe KingTech; notația „DP” este păstrată ca sufix de model, nu interpretată drept caracteristică electrică verificată. Debitul, presiunea, tensiunea de alimentare și asocierea cu ECU nu sunt confirmate de titlul sursei. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "fuel-systems",
+        "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp800dp-pump/142",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/pump/12"
+        ],
+        "variantLabel": "KP800DP",
+        "compatibility": {
+          "status": "unverified",
+          "sourceLabel": null,
+          "confirmedModels": []
+        },
+        "artBriefId": "fuel-systems"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-143",
+      "slug": "kingtech-accessory-143",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "KingTech KP1000DP Pump — KingTech reference",
+          "summary": "Source-listed fuel pump: KingTech KP1000DP Pump. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "This is the KP1000DP listing within KingTech's pump family; the \"DP\" notation is retained as a model suffix rather than interpreted as a confirmed electrical characteristic. Flow rate, pressure, supply voltage and ECU pairing are not verified by the indexed source title. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Pompă de combustibil — KingTech KP1000DP Pump (referință KingTech)",
+          "summary": "Fișă de referință pentru pompă de combustibil: KingTech KP1000DP Pump. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Aceasta este poziția KP1000DP din familia de pompe KingTech; notația „DP” este păstrată ca sufix de model, nu interpretată drept caracteristică electrică verificată. Debitul, presiunea, tensiunea de alimentare și asocierea cu ECU nu sunt confirmate de titlul sursei. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "fuel-systems",
+        "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp1000dp-pump/143",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/pump/12"
+        ],
+        "variantLabel": "KP1000DP",
+        "compatibility": {
+          "status": "unverified",
+          "sourceLabel": null,
+          "confirmedModels": []
+        },
+        "artBriefId": "fuel-systems"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-144",
+      "slug": "kingtech-accessory-144",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "KingTech KP1200DP Pump — KingTech reference",
+          "summary": "Source-listed fuel pump: KingTech KP1200DP Pump. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "This is the KP1200DP listing within KingTech's pump family; the \"DP\" notation is retained as a model suffix rather than interpreted as a confirmed electrical characteristic. Flow rate, pressure, supply voltage and ECU pairing are not verified by the indexed source title. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Pompă de combustibil — KingTech KP1200DP Pump (referință KingTech)",
+          "summary": "Fișă de referință pentru pompă de combustibil: KingTech KP1200DP Pump. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Aceasta este poziția KP1200DP din familia de pompe KingTech; notația „DP” este păstrată ca sufix de model, nu interpretată drept caracteristică electrică verificată. Debitul, presiunea, tensiunea de alimentare și asocierea cu ECU nu sunt confirmate de titlul sursei. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "fuel-systems",
+        "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp1200dp-pump/144",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/pump/12"
+        ],
+        "variantLabel": "KP1200DP",
+        "compatibility": {
+          "status": "unverified",
+          "sourceLabel": null,
+          "confirmedModels": []
+        },
+        "artBriefId": "fuel-systems"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-145",
+      "slug": "kingtech-accessory-145",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "KingTech KP1250DP Pump — KingTech reference",
+          "summary": "Source-listed fuel pump: KingTech KP1250DP Pump. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "This is the KP1250DP listing within KingTech's pump family; the \"DP\" notation is retained as a model suffix rather than interpreted as a confirmed electrical characteristic. Flow rate, pressure, supply voltage and ECU pairing are not verified by the indexed source title. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Pompă de combustibil — KingTech KP1250DP Pump (referință KingTech)",
+          "summary": "Fișă de referință pentru pompă de combustibil: KingTech KP1250DP Pump. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Aceasta este poziția KP1250DP din familia de pompe KingTech; notația „DP” este păstrată ca sufix de model, nu interpretată drept caracteristică electrică verificată. Debitul, presiunea, tensiunea de alimentare și asocierea cu ECU nu sunt confirmate de titlul sursei. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "fuel-systems",
+        "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp1250dp-pump/145",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/pump/12"
+        ],
+        "variantLabel": "KP1250DP",
+        "compatibility": {
+          "status": "unverified",
+          "sourceLabel": null,
+          "confirmedModels": []
+        },
+        "artBriefId": "fuel-systems"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-146",
+      "slug": "kingtech-accessory-146",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "KingTech DRM G5 — KingTech reference",
+          "summary": "Source-listed turbine control electronics: KingTech DRM G5. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "This named DRM control-system entry is distinct from data leads and Bluetooth adapters. Revision, firmware, connectors and engine compatibility must be established against the actual controller manual before use. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Echipament electronic de control — KingTech DRM G5 (referință KingTech)",
+          "summary": "Fișă de referință pentru echipament electronic de control: KingTech DRM G5. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Acest echipament DRM apare separat de cablurile de date și adaptoarele Bluetooth. Revizia, firmware-ul, conectorii și compatibilitatea cu motoarele trebuie stabilite din manualul controlerului înainte de utilizare. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "ecu-controls",
+        "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-drm-g5/146",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/ecu-and-gsu/13"
+        ],
+        "variantLabel": "G5",
+        "compatibility": {
+          "status": "source_title_only",
+          "sourceLabel": "G5",
+          "confirmedModels": []
+        },
+        "artBriefId": "ecu-controls"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-148",
+      "slug": "kingtech-accessory-148",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "Stainless Steel Bracket for K65 — KingTech reference",
+          "summary": "Source-listed engine mounting bracket: Stainless Steel Bracket for K65. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "The source identifies a stainless-steel mounting bracket for the designation printed in \"Stainless Steel Bracket for K65\". This distinguishes the intended mounting family, but does not establish bolt spacing, thickness, engine revision or interchangeability. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Suport de fixare a motorului — Stainless Steel Bracket for K65 (referință KingTech)",
+          "summary": "Fișă de referință pentru suport de fixare a motorului: Stainless Steel Bracket for K65. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Sursa indică un suport de montaj din oțel inoxidabil cu identificarea din „Stainless Steel Bracket for K65”. Aceasta diferențiază familia de montaj, fără să confirme distanța dintre găuri, grosimea, revizia motorului sau interschimbabilitatea. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "mounting-hardware",
+        "sourceUrl": "https://www.kingtechturbines.com/product/stainless-steel-bracket-for-k65/148",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/engine-bracket/24"
+        ],
+        "variantLabel": "K65",
+        "compatibility": {
+          "status": "source_title_only",
+          "sourceLabel": "K65",
+          "confirmedModels": []
+        },
+        "artBriefId": "mounting-hardware"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-149",
+      "slug": "kingtech-accessory-149",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "Brushless Starter Motor Assembly — KingTech reference",
+          "summary": "Source-listed turbine starter motor: Brushless Starter Motor Assembly. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "This source entry concerns the electric starter assembly rather than the other starter-system spare parts. \"Brushless Starter Motor Assembly\" identifies the version or component; connector pinout, torque, dimensions and service applicability are not specified as verified data. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Motor de pornire a turbinei — Brushless Starter Motor Assembly (referință KingTech)",
+          "summary": "Fișă de referință pentru motor de pornire a turbinei: Brushless Starter Motor Assembly. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Această poziție privește ansamblul electric de pornire, nu celelalte piese ale sistemului de pornire. Denumirea „Brushless Starter Motor Assembly” identifică versiunea sau componenta; configurația pinilor, cuplul, dimensiunile și aplicabilitatea în service nu sunt confirmate. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "maintenance-parts",
+        "sourceUrl": "https://www.kingtechturbines.com/product/brushless-starter-motor-assembly/149",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/starter-motor/15"
+        ],
+        "variantLabel": null,
+        "compatibility": {
+          "status": "unverified",
+          "sourceLabel": null,
+          "confirmedModels": []
+        },
+        "artBriefId": "maintenance-parts"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-151",
+      "slug": "kingtech-accessory-151",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "Fuel Tubing 8mm — KingTech reference",
+          "summary": "Source-listed fuel-system tubing: Fuel Tubing 8mm. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "\"Fuel Tubing 8mm\" records a nominal size or material label from the source and stays separate from other tubing sizes. The title alone does not establish inner versus outer diameter, pressure rating, length supplied or chemical compatibility. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Tubulatură pentru combustibil — Fuel Tubing 8mm (referință KingTech)",
+          "summary": "Fișă de referință pentru tubulatură pentru combustibil: Fuel Tubing 8mm. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "„Fuel Tubing 8mm” păstrează mărimea nominală ori materialul menționat de sursă și rămâne separat de alte dimensiuni de tub. Titlul nu precizează diametrul interior sau exterior, presiunea admisă, lungimea livrată ori compatibilitatea chimică. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "fuel-systems",
+        "sourceUrl": "https://www.kingtechturbines.com/product/fuel-tubing-8mm/151",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/fuel-tubing/26"
+        ],
+        "variantLabel": "8mm",
+        "compatibility": {
+          "status": "unverified",
+          "sourceLabel": null,
+          "confirmedModels": []
+        },
+        "artBriefId": "fuel-systems"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-sq-B6UE3Q5GGAWUC57XIETALASF",
+      "slug": "kingtech-accessory-b6ue3q5ggawuc57xietalasf",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "PISCO One-Way Valve — KingTech reference",
+          "summary": "Source-listed one-way fuel valve: PISCO One-Way Valve. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "The supplier labels this as a one-direction fuel-system valve, not as an entire fuel system. \"PISCO One-Way Valve\" distinguishes its function; port size, sealing material, operating pressure and interchangeable pump or engine models are not verified. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Supapă unisens pentru combustibil — PISCO One-Way Valve (referință KingTech)",
+          "summary": "Fișă de referință pentru supapă unisens pentru combustibil: PISCO One-Way Valve. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Furnizorul descrie o supapă unisens a circuitului de combustibil, nu întregul sistem de alimentare. „PISCO One-Way Valve” delimitează funcția; racordurile, materialul garniturilor, presiunea și modelele de pompe ori motoare interschimbabile nu sunt confirmate. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "fuel-systems",
+        "sourceUrl": "https://www.kingtechturbines.com/product/pisco-one-way-valve/B6UE3Q5GGAWUC57XIETALASF",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/pump/12"
+        ],
+        "variantLabel": null,
+        "compatibility": {
+          "status": "unverified",
+          "sourceLabel": null,
+          "confirmedModels": []
+        },
+        "artBriefId": "fuel-systems"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-sq-ECX6KXRCBWRIZ2YGLCIVQAWT",
+      "slug": "kingtech-accessory-ecx6kxrcbwriz2yglcivqawt",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "Stainless Steel Bracket for K130 — KingTech reference",
+          "summary": "Source-listed engine mounting bracket: Stainless Steel Bracket for K130. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "The source identifies a stainless-steel mounting bracket for the designation printed in \"Stainless Steel Bracket for K130\". This distinguishes the intended mounting family, but does not establish bolt spacing, thickness, engine revision or interchangeability. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Suport de fixare a motorului — Stainless Steel Bracket for K130 (referință KingTech)",
+          "summary": "Fișă de referință pentru suport de fixare a motorului: Stainless Steel Bracket for K130. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Sursa indică un suport de montaj din oțel inoxidabil cu identificarea din „Stainless Steel Bracket for K130”. Aceasta diferențiază familia de montaj, fără să confirme distanța dintre găuri, grosimea, revizia motorului sau interschimbabilitatea. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "mounting-hardware",
+        "sourceUrl": "https://www.kingtechturbines.com/product/stainless-steel-bracket-for-k130/ECX6KXRCBWRIZ2YGLCIVQAWT",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/engine-bracket/24"
+        ],
+        "variantLabel": "K130",
+        "compatibility": {
+          "status": "source_title_only",
+          "sourceLabel": "K130",
+          "confirmedModels": []
+        },
+        "artBriefId": "mounting-hardware"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-sq-LRO5A4V3ZOBXOVEKU4F3PPC3",
+      "slug": "kingtech-accessory-lro5a4v3zobxoveku4f3ppc3",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "KingTech KP500V+ — KingTech reference",
+          "summary": "Source-listed fuel pump: KingTech KP500V+. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "This is the KP500V+ listing within KingTech's pump family; the \"V\" notation is retained as a model suffix rather than interpreted as a confirmed electrical characteristic. Flow rate, pressure, supply voltage and ECU pairing are not verified by the indexed source title. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Pompă de combustibil — KingTech KP500V+ (referință KingTech)",
+          "summary": "Fișă de referință pentru pompă de combustibil: KingTech KP500V+. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Aceasta este poziția KP500V+ din familia de pompe KingTech; notația „V” este păstrată ca sufix de model, nu interpretată drept caracteristică electrică verificată. Debitul, presiunea, tensiunea de alimentare și asocierea cu ECU nu sunt confirmate de titlul sursei. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "fuel-systems",
+        "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp500v-/LRO5A4V3ZOBXOVEKU4F3PPC3",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/pump/12"
+        ],
+        "variantLabel": "KP500V+",
+        "compatibility": {
+          "status": "unverified",
+          "sourceLabel": null,
+          "confirmedModels": []
+        },
+        "artBriefId": "fuel-systems"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-sq-PYRA6D5K64KITYJCJGXLZCQU",
+      "slug": "kingtech-accessory-pyra6d5k64kityjcjgxlzcqu",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "Engine Bracket K450 — KingTech reference",
+          "summary": "Source-listed engine mounting bracket: Engine Bracket K450. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "The source identifies an engine mounting bracket for the designation printed in \"Engine Bracket K450\". This distinguishes the intended mounting family, but does not establish bolt spacing, thickness, engine revision or interchangeability. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Suport de fixare a motorului — Engine Bracket K450 (referință KingTech)",
+          "summary": "Fișă de referință pentru suport de fixare a motorului: Engine Bracket K450. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Sursa indică un suport de montaj pentru motor cu identificarea din „Engine Bracket K450”. Aceasta diferențiază familia de montaj, fără să confirme distanța dintre găuri, grosimea, revizia motorului sau interschimbabilitatea. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "mounting-hardware",
+        "sourceUrl": "https://www.kingtechturbines.com/product/engine-bracket-k450/PYRA6D5K64KITYJCJGXLZCQU",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/engine-bracket/24"
+        ],
+        "variantLabel": "K450",
+        "compatibility": {
+          "status": "source_title_only",
+          "sourceLabel": "K450",
+          "confirmedModels": []
+        },
+        "artBriefId": "mounting-hardware"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-sq-VCEYUYCU5FJF2GZQMXDNZXJO",
+      "slug": "kingtech-accessory-vceyuycu5fjf2gzqmxdnzxjo",
+      "model": null,
+      "copy": {
+        "en": {
+          "name": "Stainless Steel Bracket for K102 — KingTech reference",
+          "summary": "Source-listed engine mounting bracket: Stainless Steel Bracket for K102. The manufacturer catalogue is retained as a distinct unpublished reference.",
+          "description": "The source identifies a stainless-steel mounting bracket for the designation printed in \"Stainless Steel Bracket for K102\". This distinguishes the intended mounting family, but does not establish bolt spacing, thickness, engine revision or interchangeability. This is an external reference only; BODICH does not claim to make or sell the item."
+        },
+        "ro": {
+          "name": "Suport de fixare a motorului — Stainless Steel Bracket for K102 (referință KingTech)",
+          "summary": "Fișă de referință pentru suport de fixare a motorului: Stainless Steel Bracket for K102. Articolul din catalogul producătorului este păstrat separat, fără publicare.",
+          "description": "Sursa indică un suport de montaj din oțel inoxidabil cu identificarea din „Stainless Steel Bracket for K102”. Aceasta diferențiază familia de montaj, fără să confirme distanța dintre găuri, grosimea, revizia motorului sau interschimbabilitatea. Aceasta este doar o referință externă; BODICH nu pretinde că produce sau vinde articolul."
+        }
+      },
+      "specs": [],
+      "accessory": {
+        "groupId": "mounting-hardware",
+        "sourceUrl": "https://www.kingtechturbines.com/product/stainless-steel-bracket-for-k102/VCEYUYCU5FJF2GZQMXDNZXJO",
+        "sourceSubcategoryUrls": [
+          "https://www.kingtechturbines.com/shop/engine-bracket/24"
+        ],
+        "variantLabel": "K102",
+        "compatibility": {
+          "status": "source_title_only",
+          "sourceLabel": "K102",
+          "confirmedModels": []
+        },
+        "artBriefId": "mounting-hardware"
+      },
+      "images": [],
+      "approval": "draft"
     }
   ]
 }
