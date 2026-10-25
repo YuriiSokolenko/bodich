@@ -500,6 +500,61 @@ try {
       await page.close();
     }
   });
+
+  // Release gate: exercise the actual EN/RO category routes at mobile and desktop
+  // widths, not only the top-level sections. Reference drafts must stay absent.
+  for (const locale of locales) {
+    for (const width of [320, 1440]) {
+      for (const [section, category] of [
+        ['products', 'turbine-engines'],
+        ['accessories', 'ecu-controls'],
+      ]) {
+        const name = locale + '-' + width + '-' + category;
+        await verify(name + ': category route, draft isolation, layout and screenshot', async () => {
+          const page = await browser.newPage({
+            viewport: { width, height: 900 },
+            deviceScaleFactor: 1,
+            reducedMotion: 'reduce',
+          });
+          const pageErrors = [];
+          page.on('pageerror', (error) => pageErrors.push(error.message));
+          page.on('console', (message) => {
+            if (message.type() === 'error') pageErrors.push(message.text());
+          });
+          try {
+            const response = await page.goto(baseUrl + '/' + locale + '/' + section + '/' + category + '/', {
+              waitUntil: 'load', timeout: 30000,
+            });
+            assert.equal(response?.status(), 200, 'Localized category page is missing');
+            assert.equal(await page.locator('html').getAttribute('lang'), locale);
+            assert.equal(await page.locator('h1').count(), 1);
+            assert.equal(await page.locator('[data-catalog-category="' + category + '"]').count(), 1);
+            assert.equal(await page.locator('[data-product-card]').count(), 0,
+              'Unapproved supplier references must never become product cards');
+            assert.equal(await page.locator('[data-catalog-empty-state]').count(), 1,
+              'No approved BODICH products exist for this frozen release phase');
+            const other = locale === 'en' ? 'ro' : 'en';
+            assert(await page.locator('a[href*="/' + other + '/' + section + '/' + category + '/"]').count() >= 1,
+              'Locale switch must preserve the category route');
+            const overflow = await page.evaluate(() =>
+              document.documentElement.scrollWidth - document.documentElement.clientWidth);
+            assert(overflow <= 1, 'Category overflows viewport by ' + overflow + 'px');
+            const content = await page.locator('body').innerText();
+            assert(!/KingTech|Square Gift Card/i.test(content),
+              'Unpublished supplier data or external gift checkout is visible');
+            assert.deepEqual(pageErrors, [], 'Browser errors on catalog category');
+            const shot = output + '/screenshots/' + name + '.png';
+            const data = await page.screenshot({ path: shot, fullPage: true });
+            assert(data.length > 1000, 'Empty category screenshot');
+            screenshots.push(shot);
+          } finally {
+            await page.close();
+          }
+        });
+      }
+    }
+  }
+
 } finally {
   await browser.close();
 }
