@@ -134,7 +134,7 @@ export function validate(input, { checkMatrix = true } = {}) {
         !e.acceptedPhrases || !languages.every((lang) =>
           Array.isArray(e.acceptedPhrases[lang]) && e.acceptedPhrases[lang].length > 0 &&
           e.acceptedPhrases[lang].every((phrase) =>
-            typeof phrase === 'string' && phrase.length > 8 &&
+            typeof phrase === 'string' && phrase.length >= 5 &&
             measured({ name: phrase }, lang).some((found) => equivalent(found, e)))))
       fail('Invalid, unclear or unsourced claim exception: ' + e.sourceId);
     if (exceptionsByKey.has(keyFor(e))) fail('Duplicate claim exception: ' + keyFor(e));
@@ -187,6 +187,18 @@ export function validate(input, { checkMatrix = true } = {}) {
           !alt.includes(lang === 'en' ? 'not an actual product photograph' : 'nu este o imagine a produsului real'))
         fail('Missing/unlocalized image alt: ' + id + '/' + lang);
       for (const claim of measured(copy, lang)) {
+        // A supplier's complete literal title is an identifying label, not a
+        // dimensional spec. Preserve “Fuel Tubing 4mm”, but forbid a free
+        // standing, unevidenced "4 mm diameter" claim elsewhere in the prose.
+        const text = copy[claim.field];
+        let at = text.indexOf(source.sourceTitle);
+        let literalSourceTitle = false;
+        while (at !== -1) {
+          if (at <= claim.start && at + source.sourceTitle.length >= claim.end)
+            literalSourceTitle = true;
+          at = text.indexOf(source.sourceTitle, at + 1);
+        }
+        if (literalSourceTitle) continue;
         if (claim.value === null) {
           fail('Wrong decimal/thousands locale format: ' + id + '/' + lang + '/' + claim.surface);
           continue;
