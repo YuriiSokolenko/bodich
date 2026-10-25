@@ -133,6 +133,9 @@ const glyphRows = {
   '/':'00001/00001/00010/00100/01000/10000/10000',
   '-':'00000/00000/00000/11111/00000/00000/00000',
   '.':'00000/00000/00000/00000/00000/01100/01100',
+  ',':'00000/00000/00000/00000/00100/00100/01000',
+  '(':'00010/00100/01000/01000/01000/00100/00010',
+  ')':'01000/00100/00010/00010/00010/00100/01000',
   '+':'00000/00100/00100/11111/00100/00100/00000',
   '·':'00000/00000/00000/00100/00000/00000/00000',
   ' ':'00000/00000/00000/00000/00000/00000/00000',
@@ -157,6 +160,42 @@ function vectorText(value, x, y, scale, fill = '#e4ecf1') {
 /** Preserve the full ID in the manifest; print only an unambiguous short index. */
 function displayIndex(id) {
   return id.startsWith('kt-sq-') ? 'SQ-' + id.slice(-6) : id.toUpperCase();
+}
+
+
+const REVIEW_CAPTION_WIDTH = 360;
+const REVIEW_CAPTION_HEIGHT = 114;
+const REVIEW_CHARS_PER_LINE = 27;
+const REVIEW_TITLE_LINES = 3;
+
+/** Wrap without shortening model identifiers or discarding meaningful suffixes. */
+function reviewTitleLines(sourceTitle) {
+  const normalized = sourceTitle.toUpperCase().trim().replace(/\\s+/g, ' ');
+  const lines = [];
+  for (const word of normalized.split(' ')) {
+    if (word.length > REVIEW_CHARS_PER_LINE)
+      throw new Error('Unbreakable supplier title fragment: ' + word);
+    const current = lines.at(-1);
+    if (current && current.length + 1 + word.length <= REVIEW_CHARS_PER_LINE)
+      lines[lines.length - 1] += ' ' + word;
+    else lines.push(word);
+  }
+  if (lines.length > REVIEW_TITLE_LINES)
+    throw new Error('Source title cannot fit without truncation: ' + sourceTitle);
+  return lines;
+}
+function contactSheetCaption(entry) {
+  const fullId = entry.sourceId.toUpperCase();
+  if (fullId.length > REVIEW_CHARS_PER_LINE)
+    throw new Error('Full source ID cannot fit caption: ' + fullId);
+  const titleLines = reviewTitleLines(entry.sourceTitle);
+  return '<svg xmlns="http://www.w3.org/2000/svg" width="' + REVIEW_CAPTION_WIDTH +
+    '" height="' + REVIEW_CAPTION_HEIGHT + '">' +
+    '<rect width="' + REVIEW_CAPTION_WIDTH + '" height="' + REVIEW_CAPTION_HEIGHT +
+    '" fill="#182b39"/>' +
+    vectorText(fullId, 12, 8, 2, '#edb082') +
+    titleLines.map((line, index) => vectorText(line, 12, 38 + index * 24, 2, '#deebef')).join('') +
+    '</svg>';
 }
 
 function seedFor(text) {
@@ -363,20 +402,17 @@ async function generate() {
   }
   // Visual category review sheets: a human can inspect EVERY reference thumbnail.
   for (const [family, entries] of byFamily) {
-    const columns = 4, width = 360, height = 270, footer = 64;
-    const rows = Math.ceil(entries.length / columns), cellHeight = height + footer;
+    const columns = 4, width = 360, height = 270;
+    const rows = Math.ceil(entries.length / columns);
+    const cellHeight = height + REVIEW_CAPTION_HEIGHT;
     const images = [];
     for (let i = 0; i < entries.length; i++) {
       const entry = entries[i], left = (i % columns) * width;
       const top = Math.floor(i / columns) * cellHeight;
       images.push({ input: readFileSync(entry.assets.webp360), top, left });
-      // An external-source index and title BELOW the illustration, never a product badge.
-      const title = (entry.sourceTitle ?? 'UNTITLED REFERENCE')
-        .toUpperCase().replace(/[^A-Z0-9 +/.-]/g, ' ').slice(0, 27);
-      const caption = '<svg xmlns="http://www.w3.org/2000/svg" width="360" height="64">' +
-        '<rect width="360" height="64" fill="#182b39"/>' +
-        vectorText(displayIndex(entry.sourceId), 12, 8, 3, '#edb082') +
-        vectorText(title, 12, 38, 2, '#deebef') + '</svg>';
+      // Contact sheets print FULL source IDs and titles below each category sketch.
+      // Only the image header abbreviates long Square IDs.
+      const caption = contactSheetCaption(entry);
       images.push({ input: Buffer.from(caption, 'utf8'), top: top + height, left });
     }
     await sharp({ create: { width: columns * width, height: rows * cellHeight,
@@ -410,6 +446,22 @@ function selfTest() {
     if (printed.length > 9 || !svgFor(entry).includes(vectorText(printed, 865, 116, 4, '#d68a59')))
       throw new Error('Visual index overflow / missing vector index: ' + entry.sourceId);
   }
+  for (const entry of manifest.entries) {
+    const expectedLines = reviewTitleLines(entry.sourceTitle);
+    if (expectedLines.join(' ') !== entry.sourceTitle.toUpperCase().trim().replace(/\\s+/g, ' '))
+      throw new Error('Source title was truncated or reordered in review caption: ' + entry.sourceId);
+    const caption = contactSheetCaption(entry);
+    if (!caption.includes(vectorText(entry.sourceId.toUpperCase(), 12, 8, 2, '#edb082')) ||
+        expectedLines.some((line, i) => !caption.includes(
+          vectorText(line, 12, 38 + i * 24, 2, '#deebef'))))
+      throw new Error('Missing full source ID or title in review caption: ' + entry.sourceId);
+  }
+  const mounting = manifest.entries.filter((entry) => entry.family === 'accessory-mounting-hardware');
+  const captionIdentifiers = new Set(mounting.map((entry) => entry.sourceId));
+  if (captionIdentifiers.size !== mounting.length ||
+      mounting.some((entry) => !contactSheetCaption(entry).includes(
+        vectorText(entry.sourceId.toUpperCase(), 12, 8, 2, '#edb082'))))
+    throw new Error('Mounting hardware contact sheets lack distinct full reference IDs');
   const glyphProof = svgFor(manifest.entries[0]);
   if (glyphProof.includes('<text ') ||
       !glyphProof.includes(vectorText('ILLUSTRATIVE DIAGRAM · NOT A PRODUCT PHOTO', 103, 787, 3, '#9bb4be')))
