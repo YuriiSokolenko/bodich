@@ -1918,6 +1918,325 @@
       ],
       "images": [],
       "approval": "draft"
+    },
+    {
+      "sourceId": "kt-17",
+      "slug": "kingtech-k-30tpg4-plus",
+      "model": "K-30TPG4+",
+      "copy": {
+        "en": {
+          "name": "KingTech K-30TPG4+ — turboprop technical reference",
+          "summary": "Technical research reference for the propeller-driving K-30TPG4+, reported at 276.5 mm length, 1,200 g mass and 230,000 turbine rpm.",
+          "description": "The listed turbine fuel consumption is 145 g/min by mass, with Jet A1 or kerosene indicated. KingTech recommends a three-blade 18 × 12 or 18 × 16 inch propeller and specifies the KP200BL digital SBus brushless pump. The listing does not establish power at the shaft, a gearbox ratio or a verified package-contents list. The two propeller sizes are recommendations, not separate commercial SKUs. This is a KingTech source reference, not an engine manufactured or sold by BODICH."
+        },
+        "ro": {
+          "name": "KingTech K-30TPG4+ — referință tehnică pentru turbopropulsor",
+          "summary": "Fișă externă de referință pentru turbopropulsorul K-30TPG4+, cu lungimea declarată de 276,5 mm, masa de 1.200 g și turația turbinei de 230.000 rpm.",
+          "description": "Consumul masic indicat este de 145 g/min, cu combustibilii Jet A1 sau kerosen. KingTech recomandă elice cu trei pale de 18 × 12 sau 18 × 16 țoli și indică pompa digitală SBus fără perii KP200BL. Pagina nu confirmă puterea la arbore, raportul reductorului ori lista pieselor furnizate. Cele două dimensiuni de elice sunt recomandări, nu produse comerciale distincte. Aceasta este o referință KingTech, nu un motor fabricat sau comercializat de BODICH."
+        }
+      },
+      "specs": [
+        {
+          "kind": "dimension",
+          "metric": "length",
+          "value": 276.5,
+          "unit": "mm",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-30tpg4-/17",
+          "verifiedOn": "2026-10-25"
+        },
+        {
+          "kind": "mass",
+          "scope": "not_stated",
+          "value": 1200,
+          "unit": "g",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-30tpg4-/17",
+          "verifiedOn": "2026-10-25"
+        },
+        {
+          "kind": "speed",
+          "metric": "turbine",
+          "value": 230000,
+          "unit": "rpm",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-30tpg4-/17",
+          "verifiedOn": "2026-10-25"
+        },
+        {
+          "kind": "fuel_consumption",
+          "value": 145,
+          "unit": "g/min",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-30tpg4-/17",
+          "verifiedOn": "2026-10-25"
+        }
+      ],
+      "turboprop": {
+        "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-30tpg4-/17",
+        "verifiedOn": "2026-10-25",
+        "propellers": [
+          {
+            "blades": 3,
+            "diameterInches": 18,
+            "pitchInches": 12
+          },
+          {
+            "blades": 3,
+            "diameterInches": 18,
+            "pitchInches": 16
+          }
+        ],
+        "fuelTypes": [
+          "jet_a1",
+          "kerosene"
+        ],
+        "pumpModel": "KP200BL"
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-18",
+      "slug": "kingtech-k-45tpg4-plus",
+      "model": "K-45TPG4+",
+      "copy": {
+        "en": {
+          "name": "KingTech K-45TPG4+ — turboprop technical reference",
+          "summary": "Turboprop reference recording KingTech's 5.2 kW declared power, a 316 mm length and a recommended three-blade 22 × 12 inch propeller.",
+          "description": "The KingTech item reports a 1,800 g weight, turbine speed up to 170,000 rpm, 700 °C maximum exhaust temperature and 220 g/min mass-based fuel consumption. Diesel, Jet A1 and kerosene are listed fuels. The recommended 22 × 12 inch propeller is not verified as an included accessory or as a separate purchasable SKU. Gearbox reduction ratio and full package contents have not been confirmed. This external technical record does not advertise a BODICH product or stock."
+        },
+        "ro": {
+          "name": "KingTech K-45TPG4+ — referință tehnică pentru turbopropulsor",
+          "summary": "Referință pentru turbopropulsorul KingTech cu puterea declarată de 5,2 kW, lungimea de 316 mm și elice recomandată cu trei pale de 22 × 12 țoli.",
+          "description": "Pagina KingTech indică masa de 1.800 g, turația turbinei de până la 170.000 rpm, temperatura maximă a gazelor de evacuare de 700 °C și consumul masic de combustibil de 220 g/min. Sunt enumerați motorina, Jet A1 și kerosenul. Elicea recomandată de 22 × 12 țoli nu este confirmată ca piesă inclusă sau produs comercial separat. Raportul reductorului și lista completă de componente nu sunt verificate. Fișa tehnică externă nu constituie o ofertă ori un stoc BODICH."
+        }
+      },
+      "specs": [
+        {
+          "kind": "dimension",
+          "metric": "length",
+          "value": 316,
+          "unit": "mm",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-45tpg4-/18",
+          "verifiedOn": "2026-10-25"
+        },
+        {
+          "kind": "mass",
+          "scope": "not_stated",
+          "value": 1800,
+          "unit": "g",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-45tpg4-/18",
+          "verifiedOn": "2026-10-25"
+        },
+        {
+          "kind": "speed",
+          "metric": "turbine",
+          "value": 170000,
+          "unit": "rpm",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-45tpg4-/18",
+          "verifiedOn": "2026-10-25"
+        },
+        {
+          "kind": "fuel_consumption",
+          "value": 220,
+          "unit": "g/min",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-45tpg4-/18",
+          "verifiedOn": "2026-10-25"
+        },
+        {
+          "kind": "power",
+          "value": 5.2,
+          "unit": "kW",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-45tpg4-/18",
+          "verifiedOn": "2026-10-25"
+        },
+        {
+          "kind": "temperature",
+          "value": 700,
+          "unit": "°C",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-45tpg4-/18",
+          "verifiedOn": "2026-10-25"
+        }
+      ],
+      "turboprop": {
+        "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-45tpg4-/18",
+        "verifiedOn": "2026-10-25",
+        "propellers": [
+          {
+            "blades": 3,
+            "diameterInches": 22,
+            "pitchInches": 12
+          }
+        ],
+        "fuelTypes": [
+          "diesel",
+          "jet_a1",
+          "kerosene"
+        ]
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-19",
+      "slug": "kingtech-k-60tpg4-plus",
+      "model": "K-60TPG4+",
+      "copy": {
+        "en": {
+          "name": "KingTech K-60TPG4+ — turboprop technical reference",
+          "summary": "KingTech K-60TPG4+ research record with 7.3 kW declared power and a three-blade 24 × 20 inch recommended propeller.",
+          "description": "The supplier states a 362 mm unit length, 2,400 g weight, maximum turbine speed of 160,000 rpm and maximum exhaust temperature of 700 °C. Mass-based fuel consumption is listed at 240 g/min for diesel, Jet A1 or kerosene. A recommended propeller size is not evidence that a propeller is supplied, nor does it denote another SKU. No verified gearbox ratio, output-shaft speed or full included-components inventory is present in the source. This item is an external KingTech reference, not a BODICH sale listing."
+        },
+        "ro": {
+          "name": "KingTech K-60TPG4+ — referință tehnică pentru turbopropulsor",
+          "summary": "Fișă de referință KingTech K-60TPG4+, cu puterea declarată de 7,3 kW și elice recomandată cu trei pale de 24 × 20 țoli.",
+          "description": "Furnizorul indică lungimea ansamblului de 362 mm, masa de 2.400 g, turația maximă a turbinei de 160.000 rpm și temperatura maximă a gazelor de evacuare de 700 °C. Consumul masic declarat este de 240 g/min pentru motorină, Jet A1 sau kerosen. O dimensiune de elice recomandată nu dovedește că elicea este inclusă și nu definește alt SKU. Sursa nu precizează un raport verificat al reductorului, turația arborelui de ieșire sau lista completă a componentelor. Este o referință externă KingTech, nu o ofertă BODICH."
+        }
+      },
+      "specs": [
+        {
+          "kind": "dimension",
+          "metric": "length",
+          "value": 362,
+          "unit": "mm",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-60tpg4-/19",
+          "verifiedOn": "2026-10-25"
+        },
+        {
+          "kind": "mass",
+          "scope": "not_stated",
+          "value": 2400,
+          "unit": "g",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-60tpg4-/19",
+          "verifiedOn": "2026-10-25"
+        },
+        {
+          "kind": "speed",
+          "metric": "turbine",
+          "value": 160000,
+          "unit": "rpm",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-60tpg4-/19",
+          "verifiedOn": "2026-10-25"
+        },
+        {
+          "kind": "fuel_consumption",
+          "value": 240,
+          "unit": "g/min",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-60tpg4-/19",
+          "verifiedOn": "2026-10-25"
+        },
+        {
+          "kind": "power",
+          "value": 7.3,
+          "unit": "kW",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-60tpg4-/19",
+          "verifiedOn": "2026-10-25"
+        },
+        {
+          "kind": "temperature",
+          "value": 700,
+          "unit": "°C",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-60tpg4-/19",
+          "verifiedOn": "2026-10-25"
+        }
+      ],
+      "turboprop": {
+        "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-60tpg4-/19",
+        "verifiedOn": "2026-10-25",
+        "propellers": [
+          {
+            "blades": 3,
+            "diameterInches": 24,
+            "pitchInches": 20
+          }
+        ],
+        "fuelTypes": [
+          "diesel",
+          "jet_a1",
+          "kerosene"
+        ]
+      },
+      "images": [],
+      "approval": "draft"
+    },
+    {
+      "sourceId": "kt-20",
+      "slug": "kingtech-k-100tpg4-plus",
+      "model": "K-100TPG4+",
+      "copy": {
+        "en": {
+          "name": "KingTech K-100TPG4+ — turboprop technical reference",
+          "summary": "KingTech K-100TPG4+ reference documenting 13 kW declared power, a 384.55 mm assembly length and a three-blade 26 × 20 inch propeller recommendation.",
+          "description": "The original product page reports a 3,500 g mass, maximum turbine speed up to 135,000 rpm, 700 °C maximum exhaust temperature and 360 g/min mass-based fuel use. The fuel list is diesel, Jet A1 and kerosene. The power is shown alongside 6,200 rpm, but that number is not unambiguously labelled as output-shaft speed; we therefore leave gearbox-output speed and reduction ratio unknown. The recommended propeller is not asserted to be supplied. This is an external KingTech technical reference, not a BODICH product claim."
+        },
+        "ro": {
+          "name": "KingTech K-100TPG4+ — referință tehnică pentru turbopropulsor",
+          "summary": "Referință KingTech K-100TPG4+ cu puterea declarată de 13 kW, lungimea ansamblului de 384,55 mm și elice recomandată cu trei pale de 26 × 20 țoli.",
+          "description": "Pagina originală indică masa de 3.500 g, turația maximă a turbinei de până la 135.000 rpm, temperatura maximă de evacuare de 700 °C și consumul masic de 360 g/min. Sunt enumerați motorina, Jet A1 și kerosenul. Puterea apare alături de valoarea de 6.200 rpm, dar aceasta nu este identificată fără echivoc ca turație a arborelui de ieșire; în consecință turația arborelui și raportul reductorului rămân necunoscute. Elicea recomandată nu este presupusă ca fiind inclusă. Este o referință externă KingTech, nu un produs BODICH confirmat."
+        }
+      },
+      "specs": [
+        {
+          "kind": "dimension",
+          "metric": "length",
+          "value": 384.55,
+          "unit": "mm",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-100tpg4-/20",
+          "verifiedOn": "2026-10-25"
+        },
+        {
+          "kind": "mass",
+          "scope": "not_stated",
+          "value": 3500,
+          "unit": "g",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-100tpg4-/20",
+          "verifiedOn": "2026-10-25"
+        },
+        {
+          "kind": "speed",
+          "metric": "turbine",
+          "value": 135000,
+          "unit": "rpm",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-100tpg4-/20",
+          "verifiedOn": "2026-10-25"
+        },
+        {
+          "kind": "fuel_consumption",
+          "value": 360,
+          "unit": "g/min",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-100tpg4-/20",
+          "verifiedOn": "2026-10-25"
+        },
+        {
+          "kind": "power",
+          "value": 13,
+          "unit": "kW",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-100tpg4-/20",
+          "verifiedOn": "2026-10-25"
+        },
+        {
+          "kind": "temperature",
+          "value": 700,
+          "unit": "°C",
+          "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-100tpg4-/20",
+          "verifiedOn": "2026-10-25"
+        }
+      ],
+      "turboprop": {
+        "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-100tpg4-/20",
+        "verifiedOn": "2026-10-25",
+        "propellers": [
+          {
+            "blades": 3,
+            "diameterInches": 26,
+            "pitchInches": 20
+          }
+        ],
+        "fuelTypes": [
+          "diesel",
+          "jet_a1",
+          "kerosene"
+        ]
+      },
+      "images": [],
+      "approval": "draft"
     }
   ]
 }

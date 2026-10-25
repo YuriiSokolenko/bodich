@@ -49,8 +49,8 @@ export const permittedSpecUnits = {
 export type SpecKind = keyof typeof permittedSpecUnits;
 export type ReferenceSpec = {
   kind: SpecKind;
-  /** A dimension must specify its axis so diameter and length are not confused. */
-  metric?: 'diameter' | 'length';
+  /** Axes for dimensions and turbine-versus-propeller shaft speeds. */
+  metric?: 'diameter' | 'length' | 'turbine' | 'propeller';
   value: number;
   unit: string;
   /** Mass scope prevents misleading comparisons of engine-only and equipped assemblies. */
@@ -58,6 +58,17 @@ export type ReferenceSpec = {
   /** Provenance must be per specification, not just per product. */
   sourceUrl: string;
   verifiedOn: string;
+};
+
+/** TP-only provenance and propeller/fuel recommendations: never jet thrust defaults. */
+export type ReferenceTurbopropDetails = {
+  sourceUrl: string;
+  verifiedOn: string;
+  propellers: { blades: number; diameterInches: number; pitchInches: number }[];
+  fuelTypes: ('diesel' | 'jet_a1' | 'kerosene')[];
+  pumpModel?: string;
+  includedComponents?: string[];
+  gearboxRatio?: number;
 };
 
 export type SourceInventoryProduct = {
@@ -77,6 +88,7 @@ export type ReferenceOverride = {
   model?: string | null;
   copy?: Record<Locale, ReferenceCopy | null>;
   specs?: ReferenceSpec[];
+  turboprop?: ReferenceTurbopropDetails;
   images?: ReferenceImage[];
   approval?: ReferenceApproval;
 };
@@ -93,6 +105,7 @@ export type ReferenceDraft = {
   model: string | null;
   copy: Record<Locale, ReferenceCopy | null>;
   specs: ReferenceSpec[];
+  turboprop: ReferenceTurbopropDetails | null;
   images: ReferenceImage[];
   approval: ReferenceApproval;
   source: {
@@ -138,6 +151,7 @@ export function buildReferenceDrafts(inventory: SourceInventory, overrides: Refe
       model: edit?.model ?? null,
       copy: edit?.copy ?? { en: null, ro: null },
       specs: edit?.specs ?? [],
+      turboprop: edit?.turboprop ?? null,
       images: edit?.images ?? [],
       approval: edit?.approval ?? 'research',
       source: {
@@ -191,7 +205,7 @@ export function validateReferenceDrafts(
   const edited = new Set<string>();
   for (const edit of overrides.records) {
     if (!edit || typeof edit !== 'object' || Array.isArray(edit)) { fail('Invalid editorial record'); continue; }
-    if (!keysOnly(edit, ['sourceId', 'slug', 'model', 'copy', 'specs', 'images', 'approval']))
+    if (!keysOnly(edit, ['sourceId', 'slug', 'model', 'copy', 'specs', 'turboprop', 'images', 'approval']))
       fail('Unknown editorial field for ' + edit.sourceId);
     if (!sourceIds.has(edit.sourceId)) fail('Editorial record references unknown source: ' + edit.sourceId);
     if (edited.has(edit.sourceId)) fail('Duplicate editorial override: ' + edit.sourceId);
@@ -204,6 +218,8 @@ export function validateReferenceDrafts(
         Array.isArray(edit.copy) || !keysOnly(edit.copy, locales) ||
         !locales.every((locale) => Object.hasOwn(edit.copy!, locale)))) fail('EN/RO copy objects required: ' + edit.sourceId);
     if (edit.specs !== undefined && !Array.isArray(edit.specs)) fail('Specifications must be an array: ' + edit.sourceId);
+    if (edit.turboprop !== undefined && (!edit.turboprop || typeof edit.turboprop !== 'object' || Array.isArray(edit.turboprop)))
+      fail('Invalid turboprop metadata: ' + edit.sourceId);
     if (edit.images !== undefined && !Array.isArray(edit.images)) fail('Images must be an array: ' + edit.sourceId);
   }
   if (drafts.length !== inventory.products.length) fail('Draft/reference coverage lost source rows');
@@ -240,12 +256,41 @@ export function validateReferenceDrafts(
             : spec.scope !== undefined) ||
           (spec.kind === 'dimension'
             ? !['diameter', 'length'].includes(spec.metric as string)
-            : spec.metric !== undefined) ||
+            : spec.kind === 'speed'
+              ? (draft.itemType === 'turboprop'
+                  ? !['turbine', 'propeller'].includes(spec.metric as string)
+                  : spec.metric !== undefined)
+              : spec.metric !== undefined) ||
           !Object.hasOwn(permittedSpecUnits, spec.kind) ||
           !(permittedSpecUnits[spec.kind as SpecKind] as readonly string[] | undefined)?.includes(spec.unit) ||
           !Number.isFinite(spec.value) || spec.value <= 0 ||
           !validEvidenceUrl(spec.sourceUrl) ||
           !validVerificationDate(spec.verifiedOn)) fail('Invalid specification/unit/provenance: ' + draft.sourceId);
+    }
+    const tp = draft.turboprop;
+    if (draft.itemType !== 'turboprop' && tp !== null)
+      fail('Non-TP record contains turboprop metadata: ' + draft.sourceId);
+    if (tp !== null) {
+      const source = inventory.products.find((p) => p.id === draft.sourceId);
+      if (draft.itemType !== 'turboprop' || !tp || typeof tp !== 'object' || Array.isArray(tp) ||
+          !keysOnly(tp, ['sourceUrl', 'verifiedOn', 'propellers', 'fuelTypes', 'pumpModel', 'includedComponents', 'gearboxRatio']) ||
+          !source || tp.sourceUrl !== source.canonicalUrl || !validEvidenceUrl(tp.sourceUrl) ||
+          !validVerificationDate(tp.verifiedOn) ||
+          !Array.isArray(tp.propellers) || tp.propellers.length < 1 ||
+          tp.propellers.some((p) => !p || typeof p !== 'object' || Array.isArray(p) ||
+            !keysOnly(p, ['blades', 'diameterInches', 'pitchInches']) ||
+            !Number.isSafeInteger(p.blades) || p.blades <= 0 ||
+            !Number.isFinite(p.diameterInches) || p.diameterInches <= 0 ||
+            !Number.isFinite(p.pitchInches) || p.pitchInches <= 0) ||
+          new Set(tp.propellers.map((p) => JSON.stringify(p))).size !== tp.propellers.length ||
+          !Array.isArray(tp.fuelTypes) || tp.fuelTypes.length === 0 ||
+          tp.fuelTypes.some((fuel) => !['diesel', 'jet_a1', 'kerosene'].includes(fuel)) ||
+          new Set(tp.fuelTypes).size !== tp.fuelTypes.length ||
+          (tp.pumpModel !== undefined && !nonempty(tp.pumpModel)) ||
+          (tp.includedComponents !== undefined && (!Array.isArray(tp.includedComponents) ||
+            tp.includedComponents.length === 0 || !tp.includedComponents.every(nonempty))) ||
+          (tp.gearboxRatio !== undefined && (!Number.isFinite(tp.gearboxRatio) || tp.gearboxRatio <= 0)))
+        fail('Invalid or unsourced TP metadata: ' + draft.sourceId);
     }
     if (!Array.isArray(draft.images)) { fail('Invalid images: ' + draft.sourceId); continue; }
     for (const img of draft.images) {
