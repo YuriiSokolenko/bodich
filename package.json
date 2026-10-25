@@ -9,12 +9,15 @@
     "build": "astro build",
     "preview": "astro preview",
     "catalog:intake": "node scripts/validate-catalog.mjs --intake",
-    "catalog:source:check": "node scripts/audit-kingtech-source.mjs --self-test && node scripts/validate-source-inventory.mjs && node scripts/validate-source-inventory.mjs --self-test && node scripts/validate-accessories.mjs && node scripts/validate-accessories.mjs --self-test && node scripts/validate-consumables.mjs && node scripts/validate-consumables.mjs --self-test && node scripts/validate-commerce-references.mjs && node scripts/validate-commerce-references.mjs --self-test && npm run catalog:art:manifest && npm run catalog:art:self-test",
+    "catalog:source:check": "node scripts/audit-kingtech-source.mjs --self-test && node scripts/validate-source-inventory.mjs && node scripts/validate-source-inventory.mjs --self-test && node scripts/validate-accessories.mjs && node scripts/validate-accessories.mjs --self-test && node scripts/validate-consumables.mjs && node scripts/validate-consumables.mjs --self-test && node scripts/validate-commerce-references.mjs && node scripts/validate-commerce-references.mjs --self-test && npm run catalog:art:manifest && npm run catalog:art:self-test && npm run catalog:copy:check && npm run catalog:copy:self-test",
     "catalog:source:refresh": "node scripts/audit-kingtech-source.mjs --write --browser",
     "catalog:art:manifest": "node scripts/generate-catalog-art.mjs",
     "catalog:art:generate": "node scripts/generate-catalog-art.mjs --generate",
     "catalog:art:check": "node scripts/generate-catalog-art.mjs --check",
-    "catalog:art:self-test": "node scripts/generate-catalog-art.mjs --self-test"
+    "catalog:art:self-test": "node scripts/generate-catalog-art.mjs --self-test",
+    "catalog:copy:check": "node scripts/validate-catalog-copy.mjs",
+    "catalog:copy:self-test": "node scripts/validate-catalog-copy.mjs --self-test",
+    "catalog:copy:matrix": "node scripts/validate-catalog-copy.mjs --write-matrix"
   },
   "engines": {
     "node": ">=24 <25"
