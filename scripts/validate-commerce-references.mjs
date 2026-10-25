@@ -8,7 +8,7 @@ import { readFileSync } from 'node:fs';
 import { confirmedProducts } from '../src/catalog/data.ts';
 import {
   buildReferenceDrafts, discountedReferenceDrafts,
-  externalReferenceServices, validateReferenceDrafts,
+  externalReferenceServices, validateReferenceDrafts, validVerificationDate,
 } from '../src/catalog/reference.ts';
 
 const source = JSON.parse(readFileSync('docs/catalog/source-inventory.json', 'utf8'));
@@ -21,14 +21,26 @@ const PROMO_URL = 'https://www.kingtechturbines.com/shop/promotional-items/9';
 const MISSING_BATTERY_URL = 'https://www.kingtechturbines.com/product/850mah-9-9v-life-battery/27';
 const engineSections = ['g5', 'g4', 'tp'];
 const primarySections = [...engineSections, 'oil', 'batteries', 'accessories', 'warranty'];
-const own = (obj, key) => Object.prototype.hasOwnProperty.call(obj, key);
+/** Reject *unknown* commercial properties, not merely known names like price. */
+const keysOnly = (obj, permitted) =>
+  obj !== null && typeof obj === 'object' && !Array.isArray(obj) &&
+  Object.keys(obj).every((key) => permitted.includes(key));
+const draftFields = [
+  'sourceId', 'slug', 'itemType', 'categoryId', 'collectionTags', 'model',
+  'copy', 'specs', 'turboprop', 'accessory', 'oil', 'battery', 'warranty',
+  'images', 'approval', 'source',
+];
+const warrantyDetailFields = ['kind', 'sourceUrl', 'sourceBrand', 'reviewedOn', 'offerStatus', 'legalApproval'];
+const giftFields = ['referenceId', 'sourceSection', 'itemType', 'sourceBrand', 'sourceUrl',
+  'approval', 'offerStatus', 'legalApproval', 'copy'];
+const localeFields = ['name', 'summary', 'description'];
+const noSupplierCheckoutUrl = (gift) =>
+  !/(?:^|[^a-z0-9.-])(?:[a-z0-9-]+\.)*squareup\.com\b/i.test(JSON.stringify(gift)) &&
+  !/https?:\/\//i.test(JSON.stringify(gift.copy));
 const nonempty = (s) => typeof s === 'string' && s.trim().length >= 25;
 const isLocaleCopy = (copy, locale) =>
   copy && ['name', 'summary', 'description'].every((field) => nonempty(copy[locale]?.[field]));
-const hasForbiddenCommerceFields = (object) =>
-  ['price', 'currency', 'discountPrice', 'checkoutUrl', 'buyUrl', 'couponCode',
-    'giftCode', 'warrantyMonths', 'validUntil', 'shippingPromise', 'returnPolicy',
-    'fulfillmentPromise'].some((field) => own(object, field));
+
 
 function commerceProblems(inventory, drafts, externals = externalReferenceServices, published = confirmedProducts) {
   const errors = [];
@@ -83,12 +95,13 @@ function commerceProblems(inventory, drafts, externals = externalReferenceServic
   if (!metadata || metadata.kind !== 'warranty_transfer' ||
       metadata.sourceUrl !== WARRANTY_URL || metadata.sourceBrand !== 'KingTech Turbines' ||
       metadata.offerStatus !== 'reference_only' || metadata.legalApproval !== 'pending' ||
-      metadata.reviewedOn !== '2026-10-25')
+      !validVerificationDate(metadata.reviewedOn))
     fail('Warranty source-brand/legal reference metadata is missing or changed');
+  if (w && (!keysOnly(w, draftFields) || !keysOnly(metadata, warrantyDetailFields)))
+    fail('Warranty draft contains unsupported commerce fields');
   if (w && (w.approval !== 'draft' || w.images.length || w.specs.length ||
       w.model !== null || w.oil !== null || w.battery !== null ||
-      w.accessory !== null || w.turboprop !== null ||
-      hasForbiddenCommerceFields(w) || hasForbiddenCommerceFields(metadata || {})))
+      w.accessory !== null || w.turboprop !== null))
     fail('Warranty reference was accidentally made commercial or physical');
   if (w && (!isLocaleCopy(w.copy, 'en') || !isLocaleCopy(w.copy, 'ro') ||
       !w.copy.en.description.includes('BODICH makes no') ||
@@ -111,13 +124,19 @@ function commerceProblems(inventory, drafts, externals = externalReferenceServic
     fail('Gift Card is an external checkout exception, never a store SKU');
   if (externals.length !== 1 || !gift ||
       gift.referenceId !== 'kingtech-gift-card-external' ||
+      gift.sourceSection !== 'gift-card' ||
       gift.itemType !== 'digital' || gift.sourceBrand !== 'KingTech Turbines' ||
-      gift.sourceUrl !== HOME_URL || gift.approval !== 'draft' ||
-      gift.offerStatus !== 'reference_only' || gift.legalApproval !== 'pending' ||
-      hasForbiddenCommerceFields(gift) ||
-      Object.values(gift).some((value) => value === GIFT_CHECKOUT) ||
-      sourceIds.has(gift.referenceId))
-    fail('Digital gift-card reference must be separate and legally unapproved');
+      gift.sourceUrl !== HOME_URL || sourceIds.has(gift.referenceId))
+    fail('Gift Card external digital identity is invalid');
+  if (gift && (gift.approval !== 'draft' ||
+      gift.offerStatus !== 'reference_only' || gift.legalApproval !== 'pending'))
+    fail('Gift Card legal approval gate is invalid');
+  if (gift && (!keysOnly(gift, giftFields) ||
+      !keysOnly(gift.copy, ['en', 'ro']) ||
+      !keysOnly(gift.copy?.en, localeFields) ||
+      !keysOnly(gift.copy?.ro, localeFields) ||
+      !noSupplierCheckoutUrl(gift)))
+    fail('Gift Card contains unsupported commerce fields or external checkout links');
   if (gift && (!isLocaleCopy(gift.copy, 'en') || !isLocaleCopy(gift.copy, 'ro') ||
       !gift.copy.en.name.includes('reference only') ||
       !gift.copy.ro.name.includes('doar referință') ||
