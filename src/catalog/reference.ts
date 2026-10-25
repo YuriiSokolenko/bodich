@@ -178,7 +178,7 @@ export const externalReferenceServices: readonly ExternalReferenceService[] = [
       ro: {
         name: 'Card cadou KingTech — doar referință externă',
         summary: 'Card cadou digital de la furnizor, documentat doar pentru catalog; BODICH nu vinde și nu emite carduri cadou.',
-        description: 'Sursa KingTech trimite către un sistem Square extern, nu către un motor sau un SKU propriu. Aceasta este doar o referință: BODICH nu oferă coduri cadou, răscumpărare, credit, livrare sau drepturi de retur. Un program viitor ar necesita aprobări separate din partea companiei și a departamentului juridic.',
+        description: 'Sursa KingTech trimite către un sistem Square extern, nu către un motor sau un SKU propriu. Aceasta este doar o referință: BODICH nu emite coduri cadou, nu facilitează utilizarea lor și nu oferă credit, livrare sau condiții de retur. Un program viitor ar necesita aprobări separate din partea companiei și a departamentului juridic.',
       },
     },
   },
@@ -298,7 +298,7 @@ export function discountedReferenceDrafts(drafts: readonly ReferenceDraft[]): Re
 const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const draftAssetPattern = /^docs\/catalog\/draft-assets\/[a-z0-9_-]+(?:\/[a-z0-9_-]+)*\.(?:webp|png|jpe?g)$/;
 const isoDate = /^\d{4}-\d{2}-\d{2}$/;
-function validVerificationDate(value: unknown): value is string {
+export function validVerificationDate(value: unknown): value is string {
   if (typeof value !== 'string' || !isoDate.test(value)) return false;
   const actual = new Date(value + 'T00:00:00.000Z');
   return !Number.isNaN(actual.getTime()) &&
@@ -374,8 +374,9 @@ export function validateReferenceDrafts(
         referenceTaxonomy[section].category !== draft.categoryId) fail('Mismatched item type or category: ' + draft.sourceId);
     if (draft.source.sections.some((s) => s !== 'discounted' && !isKnownSection(s)))
       fail('Unknown reference section: ' + draft.sourceId);
+    if (draft.collectionTags.some((tag) => tag !== 'discounted'))
+      fail('Unsupported reference collection tag: ' + draft.sourceId);
     if (draft.collectionTags.includes('discounted') !== draft.source.sections.includes('discounted') ||
-        draft.collectionTags.some((tag) => tag !== 'discounted') ||
         (draft.collectionTags.includes('discounted') && !['turbojet', 'turboprop'].includes(draft.itemType)))
       fail('Incorrect discount tag: ' + draft.sourceId);
     if (!['research', 'draft', 'editorial_review', 'company_approved'].includes(draft.approval))
