@@ -118,8 +118,7 @@ export function validate(input) {
         if (seenText.has(hash)) fail('Non-unique ' + lang + '.' + field + ': ' + id);
         seenText.set(hash, id);
       }
-      if (!copy.summary.toLowerCase().includes('kingtech') &&
-          !copy.description.toLowerCase().includes('kingtech'))
+      if (!fields.some((field) => copy[field].toLowerCase().includes('kingtech')))
         fail('No supplier attribution: ' + id + '/' + lang);
       if (lang === 'ro' && !/[ăâîșț]/i.test(Object.values(copy).join(' ')))
         fail('Romanian diacritics missing: ' + id);
