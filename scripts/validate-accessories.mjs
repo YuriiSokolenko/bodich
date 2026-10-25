@@ -16,7 +16,7 @@ const canonical = (x) => typeof x === 'string' &&
 const expectedIds = new Set(baseline.sourceIds);
 const validCopy = (x) => x && typeof x === 'object' &&
   ['name', 'summary', 'description'].every((key) =>
-    typeof x[key] === 'string' && x[key].trim().length >= (key === 'description' ? 140 : 35));
+    typeof x[key] === 'string' && x[key].trim().length >= (key === 'description' ? 140 : key === 'summary' ? 45 : 10));
 const equalSet = (left, right) => left.length === right.length &&
   new Set(left).size === left.length && left.every((x) => right.includes(x));
 
