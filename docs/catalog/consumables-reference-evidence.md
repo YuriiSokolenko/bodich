@@ -33,7 +33,7 @@ These are **briefs**, not images. Do not copy official-store photography or logo
 Original vector cutaway of a neutral, unbranded large oil container with a clearly separate measurement callout for the source's 2-gallon label; do not depict a KingTech label, a certification seal or an actual product package.
 
 - **Source:** https://www.kingtechturbines.com/product/kingtech-special-blend-oil-2-gallons/21
-- **Source notes:** Source label gives total quantity, not a confirmed container count. Source-side shipping, price and stock are not BODICH policies. Composition, V3.1 version and additive claims are not established by the six-SKU source ledger; do not copy them into product descriptions until individually evidenced. Current approval, stock, regional volume interpretation and publication status are separate metadata, not product copy.
+- **Source notes:** The title states 2 Gallons but does not specify how many separate containers are included. The exact regional gallon convention is not specified by the source title.
 - **Image status:** `images: []`; use localized no-approved-image fallback in any future reviewed display, never a supplier photo passed off as BODICH imagery.
 
 ### kt-22 — KingTech Special Blend Oil, 1 Gallon
@@ -41,7 +41,7 @@ Original vector cutaway of a neutral, unbranded large oil container with a clear
 Independent line-art silhouette of a single neutral oil container beside a 1-gallon label chip, visually distinct from the two-gallon scene; bottle count and physical dimensions must remain schematic.
 
 - **Source:** https://www.kingtechturbines.com/product/kingtech-special-blend-oil-1-gallon/22
-- **Source notes:** Source label gives total quantity, not a confirmed container count. Source-side shipping, price and stock are not BODICH policies. Composition, V3.1 version and additive claims are not established by the six-SKU source ledger; do not copy them into product descriptions until individually evidenced. Current approval, stock, regional volume interpretation and publication status are separate metadata, not product copy.
+- **Source notes:** The title states 1 Gallon but does not specify how many separate containers are included. The exact regional gallon convention is not specified by the source title.
 - **Image status:** `images: []`; use localized no-approved-image fallback in any future reviewed display, never a supplier photo passed off as BODICH imagery.
 
 ### kt-23 — KingTech Special Blend Oil, 32oz
@@ -49,7 +49,7 @@ Independent line-art silhouette of a single neutral oil container beside a 1-gal
 Original stylized close-up of a small neutral lubricant container with 32oz printed as an attributed source-text caption; avoid implying a verified fluid-ounce to litre equivalence.
 
 - **Source:** https://www.kingtechturbines.com/product/kingtech-special-blend-oil-32oz/23
-- **Source notes:** The 32oz title does not specify fluid vs weight ounces; metric conversion withheld. Source-side shipping, price and stock are not BODICH policies. Composition, V3.1 version and additive claims are not established by the six-SKU source ledger; do not copy them into product descriptions until individually evidenced. Current approval, stock, regional volume interpretation and publication status are separate metadata, not product copy.
+- **Source notes:** The source title uses 32oz without distinguishing liquid-volume ounces from weight ounces. Neither a converted metric quantity nor individual container count is stated.
 - **Image status:** `images: []`; use localized no-approved-image fallback in any future reviewed display, never a supplier photo passed off as BODICH imagery.
 
 ### kt-24 — 3800mAh-9.9V LIFE Battery
@@ -57,7 +57,7 @@ Original stylized close-up of a small neutral lubricant container with 32oz prin
 Original schematic battery silhouette and neutral terminal outlines with 3800 mAh / 9.9 V annotation; avoid depicting a specific plug, confirmed cell count, brand label, safety emblem or turbine fitment.
 
 - **Source:** https://www.kingtechturbines.com/product/3800mah-9-9v-life-battery/24
-- **Source notes:** LIFE, voltage and capacity are original source-title labels; detailed chemistry documentation remains review-needed. No confirmed connector, cell count or specific engine compatibility from the manufacturer product title. The original uppercase LIFE chemistry notation is preserved; the source title alone does not establish exact cell construction or a 3S count. Publication and safety verification status belong to metadata, not customer-facing copy.
+- **Source notes:** The original listing title explicitly marks 3800mAh, 9.9V and LIFE. Cell count, exact chemical construction, connector and specific engine application are absent from the source title.
 - **Image status:** `images: []`; use localized no-approved-image fallback in any future reviewed display, never a supplier photo passed off as BODICH imagery.
 
 ### kt-25 — 2100mAh-9.9V LIFE Battery
@@ -65,7 +65,7 @@ Original schematic battery silhouette and neutral terminal outlines with 3800 mA
 A different diagram composition showing only 2100 mAh / 9.9 V source-title annotations and a generic battery outline; show no charging instructions, connector, internal cell stack or asserted compatibility.
 
 - **Source:** https://www.kingtechturbines.com/product/2100mah-9-9v-life-battery/25
-- **Source notes:** LIFE, voltage and capacity are original source-title labels; detailed chemistry documentation remains review-needed. No confirmed connector, cell count or specific engine compatibility from the manufacturer product title. The original uppercase LIFE chemistry notation is preserved; the source title alone does not establish exact cell construction or a 3S count. Publication and safety verification status belong to metadata, not customer-facing copy.
+- **Source notes:** The original listing title explicitly marks 2100mAh, 9.9V and LIFE. Cell count, exact chemical construction, connector and specific engine application are absent from the source title.
 - **Image status:** `images: []`; use localized no-approved-image fallback in any future reviewed display, never a supplier photo passed off as BODICH imagery.
 
 ### kt-122 — KingTech Red Dyed Special Blend Oil, 2 Gallons
@@ -73,8 +73,12 @@ A different diagram composition showing only 2100 mAh / 9.9 V source-title annot
 Unbranded engineering still life for the distinct red-dyed two-gallon lubricant listing: subtle red droplet / colour swatch with an explicit conceptual-only caption; never imply a tested viscosity or performance difference.
 
 - **Source:** https://www.kingtechturbines.com/product/kingtech-red-dyed-special-blend-oil-2-gallons/122
-- **Source notes:** Red Dyed is an original-source product distinction; performance equivalence unverified. Source-side shipping, price and stock are not BODICH policies. Composition, V3.1 version and additive claims are not established by the six-SKU source ledger; do not copy them into product descriptions until individually evidenced. Current approval, stock, regional volume interpretation and publication status are separate metadata, not product copy.
+- **Source notes:** Red Dyed is a separate source title for the 2 Gallons presentation. No viscosity or performance difference can be established from the red-dyed title.
 - **Image status:** `images: []`; use localized no-approved-image fallback in any future reviewed display, never a supplier photo passed off as BODICH imagery.
+
+## Editorial workflow rules (not source claims)
+
+Oil formulation/version/additive assertions such as V3.1, fully synthetic and KingTech additive content require their own item-specific original-source evidence before customer-facing copy can include them. Seller prices, inventory, shipping, warranty and safety assurances must not become BODICH claims. Approval/publication status stays in structured workflow fields, not product copy. Each source's size, chemistry label and electrical values must remain exact; inferred conversions, cell construction, connectors or engine fitment are not verified. Human bilingual technical proofing remains necessary: the `unsafeEditorialCopy` regular expression is a regression tripwire, not semantic fact-checking.
 
 ## Approval and validation
 
