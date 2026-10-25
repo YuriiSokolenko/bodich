@@ -23,12 +23,16 @@ const sameIds = (items) => unique(items) && items.length === expectedIds.length 
   expectedIds.every((id) => items.includes(id));
 const enoughCopy = (c) => c && ['name', 'summary', 'description'].every((key) =>
   typeof c[key] === 'string' && c[key].trim().length >= (key === 'description' ? 160 : key === 'summary' ? 65 : 20));
+// Publication workflow status and unsupported oil chemistry claims belong in notes,
+// not copy that would become misleading after company approval.
+const unsafeEditorialCopy = (c) => /\bV3\.1\b|full[- ]synthetic|integral sintetic|aditivi KingTech|\bunpublished\b|\bdraft\b|\bnepublicat[ăe]?\b|\bverificare editorială\b|\bapproval\b|\bneed[s]? review\b|BODICH.{0,80}(?:stock|offer|sale|approved|stoc|ofertă|aprobat)|(?:before any|înainte de orice) (?:real product listing|publicare)/i.test(
+  ['name', 'summary', 'description'].map((key) => c?.[key] ?? '').join(' '));
 
 const header = '| Source ID | Original KingTech listing | Section | Distinct source variant | Source-verified fields | Needs review |\n|---|---|---|---|---|---|\n';
 function sourceRow(p, d) {
   if (!d) return '';
   const variant = d.oil ? d.oil.volume.sourceLabel + (d.oil.blend === 'red_dyed_special_blend' ? ' / red dyed' : ' / standard') :
-    d.battery.capacity.value + ' mAh / ' + d.battery.voltage.value + ' V / LiFe';
+    d.battery.capacity.value + ' mAh / ' + d.battery.voltage.value + ' V / ' + d.battery.chemistry.sourceLabel;
   const verified = d.oil ? 'Source oil-size label and turbine use' :
     'Title-listed chemistry, nominal voltage and capacity';
   const unknown = d.oil ? 'Container count; unit conversion; sale details' :
@@ -77,10 +81,13 @@ function check(source, rows, edits, evidence) {
     if (!enoughCopy(d.copy?.en) || !enoughCopy(d.copy?.ro) ||
         d.copy.en.description === d.copy.ro.description)
       fail('Incomplete or non-distinct EN/RO original copy: ' + id);
+    if (unsafeEditorialCopy(d.copy?.en) || unsafeEditorialCopy(d.copy?.ro))
+      fail('Unsupported formulation or provisional approval status leaked into product copy: ' + id);
     const metadata = d.oil ?? d.battery;
     if (!metadata || metadata.sourceUrl !== p.canonicalUrl ||
         metadata.artBriefId !== id || !evidence.includes('### ' + id + ' —') ||
-        !Array.isArray(metadata.sourceNotes) || metadata.sourceNotes.length < 1)
+        !Array.isArray(metadata.sourceNotes) || metadata.sourceNotes.length < 1 ||
+        !evidence.includes('- **Source notes:** ' + metadata.sourceNotes.join(' ')))
       fail('Missing source notes or unique artwork direction: ' + id);
     if (e.section === 'oil') {
       if (d.battery !== null || !d.oil || d.specs.length ||
@@ -90,6 +97,7 @@ function check(source, rows, edits, evidence) {
         fail('Oil product/pack/colour identity changed: ' + id);
     } else if (d.oil !== null || !d.battery ||
         d.battery.capacity.value !== e.capacity || d.battery.voltage.value !== 9.9 ||
+        d.battery.chemistry?.sourceLabel !== 'LIFE' ||
         d.battery.cellCount !== null || d.battery.connector !== null ||
         d.battery.compatibleApplications.length !== 0 ||
         d.specs.length !== 2)
@@ -145,6 +153,15 @@ if (process.argv.includes('--self-test')) {
     ...d, specs: d.specs.map((s) => s.kind === 'voltage' ? { ...s, unit: 'mAh' } : s),
   })));
   expectRejected('approved phantom stock', mutate('kt-21', (d) => ({ ...d, approval: 'company_approved' })));
+  expectRejected('unsubstantiated oil blend wording', mutate('kt-21', (d) => ({
+    ...d, copy: { ...d.copy, en: { ...d.copy.en, description: d.copy.en.description + ' Full synthetic V3.1.' } },
+  })));
+  expectRejected('workflow status exposed in copy', mutate('kt-22', (d) => ({
+    ...d, copy: { ...d.copy, ro: { ...d.copy.ro, description: d.copy.ro.description + ' Fișă nepublicată.' } },
+  })));
+  expectRejected('original LIFE chemistry label lost', mutate('kt-24', (d) => ({
+    ...d, battery: { ...d.battery, chemistry: { sourceLabel: 'LiFe' } },
+  })));
   const alteredLedger = ledger.replace(/(\| kt-23 \|[^\n]*)\n/, '');
   if (!check(inventory, drafts, overrides, alteredLedger).some((s) => s.includes('ledger')))
     errors.push('Negative fixture escaped: removed evidence row');
