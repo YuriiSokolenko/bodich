@@ -12,6 +12,7 @@ import { tmpdir } from 'node:os';
 import { dirname, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildReferenceDrafts, primaryReferenceSection } from '../src/catalog/reference.ts';
+import { validateLedger, contextOnDisk, gateNames } from './catalog-review-ledger.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const outputRoot = resolve(root, 'visual-qa/private-catalog-review');
@@ -69,7 +70,9 @@ const allowedAsset = (path, id, projectRoot = root) => {
  * An artwork diagram is never counted as cleared product photography.
  * A missing generated diagram is visible as MISSING, not silently approved.
  */
-export function assemble({ inventory, overrides, art, review, hasAsset = existsSync, expectedCount = 132 }) {
+export function assemble({ inventory, overrides, art, review, ledgerStates = null, hasAsset = existsSync, expectedCount = 132 }) {
+  const decisions = ledgerStates && new Map(ledgerStates.map((r) => [r.sourceId, r]));
+  if (decisions) assert.equal(decisions.size, expectedCount, 'Ledger coverage drift');
   const sources = unique(inventory.products, 'id', 'source', expectedCount);
   const edits = unique(overrides.records, 'sourceId', 'overlay', expectedCount);
   const arts = unique(art.entries, 'sourceId', 'artwork', expectedCount);
@@ -115,8 +118,19 @@ export function assemble({ inventory, overrides, art, review, hasAsset = existsS
       ...draft.specs.map((spec) => spec.sourceUrl)])].map(safeLink);
     assert.equal(image.assets?.webp600, exactArtPath(id), 'Artwork/ID mapping drift: ' + id);
     const illustrationAvailable = Boolean(hasAsset(allowedAsset(image.assets.webp600, id)));
+    const decision = decisions?.get(id);
+    if (decisions) assert.ok(decision, 'Missing review ledger state: ' + id);
     rows.push({
       sourceId: id,
+      reviewStatus: decision?.status || 'unreviewed',
+      reviewGates: decision?.gates || Object.fromEntries(gateNames.map((gate) => [gate, {
+        status: 'not_reviewed', reviewedBy: null, at: null, reason: null, evidence: [],
+      }])),
+      reviewHistory: decision?.history || [],
+      reviewBlockers: decision?.blockers || gateNames.map((g) => g + ': not_reviewed'),
+      sourceReviewed: decision?.sourceReviewed || false,
+      bodichIdentityVerified: decision?.bodichIdentityVerified || false,
+      eligibleForPromotion: decision?.eligibleForPromotion || false,
       title: source.sourceTitle || '(untitled supplier reference)',
       sourceUrl: url,
       category: section,
@@ -154,6 +168,30 @@ const tr = (en, ro) => '<span data-i18n-en="' + esc(en) +
   '" data-i18n-ro="' + esc(ro) + '">' + esc(en) + '</span>';
 
 function renderRecord(item) {
+  const gateLabels = {
+    identity: ['BODICH model/manufacturer and legal authority', 'Identitatea modelului/producătorului și drepturile BODICH'],
+    imagery: ['Exact model imagery and written usage rights', 'Imagini ale modelului exact și drepturi scrise'],
+    specifications: ['Independently verified specifications', 'Specificații verificate independent'],
+    editorial: ['Native Romanian, English, legal and commercial sign-off', 'Verificare română/engleză, juridică și comercială'],
+  };
+  const auditGates = gateNames.map((gate) => {
+    const review = item.reviewGates[gate];
+    const refs = review.evidence.map((e) => '<li>' + (e.ref.startsWith('https://') ?
+      '<a href="' + esc(e.ref) + '" target="_blank" rel="noopener noreferrer" referrerpolicy="no-referrer">' +
+      esc(e.ref) + '</a>' : esc(e.ref)) + ' — ' + esc(e.version) + ', ' + esc(e.verifiedOn) +
+      ', ' + esc(e.provenance) + '</li>').join('');
+    return '<li><strong>' + tr(...gateLabels[gate]) + '</strong>: ' + esc(review.status) +
+      (review.reviewedBy ? ' · ' + esc(review.reviewedBy.name) + ' (' +
+        esc(review.reviewedBy.role) + '), ' + esc(review.at) : '') +
+      (review.reason ? '<p>' + esc(review.reason) + '</p>' : '') +
+      (refs ? '<ul>' + refs + '</ul>' : '') + '</li>';
+  }).join('');
+  const auditHistory = item.reviewHistory.length ? item.reviewHistory.map((e) =>
+    '<li><code>' + esc(e.eventId) + '</code> · ' + esc(e.at) + ' · ' +
+    esc(e.reviewer.name) + ' (' + esc(e.reviewer.role) + ') · ' +
+    esc(e.kind === 'gate' ? e.gate + ': ' + e.decision : e.status) +
+    ' · ' + esc(e.reason) + '</li>').join('') :
+    '<li>' + tr('No human decisions recorded', 'Nu există decizii umane înregistrate') + '</li>';
   // Index source identity and localized copy only, not approval boilerplate.
   const search = [item.sourceId, item.title, item.draftSlug,
     ...['en', 'ro'].flatMap((lang) => ['name', 'summary', 'description'].map(
@@ -173,7 +211,8 @@ function renderRecord(item) {
     '" data-search="', esc(search), '" data-category="', esc(item.category), '" data-visual="',
     item.illustrationAvailable ? 'diagram' : 'missing',
     '" data-editorial="', item.unresolved.length ? 'flags' : 'none',
-    '" data-lifecycle="', esc(item.lifecycle), '">',
+    '" data-lifecycle="', esc(item.lifecycle),
+    '" data-review="', esc(item.reviewStatus), '">',
     '<div class="art-panel">', image,
     '<p class="disclosure">ILLUSTRATIVE STUDY — NOT A PRODUCT PHOTOGRAPH',
     '<span lang="ro">STUDIU ILUSTRATIV — NU ESTE FOTOGRAFIA UNUI PRODUS</span></p>',
@@ -182,7 +221,15 @@ function renderRecord(item) {
     item.illustrationAvailable ? tr('Generated', 'Generată') : tr('Unavailable', 'Indisponibilă'),
     '</p></div>',
     '<div class="record-body"><div class="record-head"><span class="tag">', esc(item.category),
-    '</span><span class="tag warning">', tr('Unpublished', 'Nepublicat'), ' · ', esc(item.approval), '</span></div>',
+    '</span><span class="tag warning">', tr('Unpublished', 'Nepublicat'), ' · ', esc(item.approval),
+    '</span><span class="tag">', tr('Review', 'Revizuire'), ': ', esc(item.reviewStatus),
+    '</span></div>',
+    '<p class="muted">', tr('Supplier reference reviewed', 'Referință furnizor revizuită'), ': ',
+    item.sourceReviewed ? tr('Yes', 'Da') : tr('No', 'Nu'),
+    ' · ', tr('BODICH identity verified', 'Identitate BODICH verificată'), ': ',
+    item.bodichIdentityVerified ? tr('Yes', 'Da') : tr('No', 'Nu'),
+    ' · ', tr('Eligible for separate promotion PR', 'Eligibil pentru un PR separat'), ': ',
+    item.eligibleForPromotion ? tr('Yes (not published)', 'Da (nepublicat)') : tr('No', 'Nu'), '</p>',
     '<h3>', esc(item.title), '</h3>',
     '<p class="id">', tr('Source ID', 'ID sursă'), ': <code>', esc(item.sourceId), '</code></p>',
     '<p class="id">', tr('Draft slug', 'Identificator de ciornă'), ': <code>', esc(item.draftSlug), '</code></p>',
@@ -211,7 +258,15 @@ function renderRecord(item) {
     '</li><li>', tr('Pending: BODICH model/manufacturer identity verification',
       'În așteptare: confirmarea modelului și producătorului BODICH'),
     '</li><li>', tr('Pending: native Romanian, marketing and legal copy approval',
-      'În așteptare: aprobarea textelor de către un vorbitor nativ, marketing și juridic'), '</li></ul>',
+      'În așteptare: aprobarea textelor de către un vorbitor nativ, marketing și juridic'),
+    '</li></ul>',
+    '<h4>', tr('Persisted human gate decisions (separate from source research)',
+      'Decizii umane înregistrate (separate de cercetarea surselor)'), '</h4>',
+    '<ul class="gates">', auditGates, '</ul>',
+    '<h4>', tr('Outstanding blockers', 'Blocaje rămase'), '</h4><ul>',
+    item.reviewBlockers.map((b) => '<li>' + esc(b) + '</li>').join(''), '</ul>',
+    '<h4>', tr('Append-only decision history', 'Istoricul deciziilor'), '</h4>',
+    '<ol class="audit-history">', auditHistory, '</ol>',
     '</details></div></article>',
   ].join('');
 }
@@ -243,13 +298,15 @@ export function renderHtml(rows, concepts) {
     '<header class="intro"><p class="eyebrow">', REVIEW_MARKER, '</p>',
     '<h1>', tr('Unpublished catalog reference review', 'Revizuirea referințelor de catalog nepublicate'), '</h1>',
     '<p>', tr('External supplier research records, not BODICH products. ' +
-    'No prices, orders, stock, approved photos or product offers. All approval gates remain pending.',
-    'Referințe externe de cercetare, nu produse BODICH. Fără prețuri, comenzi, stocuri, ' +
-    'fotografii aprobate sau oferte. Toate aprobările sunt încă necesare.'), '</p>',
+    'No prices, orders, stock or product offers. Human evidence gates are shown separately; no record is published.',
+    'Referințe externe de cercetare, nu produse BODICH. Fără prețuri, comenzi, stocuri sau oferte. ' +
+    'Aprobările umane sunt separate; niciun produs nu este publicat.'), '</p>',
     '<div class="summary"><strong>', rows.length,
     '</strong> ', tr('unique source drafts', 'ciorne unice din surse'), ' · <span id="visible-count">',
     rows.length, '</span> ', tr('visible', 'vizibile'), ' · ',
-    tr('0 company-approved', '0 aprobate de companie'), '</div>',
+    rows.filter((r) => r.eligibleForPromotion).length, ' ',
+    tr('eligible for separate promotion PR; 0 published', 'eligibile pentru un PR separat; 0 publicate'),
+    '</div>',
     '<a class="export" href="approval-checklist.csv" download>',
     tr('Export approval checklist (CSV)', 'Exportă lista aprobărilor (CSV)'), '</a>',
     '<a class="export" href="approval-checklist.json" download>',
@@ -271,6 +328,11 @@ export function renderHtml(rows, concepts) {
     '<select id="lifecycle"><option value="" data-i18n-en="All lifecycle states" data-i18n-ro="Toate stările">All lifecycle states</option>',
     [...new Set(rows.map((r) => r.lifecycle))].sort().map((v) =>
       '<option value="' + esc(v) + '">' + esc(v) + '</option>').join(''),
+    '</select></label><label>', tr('Review decision', 'Decizie de revizuire'),
+    '<select id="review-status"><option value="">', tr('All review statuses', 'Toate stările'),
+    '</option>', ['unreviewed', 'in_review', 'on_hold', 'rejected',
+      'evidence_complete_pending_signoff', 'approved_for_promotion'].map((s) =>
+      '<option value="' + s + '">' + s + '</option>').join(''),
     '</select></label><label class="search-label">',
     tr('Search source ID, title, slug or EN/RO copy',
       'Caută ID-ul, titlul, identificatorul sau textul EN/RO'),
@@ -304,11 +366,16 @@ export function renderCsv(rows) {
   const headings = ['sourceId', 'category', 'supplierTitle', 'supplierUrl', 'supplierLifecycle',
     'draftSlug', 'illustrationAvailable', 'illustrationFamily', 'illustrationRights',
     'modelSpecificPhoto', 'modelPhotoRights', 'bodichManufacturerIdentity',
-    'nativeRomanianLegalCopy', 'editorialFlags', 'approval'];
+    'nativeRomanianLegalCopy', 'editorialFlags', 'approval',
+    'reviewStatus', 'sourceReviewed', 'bodichIdentityVerified', 'eligibleForPromotion',
+    ...gateNames.map((gate) => 'reviewGate_' + gate), 'reviewBlockers', 'auditEventCount'];
   const values = (r) => [r.sourceId, r.category, r.title, r.sourceUrl, r.lifecycle,
     r.draftSlug, r.illustrationAvailable, r.family, r.illustrationRights,
     r.gates.modelSpecificPhoto, r.gates.modelPhotoRights, r.gates.bodichManufacturerIdentity,
-    r.gates.nativeRomanianLegalCopy, r.unresolved.join('; '), r.approval];
+    r.gates.nativeRomanianLegalCopy, r.unresolved.join('; '), r.approval,
+    r.reviewStatus, r.sourceReviewed, r.bodichIdentityVerified, r.eligibleForPromotion,
+    ...gateNames.map((gate) => r.reviewGates[gate].status),
+    r.reviewBlockers.join('; '), r.reviewHistory.length];
   return '\uFEFF' + [headings, ...rows.map(values)].map((line) => line.map(csvCell).join(',')).join('\r\n') + '\r\n';
 }
 
@@ -334,11 +401,12 @@ export function publicLeakErrors(projectRoot, outputDir) {
     if (!existsSync(dir)) return;
     for (const entry of readdirSync(dir, { withFileTypes: true })) {
       const full = join(dir, entry.name);
-      if (/private-catalog-review|approval-checklist\.(csv|json)|catalog-review\.css|catalog-review-client\.js/.test(entry.name))
+      if (/private-catalog-review|review-ledger|catalog-review-audit|approval-checklist\.(csv|json)|catalog-review\.css|catalog-review-client\.js/.test(entry.name))
         violations.push('Private gallery file published: ' + relative(projectRoot, full));
       if (entry.isDirectory()) walk(full);
       else if (entry.isFile() && /\.(?:html?|m?js|css|json|csv|xml|txt|svg)$/i.test(entry.name) &&
-        readFileSync(full, 'utf8').includes(REVIEW_MARKER))
+        (readFileSync(full, 'utf8').includes(REVIEW_MARKER) ||
+          readFileSync(full, 'utf8').includes('unpublished_source_review_only_no_publication')))
         violations.push('Private gallery marker published: ' + relative(projectRoot, full));
     }
   };
@@ -610,7 +678,8 @@ function main(args) {
       inventory: readJson(snapshot.inventory), overrides: readJson(snapshot.overrides),
       art: readJson(snapshot.art), review: readJson(snapshot.review),
     };
-    const rows = assemble(sources);
+    const ledgerStates = validateLedger(readJson('docs/catalog/review-ledger.json'), contextOnDisk());
+    const rows = assemble({ ...sources, ledgerStates });
     assert.deepEqual(publicLeakErrors(root, outputRoot), [], 'Public review leakage detected');
     if (args.includes('--check')) {
       validateOutput(rows);
