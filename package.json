@@ -25,7 +25,8 @@
     "catalog:review:self-test": "node scripts/build-catalog-review.mjs --self-test",
     "catalog:review:ledger:check": "node scripts/catalog-review-ledger.mjs --check",
     "catalog:review:ledger:self-test": "node scripts/catalog-review-ledger.mjs --self-test",
-    "catalog:review:ledger:export": "node scripts/catalog-review-ledger.mjs --export"
+    "catalog:review:ledger:export": "node scripts/catalog-review-ledger.mjs --export",
+    "catalog:review:ledger:plan": "node scripts/catalog-review-ledger.mjs --migrate-plan"
   },
   "engines": {
     "node": ">=24 <25"

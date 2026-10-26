@@ -127,6 +127,9 @@ export function assemble({ inventory, overrides, art, review, ledgerStates = nul
         status: 'not_reviewed', reviewedBy: null, at: null, reason: null, evidence: [],
       }])),
       reviewHistory: decision?.history || [],
+      // Issue #51: sealed history from earlier ledger epochs is shown for audit only; it never feeds status.
+      ledgerEpoch: decision?.epoch ?? 1,
+      previousEpochHistory: decision?.previousEpochs || [],
       reviewBlockers: decision?.blockers || gateNames.map((g) => g + ': not_reviewed'),
       sourceReviewed: decision?.sourceReviewed || false,
       bodichIdentityVerified: decision?.bodichIdentityVerified || false,
@@ -211,6 +214,17 @@ function renderRecord(item) {
     esc(e.kind === 'gate' ? e.gate + ': ' + e.decision : e.status) +
     ' · ' + esc(e.reason) + '</li>').join('') :
     '<li>' + tr('No human decisions recorded', 'Nu există decizii umane înregistrate') + '</li>';
+  const previousEpochs = item.previousEpochHistory.length ? item.previousEpochHistory.map((epoch) =>
+    '<li class="previous-epoch" data-epoch="' + esc(epoch.epoch) + '"><strong>' +
+    tr('Epoch', 'Epoca') + ' ' + esc(epoch.epoch) + '</strong> · ' +
+    tr('previous epoch only — not effective', 'epocă anterioară — fără efect') + ' · ' +
+    tr('status when sealed', 'stare la arhivare') + ': <code>' + esc(epoch.statusAtArchive) + '</code>' +
+    '<ol class="audit-history">' + epoch.history.map((e) =>
+      '<li><code>' + esc(e.eventId) + '</code> · ' + esc(e.at) + ' · ' +
+      esc(e.reviewer.name) + ' (' + esc(e.reviewer.role) + ') · ' +
+      esc(e.kind === 'gate' ? e.gate + ': ' + e.decision : e.status) +
+      ' · ' + esc(e.reason) + '</li>').join('') + '</ol></li>').join('') :
+    '<li>' + tr('No sealed history from previous epochs', 'Nu există istoric arhivat din epoci anterioare') + '</li>';
   // Index source identity and localized copy only, not approval boilerplate.
   const search = [item.sourceId, item.title, item.draftSlug,
     ...['en', 'ro'].flatMap((lang) => ['name', 'summary', 'description'].map(
@@ -242,6 +256,7 @@ function renderRecord(item) {
     '<div class="record-body"><div class="record-head"><span class="tag">', esc(item.category),
     '</span><span class="tag warning">', tr('Unpublished', 'Nepublicat'), ' · ', esc(item.approval),
     '</span><span class="tag">', tr('Review', 'Revizuire'), ': ', statusText(item.reviewStatus),
+    '</span><span class="tag">', tr('Ledger epoch', 'Epoca registrului'), ': ', esc(item.ledgerEpoch),
     '</span></div>',
     '<p class="muted">', tr('Supplier reference reviewed', 'Referință furnizor revizuită'), ': ',
     item.sourceReviewed ? tr('Yes', 'Da') : tr('No', 'Nu'),
@@ -286,6 +301,9 @@ function renderRecord(item) {
     item.reviewBlockers.map((b) => '<li>' + esc(b) + '</li>').join(''), '</ul>',
     '<h4>', tr('Append-only decision history', 'Istoricul deciziilor'), '</h4>',
     '<ol class="audit-history">', auditHistory, '</ol>',
+    '<h4>', tr('Previous epoch history — sealed, read-only, never inherited',
+      'Istoric din epoci anterioare — arhivat, doar pentru consultare, fără moștenire'), '</h4>',
+    '<ul class="previous-epochs">', previousEpochs, '</ul>',
     '</details></div></article>',
   ].join('');
 }
@@ -387,14 +405,16 @@ export function renderCsv(rows) {
     'modelSpecificPhoto', 'modelPhotoRights', 'bodichManufacturerIdentity',
     'nativeRomanianLegalCopy', 'editorialFlags', 'approval',
     'reviewStatus', 'sourceReviewed', 'bodichIdentityVerified', 'eligibleForPromotion',
-    ...gateNames.map((gate) => 'reviewGate_' + gate), 'reviewBlockers', 'auditEventCount'];
+    ...gateNames.map((gate) => 'reviewGate_' + gate), 'reviewBlockers', 'auditEventCount',
+    'ledgerEpoch', 'previousEpochEventCount'];
   const values = (r) => [r.sourceId, r.category, r.title, r.sourceUrl, r.lifecycle,
     r.draftSlug, r.illustrationAvailable, r.family, r.illustrationRights,
     r.gates.modelSpecificPhoto, r.gates.modelPhotoRights, r.gates.bodichManufacturerIdentity,
     r.gates.nativeRomanianLegalCopy, r.unresolved.join('; '), r.approval,
     r.reviewStatus, r.sourceReviewed, r.bodichIdentityVerified, r.eligibleForPromotion,
     ...gateNames.map((gate) => r.reviewGates[gate].status),
-    r.reviewBlockers.join('; '), r.reviewHistory.length];
+    r.reviewBlockers.join('; '), r.reviewHistory.length,
+    r.ledgerEpoch, r.previousEpochHistory.reduce((n, epoch) => n + epoch.eventCount, 0)];
   return '\uFEFF' + [headings, ...rows.map(values)].map((line) => line.map(csvCell).join(',')).join('\r\n') + '\r\n';
 }
 
@@ -586,6 +606,31 @@ function selfTest() {
   assert.ok(auditedHtml.includes('Test reviewer'));
   assert.ok(auditedHtml.includes('Independent BODICH identity evidence unavailable'));
   assert.ok(renderCsv(withDecision).includes('"on_hold"'));
+  // Issue #51: sealed history of earlier epochs is shown separately and never changes the effective state.
+  const sealedEvent = { eventId: 'old-epoch-001', at: '2026-10-26T12:00:00Z',
+    reviewer: { name: 'Earlier epoch reviewer', role: 'owner' }, kind: 'status',
+    status: 'approved_for_promotion', reason: 'Sealed prior epoch decision' };
+  const withEpochs = assemble({ ...data, ledgerStates: rows.map((row) => ({
+    sourceId: row.sourceId, status: 'unreviewed', gates: row.reviewGates, history: [], epoch: 2,
+    previousEpochs: row.sourceId === 'kt-a' ? [{ epoch: 1, previousEpochOnly: true, effective: false,
+      statusAtArchive: 'approved_for_promotion', eventCount: 1, history: [sealedEvent] }] : [],
+    blockers: ['identity: not_reviewed'], sourceReviewed: false, bodichIdentityVerified: false,
+    eligibleForPromotion: false })) });
+  const epochHtml = renderHtml(withEpochs, []);
+  assert.equal(withEpochs[0].reviewStatus, 'unreviewed');
+  assert.equal(withEpochs[0].eligibleForPromotion, false);
+  assert.equal(withEpochs[0].ledgerEpoch, 2);
+  assert.ok(epochHtml.includes('class="previous-epoch" data-epoch="1"'));
+  assert.ok(epochHtml.includes('Sealed prior epoch decision'));
+  assert.ok(epochHtml.includes('previous epoch only'));
+  assert.ok(epochHtml.includes('data-review="unreviewed"') && !epochHtml.includes('data-review="approved_for_promotion"'));
+  const currentHistory = epochHtml.match(/<ol class="audit-history">(.*?)<\/ol>/)?.[1] ?? '';
+  assert.ok(!currentHistory.includes('old-epoch-001'), 'Previous-epoch events must not appear in current history');
+  const epochCsv = renderCsv(withEpochs).split('\r\n');
+  assert.ok(epochCsv[0].endsWith('"ledgerEpoch","previousEpochEventCount"'));
+  assert.ok(epochCsv[1].endsWith('"2","1"'), 'Previous-epoch events are counted separately from current history');
+  assert.ok(epochCsv[1].includes('"unreviewed"') && epochCsv[1].includes('"0","2","1"'));
+  assert.ok(renderCsv(rows).split('\r\n')[1].endsWith('"0","1","0"'));
   // Supplier titles must be inert spreadsheet text even in the extended audit export.
   assert.ok(renderCsv([{ ...withDecision[0], title: '=HYPERLINK("https://example.invalid")' }])
     .includes("'=HYPERLINK"));

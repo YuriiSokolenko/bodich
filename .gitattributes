@@ -1,3 +1,5 @@
 # Frozen catalog snapshot hashes depend on exact working-tree bytes.
 # Keep source manifests and evidence ledgers LF even with core.autocrlf=true.
 docs/catalog/*.json text eol=lf
+# Sealed previous-epoch ledger archives must stay byte-stable (LF) across platforms.
+docs/catalog/review-ledger-archive/*.json text eol=lf

@@ -35,7 +35,7 @@ Ignored output files in visual-qa/private-catalog-review:
 - **approval-checklist.csv**: 132-row spreadsheet export with formula-injection protection.
 - **approval-checklist.json**: complete structured evidence, bilingual description and blocker matrix for every SKU.
 
-This is a **read-only gallery of auditable persisted review decisions**, not a click-to-approve interface. Changing filters, language or exports never grants approval. Decision history, per-gate evidence, blockers, and status are shown separately from supplier-stage research. Read the [Stage 13 reviewer runbook](./review-ledger-runbook.md) for recording/reversing decisions, re-review and source migration.
+This is a **read-only gallery of auditable persisted review decisions**, not a click-to-approve interface. Changing filters, language or exports never grants approval. Decision history, per-gate evidence, blockers, and status are shown separately from supplier-stage research. Read the [Stage 13 reviewer runbook](./review-ledger-runbook.md) for recording/reversing decisions, re-review and revision-epoch migration. Each record shows its ledger epoch; sealed history of earlier epochs is displayed in a separate *previous epoch only* block (also in the CSV/JSON as `previousEpochEventCount` / `previousEpochHistory`) and never affects status, gates, blockers or promotion eligibility.
 
 ## CI and shipping isolation
 
