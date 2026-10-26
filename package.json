@@ -19,7 +19,10 @@
     "catalog:art:self-test": "node scripts/generate-catalog-art.mjs --self-test",
     "catalog:copy:check": "node scripts/validate-catalog-copy.mjs",
     "catalog:copy:self-test": "node scripts/validate-catalog-copy.mjs --self-test",
-    "catalog:copy:matrix": "node scripts/validate-catalog-copy.mjs --write-matrix"
+    "catalog:copy:matrix": "node scripts/validate-catalog-copy.mjs --write-matrix",
+    "catalog:review:build": "node scripts/build-catalog-review.mjs",
+    "catalog:review:check": "node scripts/build-catalog-review.mjs --check",
+    "catalog:review:self-test": "node scripts/build-catalog-review.mjs --self-test"
   },
   "engines": {
     "node": ">=24 <25"
