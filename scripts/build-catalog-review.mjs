@@ -550,6 +550,26 @@ function selfTest() {
   assert.equal(rows[0].gates.modelSpecificPhoto, 'missing');
   assert.equal(rows[0].gates.nativeRomanianLegalCopy, 'pending');
   const html = renderHtml(rows, []);
+  const withDecision = assemble({ ...data, ledgerStates: rows.map((row) => ({
+    sourceId: row.sourceId,
+    status: row.sourceId === 'kt-a' ? 'on_hold' : 'unreviewed',
+    gates: row.reviewGates,
+    history: row.sourceId === 'kt-a' ? [{
+      eventId: 'test-hold-001', at: '2026-10-26T12:00:00Z',
+      reviewer: { name: 'Test reviewer', role: 'owner' }, kind: 'status',
+      status: 'on_hold', reason: 'Independent BODICH identity evidence unavailable',
+    }] : [],
+    blockers: ['identity: needs_evidence'], sourceReviewed: row.sourceId === 'kt-a',
+    bodichIdentityVerified: false, eligibleForPromotion: false,
+  })) });
+  const auditedHtml = renderHtml(withDecision, []);
+  assert.ok(auditedHtml.includes('data-review="on_hold"'));
+  assert.ok(auditedHtml.includes('Test reviewer'));
+  assert.ok(auditedHtml.includes('Independent BODICH identity evidence unavailable'));
+  assert.ok(renderCsv(withDecision).includes('"on_hold"'));
+  // Supplier titles must be inert spreadsheet text even in the extended audit export.
+  assert.ok(renderCsv([{ ...withDecision[0], title: '=HYPERLINK("https://example.invalid")' }])
+    .includes("'=HYPERLINK"));
   assert.equal((html.match(/class="review-record"/g) ?? []).length, 2);
   assert.ok(html.includes('ILLUSTRATIVE STUDY — NOT A PRODUCT PHOTOGRAPH'));
   assert.ok(html.includes('No generated illustration'));
