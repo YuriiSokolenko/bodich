@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "purpose": "genuine_bodich_evidence_intake_unpublished",
+  "ledgerEpoch": 1,
+  "ledgerRevisions": {
+    "inventory": "b1af06e0d35cd5b22599009ccf63ce41b6443418",
+    "overrides": "6bbc24622d43787cff9967c555166fcfca1147cc",
+    "art": "15e537c65cd484341f8d1b97c4aca28839e63293",
+    "copy": "4cff7d5a87b355b2119ed9d89c19fafaba042f47"
+  },
+  "pilotSourceId": "kt-127",
+  "records": []
+}
