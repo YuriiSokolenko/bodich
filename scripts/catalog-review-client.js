@@ -20,7 +20,7 @@
         (!controls.editorial.value || card.dataset.editorial === controls.editorial.value) &&
         (!controls.visual.value || card.dataset.visual === controls.visual.value) &&
         (!controls.lifecycle.value || card.dataset.lifecycle === controls.lifecycle.value) &&
-        (!query || card.textContent.normalize('NFKC').toLocaleLowerCase().includes(query));
+        (!query || card.dataset.search.normalize('NFKC').toLocaleLowerCase().includes(query));
       card.hidden = !match;
       if (match) visible += 1;
       const img = card.querySelector('img[data-alt-en]');
