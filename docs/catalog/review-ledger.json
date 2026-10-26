@@ -1,0 +1,804 @@
+{
+  "schemaVersion": 1,
+  "purpose": "unpublished_source_review_only_no_publication",
+  "revisions": {
+    "inventory": "b1af06e0d35cd5b22599009ccf63ce41b6443418",
+    "overrides": "6bbc24622d43787cff9967c555166fcfca1147cc",
+    "art": "15e537c65cd484341f8d1b97c4aca28839e63293",
+    "copy": "4cff7d5a87b355b2119ed9d89c19fafaba042f47"
+  },
+  "records": [
+    {
+      "sourceId": "kt-1",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-30g4-discontinued/1",
+      "draftSlug": "kingtech-k-30g4-plus",
+      "events": []
+    },
+    {
+      "sourceId": "kt-10",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-160g4-/10",
+      "draftSlug": "kingtech-k-160g4-plus",
+      "events": []
+    },
+    {
+      "sourceId": "kt-100",
+      "sourceUrl": "https://www.kingtechturbines.com/product/warranty-transfer/100",
+      "draftSlug": "kingtech-warranty-transfer-reference",
+      "events": []
+    },
+    {
+      "sourceId": "kt-103",
+      "sourceUrl": "https://www.kingtechturbines.com/product/tp-propeller-spacer45/103",
+      "draftSlug": "kingtech-accessory-103",
+      "events": []
+    },
+    {
+      "sourceId": "kt-104",
+      "sourceUrl": "https://www.kingtechturbines.com/product/propeller-bolt-for-k45tp/104",
+      "draftSlug": "kingtech-accessory-104",
+      "events": []
+    },
+    {
+      "sourceId": "kt-105",
+      "sourceUrl": "https://www.kingtechturbines.com/product/tp-propeller-spacer60-100/105",
+      "draftSlug": "kingtech-accessory-105",
+      "events": []
+    },
+    {
+      "sourceId": "kt-106",
+      "sourceUrl": "https://www.kingtechturbines.com/product/tp-bolt75l60-100/106",
+      "draftSlug": "kingtech-accessory-106",
+      "events": []
+    },
+    {
+      "sourceId": "kt-107",
+      "sourceUrl": "https://www.kingtechturbines.com/product/fuel-solenoid-valve/107",
+      "draftSlug": "kingtech-accessory-107",
+      "events": []
+    },
+    {
+      "sourceId": "kt-108",
+      "sourceUrl": "https://www.kingtechturbines.com/product/propane-solenoid-valve/108",
+      "draftSlug": "kingtech-accessory-108",
+      "events": []
+    },
+    {
+      "sourceId": "kt-11",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-180g4-/11",
+      "draftSlug": "kingtech-k-180g4-plus",
+      "events": []
+    },
+    {
+      "sourceId": "kt-112",
+      "sourceUrl": "https://www.kingtechturbines.com/product/fuel-tubing-4mm/112",
+      "draftSlug": "kingtech-accessory-112",
+      "events": []
+    },
+    {
+      "sourceId": "kt-113",
+      "sourceUrl": "https://www.kingtechturbines.com/product/fuel-tubing-6mm/113",
+      "draftSlug": "kingtech-accessory-113",
+      "events": []
+    },
+    {
+      "sourceId": "kt-114",
+      "sourceUrl": "https://www.kingtechturbines.com/product/teflon-tubing-4mm/114",
+      "draftSlug": "kingtech-accessory-114",
+      "events": []
+    },
+    {
+      "sourceId": "kt-115",
+      "sourceUrl": "https://www.kingtechturbines.com/product/uat-100/115",
+      "draftSlug": "kingtech-accessory-115",
+      "events": []
+    },
+    {
+      "sourceId": "kt-116",
+      "sourceUrl": "https://www.kingtechturbines.com/product/uat-150/116",
+      "draftSlug": "kingtech-accessory-116",
+      "events": []
+    },
+    {
+      "sourceId": "kt-117",
+      "sourceUrl": "https://www.kingtechturbines.com/product/uat-250/117",
+      "draftSlug": "kingtech-accessory-117",
+      "events": []
+    },
+    {
+      "sourceId": "kt-12",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-210g4-/12",
+      "draftSlug": "kingtech-k-210g4-plus",
+      "events": []
+    },
+    {
+      "sourceId": "kt-120",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-86g4-discontinued/120",
+      "draftSlug": "kingtech-k-86g4-plus",
+      "events": []
+    },
+    {
+      "sourceId": "kt-121",
+      "sourceUrl": "https://www.kingtechturbines.com/product/stainless-steel-bracket-for-k140-170-180-210/121",
+      "draftSlug": "kingtech-accessory-121",
+      "events": []
+    },
+    {
+      "sourceId": "kt-122",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-red-dyed-special-blend-oil-2-gallons/122",
+      "draftSlug": "kingtech-red-dyed-special-blend-oil-2-gallons",
+      "events": []
+    },
+    {
+      "sourceId": "kt-124",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kero-plug-for-k30-45-g3-and-g4/124",
+      "draftSlug": "kingtech-accessory-124",
+      "events": []
+    },
+    {
+      "sourceId": "kt-125",
+      "sourceUrl": "https://www.kingtechturbines.com/product/starter-motor-clutch-o-rings/125",
+      "draftSlug": "kingtech-accessory-125",
+      "events": []
+    },
+    {
+      "sourceId": "kt-126",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-86g5-discontinued/126",
+      "draftSlug": "kingtech-k-86g5",
+      "events": []
+    },
+    {
+      "sourceId": "kt-127",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-102g5/127",
+      "draftSlug": "kingtech-k-102g5",
+      "events": []
+    },
+    {
+      "sourceId": "kt-128",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-130g5/128",
+      "draftSlug": "kingtech-k-130g5",
+      "events": []
+    },
+    {
+      "sourceId": "kt-129",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-142g5/129",
+      "draftSlug": "kingtech-k-142g5",
+      "events": []
+    },
+    {
+      "sourceId": "kt-13",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-235g4-/13",
+      "draftSlug": "kingtech-k-235g4-plus",
+      "events": []
+    },
+    {
+      "sourceId": "kt-130",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-160g5/130",
+      "draftSlug": "kingtech-k-160g5",
+      "events": []
+    },
+    {
+      "sourceId": "kt-131",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-180g5/131",
+      "draftSlug": "kingtech-k-180g5",
+      "events": []
+    },
+    {
+      "sourceId": "kt-132",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-210g5/132",
+      "draftSlug": "kingtech-k-210g5",
+      "events": []
+    },
+    {
+      "sourceId": "kt-133",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-240g5/133",
+      "draftSlug": "kingtech-k-240g5",
+      "events": []
+    },
+    {
+      "sourceId": "kt-134",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-260g5/134",
+      "draftSlug": "kingtech-k-260g5",
+      "events": []
+    },
+    {
+      "sourceId": "kt-135",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-320g5/135",
+      "draftSlug": "kingtech-k-320g5",
+      "events": []
+    },
+    {
+      "sourceId": "kt-136",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-450g5-industrial-purchases-only-please-inquire-/136",
+      "draftSlug": "kingtech-k-450g5",
+      "events": []
+    },
+    {
+      "sourceId": "kt-137",
+      "sourceUrl": "https://www.kingtechturbines.com/product/fod-screen-320/137",
+      "draftSlug": "kingtech-accessory-137",
+      "events": []
+    },
+    {
+      "sourceId": "kt-138",
+      "sourceUrl": "https://www.kingtechturbines.com/product/temp-probe-k30-45g/138",
+      "draftSlug": "kingtech-accessory-138",
+      "events": []
+    },
+    {
+      "sourceId": "kt-139",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp300dp-pump/139",
+      "draftSlug": "kingtech-accessory-139",
+      "events": []
+    },
+    {
+      "sourceId": "kt-14",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-260g4-/14",
+      "draftSlug": "kingtech-k-260g4-plus",
+      "events": []
+    },
+    {
+      "sourceId": "kt-140",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp500dp-pump/140",
+      "draftSlug": "kingtech-accessory-140",
+      "events": []
+    },
+    {
+      "sourceId": "kt-141",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp600dp-pump/141",
+      "draftSlug": "kingtech-accessory-141",
+      "events": []
+    },
+    {
+      "sourceId": "kt-142",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp800dp-pump/142",
+      "draftSlug": "kingtech-accessory-142",
+      "events": []
+    },
+    {
+      "sourceId": "kt-143",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp1000dp-pump/143",
+      "draftSlug": "kingtech-accessory-143",
+      "events": []
+    },
+    {
+      "sourceId": "kt-144",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp1200dp-pump/144",
+      "draftSlug": "kingtech-accessory-144",
+      "events": []
+    },
+    {
+      "sourceId": "kt-145",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp1250dp-pump/145",
+      "draftSlug": "kingtech-accessory-145",
+      "events": []
+    },
+    {
+      "sourceId": "kt-146",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-drm-g5/146",
+      "draftSlug": "kingtech-accessory-146",
+      "events": []
+    },
+    {
+      "sourceId": "kt-148",
+      "sourceUrl": "https://www.kingtechturbines.com/product/stainless-steel-bracket-for-k65/148",
+      "draftSlug": "kingtech-accessory-148",
+      "events": []
+    },
+    {
+      "sourceId": "kt-149",
+      "sourceUrl": "https://www.kingtechturbines.com/product/brushless-starter-motor-assembly/149",
+      "draftSlug": "kingtech-accessory-149",
+      "events": []
+    },
+    {
+      "sourceId": "kt-15",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-320g4-/15",
+      "draftSlug": "kingtech-k-320g4-plus",
+      "events": []
+    },
+    {
+      "sourceId": "kt-151",
+      "sourceUrl": "https://www.kingtechturbines.com/product/fuel-tubing-8mm/151",
+      "draftSlug": "kingtech-accessory-151",
+      "events": []
+    },
+    {
+      "sourceId": "kt-16",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-450g4-industrial-purchases-only-please-inquire-/16",
+      "draftSlug": "kingtech-k-450g4-plus",
+      "events": []
+    },
+    {
+      "sourceId": "kt-17",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-30tpg4-/17",
+      "draftSlug": "kingtech-k-30tpg4-plus",
+      "events": []
+    },
+    {
+      "sourceId": "kt-18",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-45tpg4-/18",
+      "draftSlug": "kingtech-k-45tpg4-plus",
+      "events": []
+    },
+    {
+      "sourceId": "kt-19",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-60tpg4-/19",
+      "draftSlug": "kingtech-k-60tpg4-plus",
+      "events": []
+    },
+    {
+      "sourceId": "kt-2",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-45g4-discontinued/2",
+      "draftSlug": "kingtech-k-45g4-plus",
+      "events": []
+    },
+    {
+      "sourceId": "kt-20",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-100tpg4-/20",
+      "draftSlug": "kingtech-k-100tpg4-plus",
+      "events": []
+    },
+    {
+      "sourceId": "kt-21",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-special-blend-oil-2-gallons/21",
+      "draftSlug": "kingtech-special-blend-oil-2-gallons",
+      "events": []
+    },
+    {
+      "sourceId": "kt-22",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-special-blend-oil-1-gallon/22",
+      "draftSlug": "kingtech-special-blend-oil-1-gallon",
+      "events": []
+    },
+    {
+      "sourceId": "kt-23",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-special-blend-oil-32oz/23",
+      "draftSlug": "kingtech-special-blend-oil-32oz",
+      "events": []
+    },
+    {
+      "sourceId": "kt-24",
+      "sourceUrl": "https://www.kingtechturbines.com/product/3800mah-9-9v-life-battery/24",
+      "draftSlug": "life-battery-3800mah-9-9v",
+      "events": []
+    },
+    {
+      "sourceId": "kt-25",
+      "sourceUrl": "https://www.kingtechturbines.com/product/2100mah-9-9v-life-battery/25",
+      "draftSlug": "life-battery-2100mah-9-9v",
+      "events": []
+    },
+    {
+      "sourceId": "kt-3",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-55g4-discontinued/3",
+      "draftSlug": "kingtech-k-55g4-plus",
+      "events": []
+    },
+    {
+      "sourceId": "kt-30",
+      "sourceUrl": "https://www.kingtechturbines.com/product/ecu-comm-cable/30",
+      "draftSlug": "kingtech-accessory-30",
+      "events": []
+    },
+    {
+      "sourceId": "kt-32",
+      "sourceUrl": "https://www.kingtechturbines.com/product/power-cable/32",
+      "draftSlug": "kingtech-accessory-32",
+      "events": []
+    },
+    {
+      "sourceId": "kt-33",
+      "sourceUrl": "https://www.kingtechturbines.com/product/g4-g4-data-cable/33",
+      "draftSlug": "kingtech-accessory-33",
+      "events": []
+    },
+    {
+      "sourceId": "kt-35",
+      "sourceUrl": "https://www.kingtechturbines.com/product/ecu-comm-cable-for-e-model-gold-xicoy-ecu-/35",
+      "draftSlug": "kingtech-accessory-35",
+      "events": []
+    },
+    {
+      "sourceId": "kt-36",
+      "sourceUrl": "https://www.kingtechturbines.com/product/ecu-comm-cable-for-e-f-model-black-xicoy-ecu-/36",
+      "draftSlug": "kingtech-accessory-36",
+      "events": []
+    },
+    {
+      "sourceId": "kt-39",
+      "sourceUrl": "https://www.kingtechturbines.com/product/battery-pump-cable-for-kt-pump/39",
+      "draftSlug": "kingtech-accessory-39",
+      "events": []
+    },
+    {
+      "sourceId": "kt-4",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-65g4-discontinued/4",
+      "draftSlug": "kingtech-k-65g4-plus",
+      "events": []
+    },
+    {
+      "sourceId": "kt-41",
+      "sourceUrl": "https://www.kingtechturbines.com/product/battery-pump-cable-for-k30-45g3/41",
+      "draftSlug": "kingtech-accessory-41",
+      "events": []
+    },
+    {
+      "sourceId": "kt-42",
+      "sourceUrl": "https://www.kingtechturbines.com/product/pump-cable-for-g4/42",
+      "draftSlug": "kingtech-accessory-42",
+      "events": []
+    },
+    {
+      "sourceId": "kt-43",
+      "sourceUrl": "https://www.kingtechturbines.com/product/pump-cable-for-g4-g5/43",
+      "draftSlug": "kingtech-accessory-43",
+      "events": []
+    },
+    {
+      "sourceId": "kt-44",
+      "sourceUrl": "https://www.kingtechturbines.com/product/turbine-power-cable/44",
+      "draftSlug": "kingtech-accessory-44",
+      "events": []
+    },
+    {
+      "sourceId": "kt-45",
+      "sourceUrl": "https://www.kingtechturbines.com/product/g4-g4-g5-battery-cable/45",
+      "draftSlug": "kingtech-accessory-45",
+      "events": []
+    },
+    {
+      "sourceId": "kt-46",
+      "sourceUrl": "https://www.kingtechturbines.com/product/fod-screen-small/46",
+      "draftSlug": "kingtech-accessory-46",
+      "events": []
+    },
+    {
+      "sourceId": "kt-47",
+      "sourceUrl": "https://www.kingtechturbines.com/product/fod-screen-medium/47",
+      "draftSlug": "kingtech-accessory-47",
+      "events": []
+    },
+    {
+      "sourceId": "kt-48",
+      "sourceUrl": "https://www.kingtechturbines.com/product/fod-screen-large/48",
+      "draftSlug": "kingtech-accessory-48",
+      "events": []
+    },
+    {
+      "sourceId": "kt-49",
+      "sourceUrl": "https://www.kingtechturbines.com/product/fod-screen-260/49",
+      "draftSlug": "kingtech-accessory-49",
+      "events": []
+    },
+    {
+      "sourceId": "kt-5",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-70g4-discontinued/5",
+      "draftSlug": "kingtech-k-70g4-plus",
+      "events": []
+    },
+    {
+      "sourceId": "kt-50",
+      "sourceUrl": "https://www.kingtechturbines.com/product/data-cable-g4-g4-g5/50",
+      "draftSlug": "kingtech-accessory-50",
+      "events": []
+    },
+    {
+      "sourceId": "kt-51",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-ecu-g2/51",
+      "draftSlug": "kingtech-accessory-51",
+      "events": []
+    },
+    {
+      "sourceId": "kt-55",
+      "sourceUrl": "https://www.kingtechturbines.com/product/gsu-kingtech/55",
+      "draftSlug": "kingtech-accessory-55",
+      "events": []
+    },
+    {
+      "sourceId": "kt-56",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-gsu-bluetooth-module/56",
+      "draftSlug": "kingtech-accessory-56",
+      "events": []
+    },
+    {
+      "sourceId": "kt-57",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-telemetry/57",
+      "draftSlug": "kingtech-accessory-57",
+      "events": []
+    },
+    {
+      "sourceId": "kt-58",
+      "sourceUrl": "https://www.kingtechturbines.com/product/fuel-filter/58",
+      "draftSlug": "kingtech-accessory-58",
+      "events": []
+    },
+    {
+      "sourceId": "kt-59",
+      "sourceUrl": "https://www.kingtechturbines.com/product/shut-off-valve/59",
+      "draftSlug": "kingtech-accessory-59",
+      "events": []
+    },
+    {
+      "sourceId": "kt-6",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-85g4-discontinued/6",
+      "draftSlug": "kingtech-k-85g4-plus",
+      "events": []
+    },
+    {
+      "sourceId": "kt-60",
+      "sourceUrl": "https://www.kingtechturbines.com/product/90-degree-fuel-festo-fitting/60",
+      "draftSlug": "kingtech-accessory-60",
+      "events": []
+    },
+    {
+      "sourceId": "kt-62",
+      "sourceUrl": "https://www.kingtechturbines.com/product/engine-bracket-k320/62",
+      "draftSlug": "kingtech-accessory-62",
+      "events": []
+    },
+    {
+      "sourceId": "kt-63",
+      "sourceUrl": "https://www.kingtechturbines.com/product/engine-bracket-k260/63",
+      "draftSlug": "kingtech-accessory-63",
+      "events": []
+    },
+    {
+      "sourceId": "kt-65",
+      "sourceUrl": "https://www.kingtechturbines.com/product/engine-bracket-k30-45-g3-g4/65",
+      "draftSlug": "kingtech-accessory-65",
+      "events": []
+    },
+    {
+      "sourceId": "kt-66",
+      "sourceUrl": "https://www.kingtechturbines.com/product/stainless-steel-bracket-for-k45-55-70-86/66",
+      "draftSlug": "kingtech-accessory-66",
+      "events": []
+    },
+    {
+      "sourceId": "kt-67",
+      "sourceUrl": "https://www.kingtechturbines.com/product/stainless-steel-bracket-for-k60-85/67",
+      "draftSlug": "kingtech-accessory-67",
+      "events": []
+    },
+    {
+      "sourceId": "kt-68",
+      "sourceUrl": "https://www.kingtechturbines.com/product/stainless-steel-bracket-for-k80-100-120-142/68",
+      "draftSlug": "kingtech-accessory-68",
+      "events": []
+    },
+    {
+      "sourceId": "kt-69",
+      "sourceUrl": "https://www.kingtechturbines.com/product/stainless-steel-bracket-for-k140-160-180/69",
+      "draftSlug": "kingtech-accessory-69",
+      "events": []
+    },
+    {
+      "sourceId": "kt-7",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-102g4-/7",
+      "draftSlug": "kingtech-k-102g4-plus",
+      "events": []
+    },
+    {
+      "sourceId": "kt-70",
+      "sourceUrl": "https://www.kingtechturbines.com/product/stainless-steel-bracket-for-k235/70",
+      "draftSlug": "kingtech-accessory-70",
+      "events": []
+    },
+    {
+      "sourceId": "kt-71",
+      "sourceUrl": "https://www.kingtechturbines.com/product/starter-motor-k30-45-g3/71",
+      "draftSlug": "kingtech-accessory-71",
+      "events": []
+    },
+    {
+      "sourceId": "kt-72",
+      "sourceUrl": "https://www.kingtechturbines.com/product/starter-motor-45-70/72",
+      "draftSlug": "kingtech-accessory-72",
+      "events": []
+    },
+    {
+      "sourceId": "kt-73",
+      "sourceUrl": "https://www.kingtechturbines.com/product/starter-motor-for-k60-85/73",
+      "draftSlug": "kingtech-accessory-73",
+      "events": []
+    },
+    {
+      "sourceId": "kt-74",
+      "sourceUrl": "https://www.kingtechturbines.com/product/start-motor-k80-210/74",
+      "draftSlug": "kingtech-accessory-74",
+      "events": []
+    },
+    {
+      "sourceId": "kt-75",
+      "sourceUrl": "https://www.kingtechturbines.com/product/starter-motor-case-k45-70/75",
+      "draftSlug": "kingtech-accessory-75",
+      "events": []
+    },
+    {
+      "sourceId": "kt-76",
+      "sourceUrl": "https://www.kingtechturbines.com/product/starter-motor-case-k60-85/76",
+      "draftSlug": "kingtech-accessory-76",
+      "events": []
+    },
+    {
+      "sourceId": "kt-77",
+      "sourceUrl": "https://www.kingtechturbines.com/product/starter-motor-case-k80-210/77",
+      "draftSlug": "kingtech-accessory-77",
+      "events": []
+    },
+    {
+      "sourceId": "kt-78",
+      "sourceUrl": "https://www.kingtechturbines.com/product/starter-motor-clutch/78",
+      "draftSlug": "kingtech-accessory-78",
+      "events": []
+    },
+    {
+      "sourceId": "kt-79",
+      "sourceUrl": "https://www.kingtechturbines.com/product/starter-motor-k260-320/79",
+      "draftSlug": "kingtech-accessory-79",
+      "events": []
+    },
+    {
+      "sourceId": "kt-8",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-130g4-/8",
+      "draftSlug": "kingtech-k-130g4-plus",
+      "events": []
+    },
+    {
+      "sourceId": "kt-80",
+      "sourceUrl": "https://www.kingtechturbines.com/product/starter-motor-case-k235-260-320/80",
+      "draftSlug": "kingtech-accessory-80",
+      "events": []
+    },
+    {
+      "sourceId": "kt-81",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp200-pump/81",
+      "draftSlug": "kingtech-accessory-81",
+      "events": []
+    },
+    {
+      "sourceId": "kt-82",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp300-pump/82",
+      "draftSlug": "kingtech-accessory-82",
+      "events": []
+    },
+    {
+      "sourceId": "kt-83",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp500-pump/83",
+      "draftSlug": "kingtech-accessory-83",
+      "events": []
+    },
+    {
+      "sourceId": "kt-84",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp600-pump/84",
+      "draftSlug": "kingtech-accessory-84",
+      "events": []
+    },
+    {
+      "sourceId": "kt-85",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp800-pump/85",
+      "draftSlug": "kingtech-accessory-85",
+      "events": []
+    },
+    {
+      "sourceId": "kt-86",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp300v-pump/86",
+      "draftSlug": "kingtech-accessory-86",
+      "events": []
+    },
+    {
+      "sourceId": "kt-87",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp500v/87",
+      "draftSlug": "kingtech-accessory-87",
+      "events": []
+    },
+    {
+      "sourceId": "kt-88",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp600v-pump/88",
+      "draftSlug": "kingtech-accessory-88",
+      "events": []
+    },
+    {
+      "sourceId": "kt-89",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp800v-pump/89",
+      "draftSlug": "kingtech-accessory-89",
+      "events": []
+    },
+    {
+      "sourceId": "kt-9",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-k-142g4-/9",
+      "draftSlug": "kingtech-k-142g4-plus",
+      "events": []
+    },
+    {
+      "sourceId": "kt-90",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp1200v-pump/90",
+      "draftSlug": "kingtech-accessory-90",
+      "events": []
+    },
+    {
+      "sourceId": "kt-91",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp200bl-pump/91",
+      "draftSlug": "kingtech-accessory-91",
+      "events": []
+    },
+    {
+      "sourceId": "kt-92",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp300-bl-pump/92",
+      "draftSlug": "kingtech-accessory-92",
+      "events": []
+    },
+    {
+      "sourceId": "kt-93",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp500bl-pump/93",
+      "draftSlug": "kingtech-accessory-93",
+      "events": []
+    },
+    {
+      "sourceId": "kt-94",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp600bl-pump/94",
+      "draftSlug": "kingtech-accessory-94",
+      "events": []
+    },
+    {
+      "sourceId": "kt-95",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp800bl-pump/95",
+      "draftSlug": "kingtech-accessory-95",
+      "events": []
+    },
+    {
+      "sourceId": "kt-96",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp1000bl/96",
+      "draftSlug": "kingtech-accessory-96",
+      "events": []
+    },
+    {
+      "sourceId": "kt-97",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp1200bl-pump/97",
+      "draftSlug": "kingtech-accessory-97",
+      "events": []
+    },
+    {
+      "sourceId": "kt-98",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp1250bl-pump/98",
+      "draftSlug": "kingtech-accessory-98",
+      "events": []
+    },
+    {
+      "sourceId": "kt-99",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kp-pump-replacement-wire-valve-set/99",
+      "draftSlug": "kingtech-accessory-99",
+      "events": []
+    },
+    {
+      "sourceId": "kt-sq-B6UE3Q5GGAWUC57XIETALASF",
+      "sourceUrl": "https://www.kingtechturbines.com/product/pisco-one-way-valve/B6UE3Q5GGAWUC57XIETALASF",
+      "draftSlug": "kingtech-accessory-b6ue3q5ggawuc57xietalasf",
+      "events": []
+    },
+    {
+      "sourceId": "kt-sq-ECX6KXRCBWRIZ2YGLCIVQAWT",
+      "sourceUrl": "https://www.kingtechturbines.com/product/stainless-steel-bracket-for-k130/ECX6KXRCBWRIZ2YGLCIVQAWT",
+      "draftSlug": "kingtech-accessory-ecx6kxrcbwriz2yglcivqawt",
+      "events": []
+    },
+    {
+      "sourceId": "kt-sq-LRO5A4V3ZOBXOVEKU4F3PPC3",
+      "sourceUrl": "https://www.kingtechturbines.com/product/kingtech-kp500v-/LRO5A4V3ZOBXOVEKU4F3PPC3",
+      "draftSlug": "kingtech-accessory-lro5a4v3zobxoveku4f3ppc3",
+      "events": []
+    },
+    {
+      "sourceId": "kt-sq-PYRA6D5K64KITYJCJGXLZCQU",
+      "sourceUrl": "https://www.kingtechturbines.com/product/engine-bracket-k450/PYRA6D5K64KITYJCJGXLZCQU",
+      "draftSlug": "kingtech-accessory-pyra6d5k64kityjcjgxlzcqu",
+      "events": []
+    },
+    {
+      "sourceId": "kt-sq-VCEYUYCU5FJF2GZQMXDNZXJO",
+      "sourceUrl": "https://www.kingtechturbines.com/product/stainless-steel-bracket-for-k102/VCEYUYCU5FJF2GZQMXDNZXJO",
+      "draftSlug": "kingtech-accessory-vceyuycu5fjf2gzqmxdnzxjo",
+      "events": []
+    }
+  ]
+}
