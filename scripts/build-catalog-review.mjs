@@ -7,7 +7,7 @@
  * Default: generate a standalone review directory in ignored visual-qa/.
  */
 import assert from 'node:assert/strict';
-import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, realpathSync, rmSync, symlinkSync, unlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -57,10 +57,10 @@ const esc = (value) => String(value ?? '').replace(/[&<>"']/g, (c) => ({
   '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
 })[c]);
 const exactArtPath = (id) => 'docs/catalog/draft-assets/' + id + '/concept-600.webp';
-const allowedAsset = (path, id) => {
+const allowedAsset = (path, id, projectRoot = root) => {
   assert.equal(path, exactArtPath(id), 'Unexpected draft asset path for ' + id);
-  const full = resolve(root, path);
-  assert.ok(full.startsWith(resolve(root, 'docs/catalog/draft-assets') + sep), 'Asset path escaped draft area');
+  const full = resolve(projectRoot, path);
+  assert.ok(full.startsWith(resolve(projectRoot, 'docs/catalog/draft-assets') + sep), 'Asset path escaped draft area');
   return full;
 };
 
@@ -347,18 +347,18 @@ export function publicLeakErrors(projectRoot, outputDir) {
   return violations;
 }
 
-function validateOutput(rows) {
+export function validateOutput(rows, outputDir = outputRoot, projectRoot = root) {
   // Check exact output parity against the source manifests, not only filenames.
-  const concepts = conceptsFor();
+  const concepts = conceptsFor(projectRoot);
   assert.equal(concepts.length, 3, 'Expected three distinct marketing concepts');
   for (const concept of concepts) {
     assert.ok(concept.available, 'Missing original BODICH marketing concept: ' + concept.name);
-    assert.ok(existsSync(resolve(outputRoot, concept.file)), 'Missing packaged marketing concept: ' + concept.name);
-    assert.ok(readFileSync(resolve(outputRoot, concept.file)).equals(readFileSync(concept.source)),
+    assert.ok(existsSync(resolve(outputDir, concept.file)), 'Missing packaged marketing concept: ' + concept.name);
+    assert.ok(readFileSync(resolve(outputDir, concept.file)).equals(readFileSync(concept.source)),
       'Packaged marketing concept out of sync: ' + concept.name);
   }
 
-  const htmlPath = join(outputRoot, 'index.html');
+  const htmlPath = join(outputDir, 'index.html');
   assert.ok(existsSync(htmlPath), 'Review HTML missing');
   const html = readFileSync(htmlPath, 'utf8');
   assert.ok(html.includes(REVIEW_MARKER), 'Missing publication warning');
@@ -370,8 +370,8 @@ function validateOutput(rows) {
   assert.ok(html.includes('ILLUSTRATIVE STUDY — NOT A PRODUCT PHOTOGRAPH'), 'Lost visual disclosure');
   assert.equal(html, renderHtml(rows, concepts), 'Private HTML stale or mismatched against source manifests');
 
-  const csvPath = join(outputRoot, 'approval-checklist.csv');
-  const jsonPath = join(outputRoot, 'approval-checklist.json');
+  const csvPath = join(outputDir, 'approval-checklist.csv');
+  const jsonPath = join(outputDir, 'approval-checklist.json');
   assert.ok(existsSync(csvPath), 'Approval CSV missing');
   assert.ok(existsSync(jsonPath), 'Approval JSON missing');
   const csv = readFileSync(csvPath, 'utf8');
@@ -387,19 +387,19 @@ function validateOutput(rows) {
 
   for (const file of ['review.css', 'review.js']) {
     const original = file === 'review.css' ? 'catalog-review.css' : 'catalog-review-client.js';
-    assert.ok(existsSync(join(outputRoot, file)), 'Missing offline UI resource: ' + file);
-    assert.ok(readFileSync(join(outputRoot, file)).equals(readFileSync(resolve(root, 'scripts', original))),
+    assert.ok(existsSync(join(outputDir, file)), 'Missing offline UI resource: ' + file);
+    assert.ok(readFileSync(join(outputDir, file)).equals(readFileSync(resolve(projectRoot, 'scripts', original))),
       'Stale offline UI resource: ' + file);
   }
   const ids = rows.filter((row) => row.illustrationAvailable).map((row) => row.sourceId);
-  assert.deepEqual(readdirSync(join(outputRoot, 'images')).sort(),
+  assert.deepEqual(readdirSync(join(outputDir, 'images')).filter((name) => !name.startsWith('.')).sort(),
     ids.map((id) => id + '.webp').sort(), 'Private illustration file inventory out of sync');
   for (const id of ids) {
-    const original = allowedAsset(exactArtPath(id), id);
-    assert.ok(readFileSync(join(outputRoot, 'images', id + '.webp')).equals(readFileSync(original)),
+    const original = allowedAsset(exactArtPath(id), id, projectRoot);
+    assert.ok(readFileSync(join(outputDir, 'images', id + '.webp')).equals(readFileSync(original)),
       'Private illustration bytes differ from generated source: ' + id);
   }
-  assert.deepEqual(readdirSync(join(outputRoot, 'concepts')).sort(),
+  assert.deepEqual(readdirSync(join(outputDir, 'concepts')).filter((name) => !name.startsWith('.')).sort(),
     concepts.map((item) => item.file.split('/').at(-1)).sort(),
     'Marketing concept file inventory mismatch');
 }
@@ -470,6 +470,10 @@ function fixture() {
     expectedCount: 2, hasAsset: (path) => path.includes('kt-a/'),
   };
 }
+export function isDirectExecution(entry = process.argv[1]) {
+  return Boolean(entry) && realpathSync(entry) === realpathSync(fileURLToPath(import.meta.url));
+}
+
 function selfTest() {
   const data = fixture();
   const rows = assemble(data);
@@ -539,6 +543,6 @@ function main(args) {
 }
 
 // Safe to import without executing the CLI or modifying local files.
-if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+if (isDirectExecution()) {
   main(process.argv.slice(2));
 }
