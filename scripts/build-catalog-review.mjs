@@ -167,6 +167,25 @@ export function assemble({ inventory, overrides, art, review, ledgerStates = nul
 const tr = (en, ro) => '<span data-i18n-en="' + esc(en) +
   '" data-i18n-ro="' + esc(ro) + '">' + esc(en) + '</span>';
 
+const statusNames = {
+  unreviewed: ['Unreviewed', 'Neverificat'],
+  in_review: ['In review', 'În curs de verificare'],
+  on_hold: ['On hold', 'În așteptare'],
+  rejected: ['Rejected', 'Respins'],
+  evidence_complete_pending_signoff: ['Evidence complete, sign-off pending', 'Dovezi complete, aprobare în așteptare'],
+  approved_for_promotion: ['Eligible for separate promotion review', 'Eligibil pentru evaluare separată'],
+  not_reviewed: ['Not reviewed', 'Neverificat'],
+  needs_evidence: ['Evidence needed', 'Sunt necesare dovezi'],
+  approved: ['Gate approved', 'Criteriu aprobat'],
+  not_applicable_with_reason: ['N/A with documented rationale', 'Nu se aplică, cu motiv documentat'],
+};
+const statusText = (status) => tr(...(statusNames[status] || [status, status]));
+function statusOption(status) {
+  const [en, ro] = statusNames[status];
+  return '<option value="' + esc(status) + '" data-i18n-en="' + esc(en) +
+    '" data-i18n-ro="' + esc(ro) + '">' + esc(en) + '</option>';
+}
+
 function renderRecord(item) {
   const gateLabels = {
     identity: ['BODICH model/manufacturer and legal authority', 'Identitatea modelului/producătorului și drepturile BODICH'],
@@ -180,7 +199,7 @@ function renderRecord(item) {
       '<a href="' + esc(e.ref) + '" target="_blank" rel="noopener noreferrer" referrerpolicy="no-referrer">' +
       esc(e.ref) + '</a>' : esc(e.ref)) + ' — ' + esc(e.version) + ', ' + esc(e.verifiedOn) +
       ', ' + esc(e.provenance) + '</li>').join('');
-    return '<li><strong>' + tr(...gateLabels[gate]) + '</strong>: ' + esc(review.status) +
+    return '<li><strong>' + tr(...gateLabels[gate]) + '</strong>: ' + statusText(review.status) +
       (review.reviewedBy ? ' · ' + esc(review.reviewedBy.name) + ' (' +
         esc(review.reviewedBy.role) + '), ' + esc(review.at) : '') +
       (review.reason ? '<p>' + esc(review.reason) + '</p>' : '') +
@@ -222,7 +241,7 @@ function renderRecord(item) {
     '</p></div>',
     '<div class="record-body"><div class="record-head"><span class="tag">', esc(item.category),
     '</span><span class="tag warning">', tr('Unpublished', 'Nepublicat'), ' · ', esc(item.approval),
-    '</span><span class="tag">', tr('Review', 'Revizuire'), ': ', esc(item.reviewStatus),
+    '</span><span class="tag">', tr('Review', 'Revizuire'), ': ', statusText(item.reviewStatus),
     '</span></div>',
     '<p class="muted">', tr('Supplier reference reviewed', 'Referință furnizor revizuită'), ': ',
     item.sourceReviewed ? tr('Yes', 'Da') : tr('No', 'Nu'),
@@ -332,7 +351,7 @@ export function renderHtml(rows, concepts) {
     '<select id="review-status"><option value="">', tr('All review statuses', 'Toate stările'),
     '</option>', ['unreviewed', 'in_review', 'on_hold', 'rejected',
       'evidence_complete_pending_signoff', 'approved_for_promotion'].map((s) =>
-      '<option value="' + s + '">' + s + '</option>').join(''),
+      statusOption(s)).join(''),
     '</select></label><label class="search-label">',
     tr('Search source ID, title, slug or EN/RO copy',
       'Caută ID-ul, titlul, identificatorul sau textul EN/RO'),
