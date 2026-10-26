@@ -57,7 +57,7 @@ npm run catalog:review:ledger:check
 git diff -- docs/catalog/review-ledger.json
 ```
 
-For subsequent decisions on the same record, set `expectedPreviousHash` to the last event's `hash`, provide a **later** UTC timestamp and a new event ID. Applying an *identical* prior import is idempotent: no second event or commit change. Reusing the ID with changed fields, a concurrent predecessor or a changed manifest is rejected. Corrections are new events (never edit/remove existing events). `rejected` and `on_hold` require a fresh `in_review` decision and renewed gate work before any later approval. A subsequent gate decision invalidates a former pending-signoff or eligible status.
+For subsequent decisions on the same record, set `expectedPreviousHash` to the last event's `hash`, provide a **later** UTC timestamp and a new event ID. Applying an *identical* prior import is idempotent: no second event or commit change. Reusing the ID with changed fields, a concurrent predecessor or a changed manifest is rejected. Corrections are new events (never edit/remove existing events). `rejected` and `on_hold` **revoke previously approved gate states**, preserving their historical evidence in old events; a fresh `in_review` decision and four new gate sign-offs are required before any later approval. A subsequent gate decision invalidates a former pending-signoff or eligible status.
 
 For a **gate** event use `kind: "gate"`, `gate: "identity" | "imagery" | "specifications" | "editorial"` and `decision: "not_reviewed" | "needs_evidence" | "approved" | "rejected" | "not_applicable_with_reason"`. Omit `status`. Human rationale is mandatory even for `not_applicable_with_reason`; that option **never** satisfies promotion eligibility.
 
