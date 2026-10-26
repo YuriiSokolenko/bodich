@@ -56,21 +56,22 @@ const transitions = {
   approved_for_promotion: ['in_review', 'on_hold', 'rejected'],
 };
 // Sealed previous-epoch archives. Any unexpected file is an error: half-written or stray history must be visible.
-function archivesOnDisk() {
+function archivesOnDisk(skip = []) {
   const dir = at('docs/catalog/review-ledger-archive'), result = {};
   if (!existsSync(dir)) return result;
   for (const name of readdirSync(dir).sort()) {
-    if (name.startsWith('.')) continue;
-    requireValue(/^epoch-\d{3}\.json$/.test(name), 'Unexpected file in review ledger archive: ' + name);
+    if (name.startsWith('.') || skip.includes(name)) continue;
+    requireValue(/^epoch-\d{3}\.json$/.test(name), 'Unexpected file in review ledger archive: ' + name +
+      ' (if a migration was interrupted, run --recover)');
     result['docs/catalog/review-ledger-archive/' + name] =
       JSON.parse(readFileSync(resolve(dir, name), 'utf8'));
   }
   return result;
 }
-export function contextOnDisk() {
+export function contextOnDisk({ skipArchives = [] } = {}) {
   const source = load(paths.inventory), overlays = load(paths.overrides);
   const edits = new Map(overlays.records.map((r) => [r.sourceId, r]));
-  return { revisions: currentRevisions(), archives: archivesOnDisk(), sources: source.products.map((r) => ({
+  return { revisions: currentRevisions(), archives: archivesOnDisk(skipArchives), sources: source.products.map((r) => ({
     sourceId: r.id, sourceUrl: r.canonicalUrl, draftSlug: edits.get(r.id)?.slug,
   })) };
 }
@@ -534,7 +535,8 @@ function analyze(ledger, ctx, { pending = false } = {}) {
     final = replayed;
   }
   for (const path of Object.keys(archives))
-    requireValue(referenced.has(path), 'Unreferenced previous-epoch archive: ' + path);
+    requireValue(referenced.has(path), 'Unreferenced previous-epoch archive: ' + path +
+      ' (if a migration was interrupted, run --recover)');
   const entry = epochs.at(-1);
   if (!pending) {
     requireValue(eq(entry.revisions, ctx.revisions),
@@ -608,6 +610,11 @@ export function migrateLedger(ledger, ctx, request, { now = Date.now() } = {}) {
   const sourceChanges = normalizeChanges(request.sourceChanges);
   const known = ledger.epochs.find((e) => e.migration?.migrationId === request.migrationId);
   if (known) {
+    // A replay is an acknowledgement, so it is only valid for the migration that created the CURRENT epoch,
+    // and only while the on-disk manifests and sources still match that epoch (otherwise: stale, migrate again).
+    requireValue(known.epoch === ledger.currentEpoch,
+      'Migration belongs to an earlier epoch and cannot be replayed; current epoch is ' + ledger.currentEpoch);
+    analyze(ledger, ctx);
     const m = known.migration;
     requireValue(m.fromEpoch === request.fromEpoch && m.toEpoch === request.toEpoch && m.at === request.at &&
       eq(m.reviewer, request.reviewer) && m.reason === request.reason &&
@@ -640,6 +647,30 @@ export function migrateLedger(ledger, ctx, request, { now = Date.now() } = {}) {
     records };
   analyze(updated, { ...ctx, archives: { ...(ctx.archives ?? {}), [archive.path]: document } });
   return { ledger: updated, archive: { path: archive.path, document }, changed: true };
+}
+// Recovery for an interrupted two-file migration write (archive renamed, ledger not yet). Pure decision logic:
+// the CLI supplies the orphan archive / pending ledger found on disk and applies the returned action.
+//  - roll_forward: the pending ledger is complete, valid against the orphan archive and the on-disk manifests
+//  - roll_back:    remove the orphan archive (it is reproducible from the current ledger) and any temp files
+//  - discard_pending: only temp files remain (crash before any rename); nothing was committed
+export function recoverMigration(ledger, ctx, { orphan = null, pending = null } = {}) {
+  analyze(ledger, ctx, { pending: true });
+  const path = archivePath(ledger.currentEpoch), expected = archiveDocument(ledger);
+  if (!orphan) return { action: pending ? 'discard_pending' : 'nothing', reason: 'No orphan archive exists' };
+  requireValue(eq(orphan, expected),
+    'Orphan archive does not match the current epoch history; resolve manually (nothing was changed)');
+  if (pending) {
+    try {
+      requireValue(pending.currentEpoch === ledger.currentEpoch + 1 &&
+        pending.epochs[ledger.currentEpoch - 1]?.archive?.sha256 === sha256Canonical(expected),
+      'Pending ledger does not seal the orphan archive');
+      analyze(pending, { ...ctx, archives: { ...(ctx.archives ?? {}), [path]: orphan } });
+      return { action: 'roll_forward', ledger: pending, path };
+    } catch (error) {
+      return { action: 'roll_back', path, reason: 'Pending ledger unusable: ' + error.message };
+    }
+  }
+  return { action: 'roll_back', path, reason: 'No complete pending ledger was found' };
 }
 export function appendDecision(ledger, ctx, request, { now = Date.now() } = {}) {
   const view = analyze(ledger, ctx);
@@ -809,6 +840,36 @@ function epochSelfTest({ apply, input, ctx, revisions, approvedLedger, freshLedg
   assert.throws(() => validateLedger(backdated, ctxA), /timestamps must increase/);
   assert.throws(() => validateLedger(m1.ledger, { ...ctxA, fixture: false }), /Frozen inventory requires 132/);
 
+  // 4b. Review findings on PR #52: replay is only an acknowledgement of the current, non-stale epoch...
+  const drifted = { ...ctxA, revisions: { ...R2, art: '3'.repeat(40) } };
+  assert.throws(() => migrate(m1.ledger, drifted, request()), /Stale manifest revisions/);
+  assert.throws(() => migrate(m1.ledger, ctxA, request({ reason: 'Different rationale, same migration ID' })),
+    /Conflicting duplicate migration/);
+  // ...and an interrupted archive+ledger write is recoverable without touching history.
+  const orphanCtx = { ...ctx2, archives: {} };
+  const crashed = { orphan: m1.archive.document, pending: m1.ledger };
+  assert.throws(() => validateLedger(approvedLedger, { ...ctx, archives: { [m1.archive.path]: m1.archive.document } }),
+    /Unreferenced previous-epoch archive.*--recover/);
+  const rolledForward = recoverMigration(approvedLedger, orphanCtx, crashed);
+  assert.equal(rolledForward.action, 'roll_forward');
+  assert.ok(eq(rolledForward.ledger, m1.ledger));
+  assert.equal(validateLedger(rolledForward.ledger, ctxA).length, 2);
+  assert.equal(recoverMigration(approvedLedger, orphanCtx, { orphan: m1.archive.document }).action, 'roll_back');
+  const staleManifests = recoverMigration(approvedLedger, { ...ctx, archives: {} }, crashed);
+  assert.equal(staleManifests.action, 'roll_back');
+  assert.match(staleManifests.reason, /Stale manifest revisions/);
+  const tamperedPending = clone(m1.ledger);
+  tamperedPending.epochs[1].migration.reason = 'Quietly rewritten migration rationale text';
+  assert.equal(recoverMigration(approvedLedger, orphanCtx, { orphan: m1.archive.document,
+    pending: tamperedPending }).action, 'roll_back');
+  assert.equal(recoverMigration(approvedLedger, orphanCtx, { pending: m1.ledger }).action, 'discard_pending');
+  assert.equal(recoverMigration(approvedLedger, orphanCtx).action, 'nothing');
+  assert.equal(recoverMigration(m1.ledger, ctxA).action, 'nothing');
+  assert.throws(() => recoverMigration(approvedLedger, orphanCtx, { orphan: editedDoc, pending: m1.ledger }),
+    /does not match the current epoch history/);
+  // After either recovery the migration can be (re)applied cleanly.
+  assert.equal(migrate(approvedLedger, orphanCtx, request()).changed, true);
+
   // 5. Migration request guards.
   const bad = (extra, expected) => assert.throws(() => migrate(approvedLedger, ctx2, request(extra)), expected);
   bad({ expectedPreviousSeal: 'f'.repeat(64) }, /Concurrent history conflict/);
@@ -879,6 +940,9 @@ function epochSelfTest({ apply, input, ctx, revisions, approvedLedger, freshLedg
   assert.equal(exported.retiredRecords[0].previousEpochs[0].epoch, 2);
   assert.equal(exported.epochs.length, 3);
   assert.equal(migrate(m3.ledger, ctxC, request3()).changed, false);
+  assert.throws(() => migrate(m3.ledger, ctxC, request()), /earlier epoch and cannot be replayed/);
+  assert.throws(() => migrate(m3.ledger, { ...ctxC, revisions: { ...R3, copy: '4'.repeat(40) } }, request3()),
+    /Stale manifest revisions/);
   const wrongChain = { ...ctxC.archives, [m1.archive.path]: editedDoc };
   assert.throws(() => validateLedger(m3.ledger, { ...ctxC, archives: wrongChain }), /Tampered previous-epoch archive/);
 
@@ -1225,7 +1289,7 @@ function selfTest() {
 function writeAtomically(files) {
   const temps = files.map(({ file }) => file + '.tmp');
   requireValue(files.every(({ file }, i) => !existsSync(temps[i]) && (!file.includes('/review-ledger-archive/') ||
-    !existsSync(file))), 'Existing concurrent/uncompleted write');
+    !existsSync(file))), 'Existing concurrent/uncompleted write; if a migration was interrupted, run --recover');
   const renamed = [];
   try {
     files.forEach(({ file, data }, i) => {
@@ -1239,12 +1303,38 @@ function writeAtomically(files) {
     throw error;
   }
 }
+// Explicit, safe recovery after a crash between the two renames of --migrate. Never touches history:
+// it either completes the fully validated pending ledger, or removes only reproducible leftovers.
+function recover() {
+  const ledger = load('docs/catalog/review-ledger.json');
+  const archiveFile = at(archivePath(ledger.currentEpoch));
+  const name = archiveFile.split('/').at(-1), temps = [ledgerFile + '.tmp', archiveFile + '.tmp'];
+  const ctx = contextOnDisk({ skipArchives: [name, name + '.tmp'] });
+  const readJson = (file, strict) => {
+    if (!existsSync(file)) return null;
+    try { return JSON.parse(readFileSync(file, 'utf8')); }
+    catch { requireValue(!strict, 'Orphan archive is unreadable; resolve manually (nothing was changed)'); return null; }
+  };
+  const result = recoverMigration(ledger, ctx, { orphan: readJson(archiveFile, true),
+    pending: readJson(temps[0], false) });
+  const drop = (...files) => files.forEach((file) => { if (existsSync(file)) unlinkSync(file); });
+  if (result.action === 'roll_forward') {
+    renameSync(temps[0], ledgerFile); drop(temps[1]);
+    return console.log('Recovered: completed the interrupted migration to epoch ' + result.ledger.currentEpoch +
+      '. Run --check and commit a dedicated reviewed PR.');
+  }
+  if (result.action === 'roll_back') drop(archiveFile, ...temps);
+  else drop(...temps);
+  console.log(result.action === 'nothing' ? 'Nothing to recover.' : 'Recovered: rolled back the interrupted migration (' +
+    result.action + '); the ledger is unchanged. Re-run --migrate-plan and --migrate. ' + result.reason);
+}
 function main(args) {
   if (args.length === 1 && args[0] === '--self-test') return selfTest();
-  const single = ['--check', '--export', '--upgrade-v1', '--migrate-plan'];
+  const single = ['--check', '--export', '--upgrade-v1', '--migrate-plan', '--recover'];
   requireValue((args.length === 1 && single.includes(args[0])) ||
     (args.length === 2 && ['--apply', '--migrate'].includes(args[0])),
-  'Usage: --check | --export | --self-test | --apply <decision.json> | --upgrade-v1 | --migrate-plan | --migrate <migration.json>');
+  'Usage: --check | --export | --self-test | --apply <decision.json> | --upgrade-v1 | --migrate-plan | --migrate <migration.json> | --recover');
+  if (args[0] === '--recover') return recover();
   const ctx = contextOnDisk(), ledger = load('docs/catalog/review-ledger.json');
   if (args[0] === '--upgrade-v1') {
     if (ledger.schemaVersion === 2) return console.log('Ledger is already schema v2: nothing to backfill');
