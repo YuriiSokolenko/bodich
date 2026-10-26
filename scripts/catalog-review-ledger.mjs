@@ -18,7 +18,13 @@ const load = (p) => JSON.parse(readFileSync(at(p), 'utf8'));
 const hash = (data) => createHash('sha256').update(data).digest('hex');
 const blob = (data) => createHash('sha1').update('blob ' + data.length + '\0').update(data).digest('hex');
 const clone = (value) => JSON.parse(JSON.stringify(value));
-const eq = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+// v1 hashes use recursive canonical key ordering; rewriting a JSON object must not create a new decision.
+const canonical = (value) => JSON.stringify(value, (_, item) => {
+  if (item && typeof item === 'object' && !Array.isArray(item))
+    return Object.fromEntries(Object.keys(item).sort().map((key) => [key, item[key]]));
+  return item;
+});
+const eq = (a, b) => canonical(a) === canonical(b);
 const nonempty = (v) => typeof v === 'string' && Boolean(v.trim());
 const requireValue = (v, message) => assert.ok(v, message);
 const keys = (obj, required, optional = []) => {
@@ -30,6 +36,14 @@ const keys = (obj, required, optional = []) => {
 const currentRevisions = () => Object.fromEntries(Object.entries(paths).map(([name, path]) =>
   [name, blob(readFileSync(at(path)))]));
 export const gateNames = ['identity', 'imagery', 'specifications', 'editorial'];
+// Roles are claims, not authentication: human PR review must confirm actual authority.
+export const gateRoles = {
+  identity: ['owner', 'legal_reviewer'],
+  imagery: ['owner', 'rights_reviewer'],
+  specifications: ['owner', 'technical_reviewer'],
+  editorial: ['owner', 'editorial_reviewer', 'legal_reviewer'],
+};
+const normalizedIdentity = (name) => name.trim().normalize('NFKC').replace(/\s+/g, ' ').toLocaleLowerCase('en');
 const decisions = ['not_reviewed', 'needs_evidence', 'approved', 'rejected', 'not_applicable_with_reason'];
 const statuses = ['unreviewed', 'in_review', 'on_hold', 'rejected',
   'evidence_complete_pending_signoff', 'approved_for_promotion'];
@@ -67,7 +81,9 @@ function reference(value) {
     requireValue(/^restricted:[a-zA-Z0-9][a-zA-Z0-9._/-]{2,160}$/.test(value),
       'Use opaque restricted: identifiers for confidential evidence');
   } else {
-    const u = new URL(value);
+    let u;
+    try { u = new URL(value); }
+    catch { throw new Error('Malformed evidence URL: expected full HTTPS URL or restricted: reference'); }
     requireValue(u.protocol === 'https:' && u.hostname && !u.username && !u.password && !u.search && !u.hash,
       'Evidence URL must be safe HTTPS');
     requireValue(!u.hostname.toLowerCase().endsWith('kingtechturbines.com'),
@@ -85,7 +101,8 @@ function evidenceCheck(items, imagery) {
     seen.add(item.ref);
     requireValue(nonempty(item.version) && item.version.length <= 160 &&
       nonempty(item.provenance) && item.provenance.length <= 240 &&
-      item.provenance.toLowerCase() !== 'supplier only', 'Missing independent provenance/version');
+      !/\bsupplier[\s_-]*only\b/i.test(item.provenance),
+      'Missing independent provenance/version (supplier-only is not sufficient)');
     validateDate(item.verifiedOn);
     if (imagery) requireValue(nonempty(item.rightsOwner), 'Image rights owner not identified');
   }
@@ -143,6 +160,9 @@ const ready = (s) => gateNames.every((g) => s.gates[g].status === 'approved') &&
 function reduce(state, event) {
   const s = clone(state);
   if (event.kind === 'gate') {
+    requireValue(s.status === 'in_review', 'Gate decisions require an explicit in_review status');
+    requireValue(gateRoles[event.gate]?.includes(event.reviewer.role),
+      'Reviewer role is not authorized for this gate: ' + event.gate);
     gateCheck(event);
     s.gates[event.gate] = { status: event.decision, reviewedBy: event.reviewer,
       at: event.at, reason: event.reason, evidence: event.evidence || [],
@@ -158,6 +178,10 @@ function reduce(state, event) {
     if (event.status === 'approved_for_promotion') {
       requireValue(s.status === 'evidence_complete_pending_signoff' &&
         event.reviewer.role === 'publication_approver', 'Publication approver required');
+      const signer = normalizedIdentity(event.reviewer.name);
+      requireValue(gateNames.every((gate) =>
+        normalizedIdentity(s.gates[gate].reviewedBy.name) !== signer),
+      'Publication approver must be independent of each approving gate reviewer');
       keys(event.signoff, ['statement', 'authorizationRef']);
       requireValue(event.signoff.statement ===
         'I explicitly approve this source research record only for a separate BODICH promotion PR.',
@@ -203,7 +227,7 @@ function eventCheck(event, prev, lastTime, revisions) {
   requireValue(eq(event.reviewedRevisions, revisions), 'Stale source/content revision');
   requireValue(event.previousHash === prev, 'Review history predecessor conflict');
   const { hash: digest, ...payload } = event;
-  requireValue(digest === hash(JSON.stringify(payload)), 'Tampered review event hash');
+  requireValue(digest === hash(canonical(payload)), 'Tampered review event hash');
   if (event.kind === 'gate') requireValue(!event.status && !event.signoff,
     'Gate decision cannot change publication status');
   else requireValue(!event.gate && !event.decision && !event.evidence && !event.details,
@@ -251,17 +275,21 @@ export function validateLedger(ledger, ctx) {
   requireValue(seen.size === sources.size, 'Ledger source reconciliation incomplete');
   return results;
 }
-export function appendDecision(ledger, ctx, request) {
+export function appendDecision(ledger, ctx, request, { now = Date.now() } = {}) {
   validateLedger(ledger, ctx);
   keys(request, ['sourceId', 'eventId', 'kind', 'at', 'reviewer', 'reason',
     'reviewedRevisions', 'expectedPreviousHash'],
   ['status', 'gate', 'decision', 'evidence', 'details', 'signoff']);
+  // Only new submissions are bounded by wall clock; CI can validate old Git history deterministically.
+  validateUtc(request.at);
+  requireValue(Date.parse(request.at) <= now + 5 * 60_000,
+    'Decision timestamp cannot be in the future beyond five minutes of clock skew');
   const old = ledger.records.flatMap((r) => r.events).find((event) =>
     event.eventId === request.eventId);
   const { expectedPreviousHash, ...payload } = request;
   if (old) {
     const replay = { ...payload, previousHash: old.previousHash };
-    replay.hash = hash(JSON.stringify(replay));
+    replay.hash = hash(canonical(replay));
     requireValue(old.sourceId === request.sourceId &&
       old.previousHash === expectedPreviousHash && eq(old, replay),
     'Conflicting duplicate event ID');
@@ -272,7 +300,7 @@ export function appendDecision(ledger, ctx, request) {
   const prev = record.events.at(-1)?.hash || null;
   requireValue(prev === expectedPreviousHash, 'Concurrent revision conflict; refresh prior hash');
   const event = { ...payload, previousHash: prev };
-  event.hash = hash(JSON.stringify(event));
+  event.hash = hash(canonical(event));
   const updated = clone(ledger);
   updated.records.find((r) => r.sourceId === request.sourceId).events.push(event);
   validateLedger(updated, ctx);
@@ -281,7 +309,8 @@ export function appendDecision(ledger, ctx, request) {
 export function auditExport(ledger, ctx) {
   const states = validateLedger(ledger, ctx);
   return { schemaVersion: 1, purpose: 'offline_review_only_not_publication',
-    revisions: ledger.revisions, count: states.length, records: states };
+    revisions: ledger.revisions, count: states.length,
+    records: states.sort((a, b) => a.sourceId.localeCompare(b.sourceId, 'en')) };
 }
 function selfTest() {
   const revisions = { inventory: 'a'.repeat(40), overrides: 'b'.repeat(40),
