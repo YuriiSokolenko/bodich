@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev",
-    "check": "astro check && node scripts/validate-catalog.mjs && node scripts/validate-catalog.mjs --self-test && npm run catalog:source:check && npm run catalog:reconcile",
+    "check": "astro check && node scripts/validate-catalog.mjs && node scripts/validate-catalog.mjs --self-test && npm run catalog:review:ledger:check && npm run catalog:review:ledger:self-test && npm run catalog:source:check && npm run catalog:reconcile",
     "build": "astro build",
     "preview": "astro preview",
     "catalog:intake": "node scripts/validate-catalog.mjs --intake",
@@ -22,7 +22,10 @@
     "catalog:copy:matrix": "node scripts/validate-catalog-copy.mjs --write-matrix",
     "catalog:review:build": "node scripts/build-catalog-review.mjs",
     "catalog:review:check": "node scripts/build-catalog-review.mjs --check",
-    "catalog:review:self-test": "node scripts/build-catalog-review.mjs --self-test"
+    "catalog:review:self-test": "node scripts/build-catalog-review.mjs --self-test",
+    "catalog:review:ledger:check": "node scripts/catalog-review-ledger.mjs --check",
+    "catalog:review:ledger:self-test": "node scripts/catalog-review-ledger.mjs --self-test",
+    "catalog:review:ledger:export": "node scripts/catalog-review-ledger.mjs --export"
   },
   "engines": {
     "node": ">=24 <25"
