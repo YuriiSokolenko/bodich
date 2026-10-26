@@ -517,6 +517,83 @@ function selfTest() {
     assert.ok(publicLeakErrors(testRoot, out).length > 0);
     writeFileSync(join(testRoot, 'dist', 'innocent.js'), '/* ' + REVIEW_MARKER + ' */');
     assert.ok(publicLeakErrors(testRoot, out).some((x) => x.includes('innocent.js')));
+
+    // Real output validator regression fixtures: no generated artwork dependency.
+    // Build the *actual* self-contained output shape in a disposable root.
+    const sourceImg = join(testRoot, exactArtPath('kt-a'));
+    const outputImg = join(out, 'images', 'kt-a.webp');
+    mkdirSync(dirname(sourceImg), { recursive: true });
+    mkdirSync(join(out, 'images'), { recursive: true });
+    mkdirSync(join(out, 'concepts'), { recursive: true });
+    mkdirSync(join(testRoot, 'public', 'images', 'turbines'), { recursive: true });
+    mkdirSync(join(testRoot, 'scripts'), { recursive: true });
+    writeFileSync(sourceImg, 'example-original-diagram-payload');
+    copyFileSync(sourceImg, outputImg);
+    for (const name of conceptFiles) {
+      const conceptSource = join(testRoot, 'public', 'images', 'turbines', name);
+      writeFileSync(conceptSource, 'example-ai-marketing-concept-' + name);
+      copyFileSync(conceptSource, join(out, 'concepts', name));
+    }
+    for (const [published, source] of [
+      ['review.css', 'catalog-review.css'], ['review.js', 'catalog-review-client.js'],
+    ]) {
+      copyFileSync(join(root, 'scripts', source), join(testRoot, 'scripts', source));
+      copyFileSync(join(root, 'scripts', source), join(out, published));
+    }
+    writeFileSync(join(out, 'index.html'), renderHtml(rows, conceptsFor(testRoot)));
+    writeFileSync(join(out, 'approval-checklist.csv'), renderCsv(rows));
+    writeFileSync(join(out, 'approval-checklist.json'),
+      JSON.stringify({ schemaVersion: 1, privacy: REVIEW_MARKER, count: rows.length, records: rows }, null, 2) + '\n');
+    validateOutput(rows, out, testRoot);
+
+    // The command must execute even when launched via a symlink to the script.
+    const link = join(testRoot, 'review-cli-link.mjs');
+    symlinkSync(fileURLToPath(import.meta.url), link);
+    assert.equal(isDirectExecution(link), true, 'Symlink invocation should be direct execution');
+    assert.equal(isDirectExecution(join(testRoot, 'dist', 'innocent.js')), false,
+      'Importing unrelated modules must not run the review CLI');
+
+    const tamperFile = (filename, modified, expectedError) => {
+      const before = readFileSync(filename);
+      try {
+        writeFileSync(filename, modified(before.toString('utf8')));
+        assert.throws(() => validateOutput(rows, out, testRoot), expectedError);
+      } finally {
+        writeFileSync(filename, before);
+      }
+      validateOutput(rows, out, testRoot);
+    };
+    tamperFile(join(out, 'index.html'), (html) =>
+      html.replace('Unpublished catalog reference review', 'Stale catalog reference review'),
+    /Private HTML stale or mismatched/);
+    tamperFile(join(out, 'approval-checklist.csv'), (csv) =>
+      csv.replace('Source kt-a', 'Altered source kt-a'),
+    /CSV rows or approval gates stale/);
+    tamperFile(join(out, 'approval-checklist.json'), (json) =>
+      json.replace('"count": 2', '"count": 1'),
+    /Approval JSON count drift/);
+    tamperFile(outputImg, () => 'modified-diagram-payload',
+      /Private illustration bytes differ from generated source/);
+
+    const extra = join(out, 'images', 'stray.webp');
+    writeFileSync(extra, 'unexpected');
+    try {
+      assert.throws(() => validateOutput(rows, out, testRoot),
+        /Private illustration file inventory out of sync/);
+    } finally { unlinkSync(extra); }
+    const concept = join(out, 'concepts', conceptFiles[0]);
+    unlinkSync(concept);
+    try {
+      assert.throws(() => validateOutput(rows, out, testRoot),
+        /Missing packaged marketing concept/);
+    } finally { copyFileSync(join(testRoot, 'public', 'images', 'turbines', conceptFiles[0]), concept); }
+
+    // OS metadata is not a product asset; it should not create a false failure.
+    const dotfiles = [join(out, 'images', '.DS_Store'), join(out, 'concepts', '.DS_Store')];
+    for (const file of dotfiles) writeFileSync(file, 'macOS metadata fixture');
+    try { validateOutput(rows, out, testRoot); }
+    finally { for (const file of dotfiles) unlinkSync(file); }
+    validateOutput(rows, out, testRoot);
   } finally {
     rmSync(testRoot, { recursive: true, force: true });
   }
