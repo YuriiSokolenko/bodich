@@ -346,7 +346,7 @@ function validateOutput(rows) {
   assert.ok(existsSync(jsonPath), 'Approval JSON missing');
   const csv = readFileSync(csvPath, 'utf8');
   assert.equal(csv, renderCsv(rows), 'CSV rows or approval gates stale against source manifests');
-  assert.equal(csv.split('\r\n').length - 2, rows.length + 1,
+  assert.equal(csv.split('\r\n').length - 1, rows.length + 1,
     'CSV must contain precisely a header plus one record per source ID');
   const review = JSON.parse(readFileSync(jsonPath, 'utf8'));
   assert.equal(review.schemaVersion, 1, 'Approval JSON schema drift');
@@ -451,6 +451,10 @@ function selfTest() {
   assert.equal((html.match(/class="review-record"/g) ?? []).length, 2);
   assert.ok(html.includes('ILLUSTRATIVE STUDY — NOT A PRODUCT PHOTOGRAPH'));
   assert.ok(html.includes('No generated illustration'));
+  assert.ok(html.includes('data-search="kt-a Source kt-a reference-kt-a en title'));
+  const firstSearch = html.match(/data-search="([^"]+)"/)?.[1];
+  assert.ok(firstSearch && !firstSearch.includes('pending') && !firstSearch.includes('photograph'),
+    'Search index must not contain review boilerplate');
   assert.equal(renderCsv(rows).split('\r\n').length, 4);
   const mutateSafe = (change, expected) => {
     const copy = JSON.parse(JSON.stringify({ inventory: data.inventory, overrides: data.overrides,
