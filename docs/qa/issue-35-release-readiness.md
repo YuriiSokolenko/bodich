@@ -42,6 +42,11 @@ Browser Visual QA checks real category pages and saves EN/RO screenshots at **32
 
 **Not applicable in this draft-only phase:** public search, filters, discount/stock badges, public source-linked specifications and checkout. There is no approved inventory to search, price, label, or sell. Simulating source products publicly would violate the no-fake-stock/no-price promise. Such controls must receive separate implementation and QA when real BODICH products have been expressly approved. Their absence is not a successful functional test.
 
+## Source baseline change control
+
+- [ ] For any future KingTech source-catalog refresh, conduct a **separate source-audit review**: compare added, removed and cross-listed source identities against original evidence, document every exclusion, and explicitly approve changed section counts and source lifecycle facts before updating `SNAPSHOT_BASELINE` or its pinned Git-blob SHA. Never refresh the pin merely to silence CI.
+- [ ] Preserve LF in the catalog JSON files across Windows/macOS/Linux checkouts (enforced via `.gitattributes`), then rerun the reconciliation fixtures and release QA for the proposed snapshot.
+
 ## Company approval and follow-up checklist
 
 - [ ] Confirm legal BODICH company identity, domain ownership, trade name, public contact details and brand.
