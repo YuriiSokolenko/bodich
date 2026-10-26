@@ -1,6 +1,6 @@
 # Issue #47 — offline bilingual catalog draft review
 
-**Private to the website, not confidential storage.** This is an unpublished local review artifact, never an Astro route or a public asset. The repository is public and GitHub CI artifacts may be accessible to authorized GitHub users. Do not place confidential company data here.
+**Private to the website, not confidential storage.** This is an unpublished local review artifact, never an Astro route or a public asset. The repository is public: **anyone with a GitHub account can generally access artifacts for public repositories** (subject to GitHub's current access controls and retention). This gallery is *not private data storage*, even though it is not deployed to the website. Do not place confidential company data here.
 
 ## Data and status
 
@@ -55,4 +55,4 @@ Only a separate, reviewed PR can then create an entry in the public verified con
 
 ## Test coverage
 
-The --self-test mode checks duplicate source IDs and slugs, missing Romanian copy, missing art entries and real raster files, unapproved artwork disclosure, false photo flags, source/review drift, missing human sign-off, and attempted leakage into public HTML. The --check mode requires exactly 132 distinct rendered cards, offline assets, review exports, source-specific disclosure and no production leakage. The deeper source, art, copy and Issue #35 validators are still mandatory.
+The --self-test mode checks duplicate source IDs and slugs, missing Romanian copy, missing art entries and real raster files, unapproved artwork disclosure, false photo flags, source/review drift, missing human sign-off, and attempted leakage into public HTML. The --check mode validates exactly 132 distinct rendered cards and **byte-for-byte manifest-to-HTML/CSV parity, structured JSON rows/count, all 132 generated diagrams, all three packaged marketing concepts and local stylesheet/script copies**. It verifies original asset bytes, labels, and absence of private review content from public output. If original drawings are missing, regenerate with `npm run catalog:art:generate` before checking. The deeper source, art, copy and Issue #35 validators are still mandatory.
