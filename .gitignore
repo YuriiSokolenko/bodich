@@ -11,3 +11,6 @@ dist/
 docs/catalog/draft-assets/
 visual-qa/catalog-art/
 visual-qa/catalog-reconciliation.json
+
+# Local-only bilingual SKU review gallery, never shipped in Astro dist/
+visual-qa/private-catalog-review/
