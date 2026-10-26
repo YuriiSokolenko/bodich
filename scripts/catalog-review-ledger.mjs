@@ -68,7 +68,7 @@ function reference(value) {
       'Use opaque restricted: identifiers for confidential evidence');
   } else {
     const u = new URL(value);
-    requireValue(u.protocol === 'https:' && u.hostname && !u.username && !u.password,
+    requireValue(u.protocol === 'https:' && u.hostname && !u.username && !u.password && !u.search && !u.hash,
       'Evidence URL must be safe HTTPS');
     requireValue(!u.hostname.toLowerCase().endsWith('kingtechturbines.com'),
       'Supplier-only evidence cannot authorize a BODICH product');
@@ -102,6 +102,8 @@ function gateCheck(event) {
     return;
   }
   evidenceCheck(event.evidence, event.gate === 'imagery');
+  requireValue(event.evidence.every((item) => Date.parse(item.verifiedOn) <= Date.parse(event.at)),
+    'Approved evidence cannot be dated after the human decision');
   const d = event.details;
   requireValue(d && typeof d === 'object', 'Approved gate requires exact facts');
   if (event.gate === 'identity') {
@@ -332,6 +334,19 @@ function selfTest() {
   const held = appendDecision(appended.ledger, ctx, na);
   assert.equal(validateLedger(held.ledger, ctx)[0].gates.identity.status, 'not_applicable_with_reason');
   assert.equal(auditExport(ledger, ctx).records.filter((s) => s.eligibleForPromotion).length, 0);
+  // URL credentials/query tokens and future-dated claims are not safe public evidence.
+  const unsafeRef = input('bad-reference-001', { kind: 'gate', gate: 'identity',
+    decision: 'approved', evidence: [{ ref: 'https://example.org/document?token=secret',
+      version: 'v1', verifiedOn: '2026-10-26', provenance: 'Independent record' }],
+    details: { manufacturer: 'BODICH', model: 'X', variant: 'rev-A',
+      legalAuthorityRef: 'restricted:legal-reference' } });
+  delete unsafeRef.status;
+  assert.throws(() => appendDecision(ledger, ctx, unsafeRef), /safe HTTPS/);
+  const future = clone(unsafeRef);
+  future.eventId = 'future-evidence-001';
+  future.evidence[0].ref = 'https://example.org/document';
+  future.evidence[0].verifiedOn = '2027-01-01';
+  assert.throws(() => appendDecision(ledger, ctx, future), /cannot be dated after/);
   // Complete synthetic path: four INDEPENDENT approvals, pending-signoff, human approver.
   let chain = appended.ledger;
   const next = (id, secs, fields) => {
