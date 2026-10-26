@@ -13,6 +13,13 @@
     const language = controls.language.value;
     document.body.dataset.locale = language;
     document.documentElement.lang = language;
+    for (const node of document.querySelectorAll('[data-i18n-en]')) {
+      node.textContent = node.getAttribute('data-i18n-' + language);
+    }
+    const searchInput = controls.search;
+    searchInput.placeholder = searchInput.getAttribute('data-placeholder-' + language);
+    const records = document.getElementById('records');
+    records.setAttribute('aria-label', records.getAttribute('data-aria-' + language));
     const query = controls.search.value.trim().normalize('NFKC').toLocaleLowerCase();
     let visible = 0;
     for (const card of cards) {
