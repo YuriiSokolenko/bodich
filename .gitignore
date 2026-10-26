@@ -18,3 +18,4 @@ visual-qa/private-catalog-review/
 # Offline audit export and atomic decision writer (never commit accidental artifacts)
 visual-qa/catalog-review-audit.json
 docs/catalog/review-ledger.json.tmp
+docs/catalog/review-ledger-archive/*.tmp

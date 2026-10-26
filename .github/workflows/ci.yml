@@ -56,6 +56,7 @@ jobs:
         run: |
           git check-ignore -q visual-qa/catalog-review-audit.json
           git check-ignore -q docs/catalog/review-ledger.json.tmp
+          git check-ignore -q docs/catalog/review-ledger-archive/epoch-002.json.tmp
           npm run catalog:review:ledger:check
           npm run catalog:review:ledger:self-test
           npm run catalog:review:ledger:export
