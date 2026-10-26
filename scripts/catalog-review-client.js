@@ -2,7 +2,7 @@
 (() => {
   'use strict';
   const controls = Object.fromEntries(
-    ['language', 'category', 'editorial', 'visual', 'lifecycle', 'search'].map(
+    ['language', 'category', 'editorial', 'visual', 'lifecycle', 'review-status', 'search'].map(
       (id) => [id, document.getElementById(id)]),
   );
   const cards = Array.from(document.querySelectorAll('.review-record'));
@@ -36,14 +36,15 @@
         (!controls.editorial.value || card.dataset.editorial === controls.editorial.value) &&
         (!controls.visual.value || card.dataset.visual === controls.visual.value) &&
         (!controls.lifecycle.value || card.dataset.lifecycle === controls.lifecycle.value) &&
+        (!controls['review-status'].value || card.dataset.review === controls['review-status'].value) &&
         (!query || card.dataset.search.normalize('NFKC').toLocaleLowerCase().includes(query));
       card.hidden = !match;
       if (match) visible += 1;
     }
     counter.textContent = String(visible);
     feedback.textContent = language === 'ro'
-      ? visible + ' din ' + cards.length + ' referințe afișate. Niciuna nu este aprobată.'
-      : visible + ' of ' + cards.length + ' source references shown. None are approved.';
+      ? visible + ' din ' + cards.length + ' referințe afișate. Niciun produs BODICH nu este publicat.'
+      : visible + ' of ' + cards.length + ' source references shown. No BODICH product is published.';
   }
 
   for (const control of Object.values(controls)) {

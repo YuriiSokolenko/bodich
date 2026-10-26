@@ -52,6 +52,13 @@ jobs:
         run: |
           npm run catalog:art:generate
           npm run catalog:art:check
+      - name: Validate frozen ledger and fail-closed review transitions
+        run: |
+          git check-ignore -q visual-qa/catalog-review-audit.json
+          git check-ignore -q docs/catalog/review-ledger.json.tmp
+          npm run catalog:review:ledger:check
+          npm run catalog:review:ledger:self-test
+          npm run catalog:review:ledger:export
       - name: Build and test private bilingual review gallery
         run: |
           npm run catalog:review:self-test
@@ -61,7 +68,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: unpublished-bilingual-catalog-review
-          path: visual-qa/private-catalog-review/
+          path: |
+            visual-qa/private-catalog-review/
+            visual-qa/catalog-review-audit.json
           retention-days: 7
           if-no-files-found: error
       - name: Upload SKU illustration review package

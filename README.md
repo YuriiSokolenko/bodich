@@ -238,3 +238,9 @@ Company contact information, product specifications, price lists, warranty terms
 ---
 
 <p align="center"><strong>BODICH</strong> · English / Română · Website in development</p>
+
+## Auditable draft verification (Stage 13 / issue #49)
+
+The **132 KingTech supplier research references are unpublished**. A distinct versioned review ledger lives in [`docs/catalog/review-ledger.json`](docs/catalog/review-ledger.json), with zero fabricated reviewers or approvals. Review statuses and four independent identity, imagery/rights, specification and EN/RO/editorial/legal gates are recorded only by explicit, attributable offline events. The [Stage 13 owner/reviewer runbook](docs/catalog/review-ledger-runbook.md) covers revision pins, correction/re-review, idempotent imports, source migration and separate promotion PRs. The [offline review gallery](docs/catalog/private-review-gallery.md) reads the ledger; no button/filter/export can grant approval or publish a product.
+
+Run `npm run catalog:review:ledger:check`, `npm run catalog:review:ledger:self-test`, and `npm run catalog:review:ledger:export` for deterministic local validation and ignored exports. **Do not store confidential contracts, signatures, customer data or private evidence in the public repository or CI artifacts.** A recorded status is not authenticated company approval; independent human PR review and Stage 14 genuine BODICH product evidence are required before any separately reviewed publication.

@@ -4,7 +4,7 @@
 
 ## Data and status
 
-The gallery joins exactly four source-of-truth files: docs/catalog/source-inventory.json (132 frozen source IDs), docs/catalog/reference-overrides.json (EN/RO unpublished draft overlays), docs/catalog/art-manifest.json (original diagrams) and docs/catalog/copy-review-matrix.json (copy QA), using the same identity and status contract as the Issue #35 reconciliation report.
+The gallery joins four source-of-truth files and the separate version-controlled `docs/catalog/review-ledger.json` (one event history for each of the 132 IDs): docs/catalog/source-inventory.json (132 frozen source IDs), docs/catalog/reference-overrides.json (EN/RO unpublished draft overlays), docs/catalog/art-manifest.json (original diagrams) and docs/catalog/copy-review-matrix.json (copy QA), using the same identity and status contract as the Issue #35 reconciliation report.
 
 Each record has its complete supplier title and full source ID, canonical URL, category, artwork family, draft slug, lifecycle, EN/RO description, linked evidence, numeric-spec count, unresolved flags and four pending approval gates. These are **KingTech research references, not BODICH products**. The original per-family diagrams are always marked **ILLUSTRATIVE STUDY — NOT A PRODUCT PHOTOGRAPH**. None are approved model-specific photos.
 
@@ -16,6 +16,8 @@ The three existing AI-generated BODICH images are displayed separately as **mark
 npm ci
 npm run catalog:reconcile
 npm run catalog:art:generate
+npm run catalog:review:ledger:check
+npm run catalog:review:ledger:self-test
 npm run catalog:review:self-test
 npm run catalog:review:build
 npm run catalog:review:check
@@ -33,7 +35,7 @@ Ignored output files in visual-qa/private-catalog-review:
 - **approval-checklist.csv**: 132-row spreadsheet export with formula-injection protection.
 - **approval-checklist.json**: complete structured evidence, bilingual description and blocker matrix for every SKU.
 
-This is a checklist/export, **not** an approval-record system: exporting a row or toggling filters never grants approvals.
+This is a **read-only gallery of auditable persisted review decisions**, not a click-to-approve interface. Changing filters, language or exports never grants approval. Decision history, per-gate evidence, blockers, and status are shown separately from supplier-stage research. Read the [Stage 13 reviewer runbook](./review-ledger-runbook.md) for recording/reversing decisions, re-review and source migration.
 
 ## CI and shipping isolation
 

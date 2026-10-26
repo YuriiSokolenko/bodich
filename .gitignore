@@ -14,3 +14,7 @@ visual-qa/catalog-reconciliation.json
 
 # Local-only bilingual SKU review gallery, never shipped in Astro dist/
 visual-qa/private-catalog-review/
+
+# Offline audit export and atomic decision writer (never commit accidental artifacts)
+visual-qa/catalog-review-audit.json
+docs/catalog/review-ledger.json.tmp
