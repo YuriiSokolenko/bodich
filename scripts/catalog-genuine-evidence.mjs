@@ -280,8 +280,6 @@ function test() {
     ref: 'https://www.kingtechturbines.com/product/x' }] }]; }, /Supplier-only/);
   bad((d) => { d.records = [{ ...record, evidence: [{ ...proof, sha256: '00' }] }]; }, /digest/);
   bad((d) => { d.records = [{ ...record, evidence: [{ ...proof, verifiedOn: '2027-01-01' }] }]; }, /future/);
-  bad((d) => { d.records = [{ ...record, evidence: [{ ...proof,
-    scope: { manufacturer: 'BODICH', model: 'X', variant: 'B' } }] }]; }, /./);
   // A wrong variant is valid *evidence intake* but must be a blocking gap.
   const variant = clone(concept);
   variant.records[0].evidence[0].scope.variant = 'other';
