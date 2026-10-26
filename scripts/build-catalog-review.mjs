@@ -407,12 +407,6 @@ function selfTest() {
   assert.ok(html.includes('ILLUSTRATIVE STUDY — NOT A PRODUCT PHOTOGRAPH'));
   assert.ok(html.includes('No generated illustration'));
   assert.equal(renderCsv(rows).split('\r\n').length, 4);
-  const mutate = (change) => {
-    const copy = structuredClone(data);
-    // structuredClone preserves the hasAsset function poorly; restore it.
-    change(copy);
-    assert.throws(() => assemble({ ...copy, hasAsset: data.hasAsset }));
-  };
   const mutateSafe = (change) => {
     const copy = JSON.parse(JSON.stringify({ inventory: data.inventory, overrides: data.overrides,
       art: data.art, review: data.review, expectedCount: data.expectedCount }));
@@ -436,7 +430,7 @@ function selfTest() {
     writeFileSync(join(testRoot, 'dist', 'index.html'), REVIEW_MARKER);
     assert.ok(publicLeakErrors(testRoot, out).length > 0);
     rmSync(join(testRoot, 'dist', 'index.html'));
-    mkdirSync(join(testRoot, 'public', 'private-catalog-review'));
+    mkdirSync(join(testRoot, 'public', 'private-catalog-review'), { recursive: true });
     assert.ok(publicLeakErrors(testRoot, out).length > 0);
   } finally {
     rmSync(testRoot, { recursive: true, force: true });
