@@ -12,6 +12,10 @@ on:
       - 'tailwind.config.*'
       - 'vite.config.*'
       - 'scripts/visual-qa.mjs'
+      - 'scripts/reconcile-catalog-release.mjs'
+      - 'docs/catalog/**'
+      - 'docs/qa/issue-35-release-readiness.md'
+      - '.github/workflows/ci.yml'
       # Catalog safety checks are executed by Browser QA before screenshots.
       - 'scripts/catalog-image*.mjs'
       - 'scripts/catalog-fixtures.mjs'
