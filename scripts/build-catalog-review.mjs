@@ -250,7 +250,7 @@ function renderRecord(item) {
     item.unresolved.length ? esc(item.unresolved.join(' · ')) :
       tr('No automated editorial flags; human sign-off is still pending.',
         'Nu există observații automate; aprobarea umană este încă necesară.'),
-    '</p><h4>', tr('Approval checklist — all pending', 'Lista aprobărilor — toate în așteptare'), '</h4>',
+    '</p><h4>', tr('Source-stage evidence gaps — not human gate decisions', 'Lipsuri din sursele documentare — nu sunt aprobări umane'), '</h4>',
     '<ul class="gates"><li>',
     tr('Missing: authorized, model-specific product photograph', 'Lipsește: fotografie autorizată pentru modelul exact'),
     '</li><li>', tr('Pending: photographic/illustration rights and usage permission',
