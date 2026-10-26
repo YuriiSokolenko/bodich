@@ -13,6 +13,7 @@ import { dirname, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildReferenceDrafts, primaryReferenceSection } from '../src/catalog/reference.ts';
 import { validateLedger, contextOnDisk, gateNames } from './catalog-review-ledger.mjs';
+import { reportOnDisk } from './catalog-genuine-evidence.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const outputRoot = resolve(root, 'visual-qa/private-catalog-review');
@@ -70,7 +71,9 @@ const allowedAsset = (path, id, projectRoot = root) => {
  * An artwork diagram is never counted as cleared product photography.
  * A missing generated diagram is visible as MISSING, not silently approved.
  */
-export function assemble({ inventory, overrides, art, review, ledgerStates = null, hasAsset = existsSync, expectedCount = 132 }) {
+export function assemble({ inventory, overrides, art, review, ledgerStates = null, genuineReport = null, hasAsset = existsSync, expectedCount = 132 }) {
+  const evidenceRows = genuineReport && new Map(genuineReport.rows.map((r) => [r.sourceId, r]));
+  if (evidenceRows) assert.equal(evidenceRows.size, expectedCount, 'Genuine evidence-gap coverage drift');
   const decisions = ledgerStates && new Map(ledgerStates.map((r) => [r.sourceId, r]));
   if (decisions) assert.equal(decisions.size, expectedCount, 'Ledger coverage drift');
   const sources = unique(inventory.products, 'id', 'source', expectedCount);
@@ -120,6 +123,11 @@ export function assemble({ inventory, overrides, art, review, ledgerStates = nul
     const illustrationAvailable = Boolean(hasAsset(allowedAsset(image.assets.webp600, id)));
     const decision = decisions?.get(id);
     if (decisions) assert.ok(decision, 'Missing review ledger state: ' + id);
+    const genuine = evidenceRows?.get(id) || null;
+    if (evidenceRows) {
+      assert.ok(genuine && genuine.epoch === decision?.epoch, 'Current-epoch genuine evidence mismatch: ' + id);
+      assert.equal(genuine.sourceReviewed, decision.sourceReviewed, 'Genuine/source ledger divergence');
+    }
     rows.push({
       sourceId: id,
       reviewStatus: decision?.status || 'unreviewed',
@@ -131,9 +139,10 @@ export function assemble({ inventory, overrides, art, review, ledgerStates = nul
       ledgerEpoch: decision?.epoch ?? 1,
       previousEpochHistory: decision?.previousEpochs || [],
       reviewBlockers: decision?.blockers || gateNames.map((g) => g + ': not_reviewed'),
+      genuineEvidence: genuine,
       sourceReviewed: decision?.sourceReviewed || false,
-      bodichIdentityVerified: decision?.bodichIdentityVerified || false,
-      eligibleForPromotion: decision?.eligibleForPromotion || false,
+      bodichIdentityVerified: Boolean(decision?.bodichIdentityVerified && (genuine ? genuine.bodichIdentityVerified : true)),
+      eligibleForPromotion: Boolean(decision?.eligibleForPromotion && (genuine ? genuine.promotionEligible : true)),
       title: source.sourceTitle || '(untitled supplier reference)',
       sourceUrl: url,
       category: section,
@@ -299,6 +308,21 @@ function renderRecord(item) {
     '<ul class="gates">', auditGates, '</ul>',
     '<h4>', tr('Outstanding blockers', 'Blocaje rămase'), '</h4><ul>',
     item.reviewBlockers.map((b) => '<li>' + esc(b) + '</li>').join(''), '</ul>',
+    '<h4>', tr('Genuine BODICH evidence intake — independent of supplier research',
+      'Dovezi reale BODICH — independente de cercetarea furnizorului'), '</h4>',
+    '<p>', tr('Genuine product evidence supplied', 'Dovezi furnizate pentru produs real'), ': ',
+      item.genuineEvidence?.intakePresent ? tr('Yes, not approved', 'Da, neaprobate') : tr('No', 'Nu'),
+      ' · ', tr('Evidence items', 'Elemente probatorii'), ': ', item.genuineEvidence?.evidenceCount ?? 0,
+      item.genuineEvidence?.pilot ? ' · PILOT: ' + esc(item.genuineEvidence.pilotOutcome) : '', '</p>',
+    '<ul class="gates">', gateNames.map((g) => {
+      const status = item.genuineEvidence?.gates[g];
+      if (!status) return '<li>' + esc(g) + ': ' + tr('Evidence not assessed', 'Dovezi neevaluate') + '</li>';
+      return '<li><strong>' + esc(g) + '</strong> · ' +
+        tr('Evidence complete', 'Dovezi complete') + ': ' + (status.evidenceComplete ? tr('Yes', 'Da') : tr('No', 'Nu')) +
+        ' · ' + tr('Human review', 'Revizuire umană') + ': ' + statusText(status.reviewState) +
+        (status.reasons.length ? '<ul>' + status.reasons.map((reason) => '<li><code>' +
+          esc(reason) + '</code></li>').join('') + '</ul>' : '') + '</li>';
+    }).join(''), '</ul>',
     '<h4>', tr('Append-only decision history', 'Istoricul deciziilor'), '</h4>',
     '<ol class="audit-history">', auditHistory, '</ol>',
     '<h4>', tr('Previous epoch history — sealed, read-only, never inherited',
@@ -344,6 +368,9 @@ export function renderHtml(rows, concepts) {
     rows.filter((r) => r.eligibleForPromotion).length, ' ',
     tr('eligible for separate promotion PR; 0 published', 'eligibile pentru un PR separat; 0 publicate'),
     '</div>',
+    '<p class="muted">', tr('Pilot evidence outcome', 'Rezultatul pilotului'), ': ',
+      esc(rows.find((r) => r.genuineEvidence?.pilot)?.genuineEvidence?.pilotOutcome || 'not_assessed'),
+      ' · ', tr('Old-epoch decisions never grant permission', 'Deciziile din epocile anterioare nu conferă drepturi'), '</p>',
     '<a class="export" href="approval-checklist.csv" download>',
     tr('Export approval checklist (CSV)', 'Exportă lista aprobărilor (CSV)'), '</a>',
     '<a class="export" href="approval-checklist.json" download>',
@@ -405,7 +432,9 @@ export function renderCsv(rows) {
     'modelSpecificPhoto', 'modelPhotoRights', 'bodichManufacturerIdentity',
     'nativeRomanianLegalCopy', 'editorialFlags', 'approval',
     'reviewStatus', 'sourceReviewed', 'bodichIdentityVerified', 'eligibleForPromotion',
-    ...gateNames.map((gate) => 'reviewGate_' + gate), 'reviewBlockers', 'auditEventCount',
+    ...gateNames.map((gate) => 'reviewGate_' + gate), 'reviewBlockers',
+    'genuineIntakePresent', 'genuineEvidenceItems', 'genuineEvidenceBlockers', 'genuinePilotOutcome',
+    'auditEventCount',
     'ledgerEpoch', 'previousEpochEventCount'];
   const values = (r) => [r.sourceId, r.category, r.title, r.sourceUrl, r.lifecycle,
     r.draftSlug, r.illustrationAvailable, r.family, r.illustrationRights,
@@ -413,7 +442,10 @@ export function renderCsv(rows) {
     r.gates.nativeRomanianLegalCopy, r.unresolved.join('; '), r.approval,
     r.reviewStatus, r.sourceReviewed, r.bodichIdentityVerified, r.eligibleForPromotion,
     ...gateNames.map((gate) => r.reviewGates[gate].status),
-    r.reviewBlockers.join('; '), r.reviewHistory.length,
+    r.reviewBlockers.join('; '), Boolean(r.genuineEvidence?.intakePresent),
+    r.genuineEvidence?.evidenceCount ?? 0,
+    r.genuineEvidence?.blockers?.join('; ') || 'not_assessed', r.genuineEvidence?.pilotOutcome || '',
+    r.reviewHistory.length,
     r.ledgerEpoch, r.previousEpochHistory.reduce((n, epoch) => n + epoch.eventCount, 0)];
   return '\uFEFF' + [headings, ...rows.map(values)].map((line) => line.map(csvCell).join(',')).join('\r\n') + '\r\n';
 }
@@ -440,7 +472,7 @@ export function publicLeakErrors(projectRoot, outputDir) {
     if (!existsSync(dir)) return;
     for (const entry of readdirSync(dir, { withFileTypes: true })) {
       const full = join(dir, entry.name);
-      if (/private-catalog-review|review-ledger|catalog-review-audit|approval-checklist\.(csv|json)|catalog-review\.css|catalog-review-client\.js/.test(entry.name))
+      if (/private-catalog-review|review-ledger|catalog-review-audit|approval-checklist\.(csv|json)|catalog-review\.css|catalog-review-client\.js|genuine-product-evidence-gaps\.json/.test(entry.name))
         violations.push('Private gallery file published: ' + relative(projectRoot, full));
       if (entry.isDirectory()) walk(full);
       else if (entry.isFile() && /\.(?:html?|m?js|css|json|csv|xml|txt|svg)$/i.test(entry.name) &&
@@ -763,7 +795,8 @@ function main(args) {
       art: readJson(snapshot.art), review: readJson(snapshot.review),
     };
     const ledgerStates = validateLedger(readJson('docs/catalog/review-ledger.json'), contextOnDisk());
-    const rows = assemble({ ...sources, ledgerStates });
+    const genuineReport = reportOnDisk();
+    const rows = assemble({ ...sources, ledgerStates, genuineReport });
     assert.deepEqual(publicLeakErrors(root, outputRoot), [], 'Public review leakage detected');
     if (args.includes('--check')) {
       validateOutput(rows);
