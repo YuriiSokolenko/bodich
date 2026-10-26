@@ -151,6 +151,10 @@ export function assemble({ inventory, overrides, art, review, hasAsset = existsS
 }
 
 function renderRecord(item) {
+  // Index source identity and localized copy only, not approval boilerplate.
+  const search = [item.sourceId, item.title, item.draftSlug,
+    ...['en', 'ro'].flatMap((lang) => ['name', 'summary', 'description'].map(
+      (field) => item.copy[lang][field]))].join(' ');
   const link = (url, title) => '<a href="' + esc(url) +
     '" target="_blank" rel="noopener noreferrer" referrerpolicy="no-referrer">' + esc(title) + '</a>';
   const copy = (lang) => '<section class="localized localized-' + lang + '" lang="' + lang +
@@ -163,7 +167,7 @@ function renderRecord(item) {
     '<div class="image-missing" role="img" aria-label="Illustration unavailable / Ilustrație indisponibilă">No generated illustration on disk / Ilustrație negenerată</div>';
   return [
     '<article class="review-record" data-source-id="', esc(item.sourceId),
-    '" data-category="', esc(item.category), '" data-visual="',
+    '" data-search="', esc(search), '" data-category="', esc(item.category), '" data-visual="',
     item.illustrationAvailable ? 'diagram' : 'missing',
     '" data-editorial="', item.unresolved.length ? 'flags' : 'none',
     '" data-lifecycle="', esc(item.lifecycle), '">',
@@ -303,9 +307,9 @@ export function publicLeakErrors(projectRoot, outputDir) {
       if (/private-catalog-review|approval-checklist\.(csv|json)|catalog-review\.css|catalog-review-client\.js/.test(entry.name))
         violations.push('Private gallery file published: ' + relative(projectRoot, full));
       if (entry.isDirectory()) walk(full);
-      else if (entry.name.endsWith('.html') &&
+      else if (entry.isFile() && /\.(?:html?|m?js|css|json|csv|xml|txt|svg)$/i.test(entry.name) &&
         readFileSync(full, 'utf8').includes(REVIEW_MARKER))
-        violations.push('Private gallery HTML published: ' + relative(projectRoot, full));
+        violations.push('Private gallery marker published: ' + relative(projectRoot, full));
     }
   };
   walk(publicDir);
@@ -314,6 +318,16 @@ export function publicLeakErrors(projectRoot, outputDir) {
 }
 
 function validateOutput(rows) {
+  // Check exact output parity against the source manifests, not only filenames.
+  const concepts = conceptsFor();
+  assert.equal(concepts.length, 3, 'Expected three distinct marketing concepts');
+  for (const concept of concepts) {
+    assert.ok(concept.available, 'Missing original BODICH marketing concept: ' + concept.name);
+    assert.ok(existsSync(resolve(outputRoot, concept.file)), 'Missing packaged marketing concept: ' + concept.name);
+    assert.ok(readFileSync(resolve(outputRoot, concept.file)).equals(readFileSync(concept.source)),
+      'Packaged marketing concept out of sync: ' + concept.name);
+  }
+
   const htmlPath = join(outputRoot, 'index.html');
   assert.ok(existsSync(htmlPath), 'Review HTML missing');
   const html = readFileSync(htmlPath, 'utf8');
@@ -324,10 +338,40 @@ function validateOutput(rows) {
       'Missing or duplicate review card: ' + row.sourceId);
   }
   assert.ok(html.includes('ILLUSTRATIVE STUDY — NOT A PRODUCT PHOTOGRAPH'), 'Lost visual disclosure');
-  assert.ok(existsSync(join(outputRoot, 'approval-checklist.csv')), 'Approval CSV missing');
-  assert.ok(existsSync(join(outputRoot, 'approval-checklist.json')), 'Approval JSON missing');
-  assert.ok(existsSync(join(outputRoot, 'review.js')) && existsSync(join(outputRoot, 'review.css')),
-    'Offline UI resources missing');
+  assert.equal(html, renderHtml(rows, concepts), 'Private HTML stale or mismatched against source manifests');
+
+  const csvPath = join(outputRoot, 'approval-checklist.csv');
+  const jsonPath = join(outputRoot, 'approval-checklist.json');
+  assert.ok(existsSync(csvPath), 'Approval CSV missing');
+  assert.ok(existsSync(jsonPath), 'Approval JSON missing');
+  const csv = readFileSync(csvPath, 'utf8');
+  assert.equal(csv, renderCsv(rows), 'CSV rows or approval gates stale against source manifests');
+  assert.equal(csv.split('\r\n').length - 2, rows.length + 1,
+    'CSV must contain precisely a header plus one record per source ID');
+  const review = JSON.parse(readFileSync(jsonPath, 'utf8'));
+  assert.equal(review.schemaVersion, 1, 'Approval JSON schema drift');
+  assert.equal(review.privacy, REVIEW_MARKER, 'Approval JSON privacy marker missing');
+  assert.equal(review.count, rows.length, 'Approval JSON count drift');
+  assert.equal(review.records.length, rows.length, 'Approval JSON records drift');
+  assert.deepEqual(review.records, rows, 'Approval JSON stale against source manifests');
+
+  for (const file of ['review.css', 'review.js']) {
+    const original = file === 'review.css' ? 'catalog-review.css' : 'catalog-review-client.js';
+    assert.ok(existsSync(join(outputRoot, file)), 'Missing offline UI resource: ' + file);
+    assert.ok(readFileSync(join(outputRoot, file)).equals(readFileSync(resolve(root, 'scripts', original))),
+      'Stale offline UI resource: ' + file);
+  }
+  const ids = rows.filter((row) => row.illustrationAvailable).map((row) => row.sourceId);
+  assert.deepEqual(readdirSync(join(outputRoot, 'images')).sort(),
+    ids.map((id) => id + '.webp').sort(), 'Private illustration file inventory out of sync');
+  for (const id of ids) {
+    const original = allowedAsset(exactArtPath(id), id);
+    assert.ok(readFileSync(join(outputRoot, 'images', id + '.webp')).equals(readFileSync(original)),
+      'Private illustration bytes differ from generated source: ' + id);
+  }
+  assert.deepEqual(readdirSync(join(outputRoot, 'concepts')).sort(),
+    concepts.map((item) => item.file.split('/').at(-1)).sort(),
+    'Marketing concept file inventory mismatch');
 }
 
 function makeGallery(rows) {
@@ -345,6 +389,7 @@ function makeGallery(rows) {
       join(outputRoot, 'images', row.sourceId + '.webp'));
   }
   const concepts = conceptsFor();
+  assert.ok(concepts.every((item) => item.available), 'Three BODICH marketing concepts are required');
   for (const item of concepts) if (item.available)
     copyFileSync(item.source, join(outputRoot, item.file));
   for (const file of ['review.css', 'review.js']) {
@@ -407,21 +452,21 @@ function selfTest() {
   assert.ok(html.includes('ILLUSTRATIVE STUDY — NOT A PRODUCT PHOTOGRAPH'));
   assert.ok(html.includes('No generated illustration'));
   assert.equal(renderCsv(rows).split('\r\n').length, 4);
-  const mutateSafe = (change) => {
+  const mutateSafe = (change, expected) => {
     const copy = JSON.parse(JSON.stringify({ inventory: data.inventory, overrides: data.overrides,
       art: data.art, review: data.review, expectedCount: data.expectedCount }));
     change(copy);
-    assert.throws(() => assemble({ ...copy, hasAsset: data.hasAsset }));
+    assert.throws(() => assemble({ ...copy, hasAsset: data.hasAsset }), expected);
   };
-  mutateSafe((x) => { x.inventory.products[1].id = 'kt-a'; });
-  mutateSafe((x) => { x.overrides.records[1].slug = 'reference-kt-a'; });
-  mutateSafe((x) => { x.overrides.records[0].copy.ro = null; });
-  mutateSafe((x) => { x.art.entries.pop(); });
-  mutateSafe((x) => { x.art.entries[0].approved = true; });
-  mutateSafe((x) => { x.art.entries[0].isProductPhoto = true; });
-  mutateSafe((x) => { x.art.entries[0].assets.webp600 = '../public/photo.webp'; });
-  mutateSafe((x) => { x.review.items[0].humanRomanianReview = 'approved'; });
-  mutateSafe((x) => { x.review.items[0].sourceUrl = 'https://example.org/other'; });
+  mutateSafe((x) => { x.inventory.products[1].id = 'kt-a'; }, /Duplicate source: kt-a/);
+  mutateSafe((x) => { x.overrides.records[1].slug = 'reference-kt-a'; }, /Duplicate \/ missing draft slug/);
+  mutateSafe((x) => { x.overrides.records[0].copy.ro = null; }, /Missing ro name/);
+  mutateSafe((x) => { x.art.entries.pop(); }, /artwork count \/ coverage drift/);
+  mutateSafe((x) => { x.art.entries[0].approved = true; }, /Premature art approval/);
+  mutateSafe((x) => { x.art.entries[0].isProductPhoto = true; }, /Diagram masquerading as product photo/);
+  mutateSafe((x) => { x.art.entries[0].assets.webp600 = '../public/photo.webp'; }, /Artwork\/ID mapping drift/);
+  mutateSafe((x) => { x.review.items[0].humanRomanianReview = 'approved'; }, /Unverified sign-off state/);
+  mutateSafe((x) => { x.review.items[0].sourceUrl = 'https://example.org/other'; }, /Copy\/source URL drift/);
   const testRoot = mkdtempSync(join(tmpdir(), 'bodich-private-review-'));
   try {
     const out = join(testRoot, 'visual-qa', 'private-catalog-review');
@@ -432,26 +477,34 @@ function selfTest() {
     rmSync(join(testRoot, 'dist', 'index.html'));
     mkdirSync(join(testRoot, 'public', 'private-catalog-review'), { recursive: true });
     assert.ok(publicLeakErrors(testRoot, out).length > 0);
+    writeFileSync(join(testRoot, 'dist', 'innocent.js'), '/* ' + REVIEW_MARKER + ' */');
+    assert.ok(publicLeakErrors(testRoot, out).some((x) => x.includes('innocent.js')));
   } finally {
     rmSync(testRoot, { recursive: true, force: true });
   }
   console.log('Private review self-tests passed: identity, EN/RO, image disclaimers, approvals, source joins and leakage.');
 }
 
-const args = process.argv.slice(2);
-assert.ok(args.length <= 1 && args.every((x) => ['--check', '--self-test'].includes(x)),
-  'Usage: node scripts/build-catalog-review.mjs [--check | --self-test]');
-if (args.includes('--self-test')) {
-  selfTest();
-} else {
-  const sources = {
-    inventory: readJson(snapshot.inventory), overrides: readJson(snapshot.overrides),
-    art: readJson(snapshot.art), review: readJson(snapshot.review),
-  };
-  const rows = assemble(sources);
-  assert.deepEqual(publicLeakErrors(root, outputRoot), [], 'Public review leakage detected');
-  if (args.includes('--check')) {
-    validateOutput(rows);
-    console.log('Private review validated: 132 unique drafts, no public leakage.');
-  } else makeGallery(rows);
+function main(args) {
+  assert.ok(args.length <= 1 && args.every((x) => ['--check', '--self-test'].includes(x)),
+    'Usage: node scripts/build-catalog-review.mjs [--check | --self-test]');
+  if (args.includes('--self-test')) {
+    selfTest();
+  } else {
+    const sources = {
+      inventory: readJson(snapshot.inventory), overrides: readJson(snapshot.overrides),
+      art: readJson(snapshot.art), review: readJson(snapshot.review),
+    };
+    const rows = assemble(sources);
+    assert.deepEqual(publicLeakErrors(root, outputRoot), [], 'Public review leakage detected');
+    if (args.includes('--check')) {
+      validateOutput(rows);
+      console.log('Private review validated: 132 unique drafts, all packaged assets match source manifests, no public leakage.');
+    } else makeGallery(rows);
+  }
+}
+
+// Safe to import without executing the CLI or modifying local files.
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  main(process.argv.slice(2));
 }
