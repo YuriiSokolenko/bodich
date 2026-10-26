@@ -461,6 +461,12 @@ function routeSelfTests() {
     writeFileSync(js, '// unpublished ' + overlays.records[0].slug);
     expect('source slug in JS bundle', 'Unpublished reference or checkout leaked');
     writeFileSync(js, '// clean bundle');
+    // A SKU in the URL path must fail even when file contents look harmless.
+    const leakedSlugDir = join(root, '_astro', overlays.records[0].slug);
+    mkdirSync(leakedSlugDir, { recursive: true });
+    writeFileSync(join(leakedSlugDir, 'index.txt'), 'harmless bytes');
+    expect('source SKU leaked as directory component', 'Private source SKU path copied into dist');
+    rmSync(leakedSlugDir, { recursive: true });
     const sitemap = join(root, 'sitemap-0.xml');
     writeFileSync(sitemap, '<url>https://www.kingtechturbines.com/product/example</url>');
     expect('supplier URL in sitemap', 'Unpublished reference or checkout leaked');
