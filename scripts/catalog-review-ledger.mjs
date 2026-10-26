@@ -162,6 +162,16 @@ function reduce(state, event) {
       'Missing explicit scoped human sign-off');
       reference(event.signoff.authorizationRef);
     } else requireValue(!event.signoff, 'Signoff may only accompany promotion eligibility');
+    // A hold/rejection revokes earlier gate eligibility without deleting history.
+    // Re-review must produce new independent gate events before later promotion.
+    if (['on_hold', 'rejected'].includes(event.status)) {
+      for (const gate of gateNames) {
+        if (s.gates[gate].status === 'approved')
+          s.gates[gate] = { status: 'needs_evidence', reviewedBy: event.reviewer,
+            at: event.at, reason: 'Superseded by ' + event.status + ': ' + event.reason,
+            evidence: [] };
+      }
+    }
     s.status = event.status;
   }
   s.events++;
@@ -322,6 +332,78 @@ function selfTest() {
   const held = appendDecision(appended.ledger, ctx, na);
   assert.equal(validateLedger(held.ledger, ctx)[0].gates.identity.status, 'not_applicable_with_reason');
   assert.equal(auditExport(ledger, ctx).records.filter((s) => s.eligibleForPromotion).length, 0);
+  // Complete synthetic path: four INDEPENDENT approvals, pending-signoff, human approver.
+  let chain = appended.ledger;
+  const next = (id, secs, fields) => {
+    const last = chain.records[0].events.at(-1);
+    const event = input(id, { at: new Date(Date.parse('2026-10-26T12:00:00Z') +
+      secs * 1000).toISOString().replace('.000Z', 'Z'),
+      expectedPreviousHash: last.hash, ...fields });
+    if (event.kind === 'gate') delete event.status;
+    chain = appendDecision(chain, ctx, event).ledger;
+    return chain;
+  };
+  const proof = (ref) => [{ ref: 'https://independent.example.org/' + ref,
+    version: 'v1', verifiedOn: '2026-10-26', provenance: 'Independent original company register',
+    rightsOwner: 'BODICH' }];
+  next('identity-001', 2, { kind: 'gate', gate: 'identity', decision: 'approved',
+    evidence: proof('model-rights'), details: {
+      manufacturer: 'BODICH', model: 'BODICH-X1', variant: 'rev-A',
+      legalAuthorityRef: 'restricted:company-model-record',
+    } });
+  next('imagery-001', 3, { kind: 'gate', gate: 'imagery', decision: 'approved',
+    evidence: proof('image-license'), details: {
+      imageKind: 'authorized_exact_model_photo', model: 'BODICH-X1',
+      assetSha256: 'a'.repeat(64), rightsOwner: 'BODICH',
+      writtenPermissionRef: 'restricted:company-image-license',
+    } });
+  next('specs-001', 4, { kind: 'gate', gate: 'specifications', decision: 'approved',
+    evidence: proof('independent-specs'), details: {
+      verifiedClaims: ['Test claim with independent validation'],
+      independentVerification: true, contradictionsResolved: true,
+    } });
+  next('editorial-001', 5, { kind: 'gate', gate: 'editorial', decision: 'approved',
+    evidence: proof('approved-copy'), details: {
+      nativeRomanianApproved: true, englishApproved: true,
+      legalApproved: true, commercialApproved: true, unresolvedFlagsResolved: true,
+    } });
+  assert.equal(validateLedger(chain, ctx)[0].eligibleForPromotion, false);
+  next('pending-signoff-001', 6, { status: 'evidence_complete_pending_signoff' });
+  assert.throws(() => appendDecision(chain, ctx, input('weak-signoff-001', {
+    status: 'approved_for_promotion', at: '2026-10-26T12:00:07Z',
+    expectedPreviousHash: chain.records[0].events.at(-1).hash,
+  })), /Publication approver required/);
+  next('signoff-001', 7, { status: 'approved_for_promotion',
+    reviewer: { name: 'Human test publisher', role: 'publication_approver' },
+    signoff: { statement:
+      'I explicitly approve this source research record only for a separate BODICH promotion PR.',
+      authorizationRef: 'restricted:publication-authorization' },
+  });
+  assert.equal(validateLedger(chain, ctx)[0].eligibleForPromotion, true);
+  // Revocation preserves events, but a fast-track reapproval without fresh gates fails.
+  next('hold-001', 8, { status: 'on_hold', reason: 'New contradictory evidence surfaced in review' });
+  const heldState = validateLedger(chain, ctx)[0];
+  assert.equal(heldState.eligibleForPromotion, false);
+  assert.equal(heldState.gates.identity.status, 'needs_evidence');
+  next('restart-001', 9, { status: 'in_review',
+    reason: 'Reopening only after a documented contradictory-evidence investigation' });
+  assert.throws(() => appendDecision(chain, ctx, input('fast-track-001', {
+    status: 'evidence_complete_pending_signoff', at: '2026-10-26T12:00:10Z',
+    expectedPreviousHash: chain.records[0].events.at(-1).hash,
+  })), /All independent gates/);
+  const wrongModel = clone(appended.ledger);
+  wrongModel.records[0].events[0].at = '2026-02-30T12:00:00Z';
+  assert.throws(() => validateLedger(wrongModel, ctx), /UTC|Tampered/);
+  const directReject = appendDecision(ledger, ctx,
+    input('rejection-001', { status: 'rejected', reason: 'No ownership evidence exists for this reference' })).ledger;
+  assert.throws(() => appendDecision(directReject, ctx, input('invalid-reapproval-001', {
+    status: 'approved_for_promotion', at: '2026-10-26T12:00:01Z',
+    expectedPreviousHash: directReject.records[0].events.at(-1).hash,
+  })), /Forbidden status/);
+  // A gate-specific N/A never removes a blocker; mismatched model or missing RO/legal
+  // approval cannot be used to satisfy the promotion transition.
+  assert.equal(validateLedger(held.ledger, ctx)[0].gates.identity.status, 'not_applicable_with_reason');
+  assert.equal(validateLedger(held.ledger, ctx)[0].eligibleForPromotion, false);
   console.log('Review ledger self-test passed: 132 contract, opaque ID, idempotence, immutable history, stale revision, gated approvals.');
 }
 function main(args) {
