@@ -8,18 +8,27 @@
   const cards = Array.from(document.querySelectorAll('.review-record'));
   const counter = document.getElementById('visible-count');
   const feedback = document.getElementById('filter-feedback');
+  const localizable = Array.from(document.querySelectorAll('[data-i18n-en]'));
+  const records = document.getElementById('records');
+  let renderedLanguage = null;
 
   function update() {
     const language = controls.language.value;
-    document.body.dataset.locale = language;
-    document.documentElement.lang = language;
-    for (const node of document.querySelectorAll('[data-i18n-en]')) {
-      node.textContent = node.getAttribute('data-i18n-' + language);
+    // Do not rewrite thousands of translated nodes on each search keystroke.
+    if (language !== renderedLanguage) {
+      renderedLanguage = language;
+      document.body.dataset.locale = language;
+      document.documentElement.lang = language;
+      for (const node of localizable) {
+        node.textContent = node.getAttribute('data-i18n-' + language);
+      }
+      controls.search.placeholder = controls.search.getAttribute('data-placeholder-' + language);
+      records.setAttribute('aria-label', records.getAttribute('data-aria-' + language));
+      for (const card of cards) {
+        const img = card.querySelector('img[data-alt-en]');
+        if (img) img.alt = img.getAttribute('data-alt-' + language);
+      }
     }
-    const searchInput = controls.search;
-    searchInput.placeholder = searchInput.getAttribute('data-placeholder-' + language);
-    const records = document.getElementById('records');
-    records.setAttribute('aria-label', records.getAttribute('data-aria-' + language));
     const query = controls.search.value.trim().normalize('NFKC').toLocaleLowerCase();
     let visible = 0;
     for (const card of cards) {
@@ -30,8 +39,6 @@
         (!query || card.dataset.search.normalize('NFKC').toLocaleLowerCase().includes(query));
       card.hidden = !match;
       if (match) visible += 1;
-      const img = card.querySelector('img[data-alt-en]');
-      if (img) img.alt = img.getAttribute('data-alt-' + language);
     }
     counter.textContent = String(visible);
     feedback.textContent = language === 'ro'
