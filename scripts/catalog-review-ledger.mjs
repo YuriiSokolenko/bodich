@@ -313,6 +313,10 @@ export function auditExport(ledger, ctx) {
     records: states.sort((a, b) => a.sourceId.localeCompare(b.sourceId, 'en')) };
 }
 function selfTest() {
+  // Deterministic fixture clock; the real --apply still uses the current wall clock.
+  const apply = (data, context, event) => appendDecision(data, context, event, {
+    now: Date.parse('2026-10-26T12:30:00Z'),
+  });
   const revisions = { inventory: 'a'.repeat(40), overrides: 'b'.repeat(40),
     art: 'c'.repeat(40), copy: 'd'.repeat(40) };
   const ctx = { fixture: true, revisions, sources: [
@@ -328,16 +332,33 @@ function selfTest() {
     reason: 'Explicitly reviewing research reference',
     reviewedRevisions: revisions, expectedPreviousHash: null, ...extra,
   });
-  const first = input('event-001'), appended = appendDecision(ledger, ctx, first);
+  const first = input('event-001'), appended = apply(ledger, ctx, first);
   assert.equal(appended.changed, true);
-  assert.equal(appendDecision(appended.ledger, ctx, first).changed, false);
-  assert.throws(() => appendDecision(appended.ledger, ctx,
+  assert.throws(() => apply(ledger, ctx, input('future-clock-001', {
+    at: '2099-01-01T00:00:00Z',
+  })), /Decision timestamp cannot be in the future/);
+  // Structural idempotence: recursively reordered keys never affect a v1 event digest.
+  const reordered = {
+    reason: first.reason,
+    reviewer: { role: first.reviewer.role, name: first.reviewer.name },
+    expectedPreviousHash: first.expectedPreviousHash,
+    reviewedRevisions: Object.fromEntries(Object.entries(first.reviewedRevisions).reverse()),
+    at: first.at, status: first.status, kind: first.kind, eventId: first.eventId,
+    sourceId: first.sourceId,
+  };
+  assert.equal(apply(appended.ledger, ctx, reordered).changed, false);
+  const reorderedLedger = clone(appended.ledger);
+  reorderedLedger.records[0].events[0] = Object.fromEntries(
+    Object.entries(reorderedLedger.records[0].events[0]).reverse());
+  assert.equal(validateLedger(reorderedLedger, ctx)[0].status, 'in_review');
+  assert.equal(apply(appended.ledger, ctx, first).changed, false);
+  assert.throws(() => apply(appended.ledger, ctx,
     input('event-001', { reason: 'Conflicting duplicate history event' })), /Conflicting duplicate/);
-  assert.throws(() => appendDecision(appended.ledger, ctx,
+  assert.throws(() => apply(appended.ledger, ctx,
     input('event-002', { at: '2026-10-26T12:00:01Z' })), /Concurrent revision/);
-  assert.throws(() => appendDecision(ledger, ctx, input('event-003', {
+  assert.throws(() => apply(ledger, ctx, input('event-003', {
     status: 'approved_for_promotion' })), /Forbidden status/);
-  assert.throws(() => appendDecision(ledger, ctx, input('event-004', {
+  assert.throws(() => apply(ledger, ctx, input('event-004', {
     reviewedRevisions: { ...revisions, art: 'f'.repeat(40) } })), /Stale source/);
   const mutate = clone(appended.ledger);
   mutate.records[0].events[0].reason = 'Unauthorized historical modification';
@@ -346,6 +367,23 @@ function selfTest() {
   assert.throws(() => validateLedger(drop, ctx), /Missing\/extra/);
   const bogus = clone(ledger); bogus.records[1].sourceId = 'unknown';
   assert.throws(() => validateLedger(bogus, ctx), /Unknown or duplicate/);
+  const duplicated = clone(ledger);
+  duplicated.records[1].sourceId = duplicated.records[0].sourceId;
+  assert.throws(() => validateLedger(duplicated, ctx), /Unknown or duplicate/);
+  const wrongUrl = clone(ledger);
+  wrongUrl.records[0].sourceUrl = 'https://example.org/other';
+  assert.throws(() => validateLedger(wrongUrl, ctx), /Source URL \/ draft slug mismatch/);
+  const wrongSlug = clone(ledger);
+  wrongSlug.records[0].draftSlug = 'another-slug';
+  assert.throws(() => validateLedger(wrongSlug, ctx), /Source URL \/ draft slug mismatch/);
+  const shuffled = clone(ledger);
+  shuffled.records.reverse();
+  assert.deepEqual(auditExport(shuffled, ctx).records.map((r) => r.sourceId),
+    auditExport(ledger, ctx).records.map((r) => r.sourceId),
+    'Audit export must be invariant under ledger record reordering');
+  assert.throws(() => apply(appended.ledger, ctx, input('event-001', {
+    sourceId: 'kt-sq-OPAQUE', reason: 'Another event with reused global ID',
+  })), /Conflicting duplicate event ID/);
   const stale = clone(ledger); stale.revisions.inventory = 'f'.repeat(40);
   assert.throws(() => validateLedger(stale, ctx), /Stale manifest revisions/);
   const gate = input('event-005', { kind: 'gate', gate: 'imagery', decision: 'approved',
@@ -356,26 +394,82 @@ function selfTest() {
       rightsOwner: 'Test company', writtenPermissionRef: 'restricted:test-rights' },
   });
   delete gate.status;
-  assert.throws(() => appendDecision(appended.ledger, ctx, gate), /AI concept/);
+  assert.throws(() => apply(appended.ledger, ctx, gate), /AI concept/);
   const na = input('event-006', { kind: 'gate', gate: 'identity', decision: 'not_applicable_with_reason',
     at: '2026-10-26T12:00:01Z', expectedPreviousHash: appended.ledger.records[0].events[0].hash });
   delete na.status;
-  const held = appendDecision(appended.ledger, ctx, na);
+  const held = apply(appended.ledger, ctx, na);
   assert.equal(validateLedger(held.ledger, ctx)[0].gates.identity.status, 'not_applicable_with_reason');
+  const noReason = input('missing-na-reason', {
+    kind: 'gate', gate: 'identity', decision: 'not_applicable_with_reason',
+    reason: '', at: '2026-10-26T12:00:01Z',
+    expectedPreviousHash: appended.ledger.records[0].events.at(-1).hash,
+  });
+  delete noReason.status;
+  assert.throws(() => apply(appended.ledger, ctx, noReason), /Detailed decision rationale/);
   assert.equal(auditExport(ledger, ctx).records.filter((s) => s.eligibleForPromotion).length, 0);
   // URL credentials/query tokens and future-dated claims are not safe public evidence.
   const unsafeRef = input('bad-reference-001', { kind: 'gate', gate: 'identity',
+    at: '2026-10-26T12:00:01Z',
+    expectedPreviousHash: appended.ledger.records[0].events[0].hash,
     decision: 'approved', evidence: [{ ref: 'https://example.org/document?token=secret',
       version: 'v1', verifiedOn: '2026-10-26', provenance: 'Independent record' }],
     details: { manufacturer: 'BODICH', model: 'X', variant: 'rev-A',
       legalAuthorityRef: 'restricted:legal-reference' } });
   delete unsafeRef.status;
-  assert.throws(() => appendDecision(ledger, ctx, unsafeRef), /safe HTTPS/);
+  assert.throws(() => apply(appended.ledger, ctx, unsafeRef), /safe HTTPS/);
   const future = clone(unsafeRef);
   future.eventId = 'future-evidence-001';
   future.evidence[0].ref = 'https://example.org/document';
   future.evidence[0].verifiedOn = '2027-01-01';
-  assert.throws(() => appendDecision(ledger, ctx, future), /cannot be dated after/);
+  assert.throws(() => apply(appended.ledger, ctx, future), /cannot be dated after/);
+  const rejectedGate = input('supplier-only-001', {
+    kind: 'gate', gate: 'identity', decision: 'approved',
+    at: '2026-10-26T12:00:01Z',
+    expectedPreviousHash: appended.ledger.records[0].events[0].hash,
+    evidence: [{ ref: 'https://www.kingtechturbines.com/product/foo', version: '1',
+      verifiedOn: '2026-10-26', provenance: 'supplier-only' }],
+    details: { manufacturer: 'BODICH', model: 'X', variant: 'rev-A',
+      legalAuthorityRef: 'restricted:identity-check' },
+  });
+  delete rejectedGate.status;
+  assert.throws(() => apply(appended.ledger, ctx, rejectedGate), /supplier-only|Supplier-only/);
+  const invalidRef = clone(rejectedGate);
+  invalidRef.eventId = 'malformed-url-001';
+  invalidRef.evidence[0].ref = 'not-a-link';
+  invalidRef.evidence[0].provenance = 'Independent register';
+  assert.throws(() => apply(appended.ledger, ctx, invalidRef), /Malformed evidence URL/);
+  const badSpec = input('unverified-specs-001', {
+    kind: 'gate', gate: 'specifications', decision: 'approved',
+    at: '2026-10-26T12:00:01Z',
+    expectedPreviousHash: appended.ledger.records[0].events[0].hash,
+    evidence: [{ ref: 'https://independent.example.org/spec', version: 'v1',
+      verifiedOn: '2026-10-26', provenance: 'Independent validation' }],
+    details: { verifiedClaims: ['Unproven mass'], independentVerification: false,
+      contradictionsResolved: true },
+  });
+  delete badSpec.status;
+  assert.throws(() => apply(appended.ledger, ctx, badSpec), /Independent technical verification/);
+  const wrongRole = clone(badSpec);
+  wrongRole.eventId = 'unauthorized-review-role-001';
+  wrongRole.gate = 'imagery';
+  wrongRole.reviewer.role = 'technical_reviewer';
+  assert.throws(() => apply(appended.ledger, ctx, wrongRole), /Reviewer role is not authorized/);
+  const badEditorial = input('missing-romanian-signoff-001', {
+    kind: 'gate', gate: 'editorial', decision: 'approved',
+    at: '2026-10-26T12:00:01Z',
+    expectedPreviousHash: appended.ledger.records[0].events[0].hash,
+    evidence: [{ ref: 'https://independent.example.org/editorial', version: 'v1',
+      verifiedOn: '2026-10-26', provenance: 'Independent editorial record' }],
+    details: { nativeRomanianApproved: false, englishApproved: true, legalApproved: false,
+      commercialApproved: true, unresolvedFlagsResolved: true },
+  });
+  delete badEditorial.status;
+  assert.throws(() => apply(appended.ledger, ctx, badEditorial), /sign-offs incomplete/);
+  const earlyGate = clone(badSpec);
+  earlyGate.eventId = 'gate-before-in-review-001';
+  earlyGate.expectedPreviousHash = null;
+  assert.throws(() => apply(ledger, ctx, earlyGate), /Gate decisions require an explicit in_review/);
   // Complete synthetic path: four INDEPENDENT approvals, pending-signoff, human approver.
   let chain = appended.ledger;
   const next = (id, secs, fields) => {
@@ -384,7 +478,7 @@ function selfTest() {
       secs * 1000).toISOString().replace('.000Z', 'Z'),
       expectedPreviousHash: last.hash, ...fields });
     if (event.kind === 'gate') delete event.status;
-    chain = appendDecision(chain, ctx, event).ledger;
+    chain = apply(chain, ctx, event).ledger;
     return chain;
   };
   const proof = (ref) => [{ ref: 'https://independent.example.org/' + ref,
@@ -413,7 +507,16 @@ function selfTest() {
     } });
   assert.equal(validateLedger(chain, ctx)[0].eligibleForPromotion, false);
   next('pending-signoff-001', 6, { status: 'evidence_complete_pending_signoff' });
-  assert.throws(() => appendDecision(chain, ctx, input('weak-signoff-001', {
+  const pendingLedger = clone(chain);
+  assert.throws(() => apply(chain, ctx, input('same-reviewer-as-approver', {
+    status: 'approved_for_promotion', at: '2026-10-26T12:00:07Z',
+    reviewer: { name: ' TEST   REVIEWER ', role: 'publication_approver' },
+    expectedPreviousHash: chain.records[0].events.at(-1).hash,
+    signoff: { statement:
+      'I explicitly approve this source research record only for a separate BODICH promotion PR.',
+      authorizationRef: 'restricted:publication-approval' },
+  })), /Publication approver must be independent/);
+  assert.throws(() => apply(chain, ctx, input('weak-signoff-001', {
     status: 'approved_for_promotion', at: '2026-10-26T12:00:07Z',
     expectedPreviousHash: chain.records[0].events.at(-1).hash,
   })), /Publication approver required/);
@@ -424,6 +527,32 @@ function selfTest() {
       authorizationRef: 'restricted:publication-authorization' },
   });
   assert.equal(validateLedger(chain, ctx)[0].eligibleForPromotion, true);
+  const approvedLedger = clone(chain);
+  // Enumerate every forbidden transition; valid transitions are covered by the full path
+  // and the hold/rejection/re-review fixtures.
+  const stateLedgers = {
+    unreviewed: ledger, in_review: appended.ledger,
+    on_hold: apply(ledger, ctx, input('base-hold-001', {
+      status: 'on_hold', reason: 'Explicit owner hold during investigation',
+    })).ledger,
+    rejected: apply(ledger, ctx, input('base-reject-001', {
+      status: 'rejected', reason: 'Explicit owner rejection for identity evidence',
+    })).ledger,
+    evidence_complete_pending_signoff: pendingLedger,
+    approved_for_promotion: approvedLedger,
+  };
+  for (const [from, base] of Object.entries(stateLedgers)) {
+    for (const to of statuses.filter((candidate) => !transitions[from].includes(candidate))) {
+      const last = base.records[0].events.at(-1);
+      const request = input('matrix-' + from + '-' + to, {
+        status: to, at: '2026-10-26T12:00:20Z',
+        expectedPreviousHash: last?.hash || null,
+        reviewer: { name: 'Independent publication test reviewer', role: 'publication_approver' },
+      });
+      assert.throws(() => apply(base, ctx, request), /Forbidden status transition/,
+        'Transition must be forbidden: ' + from + ' -> ' + to);
+    }
+  }
   // Revocation preserves events, but a fast-track reapproval without fresh gates fails.
   next('hold-001', 8, { status: 'on_hold', reason: 'New contradictory evidence surfaced in review' });
   const heldState = validateLedger(chain, ctx)[0];
@@ -431,16 +560,21 @@ function selfTest() {
   assert.equal(heldState.gates.identity.status, 'needs_evidence');
   next('restart-001', 9, { status: 'in_review',
     reason: 'Reopening only after a documented contradictory-evidence investigation' });
-  assert.throws(() => appendDecision(chain, ctx, input('fast-track-001', {
+  assert.throws(() => apply(chain, ctx, input('fast-track-001', {
     status: 'evidence_complete_pending_signoff', at: '2026-10-26T12:00:10Z',
     expectedPreviousHash: chain.records[0].events.at(-1).hash,
   })), /All independent gates/);
   const wrongModel = clone(appended.ledger);
   wrongModel.records[0].events[0].at = '2026-02-30T12:00:00Z';
   assert.throws(() => validateLedger(wrongModel, ctx), /UTC|Tampered/);
-  const directReject = appendDecision(ledger, ctx,
+  const directReject = apply(ledger, ctx,
     input('rejection-001', { status: 'rejected', reason: 'No ownership evidence exists for this reference' })).ledger;
-  assert.throws(() => appendDecision(directReject, ctx, input('invalid-reapproval-001', {
+  const rejectedGateAttempt = clone(badSpec);
+  rejectedGateAttempt.eventId = 'gate-on-rejected-001';
+  rejectedGateAttempt.expectedPreviousHash = directReject.records[0].events.at(-1).hash;
+  assert.throws(() => apply(directReject, ctx, rejectedGateAttempt),
+    /Gate decisions require an explicit in_review/);
+  assert.throws(() => apply(directReject, ctx, input('invalid-reapproval-001', {
     status: 'approved_for_promotion', at: '2026-10-26T12:00:01Z',
     expectedPreviousHash: directReject.records[0].events.at(-1).hash,
   })), /Forbidden status/);
