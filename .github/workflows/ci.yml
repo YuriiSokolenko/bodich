@@ -52,6 +52,18 @@ jobs:
         run: |
           npm run catalog:art:generate
           npm run catalog:art:check
+      - name: Build and test private bilingual review gallery
+        run: |
+          npm run catalog:review:self-test
+          npm run catalog:review:build
+          npm run catalog:review:check
+      - name: Upload private catalog review gallery
+        uses: actions/upload-artifact@v4
+        with:
+          name: unpublished-bilingual-catalog-review
+          path: visual-qa/private-catalog-review/
+          retention-days: 7
+          if-no-files-found: error
       - name: Upload SKU illustration review package
         uses: actions/upload-artifact@v4
         with:
@@ -74,6 +86,7 @@ jobs:
           # Derive expectations from the real typed taxonomy, never a second hard-coded list.
           node scripts/validate-catalog.mjs --routes dist
           npm run catalog:reconcile:routes
+          npm run catalog:review:check
       - name: Smoke-test non-root base path
         env:
           ASTRO_BASE: /bodich-preview
@@ -82,6 +95,7 @@ jobs:
           npm run build
           node scripts/validate-catalog.mjs --routes dist
           npm run catalog:reconcile:routes
+          npm run catalog:review:check
           node scripts/verify-base-preview.mjs dist
       - name: Validate card and detail templates with isolated CI-only records
         run: node scripts/verify-product-fixture.mjs
