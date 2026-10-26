@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev",
-    "check": "astro check && node scripts/validate-catalog.mjs && node scripts/validate-catalog.mjs --self-test && npm run catalog:review:ledger:check && npm run catalog:review:ledger:self-test && npm run catalog:source:check && npm run catalog:reconcile",
+    "check": "astro check && node scripts/validate-catalog.mjs && node scripts/validate-catalog.mjs --self-test && npm run catalog:review:ledger:check && npm run catalog:review:ledger:self-test && npm run catalog:genuine:check && npm run catalog:genuine:self-test && npm run catalog:source:check && npm run catalog:reconcile",
     "build": "astro build",
     "preview": "astro preview",
     "catalog:intake": "node scripts/validate-catalog.mjs --intake",
@@ -26,7 +26,10 @@
     "catalog:review:ledger:check": "node scripts/catalog-review-ledger.mjs --check",
     "catalog:review:ledger:self-test": "node scripts/catalog-review-ledger.mjs --self-test",
     "catalog:review:ledger:export": "node scripts/catalog-review-ledger.mjs --export",
-    "catalog:review:ledger:plan": "node scripts/catalog-review-ledger.mjs --migrate-plan"
+    "catalog:review:ledger:plan": "node scripts/catalog-review-ledger.mjs --migrate-plan",
+    "catalog:genuine:check": "node scripts/catalog-genuine-evidence.mjs --check",
+    "catalog:genuine:self-test": "node scripts/catalog-genuine-evidence.mjs --self-test",
+    "catalog:genuine:export": "node scripts/catalog-genuine-evidence.mjs --export"
   },
   "engines": {
     "node": ">=24 <25"
