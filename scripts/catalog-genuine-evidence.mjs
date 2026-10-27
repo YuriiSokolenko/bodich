@@ -64,7 +64,8 @@ const dateChecked = (s) => assert.ok(validDate(s) && s <= today(),
   'Missing, invalid or future evidence date');
 const safeText = (s) => assert.ok(typeof s === 'string' && s.trim() && s.length <= 220 &&
   !/[\u0000-\u001f<>]/.test(s) && !/\S+@\S+\.\S+/.test(s) &&
-  !/https?:\/\/\S*[?#]/i.test(s) && !/(?:^|[\s,;])(?:token|password|secret|bearer)\s*[:=]/i.test(s),
+  !/https?:\/\/\S*[?#]/i.test(s) && !/(?:^|[\s,;])(?:token|password|secret|bearer)\s*[:=]/i.test(s) &&
+  !/\bbearer\s+[A-Za-z0-9._~+/-]{8,}/i.test(s),
 'Unsafe or empty public metadata; keep personal/confidential evidence off GitHub');
 function safeRef(ref) {
   assert.ok(typeof ref === 'string' &&
@@ -145,10 +146,11 @@ function assess(record, sourceId, state, epoch, currentCopy) {
       const observed = new Map();
       for (const e of found) {
         const { name, value, unit } = e.facts;
+        const normalizedName = name.trim().normalize('NFKC').toLocaleLowerCase('en').replace(/\s+/g, ' ');
         const label = JSON.stringify([value, unit]);
-        if (observed.has(name) && observed.get(name) !== label)
+        if (observed.has(normalizedName) && observed.get(normalizedName) !== label)
           reasons.specifications.push('contradictory_specification_claims');
-        observed.set(name, label);
+        observed.set(normalizedName, label);
       }
     }
     for (const issue of record?.unresolved || [])
@@ -401,6 +403,13 @@ function test() {
   assert.throws(() => review(approvedDoc, approvedStates, staleSource), /without complete independent/);
   const staleUnreviewed = review(approvedDoc, states, staleSource);
   assert.ok(staleUnreviewed.rows[0].gates.editorial.reasons.includes('stale_or_mismatched_copy_digest'));
+  const authLeak = clone(approvedDoc);
+  authLeak.records[0].evidence[0].provenance = 'Authorization: Bearer ABCDEFGHIJKL12345678';
+  assert.throws(() => review(authLeak), /Unsafe or empty public metadata/);
+  const authPlaceholder = clone(approvedDoc);
+  authPlaceholder.records[0].evidence[0].provenance = 'Tokenized audit index';
+  assert.equal(review(authPlaceholder).eligible, 1,
+    'Benign metadata containing tokenized must remain permitted');
   const conflicting = clone(approvedDoc);
   conflicting.records[0].evidence.push(makeEvidence('spec-002', 'specifications',
     'independent_specification',
@@ -408,6 +417,13 @@ function test() {
   assert.ok(review(conflicting, states).rows[0].gates.specifications.reasons
     .includes('contradictory_specification_claims'));
   assert.throws(() => review(conflicting), /without complete independent/);
+  const casingConflict = clone(approvedDoc);
+  casingConflict.records[0].evidence.push(makeEvidence('spec-casing', 'specifications',
+    'independent_specification',
+    { subject: 'Conflicting case variant', name: ' Thrust ', value: 110, unit: 'N' }));
+  assert.ok(review(casingConflict, states).rows[0].gates.specifications.reasons
+    .includes('contradictory_specification_claims'));
+  assert.throws(() => review(casingConflict), /without complete independent/);
   const badStates = clone(approvedStates);
   badStates[0].gates.imagery.details.assetSha256 = 'c'.repeat(64);
   assert.throws(() => review(approvedDoc, badStates), /Approved photo digest/);
