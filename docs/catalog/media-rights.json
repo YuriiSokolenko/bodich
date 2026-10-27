@@ -1,0 +1,136 @@
+{
+  "schemaVersion": 1,
+  "purpose": "unverified_bodich_media_review_only",
+  "policy": "deny_public_until_human_clearance",
+  "artManifest": "docs/catalog/art-manifest.json",
+  "publicRepositoryExposure": "All tracked files and history remain reachable in this public GitHub repository; review-only is not confidential or legally cleared.",
+  "entries": [
+    {
+      "path": "docs/catalog/review-media/turbines/bodich-hero-concept.webp",
+      "classification": "ai_concept",
+      "rightsStatus": "unverified",
+      "usage": "restricted_review",
+      "purpose": "Homepage turbine visual direction",
+      "sourceId": null,
+      "provenanceRef": "docs/assets/turbine-imagery.md",
+      "sha256": "d5882b9758b117898675d5da8407ba379783b9af772aa285942288cb0160bdbe",
+      "generationMetadata": "See documented 2026-10-23 ChatGPT generation brief; exact prompt and original PNG not in repository"
+    },
+    {
+      "path": "docs/catalog/review-media/turbines/bodich-hero-concept-640.webp",
+      "classification": "ai_concept",
+      "rightsStatus": "unverified",
+      "usage": "restricted_review",
+      "purpose": "Homepage turbine visual direction",
+      "sourceId": null,
+      "provenanceRef": "docs/assets/turbine-imagery.md",
+      "derivedFrom": "docs/catalog/review-media/turbines/bodich-hero-concept.webp",
+      "generationMetadata": "See documented 2026-10-23 ChatGPT generation brief; exact prompt and original PNG not in repository",
+      "sha256": "eca0c639df9e52b74cb2af0588683355b523b2834e77d0efdb3bb5f388e97ccc"
+    },
+    {
+      "path": "docs/catalog/review-media/turbines/bodich-hero-concept-960.webp",
+      "classification": "ai_concept",
+      "rightsStatus": "unverified",
+      "usage": "restricted_review",
+      "purpose": "Homepage turbine visual direction",
+      "sourceId": null,
+      "provenanceRef": "docs/assets/turbine-imagery.md",
+      "derivedFrom": "docs/catalog/review-media/turbines/bodich-hero-concept.webp",
+      "generationMetadata": "See documented 2026-10-23 ChatGPT generation brief; exact prompt and original PNG not in repository",
+      "sha256": "a360256a44699acd6e9767172b49fff63ac491370ca559873d269cc4a3cb677d"
+    },
+    {
+      "path": "docs/catalog/review-media/turbines/bodich-card-concept-01.webp",
+      "classification": "ai_concept",
+      "rightsStatus": "unverified",
+      "usage": "restricted_review",
+      "purpose": "Turbine preview and category card visual direction",
+      "sourceId": null,
+      "provenanceRef": "docs/assets/turbine-imagery.md",
+      "sha256": "4bfe319393b64502c6203d1cb731e67729418a572c70190a88216251f673eefd",
+      "generationMetadata": "See documented 2026-10-23 ChatGPT generation brief; exact prompt and original PNG not in repository"
+    },
+    {
+      "path": "docs/catalog/review-media/turbines/bodich-card-concept-01-360.webp",
+      "classification": "ai_concept",
+      "rightsStatus": "unverified",
+      "usage": "restricted_review",
+      "purpose": "Turbine preview and category card visual direction",
+      "sourceId": null,
+      "provenanceRef": "docs/assets/turbine-imagery.md",
+      "derivedFrom": "docs/catalog/review-media/turbines/bodich-card-concept-01.webp",
+      "generationMetadata": "See documented 2026-10-23 ChatGPT generation brief; exact prompt and original PNG not in repository",
+      "sha256": "63016d46c5ade7dd5a79acb631b83921bf16d11bfbd7d6001a55848fd37303cf"
+    },
+    {
+      "path": "docs/catalog/review-media/turbines/bodich-card-concept-01-600.webp",
+      "classification": "ai_concept",
+      "rightsStatus": "unverified",
+      "usage": "restricted_review",
+      "purpose": "Turbine preview and category card visual direction",
+      "sourceId": null,
+      "provenanceRef": "docs/assets/turbine-imagery.md",
+      "derivedFrom": "docs/catalog/review-media/turbines/bodich-card-concept-01.webp",
+      "generationMetadata": "See documented 2026-10-23 ChatGPT generation brief; exact prompt and original PNG not in repository",
+      "sha256": "5d3f858c554bef61c56afc45ac3aab51b5a55f40aa8a4a8e03c08da0776daf64"
+    },
+    {
+      "path": "docs/catalog/review-media/turbines/bodich-intake-detail-concept-02.webp",
+      "classification": "ai_concept",
+      "rightsStatus": "unverified",
+      "usage": "restricted_review",
+      "purpose": "Fictional intake gallery detail",
+      "sourceId": null,
+      "provenanceRef": "docs/assets/turbine-imagery.md",
+      "sha256": "bb7a5a098df5a1552b96a6af908c3c2f6044336ac92543deb722458a9aeab1e3",
+      "generationMetadata": "See documented 2026-10-23 ChatGPT generation brief; exact prompt and original PNG not in repository"
+    },
+    {
+      "path": "docs/catalog/review-media/turbines/bodich-intake-detail-concept-02-360.webp",
+      "classification": "ai_concept",
+      "rightsStatus": "unverified",
+      "usage": "restricted_review",
+      "purpose": "Fictional intake gallery detail",
+      "sourceId": null,
+      "provenanceRef": "docs/assets/turbine-imagery.md",
+      "derivedFrom": "docs/catalog/review-media/turbines/bodich-intake-detail-concept-02.webp",
+      "generationMetadata": "See documented 2026-10-23 ChatGPT generation brief; exact prompt and original PNG not in repository",
+      "sha256": "913506c80767b2db6ba674012d2965bf8aa23541e13de5c025e4f0e831a1a1bb"
+    },
+    {
+      "path": "docs/catalog/review-media/turbines/bodich-intake-detail-concept-02-600.webp",
+      "classification": "ai_concept",
+      "rightsStatus": "unverified",
+      "usage": "restricted_review",
+      "purpose": "Fictional intake gallery detail",
+      "sourceId": null,
+      "provenanceRef": "docs/assets/turbine-imagery.md",
+      "derivedFrom": "docs/catalog/review-media/turbines/bodich-intake-detail-concept-02.webp",
+      "generationMetadata": "See documented 2026-10-23 ChatGPT generation brief; exact prompt and original PNG not in repository",
+      "sha256": "29bf4417cf084d00adf0ce8ddce8e18b50eb427a9979c9de58a12c0478d064e3"
+    },
+    {
+      "path": "docs/assets/bodich-banner.svg",
+      "classification": "technical_illustration",
+      "rightsStatus": "unverified",
+      "usage": "restricted_review",
+      "purpose": "README graphic (formerly embedded); not a model depiction",
+      "sourceId": null,
+      "provenanceRef": "docs/assets/turbine-imagery.md",
+      "generationMetadata": "Authored vector artwork in the repository; creator and permissions unverified",
+      "sha256": "e901df6ac20467539848c70685f5e67c6c9dadb82ea801c09ab18202ea0dfb04"
+    },
+    {
+      "path": "docs/catalog/review-media/ui/favicon.svg",
+      "classification": "technical_illustration",
+      "rightsStatus": "unverified",
+      "usage": "restricted_review",
+      "purpose": "BODICH preview-only brand favicon",
+      "sourceId": null,
+      "provenanceRef": null,
+      "generationMetadata": "Existing SVG mark; creator and permissions not documented",
+      "sha256": "4e59342b026f864eaea57dd990e796962dbbe8e05cd3cd0384e7a20cb4682cae"
+    }
+  ]
+}

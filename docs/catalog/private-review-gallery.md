@@ -8,7 +8,7 @@ The gallery joins four source-of-truth files and the separate version-controlled
 
 Each record has its complete supplier title and full source ID, canonical URL, category, artwork family, draft slug, lifecycle, EN/RO description, linked evidence, numeric-spec count, unresolved flags and four pending approval gates. These are **KingTech research references, not BODICH products**. The original per-family diagrams are always marked **ILLUSTRATIVE STUDY — NOT A PRODUCT PHOTOGRAPH**. None are approved model-specific photos.
 
-The three existing AI-generated BODICH images are displayed separately as **marketing concepts**, not attached to any of the 132 reference SKUs.
+The three existing AI-generated BODICH images are sourced from `docs/catalog/review-media/turbines/` (not `public/`) and displayed separately as **marketing concepts**, not attached to any of the 132 reference SKUs.
 
 ## Local commands (Node.js 24)
 

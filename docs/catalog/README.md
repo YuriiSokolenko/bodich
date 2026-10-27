@@ -1,3 +1,7 @@
+# Stage 15 media publication policy
+
+See [media provenance, rights status and clearance](./media-policy.md). Eleven existing media files (nine WebP variants and two SVGs) plus 528 planned/generated 132-source diagrams are inventoried. All are unverified; the public website ships no unapproved image assets. The offline 132-source review and evidence ledger remain unchanged.
+
 # Stage 14: Genuine BODICH product verification
 
 See [genuine-product-evidence.md](./genuine-product-evidence.md) for Issue #53, the **blocked** single-product pilot, evidence intake contract, all-132 evidence-gap report, current-epoch/human-review gates and privacy safeguards. Supplier research and original concept diagrams are **not** proof of independently authorized BODICH products. No draft is published.

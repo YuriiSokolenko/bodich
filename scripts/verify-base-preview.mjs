@@ -11,7 +11,6 @@ const checks = [
     snippets: [
       'href="/bodich-preview/ro/products/turbine-engines/"',
       'href="/bodich-preview/en/products/"',
-      'href="/bodich-preview/favicon.svg"',
       'href="https://example.invalid/bodich-preview/en/products/turbine-engines/"',
       'hreflang="ro" href="https://example.invalid/bodich-preview/ro/products/turbine-engines/"',
     ],
@@ -29,8 +28,7 @@ const checks = [
     path: 'EN products landing',
     snippets: [
       'href="/bodich-preview/en/products/turbine-engines/"',
-      '/bodich-preview/images/turbines/bodich-card-concept-01.webp',
-      '/bodich-preview/images/turbines/bodich-card-concept-01-360.webp',
+      'data-media-withheld',
     ],
   },
   {
@@ -44,4 +42,7 @@ for (const page of checks) {
     assert(page.file.includes(snippet), `${page.path}: expected HTML to contain ${snippet}`);
   }
 }
-console.log('Non-root base preview passed: locale links, breadcrumbs, canonical/hreflang, concept assets, favicon and redirect.');
+for (const page of checks) {
+  assert(!page.file.includes('/images/turbines/'), page.path + ': uncleared art was linked in public HTML');
+}
+console.log('Non-root public build passed: locale links, breadcrumbs, canonical/hreflang, withheld concept assets and redirect.');

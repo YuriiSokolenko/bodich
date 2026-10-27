@@ -1,5 +1,7 @@
 import { existsSync, lstatSync, readFileSync, readdirSync } from 'node:fs';
 import { inspectRaster, MAX_CATALOG_IMAGE_BYTES } from './catalog-image.mjs';
+import { nonPhotoMediaDigests, unverifiedMediaDigests } from './catalog-media-policy.mjs';
+import { createHash } from 'node:crypto';
 import { runImageSelfTest } from './catalog-image-test.mjs';
 import { resolve, join, relative, isAbsolute } from 'node:path';
 import { catalogCategories, confirmedProducts } from '../src/catalog/data.ts';
@@ -61,6 +63,16 @@ function validateImage(image, label, report = fail, publicRoot = resolve('public
     report('Product "' + label + '" photo exceeds 5 MiB: ' + src);
     return;
   }
+  const digest = createHash('sha256').update(readFileSync(destination)).digest('hex');
+  // Standalone fixture tests can supply an alternate publicRoot; resolve its
+  // own media registry when present rather than checking another checkout.
+  const projectRoot = resolve(publicRoot, '..');
+  const mediaRoot = existsSync(resolve(projectRoot, 'docs/catalog/media-rights.json'))
+    ? projectRoot : undefined;
+  if (unverifiedMediaDigests(mediaRoot).has(digest))
+    report('Product "' + label + '" cannot use registered unverified art as product imagery');
+  if (image.kind === 'product_photo' && nonPhotoMediaDigests(mediaRoot).has(digest))
+    report('Product "' + label + '" cannot label a concept/diagram as an exact-model product photo');
   const extension = src.slice(src.lastIndexOf('.') + 1);
   const actual = inspectRaster(readFileSync(destination), extension);
   if (!actual || !actual.width || !actual.height) {

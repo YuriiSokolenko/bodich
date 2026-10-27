@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync, unlinkSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -31,6 +32,27 @@ try {
   const photoFolder = join(temp, 'public', 'images', 'catalog');
   mkdirSync(photoFolder, { recursive: true });
   writeFileSync(join(photoFolder, 'ci-fixture.png'), Buffer.from(CI_PNG_BASE64, 'base64'));
+
+  // Declare exactly this synthetic illustration in the disposable media ledger.
+  // This is test-only evidence, never a real BODICH clearance or a project source change.
+  const fixtureBytes = Buffer.from(CI_PNG_BASE64, 'base64');
+  const registryFile = join(temp, 'docs/catalog/media-rights.json');
+  const mediaRegistry = JSON.parse(readFileSync(registryFile, 'utf8'));
+  mediaRegistry.entries.push({
+    path: 'public/images/catalog/ci-fixture.png',
+    classification: 'technical_illustration',
+    rightsStatus: 'cleared_with_evidence',
+    usage: 'public_approved',
+    rightsEvidence: 'restricted:synthetic-ci-only',
+    clearanceReviewer: 'synthetic_fixture_only',
+    clearanceDate: '2026-10-26',
+    permittedUses: ['public_website'],
+    purpose: 'Synthetic fixture illustration only; no real company permission implied',
+    provenanceRef: 'scripts/catalog-fixtures.mjs',
+    sourceId: null,
+    sha256: createHash('sha256').update(fixtureBytes).digest('hex'),
+  });
+  writeFileSync(registryFile, JSON.stringify(mediaRegistry, null, 2) + '\n');
 
   const dataPath = join(temp, 'src/catalog/data.ts');
   const original = readFileSync(dataPath, 'utf8');
@@ -117,6 +139,7 @@ try {
   unlinkSync(unreferenced);
   console.log(run('npm', ['run', 'check']));
   console.log(run('npm', ['run', 'build']));
+  console.log(run('npm', ['run', 'media:public']));
   console.log(run('node', ['scripts/validate-catalog.mjs', '--routes', 'dist']));
 
   const html = (...parts) => readFileSync(join(temp, 'dist', ...parts, 'index.html'), 'utf8');

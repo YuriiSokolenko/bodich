@@ -15,6 +15,7 @@ on:
       - 'scripts/reconcile-catalog-release.mjs'
       - 'scripts/catalog-review-ledger.mjs'
       - 'scripts/catalog-genuine-evidence.mjs'
+      - 'scripts/catalog-media-policy.mjs'
       - 'scripts/build-catalog-review.mjs'
       - 'scripts/catalog-review-client.js'
       - 'scripts/catalog-review.css'
@@ -58,9 +59,10 @@ jobs:
       - name: Check Astro/TypeScript and build locked dependencies
         run: |
           npm run check
-          npm run build
+          npm run build:beta
 
-      # Browser tooling is added only after the production build is created:
+      # Test the explicit labelled presentation-beta profile, not the release-safe build.
+      # Browser tooling is added only after the review build is created:
       # no post-install changes can affect the tested Astro output.
       - name: Install pinned browser test library (after build)
         run: npm install --no-save --package-lock=false playwright@1.64.1

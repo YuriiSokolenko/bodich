@@ -459,9 +459,9 @@ export function renderCsv(rows) {
 function conceptsFor(rootDir = root) {
   return conceptFiles.map((name) => ({
     name: name.replaceAll('-', ' ').replace('.webp', ''),
-    source: resolve(rootDir, 'public/images/turbines', name),
+    source: resolve(rootDir, 'docs/catalog/review-media/turbines', name),
     file: 'concepts/' + name,
-    available: existsSync(resolve(rootDir, 'public/images/turbines', name)),
+    available: existsSync(resolve(rootDir, 'docs/catalog/review-media/turbines', name)),
   }));
 }
 
@@ -719,12 +719,12 @@ function selfTest() {
     mkdirSync(dirname(sourceImg), { recursive: true });
     mkdirSync(join(out, 'images'), { recursive: true });
     mkdirSync(join(out, 'concepts'), { recursive: true });
-    mkdirSync(join(testRoot, 'public', 'images', 'turbines'), { recursive: true });
+    mkdirSync(join(testRoot, 'docs', 'catalog', 'review-media', 'turbines'), { recursive: true });
     mkdirSync(join(testRoot, 'scripts'), { recursive: true });
     writeFileSync(sourceImg, 'example-original-diagram-payload');
     copyFileSync(sourceImg, outputImg);
     for (const name of conceptFiles) {
-      const conceptSource = join(testRoot, 'public', 'images', 'turbines', name);
+      const conceptSource = join(testRoot, 'docs', 'catalog', 'review-media', 'turbines', name);
       writeFileSync(conceptSource, 'example-ai-marketing-concept-' + name);
       copyFileSync(conceptSource, join(out, 'concepts', name));
     }
@@ -780,7 +780,7 @@ function selfTest() {
     try {
       assert.throws(() => validateOutput(rows, out, testRoot),
         /Missing packaged marketing concept/);
-    } finally { copyFileSync(join(testRoot, 'public', 'images', 'turbines', conceptFiles[0]), concept); }
+    } finally { copyFileSync(join(testRoot, 'docs', 'catalog', 'review-media', 'turbines', conceptFiles[0]), concept); }
 
     // OS metadata is not a product asset; it should not create a false failure.
     const dotfiles = [join(out, 'images', '.DS_Store'), join(out, 'concepts', '.DS_Store')];
