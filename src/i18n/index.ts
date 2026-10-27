@@ -69,6 +69,17 @@ type Translations = {
   catalogProductDescriptionTitle: string;
   catalogUnconfirmedDetailsNotice: string;
   catalogBackToCategory: string;
+  homeExploreTitle: string;
+  homeExploreIntro: string;
+  homeFeatures: Record<'products' | 'accessories' | 'support', { title: string; description: string; action: string }>;
+  catalogLandingEmptyTitle: string;
+  catalogLandingEmptyDescription: string;
+  categoryPlannedLabel: string;
+  sectionContent: Record<'support' | 'about' | 'contact', {
+    lead: string;
+    items: { title: string; description: string; link?: SectionKey; linkLabel?: string }[];
+    status: string;
+  }>;
   pages: Record<PageKey, PageText>;
 };
 
@@ -117,6 +128,57 @@ export const translations: Record<Locale, Translations> = {
     catalogProductDescriptionTitle: 'Model overview',
     catalogUnconfirmedDetailsNotice: 'Additional technical details and prices are not published until confirmed.',
     catalogBackToCategory: 'Back to category',
+    homeExploreTitle: 'Explore the BODICH preview',
+    homeExploreIntro: 'Discover the site structure and conceptual visuals. This presentation beta does not offer verified products or online sales.',
+    homeFeatures: {
+      products: {
+        title: 'Turbine concepts',
+        description: 'View the proposed engine category and clearly identified AI-generated turbine visuals.',
+        action: 'Explore turbines',
+      },
+      accessories: {
+        title: 'Accessory categories',
+        description: 'Browse planned groups for control, fuel, electrical and mounting components.',
+        action: 'Browse categories',
+      },
+      support: {
+        title: 'Support information',
+        description: 'Learn which resources and contact options are still awaiting confirmation.',
+        action: 'View support status',
+      },
+    },
+    catalogLandingEmptyTitle: 'No confirmed products published yet',
+    catalogLandingEmptyDescription: 'The categories below describe planned navigation only. No listed models, prices, inventory or purchasing options have been approved.',
+    categoryPlannedLabel: 'Planned category',
+    sectionContent: {
+      support: {
+        lead: 'Find out what technical resources are planned and which information is not yet available in this presentation beta.',
+        items: [
+          { title: 'Documentation', description: 'Installation guides, operating manuals and safety documents will appear only after their accuracy and publication rights are confirmed.' },
+          { title: 'Product information', description: 'The catalog currently contains navigation categories, not confirmed turbine models or technical specifications.', link: 'products', linkLabel: 'View catalog structure' },
+          { title: 'Support channels', description: 'No official service desk, warranty terms or service response time has been confirmed for publication.', link: 'contact', linkLabel: 'See contact status' },
+        ],
+        status: 'No live support service or document download is provided by this beta.',
+      },
+      about: {
+        lead: 'BODICH is presented here through a bilingual website concept. The preview is not a statement of verified company history, manufacturing capability or product availability.',
+        items: [
+          { title: 'What this site demonstrates', description: 'A bilingual structure for exploring turbine-related product categories, brand presentation and future resources.' },
+          { title: 'How visuals are used', description: 'Labelled AI-generated turbine designs illustrate a presentation concept. They are not photographs of approved products.' },
+          { title: 'Verification before publication', description: 'Model identity, specifications, corporate claims and image usage must be verified independently before release.', link: 'products', linkLabel: 'Explore proposed categories' },
+        ],
+        status: 'Legal entity details, addresses and manufacturing claims have not been published because they remain unconfirmed.',
+      },
+      contact: {
+        lead: 'Official BODICH inquiry details are not confirmed for this website preview. We will not display an invented email address, telephone number or contact form.',
+        items: [
+          { title: 'Official contact details', description: 'A validated business email address, telephone number and postal address have not been supplied for publication.' },
+          { title: 'No message collection', description: 'This is a static presentation site. It does not accept messages, collect form submissions or create support tickets.' },
+          { title: 'Where to explore', description: 'You can still browse the proposed catalog structure and the current documentation status.', link: 'support', linkLabel: 'Read support information' },
+        ],
+        status: 'No inquiry submission, order placement or service request is possible on this beta site.',
+      },
+    },
     pages: {
       home: {
         label: 'Home',
@@ -194,6 +256,57 @@ export const translations: Record<Locale, Translations> = {
     catalogProductDescriptionTitle: 'Prezentarea modelului',
     catalogUnconfirmedDetailsNotice: 'Detaliile tehnice suplimentare și prețurile nu sunt publicate înainte de confirmare.',
     catalogBackToCategory: 'Înapoi la categorie',
+    homeExploreTitle: 'Explorează prezentarea BODICH',
+    homeExploreIntro: 'Descoperă structura site-ului și imaginile conceptuale. Această versiune beta nu oferă produse verificate sau vânzări online.',
+    homeFeatures: {
+      products: {
+        title: 'Concepte de turbine',
+        description: 'Vezi categoria propusă de motoare și imaginile de turbine generate cu IA, marcate în mod clar.',
+        action: 'Explorează turbinele',
+      },
+      accessories: {
+        title: 'Categorii de accesorii',
+        description: 'Explorează grupele planificate pentru sisteme de control, alimentare, componente electrice și montaj.',
+        action: 'Vezi categoriile',
+      },
+      support: {
+        title: 'Informații de asistență',
+        description: 'Află ce resurse și modalități de contact așteaptă încă o confirmare.',
+        action: 'Vezi stadiul asistenței',
+      },
+    },
+    catalogLandingEmptyTitle: 'Nu există încă produse confirmate publicate',
+    catalogLandingEmptyDescription: 'Categoriile de mai jos reprezintă doar o structură de navigare planificată. Nu au fost aprobate modele, prețuri, stocuri sau opțiuni de cumpărare.',
+    categoryPlannedLabel: 'Categorie planificată',
+    sectionContent: {
+      support: {
+        lead: 'Află ce resurse tehnice sunt planificate și ce informații nu sunt încă disponibile în această versiune beta de prezentare.',
+        items: [
+          { title: 'Documentație', description: 'Ghidurile de instalare, manualele de utilizare și documentele de siguranță vor fi publicate numai după confirmarea corectitudinii și a drepturilor de publicare.' },
+          { title: 'Informații despre produse', description: 'Catalogul conține momentan categorii de navigare, nu modele sau specificații tehnice confirmate.', link: 'products', linkLabel: 'Vezi structura catalogului' },
+          { title: 'Canale de asistență', description: 'Nu au fost confirmate pentru publicare un serviciu oficial de asistență, condiții de garanție sau timpi de răspuns.', link: 'contact', linkLabel: 'Vezi stadiul datelor de contact' },
+        ],
+        status: 'Această versiune beta nu oferă asistență activă sau descărcarea documentelor.',
+      },
+      about: {
+        lead: 'BODICH este prezentat aici printr-un concept de site bilingv. Previzualizarea nu confirmă istoricul firmei, capacitatea de producție sau disponibilitatea produselor.',
+        items: [
+          { title: 'Ce prezintă acest site', description: 'O structură bilingvă pentru explorarea categoriilor de produse asociate turbinelor, a imaginii de brand și a resurselor viitoare.' },
+          { title: 'Cum sunt folosite imaginile', description: 'Vizualurile de turbine generate cu IA și marcate explicit ilustrează un concept de prezentare. Nu sunt fotografii ale unor produse aprobate.' },
+          { title: 'Verificare înainte de publicare', description: 'Identitatea modelelor, specificațiile, afirmațiile despre companie și drepturile asupra imaginilor trebuie verificate separat.', link: 'products', linkLabel: 'Explorează categoriile propuse' },
+        ],
+        status: 'Datele juridice, adresele și afirmațiile despre producție nu sunt publicate deoarece nu au fost confirmate.',
+      },
+      contact: {
+        lead: 'Datele oficiale de contact BODICH nu sunt confirmate pentru această previzualizare. Nu vom afișa adrese de e-mail, numere de telefon sau formulare inventate.',
+        items: [
+          { title: 'Date oficiale de contact', description: 'Nu au fost furnizate pentru publicare o adresă de e-mail profesională, un număr de telefon și o adresă poștală validate.' },
+          { title: 'Fără colectare de mesaje', description: 'Acesta este un site static de prezentare. Nu primește mesaje, formulare trimise sau solicitări de asistență.' },
+          { title: 'Ce poți explora', description: 'Poți explora structura propusă a catalogului și stadiul actual al documentației.', link: 'support', linkLabel: 'Citește informațiile de asistență' },
+        ],
+        status: 'În această versiune beta nu se pot trimite solicitări, plasa comenzi sau cere servicii.',
+      },
+    },
     pages: {
       home: {
         label: 'Acasă',
