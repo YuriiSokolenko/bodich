@@ -171,6 +171,46 @@ try {
   assertContains(ecuRo, 'data-product-no-image', 'RO no-image fallback');
   assertContains(ecuRo, 'Control de test CI', 'RO control detail');
 
+  // Stage 16: approving an item in one section must not hide the
+  // independent empty state in another section. These synthetic records
+  // exist only in the isolated temporary checkout.
+  for (const locale of ['en', 'ro']) {
+    assert(!html(locale, 'products').includes('data-catalog-landing-empty'),
+      locale + ' products landing should show approved products');
+    assert(!html(locale, 'accessories').includes('data-catalog-landing-empty'),
+      locale + ' accessories landing should show approved products');
+    assert(!html(locale, 'products').includes('data-planned-category'),
+      locale + ' approved turbine category should not carry a planned badge');
+    const accessoriesLanding = html(locale, 'accessories');
+    const approvedControlCard = accessoriesLanding.match(
+      /<a data-category-link="ecu-controls"[\s\S]*?<\/a>/,
+    )?.[0];
+    assert(approvedControlCard, 'Approved control category link is missing');
+    assert(!approvedControlCard.includes('data-planned-category'),
+      locale + ' confirmed control category should not carry a planned badge');
+    assertContains(accessoriesLanding, 'data-planned-category',
+      locale + ' other accessories remain planned');
+  }
+
+  // Retain only the synthetic turbine for the second build. The accessory
+  // section must return to its empty state while the engine stays approved.
+  writeFileSync(dataPath, replaceProductRecords(original,
+    'export const confirmedProducts: readonly ConfirmedCatalogProduct[] = '
+      + JSON.stringify([products[0]], null, 2) + ';'));
+  console.log(run('npm', ['run', 'build']));
+  for (const locale of ['en', 'ro']) {
+    assert(!html(locale, 'products').includes('data-catalog-landing-empty'),
+      locale + ' engine approval must keep Products nonempty');
+    assertContains(html(locale, 'accessories'), 'data-catalog-landing-empty',
+      locale + ' Accessories must remain empty when only engine is confirmed');
+    assert(!html(locale, 'products').includes('data-planned-category'),
+      locale + ' turbine category should remain approved');
+    assertContains(html(locale, 'accessories'), 'data-planned-category',
+      locale + ' accessory categories must stay planned');
+    assertContains(html(locale, 'accessories', 'ecu-controls'), 'data-catalog-empty-state',
+      locale + ' unapproved controls category must remain empty');
+  }
+
   assert(!existsSync(join(root, 'dist/en/products/turbine-engines/ci-fixture-engine')),
     'A temporary fixture must never appear in the regular production build');
   assert.equal(readFileSync(join(root, 'src/catalog/data.ts'), 'utf8'), original,
