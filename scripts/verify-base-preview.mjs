@@ -45,4 +45,28 @@ for (const page of checks) {
 for (const page of checks) {
   assert(!page.file.includes('/images/turbines/'), page.path + ': uncleared art was linked in public HTML');
 }
+
+for (const locale of ['en', 'ro']) {
+  const other = locale === 'en' ? 'ro' : 'en';
+  const home = load(locale);
+  for (const section of ['products', 'accessories', 'support']) {
+    assert(home.includes(`href="/bodich-preview/${locale}/${section}/"`),
+      `${locale} homepage: missing localized feature route ${section}`);
+  }
+  const status = load(locale, 'contact');
+  assert(status.includes('data-information-cards="contact"'),
+    `${locale} contact page needs useful safe content`);
+  assert(!/<form\\b|href="mailto:|href="tel:/i.test(status),
+    `${locale} contact page unexpectedly exposes an unverified channel`);
+  assert(status.includes(`href="/bodich-preview/${other}/contact/"`),
+    `${locale} contact page language switch must keep the current route`);
+  for (const section of ['products', 'accessories']) {
+    const catalog = load(locale, section);
+    assert(catalog.includes('data-catalog-landing-empty'),
+      `${locale}/${section}: no approved offerings must produce a clear empty state`);
+    assert(!catalog.includes('data-product-card='),
+      `${locale}/${section}: unapproved catalog item leaked`);
+  }
+}
+
 console.log('Non-root public build passed: locale links, breadcrumbs, canonical/hreflang, withheld concept assets and redirect.');
