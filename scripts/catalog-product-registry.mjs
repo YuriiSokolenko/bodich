@@ -301,30 +301,54 @@ export function planManualPromotion(report, id) {
       'Re-run public routes, image rights, reconciliation and rollback checks'],
     rollback: 'Revert the separate publication PR; registry and historical ledger remain untouched' };
 }
-function checkNoPublicLeak(registryIds) {
-  // Existing isolated website tests intentionally add synthetic confirmed products.
-  // Never forbid that test workflow or future separately approved manual publications.
-  for (const product of confirmedProducts) {
-    assert.ok(!registryIds.has(fold(product.id)),
-      'Private registry record copied into public confirmedProducts without separate review');
-  }
-  const blocked = [REGISTRY_PATH, 'catalog-product-registry.mjs'];
-  const visit = (dir) => {
-    if (!existsSync(dir)) return;
-    for (const item of readdirSync(dir, { withFileTypes: true })) {
-      const abs = resolve(dir, item.name);
-      if (item.isDirectory()) visit(abs);
-      else {
-        assert.ok(item.isFile(), 'Unsafe symlink in public source tree');
-        if (!/\.(?:ts|js|astro|json|html|mjs)$/.test(item.name)) continue;
-        const body = readFileSync(abs, 'utf8');
-        for (const forbidden of blocked)
-          assert.ok(!body.includes(forbidden), 'Private product registry leaked to public source: ' +
-            relative(root, abs));
-      }
+const STAGE18_MAX_COMMITTED_PRODUCTS = 0; // Change only via separately reviewed registry PR.
+function visitFiles(dir, each) {
+  if (!existsSync(dir)) return;
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    const full = resolve(dir, entry.name);
+    assert.ok(!entry.isSymbolicLink(), 'Symlink forbidden in public build or source: ' + full);
+    if (entry.isDirectory()) visitFiles(full, each);
+    else {
+      assert.ok(entry.isFile(), 'Unexpected non-file in public tree: ' + full);
+      each(full);
     }
-  };
-  visit(pathAt('src')); visit(pathAt('public'));
+  }
+}
+function checkNoPublicLeak(registry, published = confirmedProducts) {
+  // Source scanner is a heuristic tripwire, not a complete information-flow proof.
+  // The actual built output has a separate independent distribution gate.
+  const privateIds = new Set(registry.products.flatMap((p) => [
+    p.id, ...p.variants.map((v) => v.id), ...p.media.map((m) => m.id),
+  ]).map(fold));
+  for (const product of published)
+    assert.ok(!privateIds.has(fold(product.id)),
+      'Private registry identity copied to confirmedProducts without independent publication PR');
+  const blocked = [REGISTRY_PATH, 'catalog-product-registry.mjs',
+    'internal_bodich_products_unpublished'];
+  for (const dir of ['src', 'public']) visitFiles(pathAt(dir), (file) => {
+    if (!/\.(?:ts|tsx|js|jsx|astro|json|html|mjs|md|mdx)$/.test(file)) return;
+    const body = readFileSync(file, 'utf8');
+    for (const forbidden of blocked)
+      assert.ok(!body.includes(forbidden),
+        'Private registry referenced by public source: ' + relative(root, file));
+  });
+  if (existsSync(pathAt('astro.config.mjs'))) {
+    const config = readFileSync(pathAt('astro.config.mjs'), 'utf8');
+    for (const forbidden of blocked)
+      assert.ok(!config.includes(forbidden), 'Private registry referenced by Astro configuration');
+  }
+}
+function checkBuiltOutput(distPath = 'dist') {
+  const dir = pathAt(distPath);
+  assert.ok(existsSync(dir), 'Public dist/ output must exist for distribution leak check');
+  // Independent of source imports: catch embedded registry data and any registry-style
+  // BODICH IDs even after a build transform or renaming of the source import.
+  const leaked = /(?:internal_bodich_products_unpublished|\b(?:bdc|bdv|bdm)-[a-z0-9]+(?:-[a-z0-9]+)*\b)/i;
+  visitFiles(dir, (file) => {
+    if (!/\.(?:html?|xml|json|js|mjs|css|svg|txt|md|webmanifest)$/.test(file)) return;
+    assert.ok(!leaked.test(readFileSync(file, 'utf8')),
+      'Unpublished BODICH registry data found in distribution: ' + relative(root, file));
+  });
 }
 function onDisk() {
   const report = reportOnDisk(); // always validates Stage 13 ledger and Stage 14 evidence
@@ -429,19 +453,29 @@ function selfTest() {
   console.log('Stage 18 synthetic-only registry tests passed: IDs, variants, bilingual copy, rights, source proof, epoch and manual promotion gates.');
 }
 function main(args) {
-  assert.ok(args.length === 1 && ['--check', '--self-test', '--export'].includes(args[0]),
-    'Usage: node scripts/catalog-product-registry.mjs --check | --self-test | --export');
+  assert.ok(args.length >= 1 && args.length <= 2 &&
+    ['--check', '--self-test', '--export', '--dist-check'].includes(args[0]) &&
+    (args[0] === '--dist-check' || args.length === 1),
+    'Usage: node scripts/catalog-product-registry.mjs --check | --self-test | --export | --dist-check [dist]');
   if (args[0] === '--self-test') return selfTest();
-  const report = validateRegistry(load(REGISTRY_PATH), onDisk());
-  // Stage 18 only establishes the private model; no production products may be committed.
-  assert.equal(report.products.length, 0, 'Stage 18 registry must remain empty');
-  checkNoPublicLeak(new Set(report.products.map((p) => fold(p.id))));
+  const registry = load(REGISTRY_PATH);
+  const report = validateRegistry(registry, onDisk());
+  // Stage 18 accepts only the empty committed registry; a future registry PR
+  // must explicitly revise this limit and independently review all records.
+  assert.equal(registry.products.length, STAGE18_MAX_COMMITTED_PRODUCTS,
+    'Stage 18 committed registry cardinality requires independent review');
+  checkNoPublicLeak(registry);
+  if (args[0] === '--dist-check') {
+    checkBuiltOutput(args[1] || 'dist');
+    console.log('No unpublished BODICH identities or registry payload in static distribution.');
+    return;
+  }
   if (args[0] === '--export') {
     mkdirSync(pathAt('visual-qa'), { recursive: true });
     writeFileSync(pathAt('visual-qa/bodich-product-registry-audit.json'),
       JSON.stringify(report, null, 2) + '\n');
   }
-  console.log('Internal BODICH registry: 132 unpublished supplier references; ' +
+  console.log('Internal BODICH registry: ' + report.sourceReferences + ' unpublished supplier references; ' +
     report.products.length + ' actual products; no public changes; epoch ' + report.reviewEpoch);
 }
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url))
