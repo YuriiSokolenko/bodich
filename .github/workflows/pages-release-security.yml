@@ -1,0 +1,68 @@
+name: Pages release security
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  cloudflare-static-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - name: Install pinned dependencies
+        run: npm ci
+      - name: Block high and critical npm vulnerabilities
+        run: npm audit --audit-level=high
+      - name: Scan Git history for secrets (Gitleaks pinned image)
+        run: |
+          docker run --rm -v "$PWD:/repo:ro" -w /repo \
+            ghcr.io/gitleaks/gitleaks:v8.30.1@sha256:b109bc5f8f76a38196a3e413704fc5b9e3c32360bce4e4b603bd6f45b3721dbb \
+            git /repo --redact --no-banner
+      - name: Validate catalog, editorial and site
+        run: npm run check
+      - name: Test fail-closed release policies
+        run: npm run pages:self-test
+      - name: Build static Pages release (never presentation beta)
+        run: npm run build
+      - name: Check static distribution, route/sitemap allow-list and quarantined draft signatures
+        run: |
+          npm run pages:verify
+          npm run catalog:products:dist
+          npm run catalog:reconcile:routes
+          npm run seo:routes
+          npm run media:public
+      - name: Scan built dist artifact for secrets (Gitleaks pinned image)
+        run: |
+          docker run --rm -v "$PWD/dist:/release:ro" \
+            ghcr.io/gitleaks/gitleaks:v8.30.1@sha256:b109bc5f8f76a38196a3e413704fc5b9e3c32360bce4e4b603bd6f45b3721dbb \
+            dir /release --redact --no-banner
+      - name: Smoke non-root static Pages build
+        env:
+          ASTRO_BASE: /bodich-preview
+          SITE_URL: https://example.invalid
+        run: |
+          npm run build
+          npm run pages:verify
+          npm run catalog:products:dist
+          npm run seo:routes
+          node scripts/verify-base-preview.mjs dist
+      - name: Emit digest-based review evidence (no private artifact)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cloudflare-static-release-gate
+          path: visual-qa/pages-release-evidence.json
+          retention-days: 7
+          if-no-files-found: ignore
