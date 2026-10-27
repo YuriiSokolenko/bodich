@@ -5,11 +5,31 @@
  * This module never writes ledger events, mutates source drafts, or publishes products.
  */
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { validateLedger, contextOnDisk, gateNames } from './catalog-review-ledger.mjs';
 
 export const INTAKE_PATH = 'docs/catalog/genuine-product-evidence.json';
+const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+const at = (p) => resolve(root, p);
+const read = (p) => JSON.parse(readFileSync(at(p), 'utf8'));
+const today = () => new Date().toISOString().slice(0, 10);
+const copyDigest = (copy) => {
+  assert.ok(copy && typeof copy === 'object', 'Reviewed bilingual copy is missing');
+  const normalized = {};
+  for (const lang of ['en', 'ro']) {
+    normalized[lang] = {};
+    for (const field of ['name', 'summary', 'description']) {
+      const value = copy[lang]?.[field];
+      assert.ok(typeof value === 'string' && value.trim(),
+        'Missing current ' + lang + ' product copy: ' + field);
+      normalized[lang][field] = value;
+    }
+  }
+  return createHash('sha256').update(JSON.stringify(normalized), 'utf8').digest('hex');
+};
 const PURPOSE = 'genuine_bodich_evidence_intake_unpublished';
 const SHA = /^[a-f0-9]{64}$/;
 const DATE = /^\d{4}-\d{2}-\d{2}$/;
@@ -40,30 +60,25 @@ const checkKeys = (obj, required, optional = []) => {
 };
 const validDate = (s) => typeof s === 'string' && DATE.test(s) &&
   !Number.isNaN(Date.parse(s)) && new Date(s).toISOString().slice(0, 10) === s;
-const dateChecked = (s) => assert.ok(validDate(s) && s <= new Date().toISOString().slice(0, 10),
+const dateChecked = (s) => assert.ok(validDate(s) && s <= today(),
   'Missing, invalid or future evidence date');
 const safeText = (s) => assert.ok(typeof s === 'string' && s.trim() && s.length <= 220 &&
   !/[\u0000-\u001f<>]/.test(s) && !/\S+@\S+\.\S+/.test(s) &&
-  !/https?:\/\/\S*[?#]/i.test(s) && !/token|password|secret|bearer\s/i.test(s),
+  !/https?:\/\/\S*[?#]/i.test(s) && !/(?:^|[\s,;])(?:token|password|secret|bearer)\s*[:=]/i.test(s),
 'Unsafe or empty public metadata; keep personal/confidential evidence off GitHub');
-function safeRef(ref, restrictedOnly = false) {
-  assert.ok(typeof ref === 'string' && ref.length <= 240, 'Missing/unsafe evidence reference');
-  if (/^restricted:[A-Za-z0-9][A-Za-z0-9._/-]{2,160}$/.test(ref)) return;
-  assert.ok(!restrictedOnly, 'Provider identity must be an opaque restricted: reference');
-  const u = new URL(ref);
-  assert.ok(u.protocol === 'https:' && !u.username && !u.password && !u.search && !u.hash &&
-    !u.hostname.toLowerCase().endsWith('kingtechturbines.com') &&
-    !u.hostname.toLowerCase().endsWith('.kingtechturbines.com'),
-  'Supplier-only / tokenized URLs cannot prove genuine BODICH identity or rights');
+function safeRef(ref) {
+  assert.ok(typeof ref === 'string' &&
+    /^restricted:[A-Za-z0-9][A-Za-z0-9._/-]{2,160}$/.test(ref),
+  'Supplier-only or public URLs are not controlled evidence: use an opaque restricted: reference');
 }
 const equal = (a, b) => JSON.stringify(a) === JSON.stringify(b);
-function evidenceItem(item, bodich, seen) {
+function evidenceItem(item, seen) {
   checkKeys(item, ['id', 'gate', 'kind', 'ref', 'sha256', 'version', 'provenance',
     'providerRole', 'providerRef', 'providedOn', 'verifiedOn', 'scope', 'facts'], ['expiresOn']);
   assert.ok(ID.test(item.id) && !seen.has(item.id), 'Duplicate or invalid evidence ID');
   seen.add(item.id);
   assert.ok(gateNames.includes(item.gate) && KINDS[item.gate].includes(item.kind), 'Unknown gate/evidence kind');
-  safeRef(item.ref); safeRef(item.providerRef, true);
+  safeRef(item.ref); safeRef(item.providerRef);
   assert.match(item.sha256, SHA, 'Document / asset digest required');
   safeText(item.version); safeText(item.provenance);
   assert.ok(['bodich_owner', 'manufacturer', 'rights_holder', 'independent_lab',
@@ -90,6 +105,8 @@ function evidenceItem(item, bodich, seen) {
     if (item.kind === 'exact_model_photo' || item.kind === 'exact_model_technical_illustration') {
       safeText(f.rightsOwner); safeRef(f.permissionRef);
       assert.match(f.assetSha256, SHA);
+      assert.equal(f.assetSha256, item.sha256,
+        'Original image digest differs from approved-asset digest');
       assert.equal(f.photoType, item.kind === 'exact_model_photo' ? 'photograph' : 'technical_illustration');
     }
   }
@@ -100,12 +117,8 @@ function evidenceItem(item, bodich, seen) {
       'Unit required for each exact-model specification');
   }
   if (item.gate === 'editorial') assert.match(f.copySha256, SHA, 'Reviewed copy digest required');
-  // Scope mismatches are gaps; never accept similar supplier designations as BODICH variants.
-  return bodich && equal(item.scope, {
-    manufacturer: bodich.manufacturer, model: bodich.model, variant: bodich.variant,
-  });
 }
-function assess(record, sourceId, ledger, epoch) {
+function assess(record, sourceId, state, epoch, currentCopy) {
   const reasons = Object.fromEntries(gateNames.map((g) => [g, []]));
   const evidence = record?.evidence || [];
   const identity = record?.proposedBodichIdentity || null;
@@ -117,10 +130,26 @@ function assess(record, sourceId, ledger, epoch) {
     for (const e of found) {
       if (!identity || !equal(e.scope, identity)) reasons[gate].push('wrong_model_or_variant');
       if (e.verifiedOn === null) reasons[gate].push('evidence_not_verified');
-      if (e.expiresOn && e.expiresOn < new Date().toISOString().slice(0, 10))
+      if (e.expiresOn && e.expiresOn < today())
         reasons[gate].push('expired_evidence');
       if (e.gate === 'imagery' && e.kind !== 'exact_model_photo')
         reasons[gate].push('concept_or_illustration_not_product_photo');
+    }
+    if (gate === 'editorial' && found.length) {
+      const digests = new Set(found.map((e) => e.facts.copySha256));
+      if (digests.size !== 1) reasons.editorial.push('editorial_digest_disagreement');
+      if (!currentCopy || [...digests].some((digest) => digest !== copyDigest(currentCopy)))
+        reasons.editorial.push('stale_or_mismatched_copy_digest');
+    }
+    if (gate === 'specifications') {
+      const observed = new Map();
+      for (const e of found) {
+        const { name, value, unit } = e.facts;
+        const label = JSON.stringify([value, unit]);
+        if (observed.has(name) && observed.get(name) !== label)
+          reasons.specifications.push('contradictory_specification_claims');
+        observed.set(name, label);
+      }
     }
     for (const issue of record?.unresolved || [])
       if (issue.gate === gate) reasons[gate].push('unresolved_' + issue.code);
@@ -129,17 +158,15 @@ function assess(record, sourceId, ledger, epoch) {
   if (identity && identity.manufacturer !== 'BODICH')
     reasons.identity.push('manufacturer_is_not_bodich');
   const img = evidence.filter((e) => e.kind === 'exact_model_photo');
-  if (img.length && img.some((e) => !e.facts.rightsOwner || !e.facts.permissionRef))
-    reasons.imagery.push('missing_written_image_permission');
   const gateState = {};
   for (const gate of gateNames) {
-    const decision = ledger.gates[gate];
+    const decision = state.gates[gate];
     const unique = [...new Set(reasons[gate])].sort();
     if (decision.status === 'approved') {
       assert.equal(unique.length, 0,
         'Human gate approved without complete independent current-epoch evidence: ' + sourceId + ' ' + gate);
       if (gate === 'identity') {
-        assert.equal(ledger.gates.identity.details?.manufacturer, identity.manufacturer);
+        assert.equal(state.gates.identity.details?.manufacturer, identity.manufacturer);
         assert.equal(ledger.gates.identity.details?.model, identity.model);
         assert.equal(ledger.gates.identity.details?.variant, identity.variant);
       }
@@ -157,14 +184,14 @@ function assess(record, sourceId, ledger, epoch) {
       reasons: unique, evidenceCount: evidence.filter((e) => e.gate === gate).length };
   }
   const evidenceComplete = gateNames.every((g) => gateState[g].evidenceComplete);
-  assert.ok(!['evidence_complete_pending_signoff', 'approved_for_promotion'].includes(ledger.status) ||
+  assert.ok(!['evidence_complete_pending_signoff', 'approved_for_promotion'].includes(state.status) ||
     evidenceComplete, 'Promotion state cannot bypass genuine-product evidence gaps: ' + sourceId);
-  const eligible = evidenceComplete && ledger.eligibleForPromotion;
+  const eligible = evidenceComplete && state.eligibleForPromotion;
   return { sourceId, epoch, pilot: false, intakePresent: Boolean(record),
     proposedBodichIdentity: identity, evidenceCount: evidence.length,
-    ledgerStatus: ledger.status, sourceReviewed: ledger.sourceReviewed,
+    ledgerStatus: ledger.status, sourceReviewed: state.sourceReviewed,
     bodichIdentityVerified: gateState.identity.reviewState === 'approved' && gateState.identity.evidenceComplete,
-    promotionEligible: eligible, previousEpochOnly: (ledger.previousEpochs || []).map((e) =>
+    promotionEligible: eligible, previousEpochOnly: (state.previousEpochs || []).map((e) =>
       ({ epoch: e.epoch, effective: false, eventCount: e.eventCount })),
     gates: gateState, blockers: gateNames.flatMap((g) => gateState[g].reasons.map((code) => g + ':' + code))
       .concat(eligible ? [] : ['separate_human_review_and_promotion_pr_required']) };
@@ -192,7 +219,7 @@ export function validateIntake(intake, sources, ledger, states, { expectedCount 
     }
     assert.ok(Array.isArray(record.evidence) && record.evidence.length <= 100, 'Invalid evidence list');
     for (const e of record.evidence) {
-      evidenceItem(e, record.proposedBodichIdentity, idSet);
+      evidenceItem(e, idSet);
       assert.ok(!evidenceItemInvalidSource(e), 'Supplier-only evidence cannot authorize BODICH product');
     }
     assert.ok(Array.isArray(record.unresolved) && record.unresolved.length <= 100, 'Invalid unresolved list');
@@ -211,11 +238,11 @@ export function validateIntake(intake, sources, ledger, states, { expectedCount 
   assert.equal(decisions.size, expectedCount, 'Duplicate decision IDs');
   const rows = sources.map((s) => {
     assert.ok(decisions.has(s.sourceId), 'Missing current review decision ' + s.sourceId);
-    return assess(byId.get(s.sourceId), s.sourceId, decisions.get(s.sourceId), intake.ledgerEpoch);
+    return assess(byId.get(s.sourceId), s.sourceId, decisions.get(s.sourceId), intake.ledgerEpoch, s.copy);
   });
   const pilot = rows.find((r) => r.sourceId === intake.pilotSourceId);
   pilot.pilot = true;
-  pilot.pilotOutcome = pilot.promotionEligible ? 'requires_separate_promotion_pr' : 'blocked_on_hold_no_signoff';
+  pilot.pilotOutcome = pilot.promotionEligible ? 'requires_separate_promotion_pr' : 'blocked';
   return { schemaVersion: 1, purpose: PURPOSE, epoch: intake.ledgerEpoch,
     total: rows.length, productEvidenceIntakes: byId.size,
     eligible: rows.filter((r) => r.promotionEligible).length,
@@ -225,15 +252,19 @@ export function validateIntake(intake, sources, ledger, states, { expectedCount 
 }
 // Reject supplier research repackaged as independent product proof, even if its metadata looks complete.
 function evidenceItemInvalidSource(item) {
-  return /\bkingtech\b/i.test(item.provenance) ||
-    /\bkingtech\b/i.test(item.facts.subject);
+  return /\bking[\s_-]*tech\b/i.test(item.provenance) ||
+    /\bking[\s_-]*tech\b/i.test(item.facts.subject) ||
+    /\bsupplier[\s_-]*only\b/i.test(item.provenance);
 }
 export function reportOnDisk() {
-  const read = (p) => JSON.parse(readFileSync(p, 'utf8'));
   const ctx = contextOnDisk();
   const ledger = read('docs/catalog/review-ledger.json');
   const states = validateLedger(ledger, ctx);
-  return validateIntake(read(INTAKE_PATH), ctx.sources, ledger, states);
+  const overrides = read('docs/catalog/reference-overrides.json');
+  const copies = new Map(overrides.records.map((r) => [r.sourceId, r.copy]));
+  return validateIntake(read(INTAKE_PATH),
+    ctx.sources.map((s) => ({ ...s, copy: copies.get(s.sourceId) })),
+    ledger, states);
 }
 function test() {
   const revisions = { inventory: 'a'.repeat(40), overrides: 'b'.repeat(40),
@@ -279,7 +310,7 @@ function test() {
   bad((d) => { d.records = [{ ...record, evidence: [{ ...proof,
     ref: 'https://www.kingtechturbines.com/product/x' }] }]; }, /Supplier-only/);
   bad((d) => { d.records = [{ ...record, evidence: [{ ...proof, sha256: '00' }] }]; }, /digest/);
-  bad((d) => { d.records = [{ ...record, evidence: [{ ...proof, verifiedOn: '2027-01-01' }] }]; }, /future/);
+  bad((d) => { d.records = [{ ...record, evidence: [{ ...proof, verifiedOn: '9999-12-31' }] }]; }, /future/);
   // A wrong variant is valid *evidence intake* but must be a blocking gap.
   const variant = clone(concept);
   variant.records[0].evidence[0].scope.variant = 'other';
@@ -305,13 +336,14 @@ function main(args) {
   if (args[0] === '--self-test') return test();
   const report = reportOnDisk();
   if (args[0] === '--export') {
-    mkdirSync('visual-qa', { recursive: true });
-    writeFileSync('visual-qa/genuine-product-evidence-gaps.json', JSON.stringify(report, null, 2) + '\n');
+    mkdirSync(at('visual-qa'), { recursive: true });
+    writeFileSync(at('visual-qa/genuine-product-evidence-gaps.json'),
+      JSON.stringify(report, null, 2) + '\n');
   }
   console.log('Genuine BODICH evidence: ' + report.total + ' source drafts, ' +
     report.productEvidenceIntakes + ' submitted product-intake records; epoch ' + report.epoch +
     '; pilot ' + report.pilotSourceId + ': ' + report.pilotOutcome +
     '; ' + report.eligible + ' promotion-eligible; 0 products published by this workflow.');
 }
-if (process.argv[1] && resolve(process.argv[1]) === new URL(import.meta.url).pathname)
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url))
   main(process.argv.slice(2));
