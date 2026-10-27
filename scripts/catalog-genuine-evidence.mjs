@@ -328,7 +328,96 @@ function test() {
   forged[0].gates.imagery.status = 'approved';
   assert.throws(() => validateIntake(fixture, sources, ledger, forged, { expectedCount: 2 }),
     /without complete independent/);
-  console.log('Genuine BODICH intake self-test passed: gaps, scopes, rights, stale epochs, conflict and approval fail-closed.');
+  // Synthetic only: exercise the positive path WITHOUT adding any reviewer event to the real ledger.
+  const sourcesWithCopy = clone(sources);
+  sourcesWithCopy[0].copy = {
+    en: { name: 'Fixture X', summary: 'Synthetic English summary', description: 'Synthetic description' },
+    ro: { name: 'Model de test X', summary: 'Rezumat de test', description: 'Descriere de test' },
+  };
+  const copySha = copyDigest(sourcesWithCopy[0].copy);
+  const bodich = { manufacturer: 'BODICH', model: 'X', variant: 'A' };
+  const makeEvidence = (id, gate, kind, facts, digest = 'a'.repeat(64)) => ({
+    id, gate, kind, ref: 'restricted:document-' + id, sha256: digest,
+    version: 'revision-1', provenance: 'Independent synthetic test evidence',
+    providerRole: 'manufacturer', providerRef: 'restricted:source-provider',
+    providedOn: '2026-10-20', verifiedOn: '2026-10-21', scope: bodich, facts,
+  });
+  const photoSha = 'b'.repeat(64);
+  const evidence = [
+    makeEvidence('identity-001', 'identity', 'manufacturer_authorization', {
+      subject: 'manufacture_and_brand_authority', origin: 'Synthetic manufacturing record',
+      authorizationRef: 'restricted:manufacturer-rights',
+    }),
+    makeEvidence('photo-001', 'imagery', 'exact_model_photo', {
+      subject: 'exact model photograph', rightsOwner: 'Test rights holder',
+      permissionRef: 'restricted:image-permission', assetSha256: photoSha,
+      photoType: 'photograph',
+    }, photoSha),
+    makeEvidence('spec-001', 'specifications', 'independent_specification', {
+      subject: 'Synthetic measurement', name: 'thrust', value: 100, unit: 'N',
+    }),
+    ...KINDS.editorial.map((kind, index) => makeEvidence('editorial-' + index,
+      'editorial', kind, { subject: kind, copySha256: copySha })),
+  ];
+  const approvedDoc = clone(fixture);
+  approvedDoc.records = [{ sourceId: 'kt-a', proposedBodichIdentity: bodich,
+    evidence, unresolved: [] }];
+  const approvedStates = clone(states);
+  approvedStates[0] = {
+    ...approvedStates[0], status: 'approved_for_promotion',
+    sourceReviewed: true, eligibleForPromotion: true,
+    gates: {
+      identity: { status: 'approved', details: bodich },
+      imagery: { status: 'approved', details: { model: 'X', assetSha256: photoSha } },
+      specifications: { status: 'approved',
+        details: { verifiedClaims: ['thrust: 100 N'] } },
+      editorial: { status: 'approved' },
+    },
+  };
+  const review = (doc, reviewerStates = approvedStates, sourceSnapshot = sourcesWithCopy) =>
+    validateIntake(doc, sourceSnapshot, ledger, reviewerStates, { expectedCount: 2 });
+  const green = review(approvedDoc);
+  assert.equal(green.eligible, 1);
+  assert.equal(green.rows[0].promotionEligible, true);
+  assert.ok(gateNames.every((gate) => green.rows[0].gates[gate].evidenceComplete));
+  assert.equal(green.pilotOutcome, 'requires_separate_promotion_pr');
+  const notApproved = review(approvedDoc, states);
+  assert.equal(notApproved.rows[0].promotionEligible, false,
+    'Full intake evidence must never automatically manufacture human approval');
+  const negative = (edit, pattern) => {
+    const doc = clone(approvedDoc); edit(doc);
+    assert.throws(() => review(doc), pattern);
+  };
+  negative((d) => { d.records[0].evidence[1].facts.assetSha256 = 'c'.repeat(64); },
+    /Original image digest differs/);
+  negative((d) => { d.records[0].evidence[1].scope.variant = 'B'; },
+    /without complete independent/);
+  negative((d) => { d.records[0].evidence[1].expiresOn = '2020-01-01'; },
+    /without complete independent/);
+  negative((d) => { d.records[0].evidence[3].facts.copySha256 = 'c'.repeat(64); },
+    /without complete independent/);
+  const staleSource = clone(sourcesWithCopy);
+  staleSource[0].copy.ro.summary = 'Changed Romanian copy invalidates all editorial sign-offs';
+  assert.throws(() => review(approvedDoc, approvedStates, staleSource), /without complete independent/);
+  const staleUnreviewed = review(approvedDoc, states, staleSource);
+  assert.ok(staleUnreviewed.rows[0].gates.editorial.reasons.includes('stale_or_mismatched_copy_digest'));
+  const conflicting = clone(approvedDoc);
+  conflicting.records[0].evidence.push(makeEvidence('spec-002', 'specifications',
+    'independent_specification',
+    { subject: 'Conflicting measurement', name: 'thrust', value: 110, unit: 'N' }));
+  assert.ok(review(conflicting, states).rows[0].gates.specifications.reasons
+    .includes('contradictory_specification_claims'));
+  assert.throws(() => review(conflicting), /without complete independent/);
+  const badStates = clone(approvedStates);
+  badStates[0].gates.imagery.details.assetSha256 = 'c'.repeat(64);
+  assert.throws(() => review(approvedDoc, badStates), /Approved photo digest/);
+  const badIdentity = clone(approvedStates);
+  badIdentity[0].gates.identity.details.model = 'Wrong-model';
+  assert.throws(() => review(approvedDoc, badIdentity));
+  const badSpecs = clone(approvedStates);
+  badSpecs[0].gates.specifications.details.verifiedClaims = ['thrust: 110 N'];
+  assert.throws(() => review(approvedDoc, badSpecs), /Human-approved spec/);
+  console.log('Genuine BODICH intake self-test passed: source coverage, time-safe dates, exact-copy/image digests, synthetic positive path, promotion blockers and current-epoch approval guards.');
 }
 function main(args) {
   assert.ok(args.length === 1 && ['--check', '--self-test', '--export'].includes(args[0]),
