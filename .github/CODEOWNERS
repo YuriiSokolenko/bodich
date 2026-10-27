@@ -1,0 +1,5 @@
+# Enable code-owner review requirements in GitHub branch protection; this file alone is not enforcement.
+/docs/editorial/review-matrix.json @YuriiSokolenko
+/src/seo/ @YuriiSokolenko
+/src/pages/robots.txt.ts @YuriiSokolenko
+/src/pages/sitemap.xml.ts @YuriiSokolenko

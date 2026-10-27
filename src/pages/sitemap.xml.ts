@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
 import { hrefFor, locales } from '../i18n';
-import { indexableInformationPages } from '../seo/policy';
+import { indexableInformationPages, isSeoPublicationContext } from '../seo/policy';
 
 const xmlEscape = (value: string) => value
   .replace(/&/g, '&amp;')
@@ -10,8 +10,7 @@ const xmlEscape = (value: string) => value
   .replace(/'/g, '&apos;');
 
 export const GET: APIRoute = ({ site }) => {
-  const releaseSafe = (import.meta.env.BODICH_MEDIA_PROFILE || 'release_safe') === 'release_safe';
-  const urls = site && releaseSafe ? indexableInformationPages().flatMap((page) =>
+  const urls = site && isSeoPublicationContext(site, import.meta.env.BODICH_MEDIA_PROFILE || 'release_safe', import.meta.env.BASE_URL) ? indexableInformationPages().flatMap((page) =>
     locales.map((locale) => {
       const location = xmlEscape(new URL(hrefFor(locale, page), site).toString());
       const alternates = locales.map((lang) =>

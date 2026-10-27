@@ -16,7 +16,7 @@ Never claim a specific thrust, fuel rate, certification, test result, warranty t
 
 ## Editorial review ledger (not the SKU review ledger)
 
-The machine-readable status is [review-matrix.json](review-matrix.json). Each of Home, Products, Accessories, Support, About and Contact starts with five **pending** checks: English writing, native Romanian, technical accuracy, legal/commercial claims and media rights. The `reviewedBy` and `reviewRecord` fields are empty.
+The machine-readable status is [review-matrix.json](review-matrix.json). Each of Home, Products, Accessories, Support, About and Contact starts with seven **pending** checks: English writing, native Romanian, technical accuracy, legal/commercial claims, media rights, accessibility/UX and SEO launch approval. The `reviewedBy` and `reviewRecord` fields are empty.
 
 Only a named authorized human may mark a gate approved, with a review record link in this repository. Reviewers must inspect the **actual rendered EN and RO pages**, not merely the original text. A rejected or pending gate blocks both locales from indexing, preserving EN/RO parity. Do not populate review fields or fabricate approvals from scripts, models or test fixtures.
 
@@ -30,13 +30,13 @@ Review checklist (all outstanding, not completed):
 - [ ] **Accessibility/UX reviewer:** heading sequence, meaningful image alt text, accurate bilingual source labels, descriptive internal links, keyboard navigation and small-screen readability.
 - [ ] **SEO reviewer:** chosen real `SITE_URL`, locale parity, metadata quality, canonical/hreflang paths, sitemap/robots settings, structured data accuracy, and search-engine launch decision.
 
-**Required evidence:** a recorded review discussion or PR URL, the reviewer identity, scope, approval date, and supporting primary evidence in the appropriate private/public record. Public approval record URLs are not a substitute for actual rights or legal clearance.
+**Required evidence:** a PR review permalink (`#pullrequestreview-ID`) in this repository, reviewer identity, scope, approval date, and supporting evidence. JSON alone cannot prove human approval. Protect the matrix with CODEOWNERS **and** repository branch protection requiring independent code-owner review; self-review of a PR is not approval. An authorized reviewer must verify the record is relevant. Review links are not substitutes for rights clearance. Public approval record URLs are not a substitute for actual rights or legal clearance.
 
 ## Technical SEO guardrails
 
 - `SITE_URL` is optional and must be set only to a confirmed production origin when publishing. Setting it for CI previews adds canonical/hreflang links **but does not authorize indexing**.
-- The `src/seo/policy.ts` allowlist reads the separate corporate review matrix. All five checks and a named review are required for **both languages**. Category/product paths are never opened by a corporate page approval.
-- `robots.txt` denies all routes unless a real canonical site is configured and an information page is fully reviewed. Explicit allow rules are anchored to the exact corporate page URL.
+- The `src/seo/policy.ts` allowlist reads the separate corporate review matrix. All seven checks and a named review permalink are required for **both languages**. Category/product paths are never opened by a corporate page approval.
+- `robots.txt` denies all routes unless a real canonical site is configured **at the host root** and an information page is fully reviewed. Exact allow rules open only reviewed pages plus shared `/_astro/` CSS/JS and favicon assets needed to render them. For non-root `ASTRO_BASE`, robots.txt is not served at the host root and crawlers ignore it: therefore page-level `noindex` remains mandatory and all indexing is disabled. For blocked pages, crawlers may not see meta `noindex` because robots itself disallows fetching.
 - `sitemap.xml` contains only reviewed EN/RO information pages. Today it is intentionally empty; no supplier/reference SKU or private review path belongs in a sitemap.
 - Page-level `noindex, nofollow, noarchive` is retained until human approval. Generic `WebPage` JSON-LD is generated only for a reviewed page on a configured site; neither `Product` nor `Organization` claims are synthesized.
 - The private catalog review pages and frozen-epoch files are not altered. This editorial review is **not** a Stage 13/14 review-ledger migration.

@@ -2,7 +2,7 @@
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import '../styles/global.css';
-import { isIndexableInformationPage } from '../seo/policy';
+import { isIndexableInformationPage, isSeoPublicationContext } from '../seo/policy';
 import { hrefFor, locales, translations, type Locale, type PageKey } from '../i18n';
 
 interface Props {
@@ -19,7 +19,7 @@ const resolvedTitle = title ?? pageText.title;
 const resolvedDescription = description ?? pageText.description;
 const site = Astro.site;
 const mediaProfile = import.meta.env.BODICH_MEDIA_PROFILE || 'release_safe';
-const indexable = Boolean(site) && mediaProfile === 'release_safe' && isIndexableInformationPage(page, subpath);
+const indexable = isSeoPublicationContext(site, mediaProfile, import.meta.env.BASE_URL) && isIndexableInformationPage(page, subpath);
 const pageSchema = indexable && site ? {
   '@context': 'https://schema.org',
   '@type': 'WebPage',

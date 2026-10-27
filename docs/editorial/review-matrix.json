@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "scope": "Public corporate-information pages only; not SKU/product approval",
   "pages": {
     "home": {
@@ -9,7 +9,9 @@
       "legal": "pending",
       "media": "pending",
       "reviewedBy": "",
-      "reviewRecord": ""
+      "reviewRecord": "",
+      "accessibility": "pending",
+      "seo": "pending"
     },
     "products": {
       "english": "pending",
@@ -18,7 +20,9 @@
       "legal": "pending",
       "media": "pending",
       "reviewedBy": "",
-      "reviewRecord": ""
+      "reviewRecord": "",
+      "accessibility": "pending",
+      "seo": "pending"
     },
     "accessories": {
       "english": "pending",
@@ -27,7 +31,9 @@
       "legal": "pending",
       "media": "pending",
       "reviewedBy": "",
-      "reviewRecord": ""
+      "reviewRecord": "",
+      "accessibility": "pending",
+      "seo": "pending"
     },
     "support": {
       "english": "pending",
@@ -36,7 +42,9 @@
       "legal": "pending",
       "media": "pending",
       "reviewedBy": "",
-      "reviewRecord": ""
+      "reviewRecord": "",
+      "accessibility": "pending",
+      "seo": "pending"
     },
     "about": {
       "english": "pending",
@@ -45,7 +53,9 @@
       "legal": "pending",
       "media": "pending",
       "reviewedBy": "",
-      "reviewRecord": ""
+      "reviewRecord": "",
+      "accessibility": "pending",
+      "seo": "pending"
     },
     "contact": {
       "english": "pending",
@@ -54,7 +64,9 @@
       "legal": "pending",
       "media": "pending",
       "reviewedBy": "",
-      "reviewRecord": ""
+      "reviewRecord": "",
+      "accessibility": "pending",
+      "seo": "pending"
     }
   }
 }
