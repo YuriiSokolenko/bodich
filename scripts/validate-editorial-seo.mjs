@@ -20,7 +20,7 @@ const forbiddenClaimSignals = [
   { label: 'performance assertion', test: /\b\d[\d.,]*\s*(?:kgf|rpm|kW|lit(?:er|re)s?\/?h|l\/?h|N\s+thrust|newtons?\s+thrust)\b/iu },
   { label: 'certification assertion', test: /\b(?:certified|certificat(?:ă|e)?|omologat(?:ă|e)?|CE\s+certified|ISO\s*\d+)\b/iu },
   { label: 'manufacturer assertion', test: /\b(?:BODICH\s+(?:manufactures|builds|is\s+(?:an?\s+)?(?:authorized\s+)?manufacturer)|BODICH\s+(?:este\s+)?(?:producător|fabrică))\b/iu },
-  { label: 'warranty promise', test: /\b(?:\d+[- ]?(?:year|month)\s+warranty|\d+\s*(?:ani|luni)\s+(?:de\s+)?garanție|guaranteed\s+warranty)\b/iu },
+  { label: 'warranty promise', test: /\b(?:\d+[- ]?(?:year|month)\s+warranty|\d+\s*(?:ani|luni)\s+(?:de\s+)?garanție|garanție\s+de\s+\d+\s+(?:ani|luni)|guaranteed\s+warranty)\b/iu },
 ];
 function scanClaimRisks(text) {
   return forbiddenClaimSignals.filter((entry) => entry.test.test(text)).map((entry) => entry.label);
@@ -162,7 +162,7 @@ for (const locale of locales) {
     assert(html.includes('name="robots" content="noindex, nofollow"'),
       path + ': category must not inherit informational approval');
     assert(!html.includes('type="application/ld+json"'), path + ': category cannot inherit corporate schema');
-    assert.deepEqual(scanClaimRisks(visibleText(html.match(/<main\\b[^>]*>([\\s\\S]*?)<\\/main>/)?.[1] || '')), [], path + ': unsupported category claim');
+    assert.deepEqual(scanClaimRisks(visibleText(html.match(/<main\b[^>]*>([\s\S]*?)<\/main>/)?.[1] || '')), [], path + ': unsupported category claim');
   }
 }
 for (const product of confirmedProducts) {
@@ -187,7 +187,7 @@ for (const url of foundUrls) {
   const route = publicRoutes.find((entry) => actualUrl(entry.urlPath) === url);
   assert(route && approved.includes(route.page), 'sitemap must include only approved information pages');
   for (const locale of locales) {
-    const counterpart = actualUrl(route.urlPath.replace(/^\\/(?:en|ro)\\//, `/${locale}/`));
+    const counterpart = actualUrl(route.urlPath.replace(/^\/(?:en|ro)\//, `/${locale}/`));
     assert(sitemap.includes(`hreflang="${locale}" href="${counterpart}"`), 'sitemap missing ' + locale + ' alternate');
   }
 }

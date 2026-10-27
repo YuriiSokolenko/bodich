@@ -93,6 +93,8 @@ jobs:
         run: npm run build
       - name: Verify bilingual editorial SEO, crawl policy and safe output
         run: npm run seo:routes
+      - name: Verify synthetic positive editorial approval in isolated build
+        run: npm run seo:fixture
       - name: Block unverified media from public distribution
         run: npm run media:public
       - name: Check generated localized routes
