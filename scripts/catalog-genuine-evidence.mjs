@@ -439,6 +439,21 @@ function test() {
   assert.throws(() => review(approvedDoc, approvedStates, staleSource), /without complete independent/);
   const staleUnreviewed = review(approvedDoc, states, staleSource);
   assert.ok(staleUnreviewed.rows[0].gates.editorial.reasons.includes('stale_or_mismatched_copy_digest'));
+  // Stage 18: optional independent BODICH copy evidence and measurement qualifiers.
+  // These must NOT replace or weaken the original supplier draft digest binding.
+  const detailProof = clone(approvedDoc);
+  detailProof.records[0].evidence[2].facts = {
+    subject: 'Exact dimension', name: 'dimension', value: 80, unit: 'mm', metric: 'diameter',
+  };
+  detailProof.records[0].evidence[3].facts.bodichCopySha256 = 'e'.repeat(64);
+  assert.equal(review(detailProof, states).eligible, 0,
+    'Extra BODICH-copy proof cannot create human ledger approval');
+  negative((d) => { d.records[0].evidence[2].facts.metric = 'diameter'; },
+    /Evidence metric must describe/);
+  negative((d) => { d.records[0].evidence[2].facts.scope = 'bare_engine'; },
+    /Evidence scope must describe/);
+  negative((d) => { d.records[0].evidence[3].facts.bodichCopySha256 = 'not-a-digest'; },
+    /Reviewed independent BODICH copy digest/);
   const authLeak = clone(approvedDoc);
   authLeak.records[0].evidence[0].provenance = 'Authorization: Bearer ABCDEFGHIJKL12345678';
   assert.throws(() => review(authLeak), /Unsafe or empty public metadata/);
