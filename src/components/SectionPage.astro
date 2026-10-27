@@ -15,7 +15,7 @@ interface Props {
 
 const { locale, page } = Astro.props;
 const t = translations[locale];
-const privateMedia = process.env.BODICH_MEDIA_PROFILE === 'private_review';
+const privateMedia = import.meta.env.BODICH_MEDIA_PROFILE === 'private_review';
 ---
 
 <SiteLayout locale={locale} page={page}>
