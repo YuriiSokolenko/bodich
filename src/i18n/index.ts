@@ -98,7 +98,7 @@ export const translations: Record<Locale, Translations> = {
     conceptRenderingLabel: 'AI-generated BODICH presentation visual — beta',
     mediaWithheldNotice: 'Concept image withheld — publication rights have not been verified.',
     conceptPreviewTitle: 'Turbine design concepts',
-    conceptPreviewIntro: 'Explore BODICH turbine visuals for this presentation beta. Images are AI-generated previews; product details are confirmed separately.',
+    conceptPreviewIntro: 'AI-generated turbine concept images appear only in designated presentation previews. They do not confirm product identity, specifications or availability.',
     conceptTurbineTitle: 'Turbine overview',
     conceptTurbineAlt: 'BODICH-branded miniature jet turbine concept with a red intake and dark metal housing.',
     conceptTurbineDescription: 'A full-engine concept view showing the housing, inlet and heat-tinted exhaust.',
@@ -114,7 +114,7 @@ export const translations: Record<Locale, Translations> = {
     footerCompanyTitle: 'Company',
     footerNavigationSuffix: 'footer navigation',
     catalogCategoriesTitle: 'Catalog categories',
-    catalogCategoriesIntro: 'Browse the planned catalog structure. Individual products will be listed only after BODICH confirms them.',
+    catalogCategoriesIntro: 'Browse the catalog categories below. Only products confirmed for publication appear as listings.',
     catalogExploreCategory: 'Explore category',
     catalogPlanningNotice: 'Category names describe the proposed catalog structure, not confirmed stock or available products.',
     catalogBreadcrumbLabel: 'Breadcrumb',
@@ -146,7 +146,7 @@ export const translations: Record<Locale, Translations> = {
       },
     },
     catalogLandingEmptyTitle: 'No confirmed products published yet',
-    catalogLandingEmptyDescription: 'The categories below describe planned navigation only. No listed models, prices, inventory or purchasing options have been approved.',
+    catalogLandingEmptyDescription: 'This section has no confirmed product listings yet. The category links below describe planned navigation, not current stock or purchasing options.',
     categoryPlannedLabel: 'Planned category',
     sectionContent: {
       support: {
@@ -225,7 +225,7 @@ export const translations: Record<Locale, Translations> = {
     conceptRenderingLabel: 'Vizual BODICH generat cu IA pentru prezentare — versiune beta',
     mediaWithheldNotice: 'Imagine conceptuală neafișată — drepturile de publicare nu au fost verificate.',
     conceptPreviewTitle: 'Concepte vizuale de turbine',
-    conceptPreviewIntro: 'Descoperă turbinele BODICH în versiunea beta de prezentare. Imaginile sunt vizualizări generate cu IA; detaliile produselor se confirmă separat.',
+    conceptPreviewIntro: 'Imaginile conceptuale de turbine generate cu IA apar doar în versiunile de prezentare desemnate. Acestea nu confirmă identitatea, specificațiile sau disponibilitatea produselor.',
     conceptTurbineTitle: 'Prezentare generală a turbinei',
     conceptTurbineAlt: 'Concept de turbină cu reacție miniaturală BODICH, cu admisie roșie și carcasă metalică închisă la culoare.',
     conceptTurbineDescription: 'O reprezentare conceptuală a motorului, cu carcasă, admisie și duză cu nuanțe termice.',
@@ -241,7 +241,7 @@ export const translations: Record<Locale, Translations> = {
     footerCompanyTitle: 'Companie',
     footerNavigationSuffix: 'navigare în subsol',
     catalogCategoriesTitle: 'Categorii de catalog',
-    catalogCategoriesIntro: 'Explorează structura planificată a catalogului. Produsele vor fi listate numai după confirmarea lor de către BODICH.',
+    catalogCategoriesIntro: 'Explorează categoriile de catalog de mai jos. Numai produsele confirmate pentru publicare apar în liste.',
     catalogExploreCategory: 'Explorează categoria',
     catalogPlanningNotice: 'Denumirile categoriilor descriu structura propusă a catalogului, nu stocuri sau produse disponibile confirmate.',
     catalogBreadcrumbLabel: 'Navigare ierarhică',
@@ -273,7 +273,7 @@ export const translations: Record<Locale, Translations> = {
       },
     },
     catalogLandingEmptyTitle: 'Nu există încă produse confirmate publicate',
-    catalogLandingEmptyDescription: 'Categoriile de mai jos reprezintă doar o structură de navigare planificată. Nu au fost aprobate modele, prețuri, stocuri sau opțiuni de cumpărare.',
+    catalogLandingEmptyDescription: 'Această secțiune nu conține încă produse confirmate. Linkurile către categorii descriu navigarea planificată, nu stocuri sau opțiuni de cumpărare.',
     categoryPlannedLabel: 'Categorie planificată',
     sectionContent: {
       support: {
