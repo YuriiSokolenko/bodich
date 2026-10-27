@@ -190,12 +190,22 @@ function audit(entries) {
         errors.push(finding('Non-release-safe HTML', name));
       if (/<form\b|href=["'](?:mailto:|tel:)/i.test(html))
         errors.push(finding('Unauthorized commerce/contact surface', name));
+      // CSP also blocks inline event handlers and javascript: navigation; reject
+      // those patterns proactively so future UI behaviour cannot silently break.
+      for (const tag of html.matchAll(/<[a-z][a-z0-9:-]*\b[^>]*>/gi)) {
+        const openTag = tag[0];
+        if (/\s+on[a-z][a-z0-9_-]*\s*=/i.test(openTag))
+          errors.push(finding('Inline event handler rejected by CSP', name));
+        if (/\s+(?:href|src|action|formaction|xlink:href)\s*=\s*(?:["']\s*|\s*)javascript\s*:/i.test(openTag))
+          errors.push(finding('JavaScript URL rejected by CSP', name));
+      }
       // Only externally hosted executable scripts are compatible with CSP.
       // JSON-LD is inert and independently checked by the SEO validator.
       for (const script of html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi)) {
         const attrs = script[1];
-        const type = attrs.match(/\btype\s*=\s*["']([^"']+)["']/i)?.[1]?.toLowerCase();
-        const src = attrs.match(/\bsrc\s*=\s*["']([^"']+)["']/i)?.[1];
+        // Attribute names must start at whitespace/start, never inside data-type/data-src.
+        const type = attrs.match(/(?:^|\s)type\s*=\s*["']([^"']+)["']/i)?.[1]?.toLowerCase();
+        const src = attrs.match(/(?:^|\s)src\s*=\s*["']([^"']+)["']/i)?.[1];
         if (type === 'application/ld+json' && !src) continue;
         if (!src) {
           errors.push(finding('Inline executable script rejected by CSP', name));
@@ -289,6 +299,27 @@ function selfTest() {
   negative('inline executable JavaScript', (m) => m.set('en/index.html',
     '<html data-media-profile="release_safe"><script type="module">alert(1)</script></html>'),
     'Inline executable script');
+  negative('data-type cannot impersonate JSON-LD', (m) => m.set('en/index.html',
+    '<html data-media-profile="release_safe"><script data-type="application/ld+json">alert(1)</script></html>'),
+    'Inline executable script');
+  negative('data-src cannot impersonate external script', (m) => m.set('en/index.html',
+    '<html data-media-profile="release_safe"><script data-src="/_astro/safe.js">alert(1)</script></html>'),
+    'Inline executable script');
+  negative('inline event handler', (m) => m.set('en/index.html',
+    '<html data-media-profile="release_safe"><button onclick="alert(1)">Open</button></html>'),
+    'Inline event handler');
+  negative('inline event on image', (m) => m.set('en/index.html',
+    '<html data-media-profile="release_safe"><img src="/_astro/example.js" onload=alert(1)></html>'),
+    'Inline event handler');
+  negative('javascript href', (m) => m.set('en/index.html',
+    '<html data-media-profile="release_safe"><a href="javascript:alert(1)">Open</a></html>'),
+    'JavaScript URL');
+  negative('unquoted javascript href', (m) => m.set('en/index.html',
+    '<html data-media-profile="release_safe"><a href=javascript:alert(1)>Open</a></html>'),
+    'JavaScript URL');
+  negative('javascript form action', (m) => m.set('en/index.html',
+    '<html data-media-profile="release_safe"><input formaction="javascript:alert(1)"></html>'),
+    'JavaScript URL');
   negative('remote executable JavaScript', (m) => m.set('en/index.html',
     '<html data-media-profile="release_safe"><script src="https://evil.invalid/a.js"></script></html>'),
     'outside approved static assets');
@@ -296,6 +327,11 @@ function selfTest() {
   withStructuredData.set('en/index.html',
     '<html data-media-profile="release_safe"><script type="application/ld+json">{"@type":"WebPage"}</script></html>');
   assert.deepEqual(run(withStructuredData), [], 'Safe inert JSON-LD cannot be blocked');
+  const withExternalScript = new Map(valid);
+  withExternalScript.set('en/index.html',
+    '<html data-media-profile="release_safe"><script type="module" src="/_astro/safe.js"></script></html>');
+  assert.deepEqual(run(withExternalScript), [], 'Approved external script rejected');
+  assert.equal(pathId('en/cart/index.html'), digest('en/cart/index.html').slice(0, 20));
   const leaked = overlays.records[0].slug;
   const secretsInNames = new Map(valid);
   secretsInNames.set('_astro/' + leaked + '.js', 'const x=1;');
@@ -315,6 +351,21 @@ function selfTest() {
 
 if (process.argv.includes('--self-test')) {
   selfTest();
+} else if (process.argv.includes('--explain')) {
+  // Local-only opt-in reverse lookup. Never reveal private names in public CI logs.
+  assert(!process.env.CI && !process.env.GITHUB_ACTIONS,
+    'Local explanation is forbidden in CI; use the hashed release report');
+  const args = process.argv.slice(2);
+  assert(args[0] === '--explain' && args.length >= 2 && args.length <= 3,
+    'Usage: node scripts/verify-pages-release.mjs --explain <hash-prefix> [dist]');
+  const prefix = args[1].toLowerCase();
+  assert.match(prefix, /^[a-f0-9]{12,64}$/, 'Expected at least 12 hex digits');
+  const folder = resolve(args[2] ?? 'dist');
+  const candidates = new Set([...filesForRoutes(), '_headers']);
+  if (existsSync(folder)) for (const entry of gather(folder)) candidates.add(entry.name);
+  const matches = [...candidates].filter((path) => digest(path).startsWith(prefix));
+  assert(matches.length === 1, 'No unique local path for hash prefix');
+  console.log('Local path matching hash: ' + matches[0]);
 } else {
   assertPolicy();
   const flags = process.argv.slice(2);
