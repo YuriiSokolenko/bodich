@@ -10,7 +10,8 @@ const xmlEscape = (value: string) => value
   .replace(/'/g, '&apos;');
 
 export const GET: APIRoute = ({ site }) => {
-  const urls = site ? indexableInformationPages().flatMap((page) =>
+  const releaseSafe = (import.meta.env.BODICH_MEDIA_PROFILE || 'release_safe') === 'release_safe';
+  const urls = site && releaseSafe ? indexableInformationPages().flatMap((page) =>
     locales.map((locale) => {
       const location = xmlEscape(new URL(hrefFor(locale, page), site).toString());
       const alternates = locales.map((lang) =>

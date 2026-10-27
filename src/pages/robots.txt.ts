@@ -4,7 +4,8 @@ import { indexableInformationPages } from '../seo/policy';
 
 export const GET: APIRoute = ({ site }) => {
   // Missing canonical domain or incomplete human approvals must fail closed.
-  const pages = site ? indexableInformationPages() : [];
+  const releaseSafe = (import.meta.env.BODICH_MEDIA_PROFILE || 'release_safe') === 'release_safe';
+  const pages = site && releaseSafe ? indexableInformationPages() : [];
   const lines = ['User-agent: *', 'Disallow: /'];
   if (site && pages.length) {
     // $ anchors these exceptions so approval of /en/ does not open /en/products/.

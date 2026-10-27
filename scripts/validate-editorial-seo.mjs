@@ -56,7 +56,7 @@ const base = (process.env.ASTRO_BASE || '/').replace(/\/+$/, '');
 const domain = process.env.SITE_URL ? new URL(process.env.SITE_URL) : null;
 const actualUrl = (path) => domain ? new URL(`${base}${path}`, domain).toString() : null;
 const load = (...segments) => readFileSync(join(dist, ...segments, 'index.html'), 'utf8');
-const approved = pageKeys.filter((key) => isApproved(matrix.pages[key]));
+const reviewedPages = pageKeys.filter((key) => isApproved(matrix.pages[key]));
 const titles = new Set(), descriptions = new Set();
 const expectedPaths = new Set();
 const publicRoutes = [];
@@ -71,10 +71,13 @@ for (const locale of locales) {
     expectedPaths.add(`/${locale}/${category.section}/${category.id}/`);
   }
 }
+const profile = publicRoutes[0]?.html.match(/data-media-profile="([^"]+)"/)?.[1];
+const approved = profile === 'release_safe' ? reviewedPages : [];
 assert.equal(confirmedProducts.length, 0,
   'Stage 17 cannot approve catalog products or alter the Stage 13/14 gate');
 for (const { locale, page, urlPath, html } of publicRoutes) {
   assert(html.includes(`<html lang="${locale}"`), urlPath + ': wrong language');
+  assert(html.includes(`data-media-profile="${profile}"`), urlPath + ': mismatched build profile');
   const main = html.match(/<main\b[^>]*>([\s\S]*?)<\/main>/)?.[1] || '';
   assert.equal((main.match(/<h1\b/g) || []).length, 1, urlPath + ': must have one H1');
   assert(main.includes('<h2'), urlPath + ': missing H2');
