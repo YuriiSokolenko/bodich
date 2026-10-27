@@ -72,6 +72,12 @@ const allowedAsset = (path, id, projectRoot = root) => {
  * A missing generated diagram is visible as MISSING, not silently approved.
  */
 export function assemble({ inventory, overrides, art, review, ledgerStates = null, genuineReport = null, hasAsset = existsSync, expectedCount = 132 }) {
+  // Real catalog builds must never silently bypass the independent genuine-evidence guard.
+  // The smaller 2-record fixture is intentionally allowed to omit external evidence inputs.
+  assert.ok(expectedCount !== 132 || (ledgerStates && genuineReport),
+    'Production gallery requires both the validated ledger and genuine evidence-gap report');
+  assert.ok(!genuineReport || ledgerStates,
+    'Ledger states required alongside the genuine evidence-gap report');
   const evidenceRows = genuineReport && new Map(genuineReport.rows.map((r) => [r.sourceId, r]));
   if (evidenceRows) assert.equal(evidenceRows.size, expectedCount, 'Genuine evidence-gap coverage drift');
   const decisions = ledgerStates && new Map(ledgerStates.map((r) => [r.sourceId, r]));
@@ -141,8 +147,8 @@ export function assemble({ inventory, overrides, art, review, ledgerStates = nul
       reviewBlockers: decision?.blockers || gateNames.map((g) => g + ': not_reviewed'),
       genuineEvidence: genuine,
       sourceReviewed: decision?.sourceReviewed || false,
-      bodichIdentityVerified: Boolean(decision?.bodichIdentityVerified && (genuine ? genuine.bodichIdentityVerified : true)),
-      eligibleForPromotion: Boolean(decision?.eligibleForPromotion && (genuine ? genuine.promotionEligible : true)),
+      bodichIdentityVerified: Boolean(decision?.bodichIdentityVerified && genuine?.bodichIdentityVerified),
+      eligibleForPromotion: Boolean(decision?.eligibleForPromotion && genuine?.promotionEligible),
       title: source.sourceTitle || '(untitled supplier reference)',
       sourceUrl: url,
       category: section,
@@ -616,6 +622,10 @@ export function isDirectExecution(entry = process.argv[1]) {
 function selfTest() {
   const data = fixture();
   const rows = assemble(data);
+  assert.throws(() => assemble({ ...data, expectedCount: 132 }),
+    /Production gallery requires both/);
+  assert.throws(() => assemble({ ...data, genuineReport: { rows: [] } }),
+    /Ledger states required alongside/);
   assert.equal(rows.length, 2);
   assert.equal(rows.filter((r) => r.illustrationAvailable).length, 1);
   assert.equal(rows[0].gates.modelSpecificPhoto, 'missing');
