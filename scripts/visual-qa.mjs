@@ -409,13 +409,21 @@ try {
             const overflow = await page.evaluate(() =>
               document.documentElement.scrollWidth - document.documentElement.clientWidth);
             assert(overflow <= 1, `${locale}/${section} overflows by ${overflow}px`);
-            const mismatchedLinks = await page.locator('main a[href^="/"]').evaluateAll(
-              (links, lang) => links.map(link => link.getAttribute('href'))
-                .filter(href => !href?.startsWith('/' + lang + '/')),
+            const wrongLocaleLinks = await page.locator('body a[href^="/"]').evaluateAll(
+              (links, currentLocale) => links
+                .filter(link => {
+                  const href = link.getAttribute('href') ?? '';
+                  const isSwitcher = Boolean(link.closest('header [role="group"]'));
+                  const target = isSwitcher
+                    ? (currentLocale === 'en' ? 'ro' : 'en')
+                    : currentLocale;
+                  return !href.startsWith('/' + target + '/');
+                })
+                .map(link => link.getAttribute('href')),
               locale,
             );
-            assert.deepEqual(mismatchedLinks, [],
-              `${locale}/${section}: internal links must preserve locale`);
+            assert.deepEqual(wrongLocaleLinks, [],
+              `${locale}/${section}: navigation and footer links must stay localized; switcher must switch`);
             assert.equal(await page.locator('main form').count(), 0,
               'No live forms or checkout may appear in the preview');
             assert.equal(await page.locator('main a[href^="mailto:"], main a[href^="tel:"]').count(), 0,
@@ -429,8 +437,10 @@ try {
                   .getAttribute('href'), pathFor(locale, target));
               }
             } else {
-              assert.equal(await page.locator('main nav[aria-label]').count() >= 1, true,
-                'Section needs accessible breadcrumbs');
+              const breadcrumb = page.locator('main nav[aria-label] > ol');
+              assert.equal(await breadcrumb.count(), 1, 'Section needs ordered breadcrumb navigation');
+              assert.equal(await breadcrumb.locator('[aria-current="page"]').count(), 1,
+                'Breadcrumb needs one current-page label');
               if (section === 'products' || section === 'accessories') {
                 assert.equal(await page.locator('[data-catalog-landing-empty]').count(), 1,
                   'Landing page must show the zero-approved-product state');
