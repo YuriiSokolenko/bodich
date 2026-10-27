@@ -139,6 +139,9 @@ try {
   unlinkSync(unreferenced);
   console.log(run('npm', ['run', 'check']));
   console.log(run('npm', ['run', 'build']));
+  // Execute Stage 17's real route loop with nonempty CI-only products.
+  // This verifies both product.categoryId and product.slug against built routes.
+  console.log(run('npm', ['run', 'seo:routes']));
   console.log(run('npm', ['run', 'media:public']));
   console.log(run('node', ['scripts/validate-catalog.mjs', '--routes', 'dist']));
 
@@ -198,6 +201,7 @@ try {
     'export const confirmedProducts: readonly ConfirmedCatalogProduct[] = '
       + JSON.stringify([products[0]], null, 2) + ';'));
   console.log(run('npm', ['run', 'build']));
+  console.log(run('npm', ['run', 'seo:routes']));
   for (const locale of ['en', 'ro']) {
     assert(!html(locale, 'products').includes('data-catalog-landing-empty'),
       locale + ' engine approval must keep Products nonempty');

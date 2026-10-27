@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 2,
+  "scope": "Public corporate-information pages only; not SKU/product approval",
+  "pages": {
+    "home": {
+      "english": "pending",
+      "romanian": "pending",
+      "technical": "pending",
+      "legal": "pending",
+      "media": "pending",
+      "reviewedBy": "",
+      "reviewRecord": "",
+      "accessibility": "pending",
+      "seo": "pending"
+    },
+    "products": {
+      "english": "pending",
+      "romanian": "pending",
+      "technical": "pending",
+      "legal": "pending",
+      "media": "pending",
+      "reviewedBy": "",
+      "reviewRecord": "",
+      "accessibility": "pending",
+      "seo": "pending"
+    },
+    "accessories": {
+      "english": "pending",
+      "romanian": "pending",
+      "technical": "pending",
+      "legal": "pending",
+      "media": "pending",
+      "reviewedBy": "",
+      "reviewRecord": "",
+      "accessibility": "pending",
+      "seo": "pending"
+    },
+    "support": {
+      "english": "pending",
+      "romanian": "pending",
+      "technical": "pending",
+      "legal": "pending",
+      "media": "pending",
+      "reviewedBy": "",
+      "reviewRecord": "",
+      "accessibility": "pending",
+      "seo": "pending"
+    },
+    "about": {
+      "english": "pending",
+      "romanian": "pending",
+      "technical": "pending",
+      "legal": "pending",
+      "media": "pending",
+      "reviewedBy": "",
+      "reviewRecord": "",
+      "accessibility": "pending",
+      "seo": "pending"
+    },
+    "contact": {
+      "english": "pending",
+      "romanian": "pending",
+      "technical": "pending",
+      "legal": "pending",
+      "media": "pending",
+      "reviewedBy": "",
+      "reviewRecord": "",
+      "accessibility": "pending",
+      "seo": "pending"
+    }
+  }
+}

@@ -5,6 +5,7 @@ import ActionLink from './ui/ActionLink.astro';
 import ConceptImage from './ui/ConceptImage.astro';
 import SiteContainer from './ui/SiteContainer.astro';
 import TurbineConceptPreview from './TurbineConceptPreview.astro';
+import EditorialPanel from './EditorialPanel.astro';
 import { categoriesFor, productsInCategory } from '../catalog';
 import { hrefFor, translations, type Locale, type PageKey } from '../i18n';
 
@@ -149,6 +150,7 @@ const sectionHasApprovedProducts = catalogSection !== null
           </div>
         </section>
       )}
+      <EditorialPanel locale={locale} page={page} />
     </SiteContainer>
   </section>
 </SiteLayout>

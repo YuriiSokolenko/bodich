@@ -1,0 +1,27 @@
+---
+import { editorialContent } from '../content/editorial';
+import type { Locale, PageKey } from '../i18n';
+
+interface Props {
+  locale: Locale;
+  page: PageKey;
+}
+
+const { locale, page } = Astro.props;
+const content = editorialContent[locale][page];
+const titleId = `editorial-${page}-heading`;
+---
+
+<section data-editorial-page={page} aria-labelledby={titleId} class="pb-site-section">
+  <p data-editorial-source class="text-xs font-semibold uppercase tracking-[.15em] text-bodich-accent">{content.sourceLabel}</p>
+  <h2 id={titleId} class="mt-4 max-w-4xl font-display text-2xl font-bold text-bodich-ink sm:text-3xl">{content.heading}</h2>
+  <p class="mt-4 max-w-3xl text-base leading-7 text-bodich-muted">{content.lead}</p>
+  <div class="mt-8 grid gap-5 md:grid-cols-3">
+    {content.entries.map((entry) => (
+      <article class="rounded-control border border-bodich-border bg-bodich-panel/80 p-6">
+        <h3 class="text-lg font-bold leading-snug text-bodich-ink">{entry.title}</h3>
+        <p class="mt-4 text-sm leading-7 text-bodich-muted">{entry.body}</p>
+      </article>
+    ))}
+  </div>
+</section>
