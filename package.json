@@ -45,7 +45,8 @@
     "seo:fixture": "node scripts/verify-editorial-approval-fixture.mjs",
     "catalog:products:check": "node scripts/catalog-product-registry.mjs --check",
     "catalog:products:self-test": "node scripts/catalog-product-registry.mjs --self-test",
-    "catalog:products:export": "node scripts/catalog-product-registry.mjs --export"
+    "catalog:products:export": "node scripts/catalog-product-registry.mjs --export",
+    "catalog:products:dist": "node scripts/catalog-product-registry.mjs --dist-check dist"
   },
   "engines": {
     "node": ">=24 <25"
