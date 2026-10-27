@@ -183,7 +183,7 @@ try {
       locale + ' approved turbine category should not carry a planned badge');
     const accessoriesLanding = html(locale, 'accessories');
     const approvedControlCard = accessoriesLanding.match(
-      /<a data-category-link="ecu-controls"[\\s\\S]*?<\\/a>/,
+      /<a data-category-link="ecu-controls"[\s\S]*?<\/a>/,
     )?.[0];
     assert(approvedControlCard, 'Approved control category link is missing');
     assert(!approvedControlCard.includes('data-planned-category'),
