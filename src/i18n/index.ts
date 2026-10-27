@@ -48,7 +48,6 @@ type Translations = {
   conceptIntakeAlt: string;
   conceptIntakeDescription: string;
   conceptNotice: string;
-  placeholder: string;
   browseProducts: string;
   backHome: string;
   footerNote: string;
@@ -107,7 +106,6 @@ export const translations: Record<Locale, Translations> = {
     conceptIntakeAlt: 'Close-up of a conceptual BODICH turbine intake with red housing, protective grille and central cone.',
     conceptIntakeDescription: 'An enlarged design detail of the inlet grille, spinner and fittings.',
     conceptNotice: 'Models, technical specifications and availability will be shown only after they are verified.',
-    placeholder: 'Content for this section is being prepared. Product specifications and company contact details will be published when confirmed.',
     browseProducts: 'Explore products',
     backHome: 'Back to home',
     footerNote: 'Website in preparation. No online purchases are available yet.',
@@ -129,11 +127,11 @@ export const translations: Record<Locale, Translations> = {
     catalogUnconfirmedDetailsNotice: 'Additional technical details and prices are not published until confirmed.',
     catalogBackToCategory: 'Back to category',
     homeExploreTitle: 'Explore the BODICH preview',
-    homeExploreIntro: 'Discover the site structure and conceptual visuals. This presentation beta does not offer verified products or online sales.',
+    homeExploreIntro: 'Discover the proposed site structure. Concept images appear only in designated presentation previews; online sales are unavailable.',
     homeFeatures: {
       products: {
         title: 'Turbine concepts',
-        description: 'View the proposed engine category and clearly identified AI-generated turbine visuals.',
+        description: 'Explore the proposed turbine category. AI-generated concept images are available only in designated presentation previews.',
         action: 'Explore turbines',
       },
       accessories: {
@@ -164,13 +162,13 @@ export const translations: Record<Locale, Translations> = {
         lead: 'BODICH is presented here through a bilingual website concept. The preview is not a statement of verified company history, manufacturing capability or product availability.',
         items: [
           { title: 'What this site demonstrates', description: 'A bilingual structure for exploring turbine-related product categories, brand presentation and future resources.' },
-          { title: 'How visuals are used', description: 'Labelled AI-generated turbine designs illustrate a presentation concept. They are not photographs of approved products.' },
+          { title: 'How visuals are used', description: 'AI-generated turbine concepts, when displayed in an authorized presentation preview, are illustrations rather than product photographs.' },
           { title: 'Verification before publication', description: 'Model identity, specifications, corporate claims and image usage must be verified independently before release.', link: 'products', linkLabel: 'Explore proposed categories' },
         ],
         status: 'Legal entity details, addresses and manufacturing claims have not been published because they remain unconfirmed.',
       },
       contact: {
-        lead: 'Official BODICH inquiry details are not confirmed for this website preview. We will not display an invented email address, telephone number or contact form.',
+        lead: 'Official BODICH contact details have not yet been confirmed for this preview.',
         items: [
           { title: 'Official contact details', description: 'A validated business email address, telephone number and postal address have not been supplied for publication.' },
           { title: 'No message collection', description: 'This is a static presentation site. It does not accept messages, collect form submissions or create support tickets.' },
@@ -235,7 +233,6 @@ export const translations: Record<Locale, Translations> = {
     conceptIntakeAlt: 'Detaliu al admisiei unei turbine BODICH conceptuale, cu carcasă roșie, grilaj de protecție și con central.',
     conceptIntakeDescription: 'Detaliu vizual al grilajului de admisie, al conului central și al racordurilor.',
     conceptNotice: 'Modelele, specificațiile tehnice și disponibilitatea vor fi prezentate numai după verificare.',
-    placeholder: 'Conținutul acestei secțiuni este în curs de pregătire. Specificațiile produselor și datele de contact ale companiei vor fi publicate după confirmare.',
     browseProducts: 'Explorează produsele',
     backHome: 'Înapoi la pagina principală',
     footerNote: 'Site în pregătire. Cumpărăturile online nu sunt încă disponibile.',
@@ -257,11 +254,11 @@ export const translations: Record<Locale, Translations> = {
     catalogUnconfirmedDetailsNotice: 'Detaliile tehnice suplimentare și prețurile nu sunt publicate înainte de confirmare.',
     catalogBackToCategory: 'Înapoi la categorie',
     homeExploreTitle: 'Explorează prezentarea BODICH',
-    homeExploreIntro: 'Descoperă structura site-ului și imaginile conceptuale. Această versiune beta nu oferă produse verificate sau vânzări online.',
+    homeExploreIntro: 'Descoperă structura propusă a site-ului. Imaginile conceptuale apar doar în versiunile de prezentare desemnate; cumpărăturile online nu sunt disponibile.',
     homeFeatures: {
       products: {
         title: 'Concepte de turbine',
-        description: 'Vezi categoria propusă de motoare și imaginile de turbine generate cu IA, marcate în mod clar.',
+        description: 'Explorează categoria propusă de turbine. Imaginile conceptuale generate cu IA apar doar în versiunile de prezentare desemnate.',
         action: 'Explorează turbinele',
       },
       accessories: {
@@ -292,16 +289,16 @@ export const translations: Record<Locale, Translations> = {
         lead: 'BODICH este prezentat aici printr-un concept de site bilingv. Previzualizarea nu confirmă istoricul firmei, capacitatea de producție sau disponibilitatea produselor.',
         items: [
           { title: 'Ce prezintă acest site', description: 'O structură bilingvă pentru explorarea categoriilor de produse asociate turbinelor, a imaginii de brand și a resurselor viitoare.' },
-          { title: 'Cum sunt folosite imaginile', description: 'Vizualurile de turbine generate cu IA și marcate explicit ilustrează un concept de prezentare. Nu sunt fotografii ale unor produse aprobate.' },
+          { title: 'Cum sunt folosite imaginile', description: 'Imaginile conceptuale de turbine generate cu IA, atunci când sunt afișate în versiunile de prezentare autorizate, sunt ilustrații, nu fotografii de produse.' },
           { title: 'Verificare înainte de publicare', description: 'Identitatea modelelor, specificațiile, afirmațiile despre companie și drepturile asupra imaginilor trebuie verificate separat.', link: 'products', linkLabel: 'Explorează categoriile propuse' },
         ],
         status: 'Datele juridice, adresele și afirmațiile despre producție nu sunt publicate deoarece nu au fost confirmate.',
       },
       contact: {
-        lead: 'Datele oficiale de contact BODICH nu sunt confirmate pentru această previzualizare. Nu vom afișa adrese de e-mail, numere de telefon sau formulare inventate.',
+        lead: 'Datele oficiale de contact BODICH nu au fost încă confirmate pentru această previzualizare.',
         items: [
           { title: 'Date oficiale de contact', description: 'Nu au fost furnizate pentru publicare o adresă de e-mail profesională, un număr de telefon și o adresă poștală validate.' },
-          { title: 'Fără colectare de mesaje', description: 'Acesta este un site static de prezentare. Nu primește mesaje, formulare trimise sau solicitări de asistență.' },
+          { title: 'Fără colectare de mesaje', description: 'Acesta este un site static de prezentare. Nu preia mesaje, formulare completate sau solicitări de asistență.' },
           { title: 'Ce poți explora', description: 'Poți explora structura propusă a catalogului și stadiul actual al documentației.', link: 'support', linkLabel: 'Citește informațiile de asistență' },
         ],
         status: 'În această versiune beta nu se pot trimite solicitări, plasa comenzi sau cere servicii.',
