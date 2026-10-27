@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev",
-    "check": "astro check && npm run media:check && npm run media:self-test && node scripts/validate-catalog.mjs && node scripts/validate-catalog.mjs --self-test && npm run catalog:review:ledger:check && npm run catalog:review:ledger:self-test && npm run catalog:genuine:check && npm run catalog:genuine:self-test && npm run catalog:source:check && npm run catalog:reconcile && npm run seo:check && npm run seo:self-test",
+    "check": "astro check && npm run media:check && npm run media:self-test && node scripts/validate-catalog.mjs && node scripts/validate-catalog.mjs --self-test && npm run catalog:review:ledger:check && npm run catalog:review:ledger:self-test && npm run catalog:genuine:check && npm run catalog:genuine:self-test && npm run catalog:products:check && npm run catalog:products:self-test && npm run catalog:source:check && npm run catalog:reconcile && npm run seo:check && npm run seo:self-test",
     "build": "astro build",
     "build:beta": "BODICH_MEDIA_PROFILE=beta_presentation npm run media:stage-beta && BODICH_MEDIA_PROFILE=beta_presentation npm run build && BODICH_MEDIA_PROFILE=beta_presentation npm run media:beta",
     "preview": "astro preview",
@@ -42,7 +42,10 @@
     "seo:self-test": "node scripts/validate-editorial-seo.mjs --self-test",
     "seo:check": "node scripts/validate-editorial-seo.mjs",
     "seo:routes": "node scripts/validate-editorial-seo.mjs --routes dist",
-    "seo:fixture": "node scripts/verify-editorial-approval-fixture.mjs"
+    "seo:fixture": "node scripts/verify-editorial-approval-fixture.mjs",
+    "catalog:products:check": "node scripts/catalog-product-registry.mjs --check",
+    "catalog:products:self-test": "node scripts/catalog-product-registry.mjs --self-test",
+    "catalog:products:export": "node scripts/catalog-product-registry.mjs --export"
   },
   "engines": {
     "node": ">=24 <25"
