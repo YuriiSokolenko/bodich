@@ -16,8 +16,8 @@ const expectedLabels = {
   ro: { products: 'Produse', footer: ['Explorează', 'Companie'] },
 };
 const heroExpectations = {
-  en: { caption: 'AI concept — not a real BODICH product photo', altFragment: 'miniature jet turbine' },
-  ro: { caption: 'Concept generat cu IA — nu este o fotografie a unui produs BODICH real', altFragment: 'turboreactor miniatural' },
+  en: { caption: 'AI-generated BODICH presentation visual — beta', altFragment: 'miniature jet turbine' },
+  ro: { caption: 'Vizual BODICH generat cu IA pentru prezentare — versiune beta', altFragment: 'turboreactor miniatural' },
 };
 const failures = [];
 const checks = [];
