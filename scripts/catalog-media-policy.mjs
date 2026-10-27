@@ -7,7 +7,7 @@ import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { copyFileSync, existsSync, lstatSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { dirname, join, relative, resolve, sep } from 'node:path';
+import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -62,12 +62,13 @@ export function validateEntries(entries) {
       problems.push('Invalid media usage: ' + entry.path);
     if (entry.usage === 'public_approved' || entry.rightsStatus === 'cleared_with_evidence') {
       if (entry.rightsStatus !== 'cleared_with_evidence' || entry.usage !== 'public_approved' ||
-          !entry.rightsEvidence || !entry.clearanceReviewer || !entry.clearanceDate ||
-          !entry.permittedUses?.includes('public_website'))
+          !/^restricted:[a-zA-Z0-9._/-]+$/.test(entry.rightsEvidence ?? '') ||
+          !entry.clearanceReviewer || !/^\d{4}-\d{2}-\d{2}$/.test(entry.clearanceDate ?? '') ||
+          !entry.permittedUses?.includes('public_website') || !entry.sha256)
         problems.push('Incomplete human clearance evidence: ' + entry.path);
     }
-    if (entry.classification === 'ai_concept' && entry.classification === 'verified_product_photo')
-      problems.push('Impossible concept photo classification: ' + entry.path);
+    if (entry.classification === 'ai_concept' && entry.kind === 'exact_model_photo')
+      problems.push('AI concept cannot be classified as exact-model photography: ' + entry.path);
     if (entry.classification === 'ai_concept' && entry.sourceId)
       problems.push('Marketing AI concepts must not be bound to a source SKU: ' + entry.path);
     if (entry.derivedFrom && (!safePath(entry.derivedFrom) || entry.derivedFrom === entry.path))
@@ -133,12 +134,25 @@ export function collectMedia(entries, dir = root, { requireGenerated = false } =
 
 export function publicExposureProblems(dir = root, dist = null) {
   const problems = [];
-  for (const path of walk(resolve(dir, 'public')))
-    problems.push('Unverified asset in public/: public/' + path);
+  const allow = new Map(registryEntries(dir)
+    .filter((e) => e.usage === 'public_approved' && e.rightsStatus === 'cleared_with_evidence')
+    .map((e) => [e.path, e]));
+  const verify = (repoPath, physicalPath, label) => {
+    const e = allow.get(repoPath);
+    if (!e) {
+      problems.push('Unverified asset in ' + label + ': ' + repoPath);
+      return;
+    }
+    if (!e.sha256 || sha256(readFileSync(physicalPath)) !== e.sha256)
+      problems.push('Cleared asset differs from its approved bytes: ' + repoPath);
+  };
+  for (const file of walk(resolve(dir, 'public')))
+    verify('public/' + file, resolve(dir, 'public', file), 'public/');
   if (dist) {
-    for (const path of walk(resolve(dir, dist)))
-      problems.push('Unreviewed image file in shippable dist: ' + path);
-    // Scan rendered HTML too: links to remote images or now-removed concept URLs are leaks.
+    for (const file of walk(resolve(dir, dist)))
+      verify('public/' + file, resolve(dir, dist, file), 'shippable dist');
+    // Check all static image URLs including srcset, not just locally copied files.
+    // A future genuinely approved product photo may be referenced, but not a concept.
     const scanHtml = (at) => {
       if (!existsSync(at)) return;
       for (const item of readdirSync(at, { withFileTypes: true })) {
@@ -146,8 +160,13 @@ export function publicExposureProblems(dir = root, dist = null) {
         if (item.isDirectory()) scanHtml(name);
         else if (item.name.endsWith('.html')) {
           const html = readFileSync(name, 'utf8');
-          if (/\/images\/turbines\/|bodich-(?:hero|card|intake)-[a-z0-9-]+\.webp|<img[^>]+(?:\.webp|\.png)/i.test(html))
-            problems.push('Uncleared art referenced in shippable HTML: ' + relative(dir, name));
+          const refs = [...html.matchAll(/\/(?:images\/[a-zA-Z0-9_./-]+\.(?:webp|png|jpe?g|avif|svg)|favicon\.svg)/g)]
+            .map((match) => match[0]);
+          for (const imageUrl of refs) {
+            const path = 'public' + imageUrl;
+            if (!allow.has(path))
+              problems.push('Uncleared art referenced in shippable HTML: ' + relative(dir, name) + ' -> ' + imageUrl);
+          }
         }
       }
     };
