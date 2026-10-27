@@ -363,7 +363,7 @@ function selfTest() {
     /Invalid mass measurement/);
   bad((d) => { d.products[0].variants[0].claims.push(clone(d.products[0].variants[0].claims[0])); },
     /Conflicting\/duplicate/);
-  const stale = clone(env);
+  const stale = structuredClone(env);
   stale.report.rows[0].promotionEligible = false;
   bad(() => {}, /Verified product missing promotion prerequisites/, stale);
   const draft = clone(doc);
@@ -374,14 +374,12 @@ function selfTest() {
   assert.equal(ok(draft, stale).proposed, 1);
   assert.throws(() => planManualPromotion(ok(draft, stale), product.id),
     /No manual promotion plan/);
-  const mediaUnknown = clone(doc);
-  mediaUnknown.products[0].media[0].assetSha256 = '3'.repeat(64);
   bad((d) => { d.products[0].media[0].assetSha256 = sha; },
     /Illustration\/concept cannot/, { ...env, nonPhotos: new Set([sha]) });
-  const expired = clone(env);
+  const expired = structuredClone(env);
   expired.intake.records[0].evidence[0].expiresOn = '2020-01-01';
   bad(() => {}, /Cleared photo needs/, expired);
-  const withoutProof = clone(env);
+  const withoutProof = structuredClone(env);
   withoutProof.intake.records[0].evidence.pop();
   bad(() => {}, /Unsupported technical claim/, withoutProof);
   assert.equal(ok({ ...doc, products: [] }).sourceReferences, 1);
