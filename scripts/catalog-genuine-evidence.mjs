@@ -96,7 +96,8 @@ function evidenceItem(item, seen) {
   checkKeys(item.scope, ['manufacturer', 'model', 'variant']);
   for (const value of Object.values(item.scope)) safeText(value);
   checkKeys(item.facts, ['subject'], ['origin', 'authorizationRef', 'rightsOwner',
-    'permissionRef', 'assetSha256', 'photoType', 'name', 'value', 'unit', 'copySha256']);
+    'permissionRef', 'assetSha256', 'photoType', 'name', 'value', 'unit', 'copySha256',
+    'metric', 'scope', 'bodichCopySha256']);
   safeText(item.facts.subject);
   const f = item.facts;
   if (item.kind === 'manufacturer_authorization') {
@@ -123,8 +124,26 @@ function evidenceItem(item, seen) {
     assert.ok(typeof f.value === 'number' && Number.isFinite(f.value), 'Spec value must be numeric');
     assert.ok(typeof f.unit === 'string' && /^[A-Za-z°%/0-9.-]{1,24}$/.test(f.unit),
       'Unit required for each exact-model specification');
+    if (f.metric !== undefined)
+      assert.ok(((f.name === 'dimension' && ['diameter', 'length'].includes(f.metric)) ||
+        (f.name === 'speed' && ['turbine', 'propeller'].includes(f.metric))),
+        'Evidence metric must describe its exact measurement axis');
+    if (f.scope !== undefined)
+      assert.ok(f.name === 'mass' && ['bare_engine',
+        'assembly_with_integrated_hardware', 'not_stated'].includes(f.scope),
+        'Evidence scope must describe mass measurement boundary');
+  } else {
+    assert.ok(f.metric === undefined && f.scope === undefined,
+      'Measurement metric/scope allowed on specifications only');
   }
-  if (item.gate === 'editorial') assert.match(f.copySha256, SHA, 'Reviewed copy digest required');
+  if (item.gate === 'editorial') {
+    assert.match(f.copySha256, SHA, 'Reviewed source copy digest required');
+    if (f.bodichCopySha256 !== undefined)
+      assert.match(f.bodichCopySha256, SHA, 'Reviewed independent BODICH copy digest required');
+  } else {
+    assert.ok(f.bodichCopySha256 === undefined,
+      'BODICH copy digest belongs to editorial evidence only');
+  }
 }
 function assess(record, sourceId, state, epoch, currentCopy) {
   const reasons = Object.fromEntries(gateNames.map((g) => [g, []]));
@@ -153,7 +172,10 @@ function assess(record, sourceId, state, epoch, currentCopy) {
       const observed = new Map();
       for (const e of found) {
         const { name, value, unit } = e.facts;
-        const normalizedName = name.trim().normalize('NFKC').toLocaleLowerCase('en').replace(/\s+/g, ' ');
+        const normalizedName = JSON.stringify([
+          name.trim().normalize('NFKC').toLocaleLowerCase('en').replace(/\s+/g, ' '),
+          e.facts.metric ?? null, e.facts.scope ?? null,
+        ]);
         const label = JSON.stringify([value, unit]);
         if (observed.has(normalizedName) && observed.get(normalizedName) !== label)
           reasons.specifications.push('contradictory_specification_claims');
