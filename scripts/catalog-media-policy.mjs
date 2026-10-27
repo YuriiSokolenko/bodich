@@ -134,7 +134,7 @@ export function collectMedia(entries, dir = root, { requireGenerated = false } =
 
 export function publicExposureProblems(dir = root, dist = null) {
   const problems = [];
-  const allow = new Map(registryEntries(dir)
+  const allow = new Map((existsSync(resolve(dir, registryPath)) ? registryEntries(dir) : [])
     .filter((e) => e.usage === 'public_approved' && e.rightsStatus === 'cleared_with_evidence')
     .map((e) => [e.path, e]));
   const verify = (repoPath, physicalPath, label) => {
