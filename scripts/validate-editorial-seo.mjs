@@ -17,16 +17,16 @@ assert.deepEqual(editorialReviewProblems(matrix), [], 'invalid public editorial 
 // JavaScript \b is ASCII-oriented even under /u: use Unicode property
 // boundaries so Romanian "în", "fabrică", etc. are detected reliably.
 // This is a conservative tripwire, not a substitute for human claim review.
-const leftBoundary = String.raw`(?<![\\p{L}\\p{N}])`;
-const rightBoundary = String.raw`(?![\\p{L}\\p{N}])`;
+const leftBoundary = String.raw`(?<![\p{L}\p{N}])`;
+const rightBoundary = String.raw`(?![\p{L}\p{N}])`;
 const claimPattern = (source) => new RegExp(leftBoundary + '(?:' + source + ')' + rightBoundary, 'iu');
 const forbiddenClaimSignals = [
-  { label: 'published price', test: claimPattern(String.raw`(?:[$€£]\\s*\\d[\\d.,]*|\\d[\\d.,]*\\s*(?:[$€£]|EUR|USD|RON|lei))`) },
+  { label: 'published price', test: claimPattern(String.raw`(?:[$€£]\s*\d[\d.,]*|\d[\d.,]*\s*(?:[$€£]|EUR|USD|RON|lei))`) },
   { label: 'stock or immediate sales', test: claimPattern(String.raw`(?:in stock|available now|buy now|shop now|în stoc|disponibil(?:ă|e|i)? acum|cumpără acum)`) },
-  { label: 'performance assertion', test: claimPattern(String.raw`(?:\\d[\\d.,]*\\s*(?:kgf|rpm|kW|lit(?:er|re)s?\\/?h|l\\/?h|N\\s+thrust|newtons?\\s+thrust))`) },
-  { label: 'certification assertion', test: claimPattern(String.raw`(?:certified|certificat(?:ă|e)?|omologat(?:ă|e)?|CE\\s+certified|ISO\\s*\\d+)`) },
-  { label: 'manufacturer assertion', test: claimPattern(String.raw`(?:BODICH\\s+(?:manufactures|builds|is\\s+(?:an?\\s+)?(?:authorized\\s+)?manufacturer|(?:este\\s+)?(?:producător|fabrică)))`) },
-  { label: 'warranty promise', test: claimPattern(String.raw`(?:\\d+[- ]?(?:year|month)\\s+warranty|\\d+\\s*(?:ani|luni)\\s+(?:de\\s+)?garanție|garanție\\s+de\\s+\\d+\\s+(?:ani|luni)|guaranteed\\s+warranty)`) },
+  { label: 'performance assertion', test: claimPattern(String.raw`(?:\d[\d.,]*\s*(?:kgf|rpm|kW|lit(?:er|re)s?\/?h|l\/?h|N\s+thrust|newtons?\s+thrust))`) },
+  { label: 'certification assertion', test: claimPattern(String.raw`(?:certified|certificat(?:ă|e)?|omologat(?:ă|e)?|CE\s+certified|ISO\s*\d+)`) },
+  { label: 'manufacturer assertion', test: claimPattern(String.raw`(?:BODICH\s+(?:manufactures|builds|is\s+(?:an?\s+)?(?:authorized\s+)?manufacturer|(?:este\s+)?(?:producător|fabrică)))`) },
+  { label: 'warranty promise', test: claimPattern(String.raw`(?:\d+[- ]?(?:year|month)\s+warranty|\d+\s*(?:ani|luni)\s+(?:de\s+)?garanție|garanție\s+de\s+\d+\s+(?:ani|luni)|guaranteed\s+warranty)`) },
 ];
 function scanClaimRisks(text) {
   return forbiddenClaimSignals.filter((entry) => entry.test.test(text)).map((entry) => entry.label);
