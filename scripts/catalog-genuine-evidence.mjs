@@ -280,7 +280,7 @@ function test() {
   const ok = (d) => validateIntake(d, sources, ledger, states, { expectedCount: 2 });
   const empty = ok(fixture);
   assert.equal(empty.total, 2); assert.equal(empty.eligible, 0);
-  assert.equal(empty.rows[0].pilotOutcome, 'blocked_on_hold_no_signoff');
+  assert.equal(empty.rows[0].pilotOutcome, 'blocked');
   assert.ok(empty.rows[0].blockers.some((r) => r.includes('manufacturer_authorization')));
   const bad = (fn, pattern) => {
     const doc = clone(fixture); fn(doc); assert.throws(() => ok(doc), pattern);
