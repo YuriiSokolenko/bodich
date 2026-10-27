@@ -30,7 +30,7 @@ All evidence originals, contracts, unlicensed photos, personal identity document
 
 With Node 24 and npm ci:
 
-- npm run catalog:products:check — verifies empty committed registry, current epoch, exact 132-source coverage, rights, no site-side registry leaks, and zero confirmedProducts.
+- npm run catalog:products:check — verifies empty committed registry, current epoch, exact 132-source coverage, rights, no site-side registry leaks, and no automatic promotion into confirmedProducts. The real production collection remains empty.
 - npm run catalog:products:self-test — exercises an isolated *synthetic* in-memory verified product, variant, localized copy, claim/photo evidence, positive manual-PR eligibility and extensive negative fixtures. It never writes products, source decisions, human events or public routes.
 - npm run catalog:products:export — writes the ignored local-only report visual-qa/bodich-product-registry-audit.json. The report is not publication authorization. Do not ship generated exports.
 - npm run check and website CI — include these commands plus Stage 13/14 validation, reconciliation, public route and media guards.
