@@ -167,8 +167,8 @@ function assess(record, sourceId, state, epoch, currentCopy) {
         'Human gate approved without complete independent current-epoch evidence: ' + sourceId + ' ' + gate);
       if (gate === 'identity') {
         assert.equal(state.gates.identity.details?.manufacturer, identity.manufacturer);
-        assert.equal(ledger.gates.identity.details?.model, identity.model);
-        assert.equal(ledger.gates.identity.details?.variant, identity.variant);
+        assert.equal(state.gates.identity.details?.model, identity.model);
+        assert.equal(state.gates.identity.details?.variant, identity.variant);
       }
       if (gate === 'imagery')
         assert.ok(img.some((e) => e.facts.assetSha256 === decision.details?.assetSha256 &&
@@ -189,7 +189,7 @@ function assess(record, sourceId, state, epoch, currentCopy) {
   const eligible = evidenceComplete && state.eligibleForPromotion;
   return { sourceId, epoch, pilot: false, intakePresent: Boolean(record),
     proposedBodichIdentity: identity, evidenceCount: evidence.length,
-    ledgerStatus: ledger.status, sourceReviewed: state.sourceReviewed,
+    ledgerStatus: state.status, sourceReviewed: state.sourceReviewed,
     bodichIdentityVerified: gateState.identity.reviewState === 'approved' && gateState.identity.evidenceComplete,
     promotionEligible: eligible, previousEpochOnly: (state.previousEpochs || []).map((e) =>
       ({ epoch: e.epoch, effective: false, eventCount: e.eventCount })),
