@@ -1,4 +1,0 @@
-User-agent: *
-Disallow: /
-# Preview-only. Switch to an allow policy after legal/contact/product content
-# and a real domain have been approved for launch.

@@ -91,6 +91,8 @@ jobs:
           if-no-files-found: error
       - name: Build static website
         run: npm run build
+      - name: Verify bilingual editorial SEO, crawl policy and safe output
+        run: npm run seo:routes
       - name: Block unverified media from public distribution
         run: npm run media:public
       - name: Check generated localized routes
@@ -116,7 +118,10 @@ jobs:
           npm run catalog:review:check
           node scripts/verify-base-preview.mjs dist
           npm run media:public
+          npm run seo:routes
       - name: Validate card and detail templates with isolated CI-only records
         run: node scripts/verify-product-fixture.mjs
       - name: Build presentation beta with registered AI visuals and visible disclosures
-        run: npm run build:beta
+        run: |
+          npm run build:beta
+          npm run seo:routes
