@@ -45,10 +45,10 @@ export const editorialContent: Record<Locale, Record<PageKey, EditorialSection>>
     support: {
       sourceLabel: 'General FAQ · not service or safety advice',
       heading: 'Frequently asked questions',
-      lead: 'These answers explain the current information boundaries. Consult the original approved manual and qualified support for any real installation.',
+      lead: 'These answers explain the current information boundaries. Consult the manufacturer's approved manual and qualified support for any real installation.',
       entries: [
         { title: 'Can I download a BODICH operating manual?', body: 'Not from this preview. No model-specific manual or publication rights have been approved.' },
-        { title: 'Are the concept images photographs of saleable engines?', body: 'No. Presentation visuals are AI-generated concepts and cannot establish an engine identity, test result or stock status.' },
+        { title: 'Do presentation illustrations prove product availability?', body: 'No. When shown in an authorized beta, illustrations are AI-generated; release-safe pages omit them. Neither case confirms a specific engine, test result or stock status.' },
         { title: 'Can I use these descriptions to install an engine?', body: 'No. Introductory explanations do not replace verified instructions, model-specific safety limits or qualified technical assessment.' },
       ],
     },
@@ -107,10 +107,10 @@ export const editorialContent: Record<Locale, Record<PageKey, EditorialSection>>
     support: {
       sourceLabel: 'Întrebări frecvente generale · nu sunt instrucțiuni de service',
       heading: 'Întrebări frecvente',
-      lead: 'Răspunsurile explică limitele informațiilor disponibile. Pentru un montaj real, consultați manualul aprobat și personal calificat.',
+      lead: 'Răspunsurile explică limitele informațiilor disponibile. Pentru un montaj real, consultă manualul aprobat al producătorului și cere sprijinul personalului calificat.',
       entries: [
         { title: 'Pot descărca un manual de utilizare BODICH?', body: 'Nu din această previzualizare. Niciun manual specific unui model și niciun drept de publicare nu au fost aprobate.' },
-        { title: 'Imaginile conceptuale arată motoare disponibile la vânzare?', body: 'Nu. Vizualurile de prezentare sunt concepte generate cu IA și nu dovedesc identitatea, testarea sau disponibilitatea unui motor.' },
+        { title: 'Ilustrațiile de prezentare confirmă disponibilitatea produselor?', body: 'Nu. În versiunea beta autorizată, ilustrațiile sunt generate cu IA; în versiunea publică sigură nu sunt afișate. Niciuna dintre versiuni nu confirmă identitatea, testarea sau disponibilitatea unui motor.' },
         { title: 'Pot instala un motor folosind aceste explicații?', body: 'Nu. Explicațiile introductive nu înlocuiesc instrucțiunile verificate, limitele de siguranță ale modelului și evaluarea tehnică specializată.' },
       ],
     },

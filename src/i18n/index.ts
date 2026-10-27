@@ -307,7 +307,7 @@ export const translations: Record<Locale, Translations> = {
     pages: {
       home: {
         label: 'Acasă',
-        title: 'Ghid de turbine miniaturale și prezentarea site-ului',
+        title: 'Ghid despre turbine miniaturale și prezentarea site-ului',
         description: 'Explorează informații introductive despre turbine și versiunea română a site-ului BODICH. Modelele și ofertele nu sunt confirmate.',
       },
       products: {

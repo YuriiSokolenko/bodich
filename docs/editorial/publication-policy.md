@@ -43,6 +43,6 @@ Review checklist (all outstanding, not completed):
 
 ## Regression checks and release
 
-`npm run seo:self-test` tests fail-closed editorial approval fixtures, including partial/rejected reviews and bogus evidence. `npm run seo:routes` checks the built pages for unique EN/RO metadata, local navigation, language links, heading structure, source labels, image alt text, indexability, canonical URLs, sitemap, robots, schema and prohibited audit artifacts. CI runs it on release-safe, non-root and beta builds. Production and mobile-browser visual QA plus independent human review are still required before launch.
+`npm run seo:self-test` exercises the same runtime approval function used in Astro, including fully approved synthetic records, partial/rejected reviews, malformed evidence and EN/RO forbidden-claim negatives. `npm run seo:routes` checks the built pages for unique EN/RO metadata, local navigation, language links, heading structure, source labels, image alt text, indexability, canonical URLs, sitemap, robots, schema and prohibited audit artifacts. CI runs it on release-safe, non-root and beta builds. Production and mobile-browser visual QA plus independent human review are still required before launch.
 
 Related: #1 (roadmap), #24 (catalog), #49 (frozen review ledger), #55 (media policy), #56 (site UX), #57 (this stage).
