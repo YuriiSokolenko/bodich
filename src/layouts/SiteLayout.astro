@@ -18,6 +18,7 @@ const resolvedTitle = title ?? pageText.title;
 const resolvedDescription = description ?? pageText.description;
 const site = Astro.site;
 const canonical = site ? new URL(hrefFor(locale, page, subpath), site).toString() : undefined;
+const privateMedia = import.meta.env.BODICH_MEDIA_PROFILE === 'private_review';
 const faviconHref = `${import.meta.env.BASE_URL.replace(/\/+$/, '')}/favicon.svg`;
 ---
 
@@ -33,7 +34,7 @@ const faviconHref = `${import.meta.env.BASE_URL.replace(/\/+$/, '')}/favicon.svg
     <meta property="og:title" content={resolvedTitle} />
     <meta property="og:description" content={resolvedDescription} />
     <title>{resolvedTitle} | BODICH</title>
-    <link rel="icon" type="image/svg+xml" href={faviconHref} />
+    {privateMedia && <link rel="icon" type="image/svg+xml" href={faviconHref} />}
     {canonical && <link rel="canonical" href={canonical} />}
     {site && locales.map((lang) => (
       <link rel="alternate" hreflang={lang} href={new URL(hrefFor(lang, page, subpath), site).toString()} />

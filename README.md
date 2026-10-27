@@ -1,7 +1,3 @@
-<p align="center">
-  <img src="public/images/turbines/bodich-hero-concept.webp" alt="AI-generated concept rendering of a BODICH miniature jet turbine" width="100%" />
-</p>
-
 <h1 align="center">BODICH — Turbine Website</h1>
 
 <p align="center">
@@ -17,7 +13,9 @@
 </p>
 
 > [!IMPORTANT]
-> **Development preview — not a live store.** BODICH products, specifications, contact details, pricing, stock, legal policies and production domain are not confirmed or published. No orders or payments can be placed. The turbine artwork above is an **AI-generated concept rendering**, not a photograph of an existing BODICH product.
+> **Development preview — not a live store.** BODICH products, specifications, contact details, pricing, stock, legal policies and production domain are not confirmed or published. No orders or payments can be placed. Stored turbine imagery is **AI-generated concept art with unverified use rights**, not a photograph of an existing BODICH product.
+
+> **Media rights (Stage 15 / #55):** AI images and SVG studies are **unverified and not approved for public use**. The normal production build withholds them; neither the README nor website embeds an unapproved image. The existing source files remain in this **public GitHub repository and its history**—do not treat that as private storage or a license grant. See [auditable media registry and clearance process](docs/catalog/media-policy.md). For offline review only, run `BODICH_MEDIA_PROFILE=private_review npm run media:stage-private` in a disposable checkout and use the existing private gallery workflow. Never deploy a staged private-preview build.
 
 ## About
 

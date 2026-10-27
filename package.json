@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev",
-    "check": "astro check && node scripts/validate-catalog.mjs && node scripts/validate-catalog.mjs --self-test && npm run catalog:review:ledger:check && npm run catalog:review:ledger:self-test && npm run catalog:genuine:check && npm run catalog:genuine:self-test && npm run catalog:source:check && npm run catalog:reconcile",
+    "check": "astro check && npm run media:check && npm run media:self-test && node scripts/validate-catalog.mjs && node scripts/validate-catalog.mjs --self-test && npm run catalog:review:ledger:check && npm run catalog:review:ledger:self-test && npm run catalog:genuine:check && npm run catalog:genuine:self-test && npm run catalog:source:check && npm run catalog:reconcile",
     "build": "astro build",
     "preview": "astro preview",
     "catalog:intake": "node scripts/validate-catalog.mjs --intake",
@@ -29,7 +29,13 @@
     "catalog:review:ledger:plan": "node scripts/catalog-review-ledger.mjs --migrate-plan",
     "catalog:genuine:check": "node scripts/catalog-genuine-evidence.mjs --check",
     "catalog:genuine:self-test": "node scripts/catalog-genuine-evidence.mjs --self-test",
-    "catalog:genuine:export": "node scripts/catalog-genuine-evidence.mjs --export"
+    "catalog:genuine:export": "node scripts/catalog-genuine-evidence.mjs --export",
+    "media:check": "node scripts/catalog-media-policy.mjs --check",
+    "media:self-test": "node scripts/catalog-media-policy.mjs --self-test",
+    "media:generated": "node scripts/catalog-media-policy.mjs --require-generated",
+    "media:inventory": "node scripts/catalog-media-policy.mjs --inventory",
+    "media:public": "node scripts/catalog-media-policy.mjs --public dist",
+    "media:stage-private": "node scripts/catalog-media-policy.mjs --stage-private"
   },
   "engines": {
     "node": ">=24 <25"

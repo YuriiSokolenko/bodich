@@ -38,6 +38,7 @@ type Translations = {
   intro: string;
   heroImageAlt: string;
   conceptRenderingLabel: string;
+  mediaWithheldNotice: string;
   conceptPreviewTitle: string;
   conceptPreviewIntro: string;
   conceptTurbineTitle: string;
@@ -84,7 +85,8 @@ export const translations: Record<Locale, Translations> = {
     previewLabel: 'Website preview',
     intro: 'A new BODICH website is taking shape.',
     heroImageAlt: 'BODICH-branded miniature jet turbine with a red intake, dark metal housing and a bronze-blue heat-tinted exhaust nozzle against a charcoal background.',
-    conceptRenderingLabel: 'Concept rendering',
+    conceptRenderingLabel: 'AI concept — not a real BODICH product photo',
+    mediaWithheldNotice: 'Concept image withheld — publication rights have not been verified.',
     conceptPreviewTitle: 'Turbine design concepts',
     conceptPreviewIntro: 'Explore the visual direction for BODICH turbines. These are concept images, not listings of confirmed products.',
     conceptTurbineTitle: 'Turbine overview',
@@ -160,7 +162,8 @@ export const translations: Record<Locale, Translations> = {
     previewLabel: 'Previzualizarea site-ului',
     intro: 'Noul site BODICH este în curs de pregătire.',
     heroImageAlt: 'Motor turboreactor miniatural marca BODICH, cu admisie roșie, corp metalic închis la culoare și duză de evacuare cu reflexii de bronz și albastru, pe fundal gri închis.',
-    conceptRenderingLabel: 'Vizualizare conceptuală',
+    conceptRenderingLabel: 'Concept generat cu IA — nu este o fotografie a unui produs BODICH real',
+    mediaWithheldNotice: 'Imagine conceptuală neafișată — drepturile de publicare nu au fost verificate.',
     conceptPreviewTitle: 'Concepte vizuale de turbine',
     conceptPreviewIntro: 'Descoperă direcția vizuală a turbinelor BODICH. Imaginile sunt conceptuale și nu reprezintă produse confirmate.',
     conceptTurbineTitle: 'Prezentare generală a turbinei',

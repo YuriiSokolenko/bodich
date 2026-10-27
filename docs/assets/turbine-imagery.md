@@ -1,10 +1,14 @@
+# Rights status after Stage 15
+
+All referenced BODICH concepts and responsive WebP derivatives are **unverified / restricted review**. Previous generation briefs and terms context are historical provenance, **not proof of commercial publication permission**. Refer to [the media policy](../catalog/media-policy.md) for current asset hashes, default-deny publication gate and clearance evidence.
+
 # BODICH turbine imagery inventory
 
 ## Hero concept — Issue #10, Stage 3A
 
 | Property | Value |
 | --- | --- |
-| Asset | `public/images/turbines/bodich-hero-concept.webp` |
+| Asset | `docs/catalog/review-media/turbines/bodich-hero-concept.webp` |
 | Format | WebP, 1,672 × 941 pixels (wide, approximately 16:9) |
 | Optimized size | 60,106 bytes (approximately 59 KiB) |
 | SHA-256 | `d5882b9758b117898675d5da8407ba379783b9af772aa285942288cb0160bdbe` |
@@ -40,7 +44,7 @@
 
 | Property | Value |
 | --- | --- |
-| Asset | `public/images/turbines/bodich-card-concept-01.webp` |
+| Asset | `docs/catalog/review-media/turbines/bodich-card-concept-01.webp` |
 | Format | WebP, 1,254 × 1,254 pixels (1:1 square) |
 | Optimized size | 148,998 bytes (approximately 146 KiB) |
 | SHA-256 | `4bfe319393b64502c6203d1cb731e67729418a572c70190a88216251f673eefd` |
@@ -62,7 +66,7 @@ This is **asset 1 of 2 Stage 3B images completed so far** (the target series rem
 
 | Property | Value |
 | --- | --- |
-| Asset | `public/images/turbines/bodich-intake-detail-concept-02.webp` |
+| Asset | `docs/catalog/review-media/turbines/bodich-intake-detail-concept-02.webp` |
 | Format | WebP, 950 × 950 pixels (1:1 square) |
 | Optimized size | 130,848 bytes (approximately 128 KiB) |
 | SHA-256 | `bb7a5a098df5a1552b96a6af908c3c2f6044336ac92543deb722458a9aeab1e3` |

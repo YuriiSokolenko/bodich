@@ -1,5 +1,7 @@
 import { existsSync, lstatSync, readFileSync, readdirSync } from 'node:fs';
 import { inspectRaster, MAX_CATALOG_IMAGE_BYTES } from './catalog-image.mjs';
+import { unverifiedMediaDigests } from './catalog-media-policy.mjs';
+import { createHash } from 'node:crypto';
 import { runImageSelfTest } from './catalog-image-test.mjs';
 import { resolve, join, relative, isAbsolute } from 'node:path';
 import { catalogCategories, confirmedProducts } from '../src/catalog/data.ts';
@@ -61,6 +63,9 @@ function validateImage(image, label, report = fail, publicRoot = resolve('public
     report('Product "' + label + '" photo exceeds 5 MiB: ' + src);
     return;
   }
+  const digest = createHash('sha256').update(readFileSync(destination)).digest('hex');
+  if (unverifiedMediaDigests().has(digest))
+    report('Product "' + label + '" cannot use a registered unverified concept/diagram as product imagery');
   const extension = src.slice(src.lastIndexOf('.') + 1);
   const actual = inspectRaster(readFileSync(destination), extension);
   if (!actual || !actual.width || !actual.height) {

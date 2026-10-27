@@ -52,6 +52,7 @@ jobs:
         run: |
           npm run catalog:art:generate
           npm run catalog:art:check
+          npm run media:generated
       - name: Validate frozen ledger and fail-closed review transitions
         run: |
           git check-ignore -q visual-qa/catalog-review-audit.json
@@ -74,6 +75,7 @@ jobs:
             visual-qa/private-catalog-review/
             visual-qa/catalog-review-audit.json
             visual-qa/genuine-product-evidence-gaps.json
+            visual-qa/media-inventory.json
           retention-days: 7
           if-no-files-found: error
       - name: Upload SKU illustration review package
@@ -87,6 +89,8 @@ jobs:
           if-no-files-found: error
       - name: Build static website
         run: npm run build
+      - name: Block unverified media from public distribution
+        run: npm run media:public
       - name: Check generated localized routes
         run: |
           test -f dist/index.html
@@ -109,5 +113,6 @@ jobs:
           npm run catalog:reconcile:routes
           npm run catalog:review:check
           node scripts/verify-base-preview.mjs dist
+          npm run media:public
       - name: Validate card and detail templates with isolated CI-only records
         run: node scripts/verify-product-fixture.mjs

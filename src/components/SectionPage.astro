@@ -15,6 +15,7 @@ interface Props {
 
 const { locale, page } = Astro.props;
 const t = translations[locale];
+const privateMedia = import.meta.env.BODICH_MEDIA_PROFILE === 'private_review';
 ---
 
 <SiteLayout locale={locale} page={page}>
@@ -50,6 +51,7 @@ const t = translations[locale];
               </div>
             </div>
       <!-- Image width hints track SiteContainer (max-w-6xl and mobile/desktop gutters); update these when the layout changes. -->
+            {privateMedia ? (
             <ConceptImage
               src="/images/turbines/bodich-hero-concept.webp"
               srcset="/images/turbines/bodich-hero-concept-640.webp 640w, /images/turbines/bodich-hero-concept-960.webp 960w, /images/turbines/bodich-hero-concept.webp 1672w"
@@ -61,6 +63,9 @@ const t = translations[locale];
               priority
               class="mt-10 lg:mt-0"
             />
+            ) : (
+              <div data-media-withheld role="status" class="mt-10 rounded-control border border-bodich-border bg-bodich-panel p-8 text-center text-bodich-muted lg:mt-0">{t.mediaWithheldNotice}</div>
+            )}
           </div>
         ) : (
           <>

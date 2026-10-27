@@ -10,6 +10,7 @@ import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { validateLedger, contextOnDisk, gateNames } from './catalog-review-ledger.mjs';
+import { unverifiedMediaDigests } from './catalog-media-policy.mjs';
 
 export const INTAKE_PATH = 'docs/catalog/genuine-product-evidence.json';
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -108,6 +109,8 @@ function evidenceItem(item, seen) {
       assert.match(f.assetSha256, SHA);
       assert.equal(f.assetSha256, item.sha256,
         'Original image digest differs from approved-asset digest');
+      assert.ok(!unverifiedMediaDigests().has(item.sha256),
+        'Registered unverified concept or diagram cannot be exact-model photographic evidence');
       assert.equal(f.photoType, item.kind === 'exact_model_photo' ? 'photograph' : 'technical_illustration');
     }
   }
@@ -390,6 +393,9 @@ function test() {
     const doc = clone(approvedDoc); edit(doc);
     assert.throws(() => review(doc), pattern);
   };
+  negative((d) => { d.records[0].evidence[1].sha256 = 'd5882b9758b117898675d5da8407ba379783b9af772aa285942288cb0160bdbe';
+    d.records[0].evidence[1].facts.assetSha256 = d.records[0].evidence[1].sha256; },
+    /Registered unverified concept/);
   negative((d) => { d.records[0].evidence[1].facts.assetSha256 = 'c'.repeat(64); },
     /Original image digest differs/);
   negative((d) => { d.records[0].evidence[1].scope.variant = 'B'; },
