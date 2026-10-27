@@ -372,7 +372,8 @@ function selfTest() {
   const specification = { id: 'spec-1', kind: 'independent_specification',
     gate: 'specifications', verifiedOn: '2026-10-20', scope: identity,
     facts: { name: 'thrust', value: 100, unit: 'N' } };
-  const env = { ledger: { currentEpoch: 1, epochs: [{ revisions }] },
+  const env = { today: '2026-10-27',
+    ledger: { currentEpoch: 1, epochs: [{ epoch: 1, revisions }] },
     report: { epoch: 1, total: 1, rows: [{ sourceId: 'kt-1',
       promotionEligible: true, ledgerStatus: 'approved_for_promotion', blockers: [] }] },
     intake: { records: [{ sourceId: 'kt-1', proposedBodichIdentity: identity,
@@ -380,7 +381,9 @@ function selfTest() {
     expectedSourceCount: 1, unverified: new Set(), nonPhotos: new Set() };
   const edit = (state, name) => ({ state, name, summary: 'Synthetic example only',
     description: 'No actual BODICH product or performance claims.',
-    reviewRef: state === 'reviewed' ? 'restricted:synthetic-' + name.slice(0, 2) : null,
+    reviewRef: state === 'reviewed'
+      ? (name === 'Synthetic One' ? 'restricted:english-proof' : 'restricted:romanian-proof')
+      : null,
     copySha256: digest({ name, summary: 'Synthetic example only',
       description: 'No actual BODICH product or performance claims.' }) });
   const product = { id: 'bdc-synthetic-one', lifecycle: 'verified',
@@ -394,6 +397,34 @@ function selfTest() {
       kind: 'product_photo', ref: 'restricted:synthetic-photo', assetSha256: sha,
       rights: 'cleared', rightsEvidenceId: 'photo-1',
       alt: { en: 'Synthetic sample photograph', ro: 'Fotografie sintetică de test' } }] };
+  // Every editor proof binds to exactly the CURRENT combined EN/RO BODICH text,
+  // in addition to Stage 14's separate supplier-draft digest and human ledger.
+  const bilingual = digest(Object.fromEntries(['en', 'ro'].map((lang) => {
+    const { name, summary, description } = product.editorial[lang];
+    return [lang, { name, summary, description }];
+  })));
+  for (const kind of ['english_review', 'native_romanian_review', 'legal_review', 'commercial_review']) {
+    env.intake.records[0].evidence.push({
+      id: kind, gate: 'editorial', kind,
+      ref: kind === 'english_review' ? 'restricted:english-proof' :
+        kind === 'native_romanian_review' ? 'restricted:romanian-proof' :
+        'restricted:' + kind,
+      verifiedOn: '2026-10-20', scope: identity,
+      facts: { copySha256: 'a'.repeat(64), bodichCopySha256: bilingual },
+    });
+  }
+  env.intake.records[0].evidence.push(
+    { id: 'mass-1', gate: 'specifications', kind: 'independent_specification',
+      verifiedOn: '2026-10-20', scope: identity,
+      facts: { name: 'mass', value: 250, unit: 'g', scope: 'bare_engine' } },
+    { id: 'diameter-1', gate: 'specifications', kind: 'independent_specification',
+      verifiedOn: '2026-10-20', scope: identity,
+      facts: { name: 'dimension', value: 80, unit: 'mm', metric: 'diameter' } },
+  );
+  product.variants[0].claims.push(
+    { kind: 'mass', value: 250, unit: 'g', scope: 'bare_engine', evidenceId: 'mass-1' },
+    { kind: 'dimension', value: 80, unit: 'mm', metric: 'diameter', evidenceId: 'diameter-1' },
+  );
   const doc = { schemaVersion: 1, purpose: PURPOSE, reviewEpoch: 1,
     reviewRevisions: revisions, products: [product] };
   const ok = (d = doc, e = env) => validateRegistry(d, e);
@@ -430,6 +461,15 @@ function selfTest() {
     /Invalid mass measurement/);
   bad((d) => { d.products[0].variants[0].claims.push(clone(d.products[0].variants[0].claims[0])); },
     /Conflicting\/duplicate/);
+  bad((d) => { d.products[0].variants[0].claims[1].scope = 'assembly_with_integrated_hardware'; },
+    /Unsupported technical claim/);
+  bad((d) => { d.products[0].variants[0].claims[2].metric = 'length'; },
+    /Unsupported technical claim/);
+  bad((d) => { delete d.products[0].variants[0].claims[2].metric; },
+    /independently evidenced axis/);
+  const noSpecAxis = structuredClone(env);
+  delete noSpecAxis.intake.records[0].evidence.find((i) => i.id === 'diameter-1').facts.metric;
+  bad(() => {}, /Unsupported technical claim/, noSpecAxis);
   const stale = structuredClone(env);
   stale.report.rows[0].promotionEligible = false;
   bad(() => {}, /Verified product missing promotion prerequisites/, stale);
@@ -447,7 +487,8 @@ function selfTest() {
   expired.intake.records[0].evidence[0].expiresOn = '2020-01-01';
   bad(() => {}, /Cleared photo needs/, expired);
   const withoutProof = structuredClone(env);
-  withoutProof.intake.records[0].evidence.pop();
+  withoutProof.intake.records[0].evidence = withoutProof.intake.records[0].evidence
+    .filter((item) => item.id !== 'spec-1');
   bad(() => {}, /Unsupported technical claim/, withoutProof);
   assert.equal(ok({ ...doc, products: [] }).sourceReferences, 1);
   console.log('Stage 18 synthetic-only registry tests passed: IDs, variants, bilingual copy, rights, source proof, epoch and manual promotion gates.');
