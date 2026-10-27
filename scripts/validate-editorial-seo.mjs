@@ -88,7 +88,7 @@ for (const { locale, page, urlPath, html } of publicRoutes) {
   assert(!descriptions.has(description), urlPath + ': duplicate localized description');
   titles.add(title); descriptions.add(description);
   const indexable = Boolean(domain && approved.includes(page));
-  assert(html.includes(`<meta name="robots" content="${indexable ? 'index, follow' : 'noindex, nofollow, noarchive'}"`),
+  assert(html.includes(`<meta name="robots" content="${indexable ? 'index, follow' : 'noindex, nofollow'}"`),
     urlPath + ': incorrect robots meta');
   const canonical = actualUrl(urlPath);
   if (domain) {
@@ -132,7 +132,7 @@ for (const locale of locales) {
   for (const category of catalogCategories) {
     const path = `/${locale}/${category.section}/${category.id}/`;
     const html = load(locale, category.section, category.id);
-    assert(html.includes('name="robots" content="noindex, nofollow, noarchive"'),
+    assert(html.includes('name="robots" content="noindex, nofollow"'),
       path + ': category must not inherit informational approval');
   }
 }
