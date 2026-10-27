@@ -6,8 +6,9 @@
  */
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
-import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
-import { dirname, relative, resolve } from 'node:path';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
+import { dirname, join, relative, resolve } from 'node:path';
+import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
 import { reportOnDisk } from './catalog-genuine-evidence.mjs';
 import { contextOnDisk } from './catalog-review-ledger.mjs';
@@ -564,6 +565,20 @@ function selfTest() {
   assert.throws(() => ok(rejectedConcept), /Verified product missing promotion prerequisites/);
   assert.throws(() => checkNoPublicLeak(doc, [{ id: product.id }]),
     /Private registry identity copied/);
+  // Test the independent build gate with synthetic leaked output, not with
+  // real company product data or an actual website build.
+  const syntheticDist = mkdtempSync(join(tmpdir(), 'bodich-private-registry-'));
+  try {
+    const page = join(syntheticDist, 'index.html');
+    writeFileSync(page, '<h1>Public static landing</h1>');
+    checkBuiltOutput(syntheticDist);
+    writeFileSync(page, '<script>const x="internal_bodich_products_unpublished"</script>');
+    assert.throws(() => checkBuiltOutput(syntheticDist), /Unpublished BODICH registry data/);
+    writeFileSync(page, '<span>bdv-synthetic-a</span>');
+    assert.throws(() => checkBuiltOutput(syntheticDist), /Unpublished BODICH registry data/);
+  } finally {
+    rmSync(syntheticDist, { recursive: true, force: true });
+  }
   assert.equal(ok({ ...doc, products: [] }).sourceReferences, 1);
   console.log('Stage 18 synthetic-only registry tests passed: IDs, variants, bilingual copy, rights, source proof, epoch and manual promotion gates.');
 }
