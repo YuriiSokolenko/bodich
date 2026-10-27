@@ -23,7 +23,8 @@ const load = (p) => JSON.parse(readFileSync(pathAt(p), 'utf8'));
 const SHA = /^[0-9a-f]{64}$/;
 const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const ID = /^(?:bdc|bdv|bdm)-[a-z0-9]+(?:-[a-z0-9]+)*$/;
-const evidenceRef = /^restricted:[a-zA-Z0-9][a-zA-Z0-9._/-]{2,160}$/;
+// Opaque identifiers only; never accept traversal-like path segments.
+const evidenceRef = /^restricted:[A-Za-z0-9_-]+(?:\/[A-Za-z0-9_-]+)*$/;
 const categoryIds = new Set(catalogCategories.map((item) => item.id));
 const clone = (v) => JSON.parse(JSON.stringify(v));
 const fold = (v) => v.normalize('NFKC').toLowerCase();
@@ -42,7 +43,8 @@ function safe(value, label, max = 320) {
     !/\b(?:password|secret|bearer)\s*[:=]/i.test(value), 'Unsafe or missing ' + label);
 }
 function restricted(ref, label) {
-  assert.ok(typeof ref === 'string' && evidenceRef.test(ref), label + ' requires restricted: pointer');
+  assert.ok(typeof ref === 'string' && ref.length <= 180 && evidenceRef.test(ref),
+    label + ' requires safe restricted: pointer');
 }
 function unique(name, value, taken) {
   assert.ok(typeof value === 'string' && ID.test(value) && value.startsWith(name + '-'),
@@ -55,14 +57,20 @@ function revision(rev) {
   keys(rev, ['inventory', 'overrides', 'art', 'copy']);
   for (const value of Object.values(rev)) assert.match(value, /^[a-f0-9]{40}$/, 'Invalid revision');
 }
-function activeProof(item, kind, identity) {
-  return item && item.kind === kind && item.verifiedOn !== null &&
-    (!item.expiresOn || item.expiresOn >= new Date().toISOString().slice(0, 10)) &&
+function validDate(date) {
+  return typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date) &&
+    !Number.isNaN(Date.parse(date)) && new Date(date).toISOString().slice(0, 10) === date;
+}
+function activeProof(item, kind, identity, today) {
+  return Boolean(item && item.kind === kind && validDate(item.verifiedOn) &&
+    item.verifiedOn <= today &&
+    (item.expiresOn === undefined || item.expiresOn === null ||
+      (validDate(item.expiresOn) && item.expiresOn >= today)) &&
     item.scope?.manufacturer === identity.manufacturer &&
     item.scope?.model === identity.model &&
-    item.scope?.variant === identity.variant;
+    item.scope?.variant === identity.variant);
 }
-function checkedSpec(spec, intakeRecord, identity, variantId) {
+function checkedSpec(spec, intakeRecord, identity, variantId, today) {
   keys(spec, ['kind', 'value', 'unit', 'evidenceId'], ['metric', 'scope']);
   assert.ok(Object.hasOwn(permittedSpecUnits, spec.kind), 'Unknown technical claim kind');
   assert.ok(permittedSpecUnits[spec.kind].includes(spec.unit), 'Unsupported spec unit');
@@ -78,14 +86,17 @@ function checkedSpec(spec, intakeRecord, identity, variantId) {
       'assembly_with_integrated_hardware', 'not_stated'].includes(spec.scope),
     'Invalid mass measurement scope');
   if (spec.kind === 'mass') assert.ok(spec.scope, 'Mass claim requires measurement scope');
+  if (['dimension', 'speed'].includes(spec.kind))
+    assert.ok(spec.metric, 'Dimension/speed claim requires independently evidenced axis');
   safe(spec.evidenceId, 'technical evidence ID', 101);
   const proof = intakeRecord?.evidence?.find((e) => e.id === spec.evidenceId);
-  assert.ok(activeProof(proof, 'independent_specification', identity) &&
+  assert.ok(activeProof(proof, 'independent_specification', identity, today) &&
     proof.facts.name === spec.kind && proof.facts.value === spec.value &&
-    proof.facts.unit === spec.unit,
+    proof.facts.unit === spec.unit &&
+    proof.facts.metric === spec.metric && proof.facts.scope === spec.scope,
     'Unsupported technical claim for variant ' + variantId + ': exact current independent evidence required');
 }
-function checkedMedia(media, variants, intakeBySource, ids, registeredUnverified, registeredNonPhotos) {
+function checkedMedia(media, variants, intakeBySource, ids, registeredUnverified, registeredNonPhotos, today) {
   keys(media, ['id', 'variantId', 'kind', 'ref', 'assetSha256', 'rights', 'alt',
     'rightsEvidenceId']);
   unique('bdm', media.id, ids);
@@ -107,7 +118,7 @@ function checkedMedia(media, variants, intakeBySource, ids, registeredUnverified
       safe(media.rightsEvidenceId, 'photo evidence ID', 101);
       const proof = intakeBySource.get(variant.sourceId)?.evidence
         ?.find((e) => e.id === media.rightsEvidenceId);
-      assert.ok(activeProof(proof, 'exact_model_photo', identity) &&
+      assert.ok(activeProof(proof, 'exact_model_photo', identity, today) &&
         proof.sha256 === media.assetSha256 &&
         proof.facts.assetSha256 === media.assetSha256 &&
         proof.facts.photoType === 'photograph' &&
@@ -135,11 +146,15 @@ function checkedEditorial(entry, lang) {
   else assert.equal(entry.reviewRef, null, 'Draft copy cannot claim completed review');
 }
 export function validateRegistry(registry, { report, ledger, intake, sources, published = [],
-  expectedSourceCount = 132, unverified = new Set(), nonPhotos = new Set() }) {
+  expectedSourceCount = 132, unverified = new Set(), nonPhotos = new Set(),
+  today = new Date().toISOString().slice(0, 10) }) {
   keys(registry, ['schemaVersion', 'purpose', 'reviewEpoch', 'reviewRevisions', 'products']);
   assert.equal(registry.schemaVersion, 1, 'Explicit registry migration required');
   assert.equal(registry.purpose, PURPOSE);
+  assert.ok(validDate(today), 'Validator today must be an ISO calendar date');
   assert.equal(registry.reviewEpoch, ledger.currentEpoch, 'Stale product registry review epoch');
+  assert.equal(ledger.epochs?.at(-1)?.epoch, ledger.currentEpoch,
+    'Current review epoch must be the last signed-off epoch');
   revision(registry.reviewRevisions);
   assert.deepEqual(registry.reviewRevisions, ledger.epochs.at(-1).revisions,
     'Stale product registry manifest revisions');
@@ -153,7 +168,7 @@ export function validateRegistry(registry, { report, ledger, intake, sources, pu
     'Invalid product collection');
 
   // Every producer namespace stays disjoint from supplier IDs and slugs,
-  // including case-insensitive/confusable duplicates.
+  // including case-folded collisions; ASCII-only ID/slug regexes forbid homoglyphs.
   const ids = new Set(sources.map((r) => fold(r.sourceId)));
   const slugs = new Set(sources.map((r) => fold(r.draftSlug)));
   const sourceClaims = new Set();
@@ -210,7 +225,7 @@ export function validateRegistry(registry, { report, ledger, intake, sources, pu
         'Invalid claim list');
       const claimKinds = new Set();
       for (const claim of variant.claims) {
-        checkedSpec(claim, intakeRecord, identity, variant.id);
+        checkedSpec(claim, intakeRecord, identity, variant.id, today);
         const metricKey = [claim.kind, claim.metric ?? '', claim.scope ?? ''].join(':');
         assert.ok(!claimKinds.has(metricKey), 'Conflicting/duplicate technical claim');
         claimKinds.add(metricKey);
@@ -221,7 +236,7 @@ export function validateRegistry(registry, { report, ledger, intake, sources, pu
       variants.push({ ...variant, identity });
     }
     for (const media of product.media)
-      checkedMedia(media, variants, intakeBySource, ids, unverified, nonPhotos);
+      checkedMedia(media, variants, intakeBySource, ids, unverified, nonPhotos, today);
     for (const variant of variants) {
       if (!product.media.some((m) => m.variantId === variant.id &&
         m.kind === 'product_photo' && m.rights === 'cleared'))
@@ -232,6 +247,30 @@ export function validateRegistry(registry, { report, ledger, intake, sources, pu
         blockers.push(lang + ':independent editorial review not recorded');
     if (product.media.some((m) => m.rights !== 'cleared'))
       blockers.push('unresolved media rights; remove/review non-cleared assets');
+    // Review of the SOURCE draft is not review of independent BODICH copy.
+    // All four Stage 14 editorial evidence kinds must bind to the current
+    // combined EN/RO product text for EVERY actual product variant.
+    const content = Object.fromEntries(['en', 'ro'].map((lang) => {
+      const { name, summary, description } = product.editorial[lang];
+      return [lang, { name, summary, description }];
+    }));
+    const combinedCopyDigest = digest(content);
+    for (const variant of variants) {
+      const proofs = intakeBySource.get(variant.sourceId)?.evidence ?? [];
+      const editorial = proofs.filter((proof) =>
+        proof.gate === 'editorial' && activeProof(proof, proof.kind, variant.identity, today) &&
+        proof.facts?.bodichCopySha256 === combinedCopyDigest);
+      for (const kind of ['english_review', 'native_romanian_review', 'legal_review', 'commercial_review']) {
+        const matches = editorial.filter((proof) => proof.kind === kind);
+        if (matches.length !== 1)
+          blockers.push(variant.id + ':missing or ambiguous independent BODICH ' + kind);
+        const lang = kind === 'english_review' ? 'en' :
+          kind === 'native_romanian_review' ? 'ro' : null;
+        if (lang && product.editorial[lang].state === 'reviewed' &&
+          !matches.some((proof) => proof.ref === product.editorial[lang].reviewRef))
+          blockers.push(variant.id + ':unbound ' + lang + ' editorial reviewRef');
+      }
+    }
     if (product.lifecycle === 'verified')
       assert.equal(blockers.length, 0, 'Verified product missing promotion prerequisites: ' +
         blockers.join('; '));
