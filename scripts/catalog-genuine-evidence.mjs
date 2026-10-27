@@ -96,7 +96,8 @@ function evidenceItem(item, seen) {
   checkKeys(item.scope, ['manufacturer', 'model', 'variant']);
   for (const value of Object.values(item.scope)) safeText(value);
   checkKeys(item.facts, ['subject'], ['origin', 'authorizationRef', 'rightsOwner',
-    'permissionRef', 'assetSha256', 'photoType', 'name', 'value', 'unit', 'copySha256']);
+    'permissionRef', 'assetSha256', 'photoType', 'name', 'value', 'unit', 'copySha256',
+    'metric', 'scope', 'bodichCopySha256']);
   safeText(item.facts.subject);
   const f = item.facts;
   if (item.kind === 'manufacturer_authorization') {
@@ -123,8 +124,26 @@ function evidenceItem(item, seen) {
     assert.ok(typeof f.value === 'number' && Number.isFinite(f.value), 'Spec value must be numeric');
     assert.ok(typeof f.unit === 'string' && /^[A-Za-z°%/0-9.-]{1,24}$/.test(f.unit),
       'Unit required for each exact-model specification');
+    if (f.metric !== undefined)
+      assert.ok(((f.name === 'dimension' && ['diameter', 'length'].includes(f.metric)) ||
+        (f.name === 'speed' && ['turbine', 'propeller'].includes(f.metric))),
+        'Evidence metric must describe its exact measurement axis');
+    if (f.scope !== undefined)
+      assert.ok(f.name === 'mass' && ['bare_engine',
+        'assembly_with_integrated_hardware', 'not_stated'].includes(f.scope),
+        'Evidence scope must describe mass measurement boundary');
+  } else {
+    assert.ok(f.metric === undefined && f.scope === undefined,
+      'Measurement metric/scope allowed on specifications only');
   }
-  if (item.gate === 'editorial') assert.match(f.copySha256, SHA, 'Reviewed copy digest required');
+  if (item.gate === 'editorial') {
+    assert.match(f.copySha256, SHA, 'Reviewed source copy digest required');
+    if (f.bodichCopySha256 !== undefined)
+      assert.match(f.bodichCopySha256, SHA, 'Reviewed independent BODICH copy digest required');
+  } else {
+    assert.ok(f.bodichCopySha256 === undefined,
+      'BODICH copy digest belongs to editorial evidence only');
+  }
 }
 function assess(record, sourceId, state, epoch, currentCopy) {
   const reasons = Object.fromEntries(gateNames.map((g) => [g, []]));
@@ -153,7 +172,10 @@ function assess(record, sourceId, state, epoch, currentCopy) {
       const observed = new Map();
       for (const e of found) {
         const { name, value, unit } = e.facts;
-        const normalizedName = name.trim().normalize('NFKC').toLocaleLowerCase('en').replace(/\s+/g, ' ');
+        const normalizedName = JSON.stringify([
+          name.trim().normalize('NFKC').toLocaleLowerCase('en').replace(/\s+/g, ' '),
+          e.facts.metric ?? null, e.facts.scope ?? null,
+        ]);
         const label = JSON.stringify([value, unit]);
         if (observed.has(normalizedName) && observed.get(normalizedName) !== label)
           reasons.specifications.push('contradictory_specification_claims');
@@ -417,6 +439,21 @@ function test() {
   assert.throws(() => review(approvedDoc, approvedStates, staleSource), /without complete independent/);
   const staleUnreviewed = review(approvedDoc, states, staleSource);
   assert.ok(staleUnreviewed.rows[0].gates.editorial.reasons.includes('stale_or_mismatched_copy_digest'));
+  // Stage 18: optional independent BODICH copy evidence and measurement qualifiers.
+  // These must NOT replace or weaken the original supplier draft digest binding.
+  const detailProof = clone(approvedDoc);
+  detailProof.records[0].evidence[2].facts = {
+    subject: 'Exact dimension', name: 'dimension', value: 80, unit: 'mm', metric: 'diameter',
+  };
+  detailProof.records[0].evidence[3].facts.bodichCopySha256 = 'e'.repeat(64);
+  assert.equal(review(detailProof, states).eligible, 0,
+    'Extra BODICH-copy proof cannot create human ledger approval');
+  negative((d) => { d.records[0].evidence[2].facts.metric = 'diameter'; },
+    /Evidence metric must describe/);
+  negative((d) => { d.records[0].evidence[2].facts.scope = 'bare_engine'; },
+    /Evidence scope must describe/);
+  negative((d) => { d.records[0].evidence[3].facts.bodichCopySha256 = 'not-a-digest'; },
+    /Reviewed independent BODICH copy digest/);
   const authLeak = clone(approvedDoc);
   authLeak.records[0].evidence[0].provenance = 'Authorization: Bearer ABCDEFGHIJKL12345678';
   assert.throws(() => review(authLeak), /Unsafe or empty public metadata/);
