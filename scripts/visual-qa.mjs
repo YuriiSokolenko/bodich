@@ -384,6 +384,79 @@ try {
   }
 
 
+  // Stage 16: every informational route is reviewed at every established
+  // viewport in both languages, not just the home/products hero routes.
+  for (const locale of locales) {
+    for (const width of widths) {
+      await verify(`${locale}-${width}: safe copy, links and responsive informational sections`, async () => {
+        const page = await browser.newPage({
+          viewport: { width, height: 900 },
+          deviceScaleFactor: 1,
+          reducedMotion: 'reduce',
+        });
+        const pageErrors = [];
+        page.on('pageerror', error => pageErrors.push(error.message));
+        try {
+          for (const section of pages) {
+            const response = await page.goto(baseUrl + pathFor(locale, section), {
+              waitUntil: 'load',
+              timeout: 30000,
+            });
+            assert.equal(response?.status(), 200);
+            assert.equal(await page.locator('html').getAttribute('lang'), locale);
+            assert.equal(await page.locator('main h1').count(), 1,
+              `${locale}/${section}: one primary heading required`);
+            const overflow = await page.evaluate(() =>
+              document.documentElement.scrollWidth - document.documentElement.clientWidth);
+            assert(overflow <= 1, `${locale}/${section} overflows by ${overflow}px`);
+            const mismatchedLinks = await page.locator('main a[href^="/"]').evaluateAll(
+              (links, lang) => links.map(link => link.getAttribute('href'))
+                .filter(href => !href?.startsWith('/' + lang + '/')),
+              locale,
+            );
+            assert.deepEqual(mismatchedLinks, [],
+              `${locale}/${section}: internal links must preserve locale`);
+            assert.equal(await page.locator('main form').count(), 0,
+              'No live forms or checkout may appear in the preview');
+            assert.equal(await page.locator('main a[href^="mailto:"], main a[href^="tel:"]').count(), 0,
+              'Unverified inquiry endpoints must not appear');
+            assert.equal(await page.locator('[data-product-card]').count(), 0,
+              'No unverified supplier record may become an offering');
+            if (section === 'home') {
+              assert.equal(await page.locator('[data-home-feature]').count(), 3);
+              for (const target of ['products', 'accessories', 'support']) {
+                assert.equal(await page.locator('[data-home-feature="' + target + '"]')
+                  .getAttribute('href'), pathFor(locale, target));
+              }
+            } else {
+              assert.equal(await page.locator('main nav[aria-label]').count() >= 1, true,
+                'Section needs accessible breadcrumbs');
+              if (section === 'products' || section === 'accessories') {
+                assert.equal(await page.locator('[data-catalog-landing-empty]').count(), 1,
+                  'Landing page must show the zero-approved-product state');
+                assert(await page.locator('[data-planned-category]').count() >= 1,
+                  'Provisional categories must be labelled');
+              } else {
+                assert.equal(await page.locator('[data-information-cards="' + section + '"] article').count(), 3,
+                  'Meaningful content must replace the old generic placeholder');
+                assert.equal(await page.locator('[data-section-status]').count(), 1);
+              }
+            }
+            if (!['home', 'products'].includes(section)) {
+              const shot = `${output}/screenshots/${locale}-${width}-${section}.png`;
+              const bytes = await page.screenshot({ path: shot, fullPage: true });
+              assert(bytes.length > 1000, 'Screenshot unexpectedly blank');
+              screenshots.push(shot);
+            }
+          }
+          assert.deepEqual(pageErrors, [], 'Runtime errors in section matrix');
+        } finally {
+          await page.close();
+        }
+      });
+    }
+  }
+
   // DPR-2 coverage: on modern phones the browser often selects a larger
   // srcset file than it does at DPR 1, even at the same CSS viewport.
   // The primary 5-width matrix intentionally uses DPR 1 for stable geometry.
