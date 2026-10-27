@@ -440,10 +440,17 @@ function selfTest() {
   bad((d) => { d.products[0].id = 'kt-1'; }, /Invalid bdc identity/);
   bad((d) => { d.products[0].slugs.en = 'supplier-sample'; }, /slug collision/);
   bad((d) => { d.products[0].slugs.ro = d.products[0].slugs.en; }, /slug collision/);
+  bad(() => {}, /Duplicate\/colliding identity/,
+    { ...env, published: [{ id: 'bdc-synthetic-one', slug: 'different-slug' }] });
+  bad(() => {}, /slug collision/,
+    { ...env, published: [{ id: 'outside-id', slug: 'synthetic-one' }] });
   bad((d) => { d.products.push(clone(d.products[0])); }, /Duplicate\/colliding identity/);
   bad((d) => { d.products[0].variants.push(clone(d.products[0].variants[0])); },
     /Duplicate\/colliding identity/);
   bad((d) => { d.products[0].variants[0].code = 'Variant B'; }, /identity\/variant conflict/);
+  bad((d) => { d.products[0].variants.push({
+    id: 'bdv-second', code: 'Variant B', sourceId: 'kt-1', claims: [],
+  }); }, /Source reference claimed by multiple/);
   bad((d) => { d.products[0].variants[0].sourceId = 'kt-missing'; }, /Unknown retired/);
   bad((d) => { d.products[0].variants[0].claims[0].value = 101; }, /Unsupported technical claim/);
   bad((d) => { d.products[0].variants[0].claims[0].unit = 'kg'; }, /Unsupported spec unit/);
@@ -454,8 +461,31 @@ function selfTest() {
     /Cleared photo needs/);
   bad((d) => { d.products[0].media[0].kind = 'original_concept'; },
     /Concept\/diagram is not exact-model/);
+  bad((d) => { d.products[0].media.push(clone(d.products[0].media[0])); },
+    /Duplicate\/colliding identity/);
+  bad((d) => { d.products[0].media[0].ref = 'restricted:a/../../x'; },
+    /requires safe restricted/);
+  bad((d) => { d.products[0].media[0].ref = 'https://example.invalid/photo'; },
+    /requires safe restricted/);
+  bad((d) => { d.products[0].identity.model = 'owner@example.com'; },
+    /Unsafe or missing model identity/);
+  bad((d) => { d.products[0].identity.model = 'https://example.invalid/?token=x'; },
+    /Unsafe or missing model identity/);
+  bad((d) => { d.products[0].identity.model = '<private>'; },
+    /Unsafe or missing model identity/);
   bad((d) => { d.products[0].editorial.ro.state = 'draft'; }, /Draft copy cannot/);
   bad((d) => { d.products[0].editorial.ro.summary = 'Stale edit'; }, /Stale ro editorial/);
+  bad((d) => { d.products[0].editorial.en.reviewRef = 'restricted:unrelated-proof'; },
+    /Verified product missing promotion prerequisites/);
+  bad((d) => { d.products[0].editorial.en.name = 'Altered BODICH text';
+    d.products[0].editorial.en.copySha256 = digest({
+      name: d.products[0].editorial.en.name, summary: d.products[0].editorial.en.summary,
+      description: d.products[0].editorial.en.description,
+    }); }, /Verified product missing promotion prerequisites/);
+  const missingEditor = structuredClone(env);
+  missingEditor.intake.records[0].evidence =
+    missingEditor.intake.records[0].evidence.filter((e) => e.kind !== 'legal_review');
+  bad(() => {}, /Verified product missing promotion prerequisites/, missingEditor);
   bad((d) => { d.products[0].extra = 'bad'; }, /Unexpected field/);
   bad((d) => { d.products[0].variants[0].claims[0].scope = 'bare_engine'; },
     /Invalid mass measurement/);
@@ -486,10 +516,54 @@ function selfTest() {
   const expired = structuredClone(env);
   expired.intake.records[0].evidence[0].expiresOn = '2020-01-01';
   bad(() => {}, /Cleared photo needs/, expired);
+  const invalidExpiry = structuredClone(env);
+  invalidExpiry.intake.records[0].evidence[0].expiresOn = '2026-02-30';
+  bad(() => {}, /Cleared photo needs/, invalidExpiry);
+  const missingVerification = structuredClone(env);
+  delete missingVerification.intake.records[0].evidence[0].verifiedOn;
+  bad(() => {}, /Cleared photo needs/, missingVerification);
+  const futureVerification = structuredClone(env);
+  futureVerification.intake.records[0].evidence[0].verifiedOn = '2026-10-28';
+  bad(() => {}, /Cleared photo needs/, futureVerification);
+  const wrongEpoch = structuredClone(env);
+  wrongEpoch.ledger.epochs[0].epoch = 2;
+  bad(() => {}, /Current review epoch must be the last/, wrongEpoch);
   const withoutProof = structuredClone(env);
   withoutProof.intake.records[0].evidence = withoutProof.intake.records[0].evidence
     .filter((item) => item.id !== 'spec-1');
   bad(() => {}, /Unsupported technical claim/, withoutProof);
+  // A separate independent product with no supplier lead remains a blocked
+  // proposal; no automatic identity mapping or Stage 13 approval inheritance.
+  const another = clone(product);
+  another.id = 'bdc-synthetic-two';
+  another.slugs = { en: 'synthetic-two', ro: 'sintetic-doi' };
+  another.identity.model = 'Independent design lead';
+  another.variants = [{ id: 'bdv-synthetic-b', code: 'New Variant', sourceId: null, claims: [] }];
+  another.media = [];
+  another.lifecycle = 'proposed';
+  another.editorial = { en: edit('draft', 'New Design'), ro: edit('draft', 'Proiect Nou') };
+  const multiple = { ...doc, products: [product, another] };
+  const multi = ok(multiple);
+  assert.equal(multi.proposed, 1);
+  assert.equal(multi.verified, 1);
+  assert.equal(multi.products[1].promotionEligibleForManualPR, false);
+  assert.ok(multi.products[1].blockers.includes('bdv-synthetic-b:independent BODICH evidence intake missing'));
+  bad((d) => { d.products.push(clone(another)); d.products[1].variants[0].claims = [{
+    kind: 'thrust', value: 100, unit: 'N', evidenceId: 'spec-1',
+  }]; }, /Unsupported technical claim/);
+  const rejectedConcept = clone(doc);
+  rejectedConcept.products[0].media.push({
+    id: 'bdm-proposal-study', variantId: 'bdv-synthetic-a',
+    kind: 'original_concept', ref: 'restricted:illustration-only',
+    assetSha256: '3'.repeat(64), rights: 'unknown', rightsEvidenceId: null,
+    alt: { en: 'Concept only', ro: 'Doar concept' },
+  });
+  assert.equal(ok({ ...rejectedConcept, products: [{
+    ...rejectedConcept.products[0], lifecycle: 'proposed',
+  }] }).proposed, 1);
+  assert.throws(() => ok(rejectedConcept), /Verified product missing promotion prerequisites/);
+  assert.throws(() => checkNoPublicLeak(doc, [{ id: product.id }]),
+    /Private registry identity copied/);
   assert.equal(ok({ ...doc, products: [] }).sourceReferences, 1);
   console.log('Stage 18 synthetic-only registry tests passed: IDs, variants, bilingual copy, rights, source proof, epoch and manual promotion gates.');
 }
