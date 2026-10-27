@@ -67,8 +67,6 @@ export function validateEntries(entries) {
           !entry.permittedUses?.includes('public_website') || !entry.sha256)
         problems.push('Incomplete human clearance evidence: ' + entry.path);
     }
-    if (entry.classification === 'ai_concept' && entry.kind === 'exact_model_photo')
-      problems.push('AI concept cannot be classified as exact-model photography: ' + entry.path);
     if (entry.classification === 'ai_concept' && entry.sourceId)
       problems.push('Marketing AI concepts must not be bound to a source SKU: ' + entry.path);
     if (entry.derivedFrom && (!safePath(entry.derivedFrom) || entry.derivedFrom === entry.path))
@@ -151,7 +149,9 @@ export function publicExposureProblems(dir = root, dist = null) {
   if (dist) {
     for (const file of walk(resolve(dir, dist)))
       verify('public/' + file, resolve(dir, dist, file), 'shippable dist');
-    // Check all static image URLs including srcset, not just locally copied files.
+    // Check local URL paths, including srcset. Byte-level file walking covers
+    // image files included elsewhere in dist; external URLs and inline data:
+    // URIs are not authenticated or licensed by this scanner.
     // A future genuinely approved product photo may be referenced, but not a concept.
     const scanHtml = (at) => {
       if (!existsSync(at)) return;
@@ -179,10 +179,33 @@ export function publicExposureProblems(dir = root, dist = null) {
   return problems;
 }
 
+// Media *type* and commercial-use clearance are independent: a cleared concept
+// remains synthetic and can never become evidence of exact-model photography.
+// Keep a per-project snapshot for validators that inspect many catalog records.
+// Standalone media:check rehashes fresh on every invocation.
+export function mediaDigestSetsFromRecords(records) {
+  return {
+    uncleared: new Set(records.filter((r) => r.status === 'present' &&
+      r.rightsStatus !== 'cleared_with_evidence' && r.sha256).map((r) => r.sha256)),
+    nonPhotos: new Set(records.filter((r) => r.status === 'present' &&
+      ['ai_concept', 'technical_illustration'].includes(r.classification) && r.sha256)
+      .map((r) => r.sha256)),
+  };
+}
+const digestSetsByRoot = new Map();
+function mediaDigestSets(dir = root) {
+  const projectRoot = resolve(dir);
+  if (!digestSetsByRoot.has(projectRoot)) {
+    digestSetsByRoot.set(projectRoot,
+      mediaDigestSetsFromRecords(collectMedia(registryEntries(projectRoot), projectRoot).records));
+  }
+  return digestSetsByRoot.get(projectRoot);
+}
 export function unverifiedMediaDigests(dir = root) {
-  return new Set(collectMedia(registryEntries(dir), dir).records.filter((r) =>
-    r.status === 'present' && r.rightsStatus !== 'cleared_with_evidence' && r.sha256)
-    .map((r) => r.sha256));
+  return mediaDigestSets(dir).uncleared;
+}
+export function nonPhotoMediaDigests(dir = root) {
+  return mediaDigestSets(dir).nonPhotos;
 }
 
 function stagePrivate(dir = root) {
@@ -220,6 +243,21 @@ function selfTest() {
       .some((s) => s.includes('Incomplete human clearance')));
     assert(validateEntries([{ ...example, sourceId: 'kt-1' }])
       .some((s) => s.includes('must not be bound')));
+    // A genuinely cleared AI concept may become approved *illustrative* art,
+    // but can never pass the independent exact-model photographic proof gate.
+    const cleared = { ...example, rightsStatus: 'cleared_with_evidence',
+      usage: 'public_approved', rightsEvidence: 'restricted:synthetic-ci-proof',
+      clearanceReviewer: 'synthetic-reviewer', clearanceDate: '2026-10-26',
+      permittedUses: ['public_website'] };
+    assert.deepEqual(validateEntries([cleared]), []);
+    const clearedRecord = collectMedia([cleared], temp).records[0];
+    const digestSets = mediaDigestSetsFromRecords([clearedRecord]);
+    assert(!digestSets.uncleared.has(sha256(value)), 'Cleared review asset should not be marked uncleared');
+    assert(digestSets.nonPhotos.has(sha256(value)),
+      'A cleared concept must remain forbidden as photographic proof');
+    assert(!mediaDigestSetsFromRecords([{ ...clearedRecord,
+      classification: 'verified_product_photo' }]).nonPhotos.has(sha256(value)));
+
     writeFileSync(join(temp, 'public', 'unsafe.svg'), value);
     assert(publicExposureProblems(temp).some((s) => s.includes('public/')));
     mkdirSync(join(temp, 'dist'), { recursive: true });

@@ -19,3 +19,7 @@ visual-qa/private-catalog-review/
 visual-qa/catalog-review-audit.json
 docs/catalog/review-ledger.json.tmp
 docs/catalog/review-ledger-archive/*.tmp
+
+# Stage 15: never stage locally copied, uncleared private-preview images
+/public/images/turbines/
+/public/favicon.svg
