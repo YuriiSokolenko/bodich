@@ -8,7 +8,7 @@ interface Props {
 
 const { locale } = Astro.props;
 const t = translations[locale];
-const privateMedia = process.env.BODICH_MEDIA_PROFILE === 'private_review';
+const privateMedia = import.meta.env.BODICH_MEDIA_PROFILE === 'private_review';
 ---
 
 <section data-turbine-concepts class="mt-10" aria-labelledby="turbine-concepts-heading">
