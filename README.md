@@ -243,7 +243,6 @@ The **132 KingTech supplier research references are unpublished**. A distinct ve
 
 Run `npm run catalog:review:ledger:check`, `npm run catalog:review:ledger:self-test`, and `npm run catalog:review:ledger:export` for deterministic local validation and ignored exports; `npm run catalog:review:ledger:plan` previews an epoch migration after a manifest change. **Do not store confidential contracts, signatures, customer data or private evidence in the public repository or CI artifacts.** A recorded status is not authenticated company approval; independent human PR review and Stage 14 genuine BODICH product evidence are required before any separately reviewed publication.
 
-
 ### Internal actual-product lifecycle (Stage 18 / #58)
 
 The [unpublished BODICH product registry](docs/catalog/internal-product-registry.md) is separate from the 132 supplier references and from public `confirmedProducts`. Its version/rights/evidence checks use the existing Stage 13 human ledger and Stage 14 intake, never automatic approval. The committed registry and public product collections remain empty. Run `npm run catalog:products:check`, `npm run catalog:products:self-test`, and `npm run catalog:products:export` for local-only audits. Any eventual promotion requires a separately reviewed manual PR; see the linked rollback and staleness runbook.
