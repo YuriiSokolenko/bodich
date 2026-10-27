@@ -4,8 +4,8 @@ import CatalogCategoryNavigation from './CatalogCategoryNavigation.astro';
 import ActionLink from './ui/ActionLink.astro';
 import ConceptImage from './ui/ConceptImage.astro';
 import SiteContainer from './ui/SiteContainer.astro';
-import SurfaceCard from './ui/SurfaceCard.astro';
 import TurbineConceptPreview from './TurbineConceptPreview.astro';
+import { confirmedProducts } from '../catalog';
 import { hrefFor, translations, type Locale, type PageKey } from '../i18n';
 
 interface Props {
@@ -16,13 +16,17 @@ interface Props {
 const { locale, page } = Astro.props;
 const t = translations[locale];
 const presentationMedia = ['beta_presentation', 'private_review'].includes(import.meta.env.BODICH_MEDIA_PROFILE);
+const information = page === 'support' || page === 'about' || page === 'contact'
+  ? t.sectionContent[page]
+  : null;
+const homeFeatures = ['products', 'accessories', 'support'] as const;
 ---
 
 <SiteLayout locale={locale} page={page}>
   <section class="relative isolate overflow-hidden">
     <div aria-hidden="true" class="pointer-events-none absolute right-[-9rem] top-[-12rem] -z-10 h-[30rem] w-[30rem] rounded-full bg-bodich-accent/10 blur-3xl"></div>
     <SiteContainer>
-      <div class:list={['pb-site-section', page === 'home' ? 'pt-14 sm:pt-20' : 'pt-20 sm:pt-28']}>
+      <div class:list={['pb-12 sm:pb-16', page === 'home' ? 'pt-14 sm:pt-20' : 'pt-12 sm:pt-20']}>
         <p class="mb-6 inline-flex rounded-pill border border-bodich-accent/30 bg-bodich-accent/10 px-4 py-2 text-xs font-semibold uppercase tracking-[.18em] text-bodich-accent">
           {t.previewLabel}
         </p>
@@ -50,42 +54,70 @@ const presentationMedia = ['beta_presentation', 'private_review'].includes(impor
                 </ActionLink>
               </div>
             </div>
-      <!-- Image width hints track SiteContainer (max-w-6xl and mobile/desktop gutters); update these when the layout changes. -->
+            <!-- Keep the full uncropped hero and the width hints used by the visual QA. -->
             {presentationMedia ? (
-            <ConceptImage
-              src="/images/turbines/bodich-hero-concept.webp"
-              srcset="/images/turbines/bodich-hero-concept-640.webp 640w, /images/turbines/bodich-hero-concept-960.webp 960w, /images/turbines/bodich-hero-concept.webp 1672w"
-              sizes="(max-width: 640px) calc(100vw - 2.5rem), (max-width: 1023px) calc(100vw - 4rem), 1088px"
-              alt={t.heroImageAlt}
-              caption={t.conceptRenderingLabel}
-              width={1672}
-              height={941}
-              priority
-              class="mt-10 lg:mt-0"
-            />
+              <ConceptImage
+                src="/images/turbines/bodich-hero-concept.webp"
+                srcset="/images/turbines/bodich-hero-concept-640.webp 640w, /images/turbines/bodich-hero-concept-960.webp 960w, /images/turbines/bodich-hero-concept.webp 1672w"
+                sizes="(max-width: 640px) calc(100vw - 2.5rem), (max-width: 1023px) calc(100vw - 4rem), 1088px"
+                alt={t.heroImageAlt}
+                caption={t.conceptRenderingLabel}
+                width={1672}
+                height={941}
+                priority
+                class="mt-10 lg:mt-0"
+              />
             ) : (
               <div data-media-withheld role="status" class="mt-10 rounded-control border border-bodich-border bg-bodich-panel p-8 text-center text-bodich-muted lg:mt-0">{t.mediaWithheldNotice}</div>
             )}
           </div>
         ) : (
           <>
+            <nav aria-label={t.catalogBreadcrumbLabel} class="mb-8 text-sm text-bodich-muted">
+              <ol class="flex flex-wrap items-center gap-2">
+                <li><a href={hrefFor(locale, 'home')} class="hover:text-bodich-accent-hover">{t.pages.home.label}</a></li>
+                <li class="before:mr-2 before:text-bodich-dim before:content-['/']">
+                  <span aria-current="page" class="font-semibold text-bodich-ink">{t.pages[page].label}</span>
+                </li>
+              </ol>
+            </nav>
             <h1 class="max-w-4xl font-display text-4xl font-black leading-tight tracking-tight text-bodich-ink sm:text-6xl">
               {t.pages[page].title}
             </h1>
+            <p class="mt-6 max-w-3xl text-lg leading-relaxed text-bodich-muted">
+              {information?.lead ?? t.pages[page].description}
+            </p>
             {(page === 'products' || page === 'accessories') ? (
               <>
+                {confirmedProducts.length === 0 && (
+                  <aside data-catalog-landing-empty role="status" class="mt-10 max-w-4xl rounded-control border border-bodich-control-border/60 bg-bodich-panel/80 p-5 sm:p-7">
+                    <h2 class="text-lg font-bold text-bodich-ink">{t.catalogLandingEmptyTitle}</h2>
+                    <p class="mt-2 text-sm leading-7 text-bodich-muted">{t.catalogLandingEmptyDescription}</p>
+                  </aside>
+                )}
                 <CatalogCategoryNavigation locale={locale} section={page} />
                 {page === 'products' && <TurbineConceptPreview locale={locale} />}
               </>
-            ) : (
-              <div class="mt-7 max-w-2xl">
-                <SurfaceCard>
-                  <p class="text-lg leading-relaxed text-bodich-muted">
-                    {t.placeholder}
-                  </p>
-                </SurfaceCard>
-              </div>
-            )}
+            ) : information ? (
+              <>
+                <div data-information-cards={page} class="mt-10 grid gap-5 md:grid-cols-3">
+                  {information.items.map((item) => (
+                    <article class="flex min-w-0 flex-col rounded-control border border-bodich-border bg-bodich-panel/80 p-6 transition-colors hover:border-bodich-control-border">
+                      <h2 class="text-xl font-bold leading-snug text-bodich-ink">{item.title}</h2>
+                      <p class="mt-4 flex-1 text-sm leading-7 text-bodich-muted">{item.description}</p>
+                      {item.link && item.linkLabel && (
+                        <a href={hrefFor(locale, item.link)} class="mt-6 inline-flex min-h-11 items-center gap-2 self-start rounded-control text-sm font-semibold text-bodich-accent-hover underline-offset-4 hover:underline">
+                          {item.linkLabel} <span aria-hidden="true">→</span>
+                        </a>
+                      )}
+                    </article>
+                  ))}
+                </div>
+                <p data-section-status role="note" class="mt-7 max-w-4xl rounded-control border-l-4 border-bodich-accent bg-bodich-panel p-5 text-sm leading-7 text-bodich-muted">
+                  {information.status}
+                </p>
+              </>
+            ) : null}
             <div class="mt-10 flex flex-wrap gap-4">
               <ActionLink href={hrefFor(locale, 'home')} variant="secondary">
                 <span aria-hidden="true">←</span>
@@ -95,6 +127,25 @@ const presentationMedia = ['beta_presentation', 'private_review'].includes(impor
           </>
         )}
       </div>
+      {page === 'home' && (
+        <section data-home-explore class="pb-site-section" aria-labelledby="home-explore-heading">
+          <h2 id="home-explore-heading" class="font-display text-2xl font-bold text-bodich-ink sm:text-3xl">{t.homeExploreTitle}</h2>
+          <p class="mt-4 max-w-3xl text-base leading-7 text-bodich-muted">{t.homeExploreIntro}</p>
+          <div class="mt-8 grid gap-5 md:grid-cols-3">
+            {homeFeatures.map((key) => (
+              <a href={hrefFor(locale, key)} data-home-feature={key}
+                class="group flex min-w-0 flex-col rounded-control border border-bodich-border bg-bodich-panel/80 p-6 transition-colors hover:border-bodich-accent-hover hover:bg-bodich-panel-raised">
+                <span class="text-xs font-semibold uppercase tracking-[.13em] text-bodich-accent-hover">{t.pages[key].label}</span>
+                <h3 class="mt-3 text-xl font-bold text-bodich-ink">{t.homeFeatures[key].title}</h3>
+                <p class="mt-3 flex-1 text-sm leading-7 text-bodich-muted">{t.homeFeatures[key].description}</p>
+                <span class="mt-6 inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-bodich-accent-hover">
+                  {t.homeFeatures[key].action} <span aria-hidden="true">→</span>
+                </span>
+              </a>
+            ))}
+          </div>
+        </section>
+      )}
     </SiteContainer>
   </section>
 </SiteLayout>
