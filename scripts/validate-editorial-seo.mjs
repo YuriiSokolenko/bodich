@@ -14,13 +14,19 @@ const loadJson = (path) => JSON.parse(readFileSync(path, 'utf8'));
 const matrix = loadJson('docs/editorial/review-matrix.json');
 assert.deepEqual(editorialReviewProblems(matrix), [], 'invalid public editorial matrix');
 
+// JavaScript \b is ASCII-oriented even under /u: use Unicode property
+// boundaries so Romanian "în", "fabrică", etc. are detected reliably.
+// This is a conservative tripwire, not a substitute for human claim review.
+const leftBoundary = String.raw`(?<![\\p{L}\\p{N}])`;
+const rightBoundary = String.raw`(?![\\p{L}\\p{N}])`;
+const claimPattern = (source) => new RegExp(leftBoundary + '(?:' + source + ')' + rightBoundary, 'iu');
 const forbiddenClaimSignals = [
-  { label: 'published price', test: /(?:[$€£]\s*\d|\b\d[\d.,]*\s*(?:EUR|USD|RON|lei)\b)/iu },
-  { label: 'stock or immediate sales', test: /\b(?:in stock|available now|buy now|shop now|în stoc|disponibil(?:ă|e|i)? acum|cumpără acum)\b/iu },
-  { label: 'performance assertion', test: /\b\d[\d.,]*\s*(?:kgf|rpm|kW|lit(?:er|re)s?\/?h|l\/?h|N\s+thrust|newtons?\s+thrust)\b/iu },
-  { label: 'certification assertion', test: /\b(?:certified|certificat(?:ă|e)?|omologat(?:ă|e)?|CE\s+certified|ISO\s*\d+)\b/iu },
-  { label: 'manufacturer assertion', test: /\b(?:BODICH\s+(?:manufactures|builds|is\s+(?:an?\s+)?(?:authorized\s+)?manufacturer)|BODICH\s+(?:este\s+)?(?:producător|fabrică))\b/iu },
-  { label: 'warranty promise', test: /\b(?:\d+[- ]?(?:year|month)\s+warranty|\d+\s*(?:ani|luni)\s+(?:de\s+)?garanție|garanție\s+de\s+\d+\s+(?:ani|luni)|guaranteed\s+warranty)\b/iu },
+  { label: 'published price', test: claimPattern(String.raw`(?:[$€£]\\s*\\d[\\d.,]*|\\d[\\d.,]*\\s*(?:[$€£]|EUR|USD|RON|lei))`) },
+  { label: 'stock or immediate sales', test: claimPattern(String.raw`(?:in stock|available now|buy now|shop now|în stoc|disponibil(?:ă|e|i)? acum|cumpără acum)`) },
+  { label: 'performance assertion', test: claimPattern(String.raw`(?:\\d[\\d.,]*\\s*(?:kgf|rpm|kW|lit(?:er|re)s?\\/?h|l\\/?h|N\\s+thrust|newtons?\\s+thrust))`) },
+  { label: 'certification assertion', test: claimPattern(String.raw`(?:certified|certificat(?:ă|e)?|omologat(?:ă|e)?|CE\\s+certified|ISO\\s*\\d+)`) },
+  { label: 'manufacturer assertion', test: claimPattern(String.raw`(?:BODICH\\s+(?:manufactures|builds|is\\s+(?:an?\\s+)?(?:authorized\\s+)?manufacturer|(?:este\\s+)?(?:producător|fabrică)))`) },
+  { label: 'warranty promise', test: claimPattern(String.raw`(?:\\d+[- ]?(?:year|month)\\s+warranty|\\d+\\s*(?:ani|luni)\\s+(?:de\\s+)?garanție|garanție\\s+de\\s+\\d+\\s+(?:ani|luni)|guaranteed\\s+warranty)`) },
 ];
 function scanClaimRisks(text) {
   return forbiddenClaimSignals.filter((entry) => entry.test.test(text)).map((entry) => entry.label);
@@ -30,6 +36,15 @@ function visibleText(main) {
     .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, ' ')
     .replace(/<[^>]+>/g, ' ')
     .replace(/&(?:nbsp|amp|quot|apos|lt|gt);/g, ' ');
+}
+// Includes visitors' text and snippets served to search engines/social previews.
+// Reuse for category SEO even when those pages remain noindex.
+function claimBearingText(html) {
+  const main = html.match(/<main\b[^>]*>([\s\S]*?)<\/main>/i)?.[1] || '';
+  const title = html.match(/<title>([\s\S]*?)<\/title>/i)?.[1] || '';
+  const descriptions = [...html.matchAll(/<meta\b[^>]*(?:name="description"|property="og:(?:title|description)")[^>]*>/gi)]
+    .map((match) => match[0].match(/\bcontent="([^"]*)"/i)?.[1] || '');
+  return [visibleText(main), visibleText(title), ...descriptions].join(' ');
 }
 
 if (process.argv.includes('--self-test')) {
@@ -61,6 +76,8 @@ if (process.argv.includes('--self-test')) {
     'Measured 110000 RPM', 'In stock', '2 year warranty',
     'Disponibil acum, 1.200 RON', 'BODICH este producător', 'Motor certificat, 90 kgf',
     'Garanție de 24 luni', 'Buy now',
+    'Produsul este în stoc', 'În stoc', 'BODICH fabrică motoare',
+    'Preț 299 €', 'Produsul costă 299 €', 'Preț: 1.299,00 €',
   ];
   for (const claim of badClaims) assert(scanClaimRisks(claim).length, 'unsafe claim escaped: ' + claim);
   for (const safe of ['Manufacturer instructions depend on the model.',
@@ -68,6 +85,15 @@ if (process.argv.includes('--self-test')) {
     'Nu au fost confirmate condițiile de garanție.']) {
     assert.deepEqual(scanClaimRisks(safe), [], 'qualified educational copy flagged');
   }
+  for (const [field, html] of [
+    ['title', '<title>Produsul este în stoc</title><main></main>'],
+    ['description', '<meta name="description" content="Preț 299 €"><main></main>'],
+    ['OG description', '<meta property="og:description" content="BODICH fabrică motoare"><main></main>'],
+    ['OG title', '<meta property="og:title" content="În stoc"><main></main>'],
+  ]) {
+    assert(scanClaimRisks(claimBearingText(html)).length, 'unsafe ' + field + ' escaped scan');
+  }
+  assert.deepEqual(scanClaimRisks(claimBearingText('<title>Informare despre turbine</title><main><p>Nu există stoc confirmat.</p></main>')), []);
   console.log('Editorial SEO policy regression fixtures passed: positive, partial/rejected gates, approval evidence and EN/RO forbidden claims.');
   process.exit(0);
 }
@@ -105,7 +131,7 @@ for (const { locale, page, urlPath, html } of publicRoutes) {
   assert(main.includes('<h2'), urlPath + ': missing H2');
   assert(main.includes(`data-editorial-page="${page}"`), urlPath + ': educational content missing');
   assert(main.includes('data-editorial-source'), urlPath + ': source label missing');
-  assert.deepEqual(scanClaimRisks(visibleText(main)), [], urlPath + ': unsupported factual/commercial claim');
+  assert.deepEqual(scanClaimRisks(claimBearingText(html)), [], urlPath + ': unsupported factual/commercial claim');
   const title = html.match(/<title>([^<]+)<\/title>/)?.[1];
   const description = html.match(/<meta name="description" content="([^"]+)"/)?.[1];
   assert(title && description && description.length >= 50 && description.length <= 220,
@@ -162,7 +188,7 @@ for (const locale of locales) {
     assert(html.includes('name="robots" content="noindex, nofollow"'),
       path + ': category must not inherit informational approval');
     assert(!html.includes('type="application/ld+json"'), path + ': category cannot inherit corporate schema');
-    assert.deepEqual(scanClaimRisks(visibleText(html.match(/<main\b[^>]*>([\s\S]*?)<\/main>/)?.[1] || '')), [], path + ': unsupported category claim');
+    assert.deepEqual(scanClaimRisks(claimBearingText(html)), [], path + ': unsupported category claim');
   }
 }
 for (const product of confirmedProducts) {

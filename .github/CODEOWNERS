@@ -1,5 +1,17 @@
-# Enable code-owner review requirements in GitHub branch protection; this file alone is not enforcement.
-/docs/editorial/review-matrix.json @YuriiSokolenko
+# This file requests reviews but is NOT an enforced security boundary by itself.
+# For self-authored PRs, add an independent code owner (or review team) before
+# enforcing code-owner review on main. GitHub does not count author self-approval.
+# Admins: configure branch protection/rulesets requiring independent approvals.
+# An admin bypass must not be treated as independent editorial approval.
+/.github/CODEOWNERS @YuriiSokolenko
+/.github/workflows/ci.yml @YuriiSokolenko
+/docs/editorial/ @YuriiSokolenko
+/scripts/validate-editorial-seo.mjs @YuriiSokolenko
+/scripts/verify-editorial-approval-fixture.mjs @YuriiSokolenko
+/scripts/verify-product-fixture.mjs @YuriiSokolenko
 /src/seo/ @YuriiSokolenko
 /src/pages/robots.txt.ts @YuriiSokolenko
 /src/pages/sitemap.xml.ts @YuriiSokolenko
+/src/layouts/SiteLayout.astro @YuriiSokolenko
+/src/content/editorial.ts @YuriiSokolenko
+/src/i18n/index.ts @YuriiSokolenko
