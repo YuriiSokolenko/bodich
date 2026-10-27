@@ -8,7 +8,7 @@ interface Props {
 
 const { locale } = Astro.props;
 const t = translations[locale];
-const privateMedia = import.meta.env.BODICH_MEDIA_PROFILE === 'private_review';
+const presentationMedia = ['beta_presentation', 'private_review'].includes(import.meta.env.BODICH_MEDIA_PROFILE);
 ---
 
 <section data-turbine-concepts class="mt-10" aria-labelledby="turbine-concepts-heading">
@@ -19,7 +19,7 @@ const privateMedia = import.meta.env.BODICH_MEDIA_PROFILE === 'private_review';
     {t.conceptPreviewIntro}
   </p>
 
-  {privateMedia ? (
+  {presentationMedia ? (
   <div class="mt-8 grid gap-6 lg:grid-cols-2">
     <article data-concept-card="turbine" class="min-w-0 rounded-control border border-bodich-border bg-bodich-panel/80 p-4 sm:p-6">
       <h3 class="mb-5 text-xl font-semibold text-bodich-ink">{t.conceptTurbineTitle}</h3>

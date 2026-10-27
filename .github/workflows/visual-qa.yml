@@ -59,10 +59,9 @@ jobs:
       - name: Check Astro/TypeScript and build locked dependencies
         run: |
           npm run check
-          BODICH_MEDIA_PROFILE=private_review npm run media:stage-private
-          BODICH_MEDIA_PROFILE=private_review npm run build
+          npm run build:beta
 
-      # This opt-in build is exclusively for browser QA, never a public deployment.
+      # Test the explicit labelled presentation-beta profile, not the release-safe build.
       # Browser tooling is added only after the review build is created:
       # no post-install changes can affect the tested Astro output.
       - name: Install pinned browser test library (after build)

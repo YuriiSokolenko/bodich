@@ -13,9 +13,9 @@
 </p>
 
 > [!IMPORTANT]
-> **Development preview — not a live store.** BODICH products, specifications, contact details, pricing, stock, legal policies and production domain are not confirmed or published. No orders or payments can be placed. Stored turbine imagery is **AI-generated concept art with unverified use rights**, not a photograph of an existing BODICH product.
+> **Development preview — not a live store.** BODICH products, specifications, contact details, pricing, stock, legal policies and production domain are not confirmed or published. No orders or payments can be placed. Stored turbine imagery is **AI-generated beta presentation artwork** with rights documentation pending; it is used to visually represent possible products, not as independent evidence of verified technical/model identity.
 
-> **Media rights (Stage 15 / #55):** AI images and SVG studies are **unverified and not approved for public use**. The normal production build withholds them; neither the README nor website embeds an unapproved image. The existing source files remain in this **public GitHub repository and its history**—do not treat that as private storage or a license grant. See [auditable media registry and clearance process](docs/catalog/media-policy.md). For offline review only, run `BODICH_MEDIA_PROFILE=private_review npm run media:stage-private` in a disposable checkout and use the existing private gallery workflow. Never deploy a staged private-preview build.
+> **Media rights (Stage 15 / #55):** This is currently a **presentation-beta website**, where AI-generated BODICH visuals can represent product ideas/models. Use `npm run build:beta` to create an explicitly labelled, hash-verified EN/RO demo with registered images; it does **not** certify photograph authenticity, rights ownership, real-product specifications or availability. The ordinary `npm run build` remains release-safe and withholds unverified art. All images and their prior Git history are public; the beta build also redistributes them. See [media policy and beta/release profiles](docs/catalog/media-policy.md).
 
 ## About
 
@@ -100,7 +100,7 @@ The browser tests are implemented in [`scripts/visual-qa.mjs`](scripts/visual-qa
 ```bash
 npm ci
 npm run check
-npm run build
+npm run build:beta
 npm install --no-save --package-lock=false playwright@1.64.1
 npx playwright install --only-shell chromium
 npm run preview -- --host 127.0.0.1 --port 4321

@@ -81,6 +81,22 @@ export function validateEntries(entries) {
   return problems;
 }
 
+// Versioned review images are permitted in the deliberate, marked demo only.
+// Presentation permission is not commercial-rights clearance or photo proof.
+function betaPublicPath(entry) {
+  const base = 'docs/catalog/review-media/';
+  if (!entry.path.startsWith(base)) return null;
+  const suffix = entry.path.slice(base.length);
+  if (suffix.startsWith('turbines/')) return 'public/images/' + suffix;
+  if (suffix === 'ui/favicon.svg') return 'public/favicon.svg';
+  return null;
+}
+function betaAssets(entries) {
+  return new Map(entries.map((entry) => [betaPublicPath(entry), entry])
+    .filter(([path, entry]) => path && entry.sha256 &&
+      ['ai_concept', 'technical_illustration'].includes(entry.classification)));
+}
+
 function walk(dir, prefix = '') {
   if (!existsSync(dir)) return [];
   const files = [];
@@ -93,10 +109,11 @@ function walk(dir, prefix = '') {
   return files.sort();
 }
 
-export function collectMedia(entries, dir = root, { requireGenerated = false } = {}) {
+export function collectMedia(entries, dir = root, { requireGenerated = false, beta = false } = {}) {
   const problems = validateEntries(entries);
   const output = [];
   const known = new Set(entries.map((e) => e.path));
+  if (beta) for (const path of betaAssets(entries).keys()) known.add(path);
   for (const entry of [...entries].sort((a, b) => a.path.localeCompare(b.path, 'en'))) {
     if (!safePath(entry.path)) continue;
     const filename = resolve(dir, entry.path);
@@ -130,11 +147,13 @@ export function collectMedia(entries, dir = root, { requireGenerated = false } =
     missing: output.filter((x) => x.status === 'missing').length };
 }
 
-export function publicExposureProblems(dir = root, dist = null) {
+export function publicExposureProblems(dir = root, dist = null, { beta = false, entries = null } = {}) {
   const problems = [];
-  const allow = new Map((existsSync(resolve(dir, registryPath)) ? registryEntries(dir) : [])
+  const allEntries = entries ?? (existsSync(resolve(dir, registryPath)) ? registryEntries(dir) : []);
+  const allow = new Map(allEntries
     .filter((e) => e.usage === 'public_approved' && e.rightsStatus === 'cleared_with_evidence')
     .map((e) => [e.path, e]));
+  if (beta) for (const [path, entry] of betaAssets(allEntries)) allow.set(path, entry);
   const verify = (repoPath, physicalPath, label) => {
     const e = allow.get(repoPath);
     if (!e) {
@@ -172,6 +191,27 @@ export function publicExposureProblems(dir = root, dist = null) {
     };
     scanHtml(resolve(dir, dist));
   }
+  if (beta && dist) {
+    for (const [locale, caption] of [
+      ['en', 'AI-generated BODICH presentation visual'],
+      ['ro', 'Vizual BODICH generat cu IA pentru prezentare'],
+    ]) {
+      for (const page of ['', 'products/']) {
+        const htmlPath = resolve(dir, dist, locale, page, 'index.html');
+        if (!existsSync(htmlPath)) {
+          problems.push('Missing beta presentation page: ' + locale + '/' + page);
+          continue;
+        }
+        const html = readFileSync(htmlPath, 'utf8');
+        if (!html.includes('data-media-profile="beta_presentation"') ||
+            !html.includes('content="noindex, nofollow"') ||
+            !html.includes(caption) ||
+            !html.includes('/images/turbines/bodich-')) {
+          problems.push('Missing labelled beta image / noindex in ' + locale + '/' + page);
+        }
+      }
+    }
+  }
   const readme = existsSync(resolve(dir, 'README.md')) ? readFileSync(resolve(dir, 'README.md'), 'utf8') : '';
   if (/<img\b[^>]+src\s*=\s*["'][^"']*(?:bodich-|turbines\/)/i.test(readme) ||
       /!\[[^\]]*\]\([^)]*(?:bodich-|turbines\/)/i.test(readme))
@@ -208,27 +248,30 @@ export function nonPhotoMediaDigests(dir = root) {
   return mediaDigestSets(dir).nonPhotos;
 }
 
-function stagePrivate(dir = root) {
-  assert.equal(process.env.BODICH_MEDIA_PROFILE, 'private_review',
-    'Private media staging requires explicit BODICH_MEDIA_PROFILE=private_review');
+function stagePresentation(dir = root, mode = 'private_review') {
+  assert.equal(process.env.BODICH_MEDIA_PROFILE, mode,
+    'Media staging requires explicit BODICH_MEDIA_PROFILE=' + mode);
   const entries = registryEntries(dir).filter((e) => e.path.startsWith('docs/catalog/review-media/'));
   for (const entry of entries) {
     const from = resolve(dir, entry.path);
     if (!existsSync(from)) throw Error('Missing original offline media: ' + entry.path);
-    const to = resolve(dir, entry.path.replace('docs/catalog/review-media/turbines/', 'public/images/turbines/')
-      .replace('docs/catalog/review-media/ui/', 'public/'));
+    if (!entry.sha256 || sha256(readFileSync(from)) !== entry.sha256)
+      throw Error('Refusing to stage unpinned / modified presentation image: ' + entry.path);
+    const to = resolve(dir, betaPublicPath(entry));
     mkdirSync(dirname(to), { recursive: true });
     copyFileSync(from, to);
   }
-  console.log('Private preview assets staged. DO NOT deploy or upload public/ or dist/.');
+  console.log(mode === 'beta_presentation'
+    ? 'BODICH presentation-beta images staged. Output must retain EN/RO AI labels; rights remain unverified.'
+    : 'Private preview assets staged. DO NOT deploy or upload public/ or dist/.');
 }
 
 function selfTest() {
   const temp = mkdtempSync(join(tmpdir(), 'bodich-media-'));
   try {
-    mkdirSync(join(temp, 'docs/catalog/review-media'), { recursive: true });
+    mkdirSync(join(temp, 'docs/catalog/review-media/turbines'), { recursive: true });
     mkdirSync(join(temp, 'public'), { recursive: true });
-    const rel = 'docs/catalog/review-media/study.svg';
+    const rel = 'docs/catalog/review-media/turbines/study.svg';
     const value = Buffer.from('<svg>synthetic test only</svg>');
     writeFileSync(join(temp, rel), value);
     const example = { path: rel, classification: 'ai_concept', rightsStatus: 'unverified',
@@ -236,7 +279,7 @@ function selfTest() {
     assert.deepEqual(collectMedia([example], temp).problems, []);
     assert(collectMedia([{ ...example, sha256: '0'.repeat(64) }], temp).problems
       .some((s) => s.includes('digest mismatch')));
-    assert(collectMedia([{ ...example, path: 'docs/catalog/review-media/missing.svg' }], temp).problems
+    assert(collectMedia([{ ...example, path: 'docs/catalog/review-media/turbines/missing.svg' }], temp).problems
       .some((s) => s.includes('Missing registered')));
     assert(validateEntries([example, example]).some((s) => s.includes('Duplicate')));
     assert(validateEntries([{ ...example, usage: 'public_approved' }])
@@ -258,6 +301,18 @@ function selfTest() {
     assert(!mediaDigestSetsFromRecords([{ ...clearedRecord,
       classification: 'verified_product_photo' }]).nonPhotos.has(sha256(value)));
 
+    mkdirSync(join(temp, 'public/images/turbines'), { recursive: true });
+    const staged = join(temp, 'public/images/turbines/study.svg');
+    writeFileSync(staged, value);
+    assert.deepEqual(collectMedia([example], temp, { beta: true }).problems, []);
+    assert.deepEqual(publicExposureProblems(temp, null, { beta: true, entries: [example] }), []);
+    assert(publicExposureProblems(temp, null, { entries: [example] }).length > 0,
+      'Release-safe profile must still reject identical beta assets');
+    writeFileSync(staged, Buffer.from('tampered generated image'));
+    assert(publicExposureProblems(temp, null, { beta: true, entries: [example] })
+      .some((s) => s.includes('differs from its approved bytes')),
+      'Beta must reject a tampered allowlisted image');
+    writeFileSync(staged, value);
     writeFileSync(join(temp, 'public', 'unsafe.svg'), value);
     assert(publicExposureProblems(temp).some((s) => s.includes('public/')));
     mkdirSync(join(temp, 'dist'), { recursive: true });
@@ -266,17 +321,23 @@ function selfTest() {
     writeFileSync(join(temp, 'README.md'), '<img src="public/images/turbines/bodich-hero-concept.webp">');
     assert(publicExposureProblems(temp).some((s) => s.includes('README')));
     assert(collectMedia([example], temp).problems.some((s) => s.includes('Unattributed')));
-    console.log('Media policy self-test passed: digests, missing/unknown files, rights schema, photo identity, README and public leak negatives.');
+    console.log('Media policy self-test passed: pinned digests, beta allowlist/tamper rejection, strict release isolation, rights schema, photo identity, README and public leak negatives.');
   } finally { rmSync(temp, { recursive: true, force: true }); }
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const option = process.argv[2] || '--check';
   if (option === '--self-test') selfTest();
-  else if (option === '--stage-private') stagePrivate();
-  else if (['--check', '--require-generated', '--inventory', '--public'].includes(option)) {
-    const data = collectMedia(registryEntries(), root, { requireGenerated: option === '--require-generated' });
-    const problems = [...data.problems, ...publicExposureProblems(root, option === '--public' ? (process.argv[3] || 'dist') : null)];
+  else if (option === '--stage-private') stagePresentation(root, 'private_review');
+  else if (option === '--stage-beta') stagePresentation(root, 'beta_presentation');
+  else if (['--check', '--require-generated', '--inventory', '--public', '--beta'].includes(option)) {
+    if (option === '--beta') assert.equal(process.env.BODICH_MEDIA_PROFILE, 'beta_presentation',
+      'Beta audit requires explicit BODICH_MEDIA_PROFILE=beta_presentation');
+    const beta = option === '--beta';
+    const data = collectMedia(registryEntries(), root,
+      { requireGenerated: option === '--require-generated', beta });
+    const problems = [...data.problems, ...publicExposureProblems(root,
+      ['--public', '--beta'].includes(option) ? (process.argv[3] || 'dist') : null, { beta })];
     const report = { schemaVersion: 1, purpose: 'media_provenance_audit_only',
       warning: 'Public GitHub files/history are not confidential; no use rights are inferred.',
       total: data.records.length, present: data.present, missing: data.missing,
@@ -288,5 +349,5 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
     console.log('Media policy: ' + report.total + ' expected assets, ' + data.present +
       ' present, ' + data.missing + ' absent; ' + problems.length + ' violations');
     if (problems.length) { for (const p of problems.slice(0, 25)) console.error(p); process.exitCode = 1; }
-  } else throw Error('Usage: --check | --require-generated | --inventory | --public [dist] | --stage-private | --self-test');
+  } else throw Error('Usage: --check | --require-generated | --inventory | --public [dist] | --beta [dist] | --stage-private | --stage-beta | --self-test');
 }
