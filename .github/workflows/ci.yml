@@ -60,6 +60,7 @@ jobs:
           npm run catalog:review:ledger:check
           npm run catalog:review:ledger:self-test
           npm run catalog:review:ledger:export
+          npm run catalog:genuine:export
       - name: Build and test private bilingual review gallery
         run: |
           npm run catalog:review:self-test
@@ -72,6 +73,7 @@ jobs:
           path: |
             visual-qa/private-catalog-review/
             visual-qa/catalog-review-audit.json
+            visual-qa/genuine-product-evidence-gaps.json
           retention-days: 7
           if-no-files-found: error
       - name: Upload SKU illustration review package

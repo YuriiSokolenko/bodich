@@ -1,3 +1,7 @@
+# Stage 14: Genuine BODICH product verification
+
+See [genuine-product-evidence.md](./genuine-product-evidence.md) for Issue #53, the **blocked** single-product pilot, evidence intake contract, all-132 evidence-gap report, current-epoch/human-review gates and privacy safeguards. Supplier research and original concept diagrams are **not** proof of independently authorized BODICH products. No draft is published.
+
 # Verified catalog intake
 
 See [Issue #34: bilingual copy and editorial QA](./copy-style-guide.md) for the EN/RO glossary, evidence-linked numeric claim exceptions, 132-SKU review matrix and pending Romanian native-speaker/legal sign-off. All source drafts remain unpublished.
