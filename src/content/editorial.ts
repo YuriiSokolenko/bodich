@@ -45,7 +45,7 @@ export const editorialContent: Record<Locale, Record<PageKey, EditorialSection>>
     support: {
       sourceLabel: 'General FAQ · not service or safety advice',
       heading: 'Frequently asked questions',
-      lead: 'These answers explain the current information boundaries. Consult the manufacturer's approved manual and qualified support for any real installation.',
+      lead: 'These answers explain the current information boundaries. Consult the approved manual supplied by the manufacturer and qualified support for any real installation.',
       entries: [
         { title: 'Can I download a BODICH operating manual?', body: 'Not from this preview. No model-specific manual or publication rights have been approved.' },
         { title: 'Do presentation illustrations prove product availability?', body: 'No. When shown in an authorized beta, illustrations are AI-generated; release-safe pages omit them. Neither case confirms a specific engine, test result or stock status.' },
