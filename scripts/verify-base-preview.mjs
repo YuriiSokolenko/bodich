@@ -53,12 +53,12 @@ for (const locale of ['en', 'ro']) {
     assert(home.includes(`href="/bodich-preview/${locale}/${section}/"`),
       `${locale} homepage: missing localized feature route ${section}`);
   }
-  const status = load(locale, 'contact');
-  assert(status.includes('data-information-cards="contact"'),
+  const contact = load(locale, 'contact');
+  assert(contact.includes('data-information-cards="contact"'),
     `${locale} contact page needs useful safe content`);
-  assert(!/<form\b|href="mailto:|href="tel:/i.test(status),
+  assert(!/<form\b|href="mailto:|href="tel:/i.test(contact),
     `${locale} contact page unexpectedly exposes an unverified channel`);
-  assert(status.includes(`href="/bodich-preview/${other}/contact/"`),
+  assert(contact.includes(`href="/bodich-preview/${other}/contact/"`),
     `${locale} contact page language switch must keep the current route`);
   for (const section of ['products', 'accessories']) {
     const catalog = load(locale, section);
