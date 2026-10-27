@@ -56,7 +56,7 @@ for (const locale of ['en', 'ro']) {
   const status = load(locale, 'contact');
   assert(status.includes('data-information-cards="contact"'),
     `${locale} contact page needs useful safe content`);
-  assert(!/<form\\b|href="mailto:|href="tel:/i.test(status),
+  assert(!/<form\b|href="mailto:|href="tel:/i.test(status),
     `${locale} contact page unexpectedly exposes an unverified channel`);
   assert(status.includes(`href="/bodich-preview/${other}/contact/"`),
     `${locale} contact page language switch must keep the current route`);
