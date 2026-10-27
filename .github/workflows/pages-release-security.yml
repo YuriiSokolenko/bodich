@@ -6,18 +6,26 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+  schedule:
+    # Recheck new vulnerability advisories against the default branch weekly.
+    - cron: '19 6 * * 1'
 
 permissions:
   contents: read
 
+concurrency:
+  group: pages-security-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   cloudflare-static-release:
     runs-on: ubuntu-latest
+    timeout-minutes: 40
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           fetch-depth: 0
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version-file: .nvmrc
           cache: npm
@@ -54,13 +62,13 @@ jobs:
           SITE_URL: https://example.invalid
         run: |
           npm run build
-          npm run pages:verify
+          node scripts/verify-pages-release.mjs dist --no-write
           npm run catalog:products:dist
           npm run seo:routes
           node scripts/verify-base-preview.mjs dist
       - name: Emit digest-based review evidence (no private artifact)
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: cloudflare-static-release-gate
           path: visual-qa/pages-release-evidence.json

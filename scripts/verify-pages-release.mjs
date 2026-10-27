@@ -83,50 +83,93 @@ function forbiddenPhrases() {
   return [...tokens].filter((token) => token.length >= 4).sort((a, b) => b.length - a.length);
 }
 const phrases = forbiddenPhrases();
+// Logs and public Actions artifacts must never echo an unapproved file path.
+const pathId = (name) => digest(name).slice(0, 20);
+const finding = (message, name) => message + ' [path-sha256-prefix=' + pathId(name) + ']';
 function leakProblems(relativePath, bytes) {
   const text = bytes.toString('utf8').toLowerCase();
   const haystack = relativePath.toLowerCase() + '\n' + text;
-  // Never print the matched draft identifier or leaked content into CI logs.
-  return phrases.some((phrase) => haystack.includes(phrase)) ? ['Private supplier/registry marker in ' + relativePath] : [];
+  return phrases.some((phrase) => haystack.includes(phrase)) ?
+    [finding('Private supplier/registry marker', relativePath)] : [];
 }
 
+// Closed CSP contract: any additional directive or source needs review.
+const expectedCsp = new Map([
+  ['default-src', "'self'"],
+  ['base-uri', "'self'"],
+  ['object-src', "'none'"],
+  ['frame-ancestors', "'none'"],
+  ['form-action', "'none'"],
+  ['script-src', "'self'"],
+  ['style-src', "'self' 'unsafe-inline'"],
+  ['img-src', "'self' data:"],
+  ['font-src', "'self'"],
+  ['connect-src', "'self'"],
+  ['upgrade-insecure-requests', ''],
+]);
+const expectedHeaders = new Map([
+  ['x-content-type-options', 'nosniff'],
+  ['referrer-policy', 'strict-origin-when-cross-origin'],
+  ['x-frame-options', 'DENY'],
+  ['x-robots-tag', 'noindex'],
+  ['permissions-policy', 'camera=(), microphone=(), geolocation=(), payment=()'],
+]);
 function headerProblems(content) {
   const problems = [];
-  const lines = content.split(/\r?\n/).filter((line) => line.trim() && !line.trim().startsWith('#'));
-  if (lines[0] !== '/*') problems.push('Missing wildcard static Pages header rule');
+  const lines = content.split(/\r?\n/).filter((line) =>
+    line.trim() && !line.trim().startsWith('#'));
+  if (lines.shift() !== '/*') problems.push('Missing wildcard static Pages header rule');
   const headers = new Map();
-  for (const line of lines.slice(1)) {
-    if (!/^\s+[^:\s]+:/.test(line)) { problems.push('Unexpected or unsupported header rule'); continue; }
-    const match = line.trim().match(/^([^:]+):\s*(.*)$/);
+  for (const line of lines) {
+    if (!/^\s+[^:\s]+:/.test(line)) {
+      problems.push('Unapproved Pages header rule or invalid format');
+      continue;
+    }
+    const match = line.trim().match(/^([^:\s]+):\s*(.*)$/);
     if (!match) { problems.push('Malformed Pages header'); continue; }
     const key = match[1].toLowerCase();
-    if (headers.has(key)) problems.push('Duplicate Pages header: ' + key);
-    headers.set(key, match[2]);
+    if (headers.has(key)) problems.push('Duplicate Pages header');
+    headers.set(key, match[2].trim());
   }
-  for (const [key, expected] of [
-    ['x-content-type-options', 'nosniff'], ['referrer-policy', 'strict-origin-when-cross-origin'],
-    ['x-frame-options', 'DENY'], ['x-robots-tag', 'noindex'],
-  ]) if (headers.get(key) !== expected) problems.push('Missing/unsafe ' + key);
-  const csp = headers.get('content-security-policy') || '';
-  for (const directive of ["default-src 'self'", "script-src 'self'", "object-src 'none'",
-    "base-uri 'self'", "frame-ancestors 'none'", "form-action 'none'"])
-    if (!csp.includes(directive)) problems.push('CSP missing ' + directive);
-  if (/unsafe-inline|unsafe-eval|https?:/i.test((csp.match(/script-src[^;]*/)?.[0] || '')))
-    problems.push('CSP cannot allow inline/eval/remote JavaScript');
-  if (headers.has('strict-transport-security')) problems.push('HSTS requires separately authorized production-only domain');
+  for (const [key, expected] of expectedHeaders) {
+    if (headers.get(key) !== expected) problems.push('Missing or unsafe ' + key);
+  }
+  for (const key of headers.keys()) {
+    if (key !== 'content-security-policy' && !expectedHeaders.has(key))
+      problems.push('Unapproved Pages header');
+  }
+  if (headers.has('strict-transport-security'))
+    problems.push('HSTS requires separately authorized production-only domain');
+  const csp = headers.get('content-security-policy') ?? '';
+  const actualCsp = new Map();
+  for (const piece of csp.split(';').map((v) => v.trim()).filter(Boolean)) {
+    const [key, ...tokens] = piece.split(/\s+/);
+    if (!/^[a-z-]+$/.test(key) || actualCsp.has(key)) {
+      problems.push('Malformed or duplicate CSP directive');
+      continue;
+    }
+    actualCsp.set(key, tokens.join(' '));
+  }
+  for (const [key, expected] of expectedCsp) {
+    if (actualCsp.get(key) !== expected) problems.push('Missing or unsafe CSP ' + key);
+  }
+  for (const key of actualCsp.keys()) {
+    if (!expectedCsp.has(key)) problems.push('Unapproved CSP directive');
+  }
   return problems;
 }
+
 function gather(dir, prefix = '') {
   const result = [];
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
     const name = prefix ? prefix + '/' + entry.name : entry.name;
     const absolute = join(dir, entry.name);
     const stat = lstatSync(absolute);
-    assert.ok(!stat.isSymbolicLink(), 'Symlink cannot be published: ' + name);
+    assert.ok(!stat.isSymbolicLink(), finding('Symlink cannot be published', name));
     if (stat.isDirectory()) result.push(...gather(absolute, name));
     else {
-      assert.ok(stat.isFile(), 'Non-file output: ' + name);
-      assert.ok(stat.size <= 12 * 1024 * 1024, 'Oversize asset requires independent review: ' + name);
+      assert.ok(stat.isFile(), finding('Non-file output', name));
+      assert.ok(stat.size <= 12 * 1024 * 1024, finding('Oversize asset requires review', name));
       result.push({ name, bytes: readFileSync(absolute) });
     }
   }
@@ -136,16 +179,34 @@ function audit(entries) {
   const errors = [];
   const allowed = filesForRoutes();
   const present = new Map(entries.map((item) => [item.name, item.bytes]));
-  for (const file of allowed) if (!present.has(file)) errors.push('Missing approved static route: ' + file);
+  for (const file of allowed)
+    if (!present.has(file)) errors.push(finding('Missing approved static route', file));
   for (const { name, bytes } of entries) {
-    if (!permittedFile(name, allowed)) errors.push('Not on release allow-list: ' + name);
+    if (!permittedFile(name, allowed)) errors.push(finding('Not on release allow-list', name));
     if (name !== '_headers') errors.push(...leakProblems(name, bytes));
     if (name.endsWith('.html')) {
       const html = bytes.toString('utf8');
       if (name !== 'index.html' && !html.includes('data-media-profile="release_safe"'))
-        errors.push('Non-release-safe HTML: ' + name);
+        errors.push(finding('Non-release-safe HTML', name));
       if (/<form\b|href=["'](?:mailto:|tel:)/i.test(html))
-        errors.push('Unauthorized commerce/contact surface: ' + name);
+        errors.push(finding('Unauthorized commerce/contact surface', name));
+      // Only externally hosted executable scripts are compatible with CSP.
+      // JSON-LD is inert and independently checked by the SEO validator.
+      for (const script of html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi)) {
+        const attrs = script[1];
+        const type = attrs.match(/\btype\s*=\s*["']([^"']+)["']/i)?.[1]?.toLowerCase();
+        const src = attrs.match(/\bsrc\s*=\s*["']([^"']+)["']/i)?.[1];
+        if (type === 'application/ld+json' && !src) continue;
+        if (!src) {
+          errors.push(finding('Inline executable script rejected by CSP', name));
+          continue;
+        }
+        const base = (process.env.ASTRO_BASE || '/').replace(/\/+$/, '');
+        const prefix = base + '/_astro/';
+        if (!src.startsWith(prefix) ||
+            !/^[a-zA-Z0-9_.-]+\.js$/.test(src.slice(prefix.length)))
+          errors.push(finding('Executable script source is outside approved static assets', name));
+      }
     }
   }
   if (!present.has('_headers')) errors.push('Missing Cloudflare Pages _headers');
@@ -179,8 +240,68 @@ function selfTest() {
   assert.deepEqual(leakProblems('en/index.html', Buffer.from('A bilingual educational BODICH preview')), []);
   const safeHeaders = readFileSync(join(root, 'public/_headers'), 'utf8');
   assert.deepEqual(headerProblems(safeHeaders), []);
-  assert(headerProblems(safeHeaders + '\n  Strict-Transport-Security: max-age=31536000\n').length);
-  assert(headerProblems(safeHeaders.replace("script-src 'self'", "script-src 'self' 'unsafe-inline'")).length);
+  const badHeaders = [
+    safeHeaders + '\n  Strict-Transport-Security: max-age=31536000\n',
+    safeHeaders.replace("script-src 'self'", "script-src 'self' 'unsafe-inline'"),
+    safeHeaders.replace("script-src 'self'", "script-src 'self' data:"),
+    safeHeaders.replace("script-src 'self'", "script-src 'self' blob:"),
+    safeHeaders.replace("script-src 'self'", "script-src 'self' *"),
+    safeHeaders.replace("script-src 'self'", "script-src 'self' 'strict-dynamic'"),
+    safeHeaders.replace("default-src 'self'", "default-src 'self' *"),
+    safeHeaders.replace("img-src 'self' data:", "img-src https:"),
+    safeHeaders.replace("font-src 'self'", "font-src *"),
+    safeHeaders.replace("connect-src 'self'", "connect-src https:"),
+    safeHeaders.replace("script-src 'self'", "script-src 'self'; script-src-elem *"),
+    safeHeaders.replace("script-src 'self'", "script-src 'self'; script-src-attr *"),
+    safeHeaders.replace("script-src 'self'", "script-src 'self'; script-src 'self'"),
+  ];
+  for (const [i, bad] of badHeaders.entries())
+    assert(headerProblems(bad).length, 'Unsafe CSP fixture accepted: ' + i);
+  const valid = new Map([...routeSet].map((name) => [
+    name, name === 'robots.txt' ? 'User-agent: *\nDisallow: /\n' :
+      name === 'sitemap.xml' ? '<?xml version="1.0"?><urlset></urlset>' :
+        name === 'index.html' ? '<html><body>Redirect</body></html>' :
+          '<html data-media-profile="release_safe"><main>Safe content</main></html>',
+  ]));
+  valid.set('_headers', safeHeaders);
+  valid.set('_astro/safe.js', 'document.querySelector("main")');
+  const run = (items) => audit([...items].map(([name, value]) =>
+    ({ name, bytes: Buffer.from(value) })));
+  assert.deepEqual(run(valid), [], 'Valid synthetic dist rejected');
+  function negative(label, mutation, message) {
+    const modified = new Map(valid);
+    mutation(modified);
+    const results = run(modified);
+    assert(results.some((e) => e.includes(message)),
+      'Audit did not reject ' + label + ': ' + results.join('; '));
+  }
+  negative('extra route', (m) => m.set('en/cart/index.html', '<html/>'), 'Not on release allow-list');
+  negative('non-empty sitemap', (m) => m.set('sitemap.xml',
+    '<urlset><url><loc>https://example.invalid/en/</loc></url></urlset>'), 'Sitemap differs');
+  negative('sitemap alternate', (m) => m.set('sitemap.xml',
+    '<urlset><xhtml:link href="https://example.invalid/ro/"/></urlset>'), 'Sitemap differs');
+  negative('robots allow', (m) => m.set('robots.txt', 'User-agent: *\nDisallow: /\nAllow: /'), 'Unapproved crawler');
+  negative('form', (m) => m.set('en/index.html',
+    '<html data-media-profile="release_safe"><form></form></html>'), 'Unauthorized commerce');
+  negative('mailto link', (m) => m.set('en/index.html',
+    '<html data-media-profile="release_safe"><a href="mailto:x@example.org">Send</a></html>'), 'Unauthorized commerce');
+  negative('missing headers', (m) => m.delete('_headers'), 'Missing Cloudflare Pages _headers');
+  negative('inline executable JavaScript', (m) => m.set('en/index.html',
+    '<html data-media-profile="release_safe"><script type="module">alert(1)</script></html>'),
+    'Inline executable script');
+  negative('remote executable JavaScript', (m) => m.set('en/index.html',
+    '<html data-media-profile="release_safe"><script src="https://evil.invalid/a.js"></script></html>'),
+    'outside approved static assets');
+  const withStructuredData = new Map(valid);
+  withStructuredData.set('en/index.html',
+    '<html data-media-profile="release_safe"><script type="application/ld+json">{"@type":"WebPage"}</script></html>');
+  assert.deepEqual(run(withStructuredData), [], 'Safe inert JSON-LD cannot be blocked');
+  const leaked = overlays.records[0].slug;
+  const secretsInNames = new Map(valid);
+  secretsInNames.set('_astro/' + leaked + '.js', 'const x=1;');
+  const errors = run(secretsInNames);
+  assert(errors.length && errors.every((e) => !e.includes(leaked)),
+    'Private filename escaped into a public finding');
   const testDir = mkdtempSync(join(tmpdir(), 'bodich-pages-test-'));
   try {
     mkdirSync(join(testDir, '_astro'));
@@ -189,14 +310,19 @@ function selfTest() {
     writeFileSync(join(testDir, 'secret.json'), '{}');
     assert(!permittedFile('secret.json', routeSet));
   } finally { rmSync(testDir, { recursive: true, force: true }); }
-  console.log('Cloudflare Pages release regression fixtures passed (routes, draft IDs, CSP and HSTS).');
+  console.log('Cloudflare Pages release regression fixtures passed (full dist audit, scripts, CSP, metadata, quarantine, HSTS).');
 }
 
 if (process.argv.includes('--self-test')) {
   selfTest();
 } else {
   assertPolicy();
-  const folder = resolve(process.argv[2] ?? 'dist');
+  const flags = process.argv.slice(2);
+  const noWrite = flags.includes('--no-write');
+  const positions = flags.filter((value) => value !== '--no-write');
+  assert(positions.length <= 1 && !positions.some((value) => value.startsWith('--')),
+    'Usage: node scripts/verify-pages-release.mjs [dist] [--no-write]');
+  const folder = resolve(positions[0] ?? 'dist');
   assert(existsSync(folder), 'Missing static dist directory');
   const entries = gather(folder).sort((a, b) => a.name.localeCompare(b.name, 'en'));
   const failures = audit(entries);
@@ -205,12 +331,14 @@ if (process.argv.includes('--self-test')) {
     releaseProfile: policy.profile, routeAllowListCount: policy.routes.length,
     supplierDraftsQuarantined: policy.supplierDraftCount,
     verdict: failures.length ? 'NO_GO' : 'offline_checks_passed_live_owner_approval_pending',
-    files: entries.map(({ name, bytes }) => ({ path: name, sha256: digest(bytes), bytes: bytes.length })),
+    files: entries.map(({ name, bytes }) => ({ pathSha256: digest(name), sha256: digest(bytes), bytes: bytes.length })),
     findings: failures,
   };
   const out = join(root, 'visual-qa/pages-release-evidence.json');
-  mkdirSync(join(root, 'visual-qa'), { recursive: true });
-  writeFileSync(out, JSON.stringify(report, null, 2) + '\n');
+  if (!noWrite) {
+    mkdirSync(join(root, 'visual-qa'), { recursive: true });
+    writeFileSync(out, JSON.stringify(report, null, 2) + '\n');
+  }
   for (const error of failures) console.error('Pages release gate: ' + error);
   console.log('Pages static release: ' + entries.length + ' files, ' + failures.length + ' findings; ' + report.verdict);
   if (failures.length) process.exitCode = 1;
