@@ -22,11 +22,11 @@ export const catalogCategories = [
     copy: {
       en: {
         title: "Turbine engines",
-        description: "A section for confirmed BODICH turbine models."
+        description: "An overview of miniature gas-turbine engines. The compressor, combustor and turbine form a connected system; no BODICH model or performance value is verified here."
       },
       ro: {
         title: "Motoare cu turbină",
-        description: "Secțiune pentru modelele de turbine BODICH confirmate."
+        description: "Prezentare generală a motoarelor cu turbină cu gaze miniaturale. Compresorul, camera de ardere și turbina funcționează împreună; aici nu sunt confirmate modele sau valori de performanță BODICH."
       }
     }
   },
@@ -36,11 +36,11 @@ export const catalogCategories = [
     copy: {
       en: {
         title: "ECU and controls",
-        description: "A planned grouping for turbine control components."
+        description: "Electronic control units coordinate sensor signals and operating sequences in turbine systems. This is an educational category, not a confirmed BODICH offering."
       },
       ro: {
         title: "ECU și sisteme de control",
-        description: "O categorie planificată pentru componentele de control ale turbinelor."
+        description: "Unitățile electronice de comandă gestionează semnalele senzorilor și secvențele de funcționare. Categoria este informativă, nu o ofertă BODICH confirmată."
       }
     }
   },
@@ -50,11 +50,11 @@ export const catalogCategories = [
     copy: {
       en: {
         title: "Fuel systems",
-        description: "A planned grouping for fuel-system accessories."
+        description: "Fuel lines, pumps and filtration are examples of system elements; compatibility and safe handling depend on the specific approved equipment."
       },
       ro: {
         title: "Sisteme de alimentare",
-        description: "O categorie planificată pentru accesorii ale sistemelor de alimentare cu combustibil."
+        description: "Conductele, pompele și filtrele sunt exemple de componente; compatibilitatea și manipularea sigură depind de echipamentul concret aprobat."
       }
     }
   },
@@ -64,11 +64,11 @@ export const catalogCategories = [
     copy: {
       en: {
         title: "Electrical components",
-        description: "A planned grouping for electrical accessories."
+        description: "Wiring, connectors and power supplies are distinct electrical-system topics. Ratings and compatibility must come from verified model documents."
       },
       ro: {
         title: "Componente electrice",
-        description: "O categorie planificată pentru accesorii electrice."
+        description: "Cablajele, conectorii și alimentarea electrică sunt teme distincte. Parametrii și compatibilitatea necesită documentație verificată pentru fiecare model."
       }
     }
   },
@@ -78,11 +78,11 @@ export const catalogCategories = [
     copy: {
       en: {
         title: "Mounting hardware",
-        description: "A planned grouping for mounting accessories."
+        description: "Mounting interfaces and fasteners are installation considerations; no fitment, load rating or accessory availability is asserted."
       },
       ro: {
         title: "Accesorii de montaj",
-        description: "O categorie planificată pentru componente de montaj."
+        description: "Interfețele de fixare și elementele de prindere țin de instalare; nu sunt declarate compatibilități, sarcini admise sau disponibilități."
       }
     }
   }
