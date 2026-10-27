@@ -94,6 +94,8 @@ jobs:
           if-no-files-found: error
       - name: Build static website
         run: npm run build
+      - name: Guard built distribution against private BODICH registry leakage
+        run: npm run catalog:products:dist
       - name: Verify bilingual editorial SEO, crawl policy and safe output
         run: npm run seo:routes
       - name: Verify synthetic positive editorial approval in isolated build
@@ -124,6 +126,7 @@ jobs:
           node scripts/verify-base-preview.mjs dist
           npm run media:public
           npm run seo:routes
+          npm run catalog:products:dist
       - name: Validate card and detail templates with isolated CI-only records
         run: node scripts/verify-product-fixture.mjs
       - name: Build presentation beta with registered AI visuals and visible disclosures
