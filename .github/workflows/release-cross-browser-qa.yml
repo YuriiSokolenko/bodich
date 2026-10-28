@@ -11,10 +11,8 @@ on:
       - 'tsconfig.json'
       - 'package.json'
       - 'package-lock.json'
-      - 'scripts/release-cross-browser-qa.mjs'
-      - 'scripts/verify-release-qa-install.mjs'
-      - 'scripts/verify-release-qa-dist.mjs'
-      - 'scripts/lib/release-manifest.mjs'
+      - 'scripts/**'
+      - 'docs/catalog/**'
       - 'docs/qa/issue-87-*'
       - '.github/workflows/release-cross-browser-qa.yml'
   workflow_dispatch:
