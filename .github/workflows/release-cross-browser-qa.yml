@@ -1,20 +1,9 @@
 name: Stage 20D Firefox and WebKit Smoke (automated only)
 
 on:
+  # No path filters: a required compatibility-smoke check must also run on docs-only PRs.
   pull_request:
     branches: [main]
-    paths:
-      - 'src/**'
-      - 'public/**'
-      - 'astro.config.mjs'
-      - '.nvmrc'
-      - 'tsconfig.json'
-      - 'package.json'
-      - 'package-lock.json'
-      - 'scripts/**'
-      - 'docs/catalog/**'
-      - 'docs/qa/issue-87-*'
-      - '.github/workflows/release-cross-browser-qa.yml'
   workflow_dispatch:
 
 permissions:
@@ -26,7 +15,7 @@ concurrency:
 
 jobs:
   compatibility-smoke:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 45
     env:
       QA_OUTPUT_DIR: visual-qa/cross-browser-qa
@@ -36,6 +25,7 @@ jobs:
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
 
       - name: Node 24 from repository pin
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
@@ -73,7 +63,6 @@ jobs:
         shell: bash
         run: |
           npm run preview -- --host 127.0.0.1 --port 4321 --strictPort > /tmp/bodich-cross-browser-preview.log 2>&1 &
-          echo $! > /tmp/bodich-cross-browser-preview.pid
           for attempt in $(seq 1 45); do
             if curl --fail --silent http://127.0.0.1:4321/en/ > /dev/null; then
               exit 0
@@ -85,6 +74,14 @@ jobs:
 
       - name: Exercise 48 EN/RO route cells and eight interactive journeys
         run: node scripts/release-cross-browser-qa.mjs
+
+      - name: Show bounded preview diagnostics on failure
+        if: failure()
+        shell: bash
+        run: |
+          if [ -f /tmp/bodich-cross-browser-preview.log ]; then
+            tail -n 100 /tmp/bodich-cross-browser-preview.log
+          fi
 
       - name: Assert source, lock and release-safe dist unchanged after QA
         if: always() && steps.freeze.outcome == 'success'
