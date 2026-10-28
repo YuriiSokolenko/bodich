@@ -235,7 +235,18 @@ function htmlProblems(html, name) {
     // The contents of HTML <template> live outside its childNodes.
     if (node.content) walk(node.content);
   };
-  walk(parse(html));
+  const malformedSeparators = new Set();
+  const document = parse(html, {
+    onParseError(error) {
+      // HTML5 allows recovery from stray slashes before attributes.
+      // Even when the recovered token has no standalone on* attribute,
+      // the release gate rejects ambiguous slash-separated markup.
+      if (error.code === 'unexpected-solidus-in-tag')
+        malformedSeparators.add(error.code);
+    },
+  });
+  if (malformedSeparators.size) report('Malformed HTML5 attribute separator');
+  walk(document);
   return errors;
 }
 
@@ -362,7 +373,7 @@ function selfTest() {
   const htmlFixture = (markup) =>
     '<html data-media-profile="release_safe"><main>' + markup + '</main></html>';
   const confirmedBypasses = [
-    ['slash-separated img handler', '<img/src=x/onerror=alert(1)>', 'Inline event handler'],
+    ['slash-separated img handler', '<img/src=x/onerror=alert(1)>', 'Malformed HTML5 attribute separator'],
     ['quoted > before handler', '<a title=">" onclick=alert(1)>x</a>', 'Inline event handler'],
     ['numeric entity javascript protocol', '<a href="&#106;avascript:alert(1)">x</a>', 'JavaScript URL'],
     ['ASCII tab entity in protocol', '<a href="java&#9;script:alert(1)">x</a>', 'JavaScript URL'],
