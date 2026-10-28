@@ -33,6 +33,48 @@ function assertPageEvidence(evidence, locale, route, width) {
   assert(evidence.scrollWidth <= width + 1, 'horizontal overflow (' + evidence.scrollWidth + ' > ' + width + ')');
 }
 
+// Keep the network policy and matrix validator pure so CI can mutate fixtures.
+function isAllowedOrigin(url, origin) {
+  return new URL(url).origin === origin;
+}
+
+function isBenignNavigationAbort({ sameOrigin, active, reason, navigationRequest, document, mainFrame }) {
+  return sameOrigin && active &&
+    /^(?:net::ERR_ABORTED|NS_BINDING_ABORTED|Load cancelled|Cancelled)$/i.test(reason) &&
+    navigationRequest && document && mainFrame;
+}
+
+function matrixFailures(matrix, journeys) {
+  const expectedRoutes = new Set();
+  const expectedJourneys = new Set();
+  for (const engine of Object.keys(engines)) {
+    for (const locale of locales) {
+      for (const viewport of viewports) {
+        expectedJourneys.add([engine, locale, 'journey', viewport.name].join('-'));
+        for (const route of routes) {
+          expectedRoutes.add([engine, locale, route, viewport.name].join('-'));
+        }
+      }
+    }
+  }
+  const errors = [];
+  const verify = (items, expected, kind) => {
+    const seen = new Set();
+    for (const item of items) {
+      if (!expected.has(item.id)) errors.push(kind + ' unexpected cell: ' + String(item.id));
+      if (seen.has(item.id)) errors.push(kind + ' duplicate cell: ' + String(item.id));
+      seen.add(item.id);
+      if (item.status !== 'PASS') errors.push(kind + ' non-PASS cell: ' + String(item.id));
+    }
+    for (const id of expected) {
+      if (!seen.has(id)) errors.push(kind + ' missing cell: ' + id);
+    }
+  };
+  verify(matrix, expectedRoutes, 'route');
+  verify(journeys, expectedJourneys, 'journey');
+  return errors;
+}
+
 function runNegativeFixtures() {
   const good = {
     pathname: '/ro/products/', lang: 'ro', h1Count: 1, headerCount: 1,
@@ -45,7 +87,46 @@ function runNegativeFixtures() {
     /incorrect route pathname/, 'wrong route must not PASS');
   assert.throws(() => assertPageEvidence({ ...good, scrollWidth: 400 }, 'ro', 'products', 390),
     /horizontal overflow/, 'overflow must not PASS');
-  console.log('PASS negative fixtures: wrong locale, wrong route and overflow fail closed');
+  assert.equal(isAllowedOrigin('http://127.0.0.1:4321/en/', baseUrl.origin), true);
+  assert.equal(isAllowedOrigin('https://example.invalid/en/', baseUrl.origin), false,
+    'external origins must be blocked');
+  assert.equal(isAllowedOrigin('http://127.0.0.1:9999/en/', baseUrl.origin), false,
+    'different local ports must be blocked');
+
+  const aborted = {
+    sameOrigin: true, active: true, reason: 'net::ERR_ABORTED',
+    navigationRequest: true, document: true, mainFrame: true,
+  };
+  assert.equal(isBenignNavigationAbort(aborted), true, 'known main-frame navigation abort is benign');
+  for (const patch of [
+    { sameOrigin: false }, { active: false }, { reason: 'net::ERR_CONNECTION_REFUSED' },
+    { navigationRequest: false }, { document: false }, { mainFrame: false },
+  ]) {
+    assert.equal(isBenignNavigationAbort({ ...aborted, ...patch }), false,
+      'non-navigation, off-origin, inactive, or non-document failures must not be suppressed');
+  }
+
+  const completeMatrix = Object.keys(engines).flatMap((engine) =>
+    locales.flatMap((locale) => routes.flatMap((route) => viewports.map((viewport) => ({
+      id: [engine, locale, route, viewport.name].join('-'), status: 'PASS',
+    })))));
+  const completeJourneys = Object.keys(engines).flatMap((engine) =>
+    locales.flatMap((locale) => viewports.map((viewport) => ({
+      id: [engine, locale, 'journey', viewport.name].join('-'), status: 'PASS',
+    }))));
+  assert.deepEqual(matrixFailures(completeMatrix, completeJourneys), [],
+    'fully covered matrix and journeys must PASS');
+  for (const [mutatedRoutes, mutatedJourneys] of [
+    [completeMatrix.slice(1), completeJourneys], // missing cell
+    [[...completeMatrix, completeMatrix[0]], completeJourneys], // duplicate cell
+    [[...completeMatrix.slice(1), { ...completeMatrix[0], status: 'FAIL' }], completeJourneys],
+    [completeMatrix, completeJourneys.slice(1)],
+    [completeMatrix, [...completeJourneys, completeJourneys[0]]],
+  ]) {
+    assert(matrixFailures(mutatedRoutes, mutatedJourneys).length > 0,
+      'incomplete, duplicated or failing matrix must fail closed');
+  }
+  console.log('PASS negative fixtures: locale, route, overflow, origins, abort suppression and matrix completeness');
 }
 
 if (process.argv.includes('--self-test')) {
@@ -76,7 +157,12 @@ async function pageEvidence(page) {
     // Ensure same-origin lazy images have actually been requested/decoded.
     await Promise.all([...document.images].map(async (img) => {
       img.loading = 'eager';
-      await img.decode();
+      try {
+        await img.decode();
+      } catch (error) {
+        const path = new URL(img.currentSrc || img.src, location.href).pathname.slice(0, 180);
+        throw new Error('Image decode failed at ' + path + ': ' + String(error?.message ?? error));
+      }
     }));
     await document.fonts.ready;
   });
@@ -108,13 +194,16 @@ function listenForFailures(page, issues, origin, navigation) {
     }
   });
   page.on('requestfailed', (request) => {
-    if (new URL(request.url()).origin !== origin) return;
+    const sameOrigin = isAllowedOrigin(request.url(), origin);
+    if (!sameOrigin) return; // Off-origin requests were already rejected by the context router.
     const reason = request.failure()?.errorText ?? 'unknown failure';
-    // Only an explicitly initiated, interrupted *document* navigation is benign.
-    // Never suppress cancelled scripts, styles, images, XHR, or arbitrary failures.
-    const cancelled = /^(?:net::ERR_ABORTED|NS_BINDING_ABORTED|Load cancelled|Cancelled)$/i.test(reason);
-    if (navigation.active && cancelled && request.isNavigationRequest() &&
-        request.resourceType() === 'document' && request.frame() === page.mainFrame()) return;
+    // Only a known cancelled main-frame document request during our link click is benign.
+    const navigationRequest = request.isNavigationRequest();
+    if (isBenignNavigationAbort({
+      sameOrigin, active: navigation.active, reason, navigationRequest,
+      document: request.resourceType() === 'document',
+      mainFrame: navigationRequest && request.frame() === page.mainFrame(),
+    })) return;
     issues.push('same-origin request failed: ' + new URL(request.url()).pathname + ': ' + reason);
   });
 }
@@ -134,7 +223,7 @@ async function runCase(browser, engine, locale, route, viewport, kind) {
     // Never access an external site, including during a regression.
     await context.route('**/*', (requestRoute) => {
       const url = new URL(requestRoute.request().url());
-      if (url.origin !== baseUrl.origin) {
+      if (!isAllowedOrigin(url.href, baseUrl.origin)) {
         result.failures.push('blocked off-origin request: ' + url.origin);
         return requestRoute.abort('blockedbyclient');
       }
@@ -147,6 +236,10 @@ async function runCase(browser, engine, locale, route, viewport, kind) {
     } else {
       await loadAndAssert(page, new URL(pathFor(locale, route), baseUrl).href, locale, route, viewport.width);
     }
+    // A load event can precede deferred fetches and console errors. Wait for
+    // static-page network quiescence, then allow a short event-loop settle.
+    await page.waitForLoadState('networkidle', { timeout: 10000 });
+    await page.waitForTimeout(150);
     assert.deepEqual(result.failures, [], 'browser runtime or network failures');
     result.status = 'PASS';
   } catch (error) {
@@ -171,10 +264,16 @@ async function runCase(browser, engine, locale, route, viewport, kind) {
 async function followLink(page, link, expectedPath, navigation) {
   navigation.active = true;
   try {
-    const responsePromise = page.waitForNavigation({ waitUntil: 'load', timeout: 30000 });
-    await link.click();
-    const response = await responsePromise;
-    assert.equal(response?.status(), 200, 'navigation HTTP 200');
+    const expectedUrl = new URL(expectedPath, baseUrl).href;
+    // Arm both waits before clicking. waitForURL is the supported navigation API;
+    // the separate response assertion retains the HTTP 200 contract.
+    const [, response] = await Promise.all([
+      page.waitForURL(expectedUrl, { waitUntil: 'load', timeout: 30000 }),
+      page.waitForResponse((r) => r.url() === expectedUrl && r.request().isNavigationRequest(),
+        { timeout: 30000 }),
+      link.click(),
+    ]);
+    assert.equal(response.status(), 200, 'navigation HTTP 200');
     assert.equal(new URL(page.url()).pathname, expectedPath, 'navigation destination');
   } finally {
     navigation.active = false;
@@ -274,14 +373,16 @@ async function runSmoke() {
           for (const route of routes) for (const viewport of viewports) {
             if (!report.matrix.some((x) => x.engine === engine && x.locale === locale &&
               x.route === route && x.viewport === viewport.name)) {
-              report.matrix.push({ engine, locale, route, viewport: viewport.name, width: viewport.width,
+              report.matrix.push({ id: [engine, locale, route, viewport.name].join('-'),
+                engine, locale, route, viewport: viewport.name, width: viewport.width,
                 kind: 'route', status: 'FAIL', failures: [message], screenshot: null });
             }
           }
           for (const viewport of viewports) {
             if (!report.journeys.some((x) => x.engine === engine && x.locale === locale &&
               x.viewport === viewport.name)) {
-              report.journeys.push({ engine, locale, route: null, viewport: viewport.name, width: viewport.width,
+              report.journeys.push({ id: [engine, locale, 'journey', viewport.name].join('-'),
+                engine, locale, route: null, viewport: viewport.name, width: viewport.width,
                 kind: 'journey', status: 'FAIL', failures: [message], screenshot: null });
             }
           }
@@ -301,11 +402,7 @@ async function runSmoke() {
     } catch (error) {
       report.failures.push('post-test integrity check failed: ' + String(error?.message ?? error).slice(0, 600));
     }
-    if (report.matrix.length !== 48 || report.journeys.length !== 8 ||
-        report.matrix.some((x) => x.status !== 'PASS') ||
-        report.journeys.some((x) => x.status !== 'PASS')) {
-      report.failures.push('incomplete/failing 48-cell matrix or eight interactive journeys');
-    }
+    report.failures.push(...matrixFailures(report.matrix, report.journeys));
     report.status = report.failures.length ? 'FAIL' : 'PASS_AUTOMATED_ONLY';
     await writeFile(join(outputDir, 'summary.json'), JSON.stringify(report, null, 2) + '\n');
     console.log('Issue #87: ' + report.status + ' (' +
