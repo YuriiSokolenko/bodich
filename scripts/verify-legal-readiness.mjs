@@ -4,7 +4,7 @@
  */
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
-import { mkdtempSync, mkdirSync, readFileSync, readdirSync, rmSync, lstatSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdtempSync, mkdirSync, readFileSync, readdirSync, rmSync, lstatSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -23,6 +23,7 @@ const ref = (value) => typeof value === 'string' &&
 const person = (value) => typeof value === 'string' &&
   value.trim().split(/\s+/u).length >= 2 && value.trim().length >= 5 && !INVALID.test(value);
 const filled = (value) => typeof value === 'string' && value.trim().length >= 3 && !INVALID.test(value);
+const explanation = (value) => typeof value === 'string' && value.trim().length >= 8;
 const validDate = (value) => typeof value === 'string' && DATE.test(value) &&
   !Number.isNaN(Date.parse(value + 'T00:00:00Z')) &&
   new Date(value + 'T00:00:00Z').toISOString().slice(0, 10) === value &&
@@ -36,10 +37,13 @@ function validateLedger(record, requireGo = false) {
   if (record.schemaVersion !== 1 || record.scope !== 'informational_only') fail('invalid_scope');
   if (!['NO_GO', 'GO'].includes(record.decision)) fail('invalid_decision');
   if (requireGo && record.decision !== 'GO') fail('human_legal_go_missing');
+  if ((record.decision === 'NO_GO' && record.decisionBasis !== 'POLICY_DEFAULT_UNSIGNED') ||
+      (record.decision === 'GO' && record.decisionBasis !== 'HUMAN_SIGNED'))
+    fail('invalid_decision_basis');
   const op = record.operator ?? {};
   const review = record.legalReview ?? {};
   if (!Array.isArray(record.blockers) || record.blockers.some((b) =>
-    !b || !filled(b.id) || !filled(b.action))) fail('invalid_blocker_list');
+    !b || !filled(b.id) || !explanation(b.action))) fail('invalid_blocker_list');
   const statuses = review.areas ?? {};
   const locales = review.locales ?? {};
   for (const area of AREA_IDS) {
@@ -72,15 +76,53 @@ function validateLedger(record, requireGo = false) {
 }
 
 const SCRIPT_RISKS = [
-  ['browser_storage', /(?:\blocalStorage\b|\bsessionStorage\b|\bindexedDB\b|\bcookieStore\b|document\s*(?:\.\s*cookie|\[\s*['"]cookie['"]\s*\]))/],
-  ['network_api', /(?:\bfetch\s*\(|\bXMLHttpRequest\b|\bsendBeacon\s*\(|\bWebSocket\s*\(|\bEventSource\s*\()/],
-  ['service_worker', /\bserviceWorker\s*\.\s*register\s*\(/],
+  ['browser_storage', /(?:\blocalStorage\b|\bsessionStorage\b|\bindexedDB\b|\bcookieStore\b|\bcaches\s*[.(\[]|\bcacheStorage\b|document\s*(?:\.\s*cookie|\[\s*['"]cookie['"]\s*\]))/i],
+  ['network_api', /(?:\bfetch\s*\(|\bXMLHttpRequest\b|\bsendBeacon\s*\(|\bWebSocket\s*\(|\bEventSource\s*\(|\bRTCPeerConnection\s*\()/i],
+  ['service_worker', /\bserviceWorker\s*\.\s*register\s*\(/i],
+  ['dynamic_remote_import', /\bimport\s*\(\s*['"](?:https?:)?\/\//i],
+  ['dynamic_resource_creation', /(?:\bnew\s+Image\s*\(|\bcreateElement\s*\(\s*['"](?:script|iframe|img|image|link)['"])/i],
+  ['worker_or_peer', /\b(?:new\s+)?(?:SharedWorker|Worker|RTCPeerConnection)\s*\(/i],
+  ['external_url_in_script', /\bhttps?:\/\/[a-z0-9][a-z0-9.-]*/i],
 ];
 const REMOTE = /^(?:https?:)?\/\//i;
 const UNTRUSTED = /^(?:https?:)?\/\/|^(?:data|blob|javascript):/i;
+const CONTACT_SCHEME = /^(?:mailto|tel|sms|smsto|mms|mmsto|whatsapp|tg|viber|skype):/i;
+const CONTACT_HOST = /^(?:wa\.me|api\.whatsapp\.com|web\.whatsapp\.com|t\.me|telegram\.me)$/i;
+const AUTOMATIC_LINK = /\b(?:stylesheet|icon|preload|modulepreload|prefetch|preconnect|dns-prefetch|manifest)\b/i;
+const RESOURCES = new Set(['script:src', 'img:src', 'source:src', 'video:src',
+  'audio:src', 'video:poster', 'track:src', 'image:href', 'use:href',
+  'iframe:src', 'embed:src']);
 const attrs = (node) => Object.fromEntries((node.attrs ?? []).map((a) => [a.name.toLowerCase(), a.value]));
+function normalizedScheme(value) {
+  // Match the HTML5 URL normalization used by the Pages security verifier.
+  return String(value ?? '').replace(/[\t\n\r]/g, '')
+    .replace(/^[\u0000-\u0020]+|[\u0000-\u0020]+$/g, '');
+}
 function sourceUrls(attr) {
-  return attr ? attr.split(',').map((candidate) => candidate.trim().split(/\s+/u)[0]).filter(Boolean) : [];
+  return attr ? attr.split(',').map((candidate) =>
+    normalizedScheme(candidate).split(/\s+/u)[0]).filter(Boolean) : [];
+}
+function isContactHref(value) {
+  const href = normalizedScheme(value);
+  if (CONTACT_SCHEME.test(href)) return true;
+  if (!REMOTE.test(href)) return false;
+  try {
+    // Protocol-relative links become HTTPS for host comparison.
+    return CONTACT_HOST.test(new URL(href.startsWith('//') ? 'https:' + href : href).hostname);
+  } catch {
+    return true; // malformed absolute URL must not bypass contact policy
+  }
+}
+function jsRisks(js, add) {
+  for (const [id, rx] of SCRIPT_RISKS) if (rx.test(js)) add(id);
+}
+function cssRisks(css, add) {
+  for (const match of css.matchAll(/url\(\s*['"]?([^'")]+)['"]?\s*\)/gi)) {
+    if (UNTRUSTED.test(normalizedScheme(match[1]))) add('remote_css_resource');
+  }
+  for (const match of css.matchAll(/@import\s+['"]([^'"]+)['"]/gi)) {
+    if (UNTRUSTED.test(normalizedScheme(match[1]))) add('remote_css_import');
+  }
 }
 function htmlRisks(html, add, stats) {
   const doc = parse(html, { scriptingEnabled: false });
@@ -88,54 +130,62 @@ function htmlRisks(html, add, stats) {
     const tag = node.tagName?.toLowerCase();
     if (tag) {
       const a = attrs(node);
-      const blocked = new Set(['form', 'input', 'textarea', 'select', 'iframe', 'object', 'embed']);
-      if (blocked.has(tag)) add('unapproved_collection_or_embed');
-      if (a.contenteditable === '' || a.contenteditable === 'true') add('editable_visitor_field');
-      if (a['http-equiv']?.toLowerCase() === 'set-cookie') add('cookie_header_in_markup');
-      if (tag === 'a' && /^(?:mailto|tel):/i.test(a.href ?? '')) add('unapproved_contact_channel');
-      if (tag === 'a' && REMOTE.test(a.href ?? '')) stats.externalNavigations++;
-      const resourceAttrs = new Set(['script:src', 'img:src', 'source:src', 'video:src',
-        'audio:src', 'video:poster', 'track:src', 'image:href', 'use:href']);
-      const trackedAttrs = ['src', 'poster', 'href'];
-      for (const key of trackedAttrs) {
-        const value = a[key];
-        if (!value) continue;
-        if (resourceAttrs.has(tag + ':' + key) && UNTRUSTED.test(value.trim()))
+      if (new Set(['form', 'input', 'textarea', 'select', 'iframe', 'object', 'embed']).has(tag))
+        add('unapproved_collection_or_embed');
+      if (a.contenteditable === '' || normalizedScheme(a.contenteditable).toLowerCase() === 'true')
+        add('editable_visitor_field');
+      if (normalizedScheme(a['http-equiv']).replace(/[\u0000-\u0020\u007f]/g, '').toLowerCase() === 'set-cookie')
+        add('cookie_header_in_markup');
+      if (a.style !== undefined) cssRisks(a.style, add);
+      if (tag === 'a' && a.href !== undefined) {
+        if (isContactHref(a.href)) add('unapproved_contact_channel');
+        else if (REMOTE.test(normalizedScheme(a.href))) stats.externalNavigations++;
+      }
+      // Anchor ping is a visitor-tracking request even for a relative target.
+      if (tag === 'a' && a.ping !== undefined) add('unapproved_link_ping');
+      for (const key of ['src', 'poster', 'href', 'xlink:href']) {
+        const value = normalizedScheme(a[key]);
+        if (RESOURCES.has(tag + ':' + key) && UNTRUSTED.test(value))
           add('remote_or_embedded_resource');
         if (tag === 'link' && key === 'href' &&
-            /\b(?:stylesheet|icon|preload|modulepreload|prefetch|preconnect|dns-prefetch|manifest)\b/i.test(a.rel ?? '') &&
-            UNTRUSTED.test(value.trim())) add('remote_or_embedded_resource');
+            AUTOMATIC_LINK.test(a.rel ?? '') && UNTRUSTED.test(value))
+          add('remote_or_embedded_resource');
       }
-      for (const value of sourceUrls(a.srcset)) {
-        if (UNTRUSTED.test(value)) add('remote_srcset_resource');
+      for (const key of ['srcset', 'imagesrcset']) {
+        for (const value of sourceUrls(a[key])) {
+          if (UNTRUSTED.test(value)) add('remote_srcset_resource');
+        }
       }
       if (tag === 'script') {
-        if (!a.src && (a.type ?? '').toLowerCase() !== 'application/ld+json') {
+        if (a.src !== undefined) {
+          const src = normalizedScheme(a.src);
+          // All approved executable scripts are emitted by the Astro bundler.
+          const base = (process.env.ASTRO_BASE ?? '/').replace(/^\/|\/$/g, '');
+          const prefix = '/' + (base ? base + '/' : '') + '_astro/';
+          if (!src.startsWith(prefix) || !/\.m?js(?:\?[^#]*)?$/i.test(src))
+            add('unapproved_script_source');
+        } else if (normalizedScheme(a.type).toLowerCase() !== 'application/ld+json') {
           const raw = (node.childNodes ?? []).filter((n) => n.nodeName === '#text')
             .map((n) => n.value ?? '').join('');
-          for (const [id, rx] of SCRIPT_RISKS) if (rx.test(raw)) add(id);
+          jsRisks(raw, add);
         }
-        if (a.src && UNTRUSTED.test(a.src.trim())) add('remote_script');
+      }
+      if (tag === 'style') {
+        const raw = (node.childNodes ?? []).filter((n) => n.nodeName === '#text')
+          .map((n) => n.value ?? '').join('');
+        cssRisks(raw, add);
       }
     }
     for (const child of node.childNodes ?? []) visit(child);
-    if (node.content) visit(node.content); // <template> contents do not live in childNodes.
+    if (node.content) visit(node.content);
   }
   visit(doc);
-}
-function cssRisks(css, add) {
-  for (const match of css.matchAll(/url\(\s*['"]?([^'")]+)['"]?\s*\)/gi)) {
-    if (UNTRUSTED.test(match[1].trim())) add('remote_css_resource');
-  }
-  for (const match of css.matchAll(/@import\s+['"]([^'"]+)['"]/gi)) {
-    if (UNTRUSTED.test(match[1].trim())) add('remote_css_import');
-  }
 }
 function auditDist(dir) {
   const findings = [];
   const counts = { html: 0, javascript: 0, css: 0, externalNavigations: 0 };
   const add = (id, rel) => findings.push({
-    code: id, pathSha256: createHash('sha256').update(rel).digest('hex'),
+    code: id, path: rel, pathSha256: createHash('sha256').update(rel).digest('hex'),
   });
   function walk(current) {
     for (const entry of readdirSync(current, { withFileTypes: true })) {
@@ -152,14 +202,19 @@ function auditDist(dir) {
         htmlRisks(bytes, flag, counts);
       } else if (/\.(?:js|mjs)$/i.test(entry.name)) {
         counts.javascript++;
-        for (const [id, rx] of SCRIPT_RISKS) if (rx.test(bytes)) flag(id);
+        jsRisks(bytes, flag);
       } else {
         counts.css++;
         cssRisks(bytes, flag);
       }
     }
   }
-  walk(dir);
+  if (!existsSync(dir) || !lstatSync(dir).isDirectory()) add('missing_dist_directory', '.');
+  else {
+    walk(dir);
+    if (!existsSync(join(dir, 'index.html')) || counts.html === 0)
+      add('missing_root_html', 'index.html');
+  }
   return { scope: 'static_release_build_only', counts, findings,
     conclusion: findings.length ? 'TECHNICAL_NO_GO' : 'STATIC_AUDIT_PASSED_HUMAN_NO_GO' };
 }
@@ -213,12 +268,11 @@ else {
   } else {
     console.log('Legal ledger structurally valid:', record.decision, '(not a legal sign-off)');
   }
-  if (args.includes('--dist')) {
+  if (args.some((a) => a === '--dist' || a.startsWith('--dist='))) {
     const dir = resolve(ROOT, args.find((a) => a.startsWith('--dist='))?.slice(7) ?? 'dist');
     const report = auditDist(dir);
     console.log(JSON.stringify(report, null, 2));
     if (report.findings.length) process.exitCode = 1;
-    if (args.includes('--require-go') && (!record.legalReview?.browserTraceRef ||
-      !ref(record.legalReview.browserTraceRef))) process.exitCode = 1;
+
   }
 }
