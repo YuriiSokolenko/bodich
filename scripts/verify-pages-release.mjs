@@ -190,15 +190,38 @@ function normalizedScheme(value) {
 }
 function htmlProblems(html, name) {
   const errors = [];
-  const base = (process.env.ASTRO_BASE || '/').replace(/\/+$/, '');
+  // Mirror Astro's root-relative base normalization. Only the exact
+  // base-prefixed English homepage can be the root refresh destination.
+  const base = ('/' + (process.env.ASTRO_BASE || '').replace(/^\/+/, '')).replace(/\/+$/, '');
   const prefix = base + '/_astro/';
   const report = (message) => errors.push(finding(message, name));
+  let approvedRootRefreshes = 0;
   const walk = (node) => {
     if (node.tagName) {
       const tag = node.tagName.toLowerCase();
       const attrs = node.attrs ?? [];
       const attrName = (attr) => (attr.prefix ? attr.prefix + ':' : '') + attr.name.toLowerCase();
       const getAttr = (key) => attrs.find((attr) => attrName(attr) === key);
+      if (tag === 'meta') {
+        const httpEquiv = getAttr('http-equiv')?.value;
+        // parse5 decodes entities and attribute names. Strip ASCII controls for
+        // detection only: an obfuscated refresh directive must never bypass us.
+        if (httpEquiv !== undefined &&
+            httpEquiv.replace(/[\u0000-\u0020\u007f]/g, '').toLowerCase() === 'refresh') {
+          const content = getAttr('content')?.value;
+          // The sole exception is Astro's single, status-302 root language
+          // redirect in the document head. No other route or target is trusted.
+          const rootHead = name === 'index.html' &&
+            node.parentNode?.tagName === 'head' &&
+            node.parentNode.parentNode?.tagName === 'html' &&
+            node.parentNode.parentNode.parentNode?.nodeName === '#document';
+          const approved = rootHead &&
+            httpEquiv.trim().toLowerCase() === 'refresh' &&
+            content === `2;url=${base}/en/` &&
+            ++approvedRootRefreshes === 1;
+          if (!approved) report('Unapproved HTML meta refresh navigation');
+        }
+      }
       if (tag === 'form') report('Unauthorized commerce/contact surface');
       // A document-level base can silently change how otherwise approved
       // relative resources navigate or resolve. Do not rely solely on CSP.
@@ -318,6 +341,11 @@ function selfTest() {
   ];
   for (const [i, bad] of badHeaders.entries())
     assert(headerProblems(bad).length, 'Unsafe CSP fixture accepted: ' + i);
+  // The closed Pages header allow-list must also block HTTP Refresh navigation.
+  for (const header of ['Refresh', 'rEfReSh']) {
+    assert(headerProblems(safeHeaders + '\n  ' + header + ': 0;url=https://evil.invalid\n')
+      .includes('Unapproved Pages header'), 'HTTP Refresh response header accepted');
+  }
   const valid = new Map([...routeSet].map((name) => [
     name, name === 'robots.txt' ? 'User-agent: *\nDisallow: /\n' :
       name === 'sitemap.xml' ? '<?xml version="1.0"?><urlset></urlset>' :
@@ -347,6 +375,9 @@ function selfTest() {
   negative('mailto link', (m) => m.set('en/index.html',
     '<html data-media-profile="release_safe"><a href="mailto:x@example.org">Send</a></html>'), 'Unauthorized commerce');
   negative('missing headers', (m) => m.delete('_headers'), 'Missing Cloudflare Pages _headers');
+  negative('HTTP Refresh response header',
+    (m) => m.set('_headers', safeHeaders + '\n  Refresh: 0;url=https://evil.invalid/\n'),
+    'Unapproved Pages header');
   negative('inline executable JavaScript', (m) => m.set('en/index.html',
     '<html data-media-profile="release_safe"><script type="module">alert(1)</script></html>'),
     'Inline executable script');
@@ -404,6 +435,19 @@ function selfTest() {
     ['spoofed JSON-LD with data-type', '<script data-type="application/ld+json">alert(1)</script>', 'Inline executable script'],
     ['spoofed src with data-src', '<script data-src="/_astro/safe.js">alert(1)</script>', 'Inline executable script'],
     ['external script inline fallback', '<script src="/_astro/safe.js">alert(1)</script>', 'Inline executable script'],
+    ['external refresh', '<meta http-equiv="refresh" content="0;url=https://evil.invalid/">', 'Unapproved HTML meta refresh'],
+    ['protocol-relative refresh', '<meta http-equiv=refresh content="0;url=//evil.invalid/">', 'Unapproved HTML meta refresh'],
+    ['javascript refresh', '<meta http-equiv=refresh content="0;url=javascript:alert(1)">', 'Unapproved HTML meta refresh'],
+    ['entity-obfuscated script refresh', '<meta http-equiv=refresh content="0;url=&#x6a;avascript:alert(1)">', 'Unapproved HTML meta refresh'],
+    ['control-obfuscated script refresh', '<meta http-equiv=refresh content="0;url=java&#9;script:alert(1)">', 'Unapproved HTML meta refresh'],
+    ['entity-obfuscated host refresh', '<meta http-equiv=refresh content="0;url=https://evil&#46;invalid/">', 'Unapproved HTML meta refresh'],
+    ['mixed-case refresh attributes and URL', '<MeTa HTTP-EQUIV="ReFrEsH" CONTENT="0;URL=HTTPS://evil.invalid/">', 'Unapproved HTML meta refresh'],
+    ['control-obfuscated refresh directive', '<meta http-equiv="re&#9;fresh" content="0;url=/en/">', 'Unapproved HTML meta refresh'],
+    ['missing refresh target', '<meta http-equiv=refresh>', 'Unapproved HTML meta refresh'],
+    ['delayed internal refresh', '<meta http-equiv=refresh content="5;url=/en/">', 'Unapproved HTML meta refresh'],
+    ['noscript refresh', '<noscript><meta http-equiv=refresh content="0;url=/en/"></noscript>', 'Unapproved HTML meta refresh'],
+    ['nested template refresh', '<template><template><meta http-equiv=refresh content="0;url=/en/"></template></template>', 'Unapproved HTML meta refresh'],
+    ['HTML5 slash-separated refresh', '<meta/http-equiv=refresh/content="0;url=https://evil.invalid/">', 'Malformed HTML5 attribute separator'],
     ['noscript form', '<noscript><form action="/x"></form></noscript>', 'Unauthorized commerce'],
     ['noscript mailto', '<noscript><a href="mailto:a@b.c">Contact</a></noscript>', 'Unauthorized commerce'],
     ['noscript event handler', '<noscript><img src=x onerror=alert(1)></noscript>', 'Inline event handler'],
@@ -412,6 +456,55 @@ function selfTest() {
     ['external HTML base', '<base href="https://evil.invalid/"><script src="/_astro/safe.js"></script>', 'Unapproved HTML base'],
     ['relative HTML base', '<base href="/"><script src="/_astro/safe.js"></script>', 'Unapproved HTML base'],
   ]) negative(label, (m) => m.set('en/index.html', htmlFixture(markup)), message);
+  const rootRefresh = (target, attr = 'http-equiv', directive = 'refresh') =>
+    '<html><head><meta ' + attr + '="' + directive +
+    '" content="2;url=' + target + '"></head><body>Redirect</body></html>';
+  // Mirrors Astro 7.4.2's core/routing/3xx.ts status-302 template, including
+  // its two-second refresh and bare title (parse5 reconstructs the <head>).
+  // On an Astro upgrade, investigate failing real-build verification against
+  // the new generated markup/delay; never loosen the release allow-list.
+  const astroRoot = (target) =>
+    '<!doctype html><title>Redirecting to: ' + target + '</title>' +
+    '<meta http-equiv="refresh" content="2;url=' + target + '">' +
+    '<meta name="robots" content="noindex"><link rel="canonical" href="' + target + '">' +
+    '<body><a href="' + target + '">Redirecting</a></body>';
+  const runWithBase = (base, items) => {
+    const previous = process.env.ASTRO_BASE;
+    process.env.ASTRO_BASE = base;
+    try { return run(items); } finally {
+      if (previous === undefined) delete process.env.ASTRO_BASE;
+      else process.env.ASTRO_BASE = previous;
+    }
+  };
+  for (const [base, target] of [['/', '/en/'], ['/bodich-preview', '/bodich-preview/en/']]) {
+    const approved = new Map(valid);
+    approved.set('index.html', rootRefresh(target, 'HTTP-EQUIV', 'ReFrEsH'));
+    assert.deepEqual(runWithBase(base, approved), [], 'Legitimate Astro root refresh rejected for ' + base);
+    const emittedByAstro = new Map(valid);
+    emittedByAstro.set('index.html', astroRoot(target));
+    assert.deepEqual(runWithBase(base, emittedByAstro), [], 'Built-in Astro 302 template rejected for ' + base);
+    if (base !== '/') assert.deepEqual(runWithBase(base.slice(1), emittedByAstro), [],
+      'Astro-compatible base without leading slash rejected');
+  }
+  function rejectRootRefresh(label, html, base = '/') {
+    const modified = new Map(valid);
+    modified.set('index.html', html);
+    assert(runWithBase(base, modified).some((error) => error.includes('Unapproved HTML meta refresh')),
+      'Unauthorized root refresh accepted: ' + label);
+  }
+  rejectRootRefresh('external root target', rootRefresh('https://evil.invalid/'));
+  rejectRootRefresh('unexpected zero-delay variant',
+    '<html><head><meta http-equiv=refresh content="0;url=/en/"></head></html>');
+  rejectRootRefresh('other locale', rootRefresh('/ro/'));
+  rejectRootRefresh('relative path', rootRefresh('en/'));
+  rejectRootRefresh('wrong base', rootRefresh('/en/'), '/bodich-preview');
+  rejectRootRefresh('root refresh in body', '<html><body><meta http-equiv=refresh content="2;url=/en/"></body></html>');
+  rejectRootRefresh('duplicate root refresh',
+    '<html><head><meta http-equiv=refresh content="2;url=/en/"><meta http-equiv=refresh content="2;url=/en/"></head></html>');
+  rejectRootRefresh('root refresh in nested template',
+    '<html><head><template><template><meta http-equiv=refresh content="2;url=/en/"></template></template></head></html>');
+  rejectRootRefresh('root refresh in noscript',
+    '<html><head><noscript><meta http-equiv=refresh content="2;url=/en/"></noscript></head></html>');
   const withSafeNoscript = new Map(valid);
   withSafeNoscript.set('en/index.html',
     htmlFixture('<noscript><p>Site navigation works without JavaScript.</p></noscript>'));
@@ -439,21 +532,40 @@ function selfTest() {
       mkdirSync(join(cliDir, dirname(file)), { recursive: true });
       writeFileSync(join(cliDir, file), body);
     }
-    function verifyFixture(markup, base, expectedStatus, message) {
-      writeFileSync(join(cliDir, 'en/index.html'), htmlFixture(markup));
-      const result = spawnSync(process.execPath,
-        [fileURLToPath(import.meta.url), cliDir, '--no-write'], {
-          cwd: root, encoding: 'utf8', env: { ...process.env, ASTRO_BASE: base },
-        });
-      assert.ifError(result.error);
-      assert.equal(result.status, expectedStatus, 'Unexpected pages:verify fixture exit');
-      if (message) assert(result.stderr.includes(message), 'Missing sanitized CLI finding');
-      assert(!result.stderr.includes('en/index.html'), 'CLI exposed a raw filename');
+    function verifyFixture(markup, base, expectedStatus, message, route = 'en/index.html') {
+      const file = join(cliDir, route);
+      const previous = readFileSync(file, 'utf8');
+      writeFileSync(file, route === 'index.html' ? markup : htmlFixture(markup));
+      try {
+        const result = spawnSync(process.execPath,
+          [fileURLToPath(import.meta.url), cliDir, '--no-write'], {
+            cwd: root, encoding: 'utf8', env: { ...process.env, ASTRO_BASE: base },
+          });
+        assert.ifError(result.error);
+        assert.equal(result.status, expectedStatus, 'Unexpected pages:verify fixture exit');
+        const output = result.stdout + result.stderr;
+        if (message) assert(result.stderr.includes(message), 'Missing sanitized CLI finding');
+        assert(!output.includes(route), 'CLI exposed a raw filename');
+        assert(!output.includes(source.products[0].id), 'CLI exposed private supplier HTML');
+      } finally {
+        writeFileSync(file, previous);
+      }
     }
     verifyFixture('<script src="/_astro/safe.js"></script><script type="application/ld+json">{}</script>',
       '/', 0);
     verifyFixture('<script src="/bodich-preview/_astro/safe.js"></script><script type="application/ld+json">{}</script>',
       '/bodich-preview', 0);
+    verifyFixture(astroRoot('/en/'), '/', 0, undefined, 'index.html');
+    verifyFixture(astroRoot('/bodich-preview/en/'), '/bodich-preview', 0, undefined, 'index.html');
+    verifyFixture(astroRoot('/bodich-preview/en/'), 'bodich-preview', 0, undefined, 'index.html');
+    verifyFixture(rootRefresh('/en/'), '/bodich-preview', 1, 'Unapproved HTML meta refresh', 'index.html');
+    verifyFixture(rootRefresh('https://evil.invalid/'), '/', 1, 'Unapproved HTML meta refresh', 'index.html');
+    verifyFixture('<meta HTTP-EQUIV="ReFrEsH" CONTENT="0;url=https://evil.invalid/' +
+      source.products[0].id + '">', '/', 1, 'Unapproved HTML meta refresh');
+    verifyFixture('<noscript><meta http-equiv=refresh content="0;url=https://evil.invalid/"></noscript>',
+      '/', 1, 'Unapproved HTML meta refresh');
+    verifyFixture('<template><template><meta http-equiv=refresh content="0;url=/en/"></template></template>',
+      '/', 1, 'Unapproved HTML meta refresh');
     for (const [, markup, message] of confirmedBypasses)
       verifyFixture(markup, '/', 1, message);
     verifyFixture('<noscript><form action="/x"></form></noscript>', '/', 1,
@@ -471,7 +583,7 @@ function selfTest() {
     writeFileSync(join(testDir, 'secret.json'), '{}');
     assert(!permittedFile('secret.json', routeSet));
   } finally { rmSync(testDir, { recursive: true, force: true }); }
-  console.log('Cloudflare Pages release regression fixtures passed (HTML5 parser, isolated dist CLI, CSP, metadata, quarantine, HSTS).');
+  console.log('Cloudflare Pages release regression fixtures passed (HTML5 parser, meta refresh, isolated dist CLI, CSP, metadata, quarantine, HSTS).');
 }
 
 if (process.argv.includes('--self-test')) {
