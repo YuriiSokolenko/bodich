@@ -288,6 +288,8 @@ function selfTest() {
     'unresolved_legal_blockers');
 
   const dir = mkdtempSync(join(tmpdir(), 'bodich-legal-test-'));
+  const fixtureBase = (process.env.ASTRO_BASE ?? '/').replace(/^\/|\/$/g, '');
+  const fixtureScript = '/' + (fixtureBase ? fixtureBase + '/' : '') + '_astro/';
   try {
     const check = (html, code, extra = {}) => {
       writeFileSync(join(dir, 'index.html'), html);
@@ -299,7 +301,7 @@ function selfTest() {
       for (const path of Object.keys(extra)) rmSync(join(dir, path));
     };
     writeFileSync(join(dir, 'index.html'),
-      '<!doctype html><html><head><script type="application/ld+json">{"url":"https://schema.org"}</script></head><body><a href="https://example.org">External page</a><script src="/_astro/menu.js"></script></body></html>');
+      '<!doctype html><html><head><script type="application/ld+json">{"url":"https://schema.org"}</script></head><body><a href="https://example.org">External page</a><script src="' + fixtureScript + 'menu.js"></script></body></html>');
     assert.equal(auditDist(dir).findings.length, 0);
     check('<template><form action="/contact"></form></template>', 'unapproved_collection_or_embed');
     check('<noscript><iframe src="https://tracker.invalid"></iframe></noscript>',
@@ -325,15 +327,15 @@ function selfTest() {
     check('<div style="background:url(https://tracker.invalid/pixel)"></div>', 'remote_css_resource');
     check('<style>@import "https://tracker.invalid/style.css";</style>', 'remote_css_import');
     check('<script>localStorage.setItem("id","1")</script>', 'browser_storage');
-    check('<script src="/_astro/app.js"></script>', 'network_api',
+    check('<script src="' + fixtureScript + 'app.js"></script>', 'network_api',
       { 'app.js': 'fetch("/collect")' });
-    check('<script src="/_astro/app.js"></script>', 'dynamic_remote_import',
+    check('<script src="' + fixtureScript + 'app.js"></script>', 'dynamic_remote_import',
       { 'app.js': 'import("https://tracker.invalid/sdk.js")' });
-    check('<script src="/_astro/app.js"></script>', 'dynamic_resource_creation',
+    check('<script src="' + fixtureScript + 'app.js"></script>', 'dynamic_resource_creation',
       { 'app.js': "document.createElement('script')" });
-    check('<script src="/_astro/app.js"></script>', 'worker_or_peer',
+    check('<script src="' + fixtureScript + 'app.js"></script>', 'worker_or_peer',
       { 'app.js': "new Worker('/worker.js')" });
-    check('<script src="/_astro/app.js"></script>', 'browser_storage',
+    check('<script src="' + fixtureScript + 'app.js"></script>', 'browser_storage',
       { 'app.js': "caches.open('v1')" });
     check('<link rel="stylesheet" href="/styles.css">', 'remote_css_resource',
       { 'styles.css': '.x{background:url("https://tracker.invalid/pixel")}' });
