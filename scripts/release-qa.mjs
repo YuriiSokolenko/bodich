@@ -147,6 +147,7 @@ for (const locale of locales) {
         const lhr = JSON.parse(await readFile(file, 'utf8'));
         const run = {
           iteration, file: 'lighthouse-' + id + '-' + iteration + '.json',
+          sourceSha, distManifestSha256: releaseDigest,
           lighthouseVersion: lhr.lighthouseVersion,
           userAgent: lhr.userAgent, fetchTime: lhr.fetchTime,
           settings: lhr.configSettings,
@@ -171,7 +172,11 @@ for (const locale of locales) {
       medians.accessibility >= thresholds.accessibility && medians.lcpMs <= thresholds.lcpMs &&
       medians.cls <= thresholds.cls && medians.tbtMs <= thresholds.tbtMs;
     if (!passes) fail(id + ': missing three valid runs or median mobile Lighthouse budget missed');
-    report.lab.push({ id, url: urlFor(locale, route), runs, medians, passes, repeatsRequired: repetitions });
+    report.lab.push({
+      id, url: urlFor(locale, route),
+      sourceSha, distManifestSha256: releaseDigest,
+      runs, medians, passes, repeatsRequired: repetitions,
+    });
   }
 }
 report.status = failures.length ? 'FAIL' : 'PASS_AUTOMATED_ONLY';
