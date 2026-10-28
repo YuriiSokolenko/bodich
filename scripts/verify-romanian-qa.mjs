@@ -229,8 +229,9 @@ function selfTest(base) {
   assert.equal(analyze(nested, '/ro/about/', '/bodich-preview').metadata.alternates.length, 3);
   assert.throws(() => analyze(nested.replace('href="/bodich-preview/en/about/"',
     'href="/en/about/"'), '/ro/about/', '/bodich-preview'), /wrong switch destination/);
-  assert.throws(() => analyze(nested.replace('https://review.invalid/bodich-preview/ro/about/',
-    'https://review.invalid/ro/about/'), '/ro/about/', '/bodich-preview'), /wrong alternate ro/);
+  assert.throws(() => analyze(nested.replace('hreflang="ro" href="https://review.invalid/bodich-preview/ro/about/"',
+    'hreflang="ro" href="https://review.invalid/ro/about/"'),
+    '/ro/about/', '/bodich-preview'), /wrong alternate ro/);
   const temp = mkdtempSync(join(tmpdir(), 'romanian-manifest-test-'));
   try {
     mkdirSync(join(temp, 'en'));
