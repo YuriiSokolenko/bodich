@@ -153,8 +153,11 @@ function analyze(html, route, base = '') {
       alternates: alternates.map((n) => ({ locale: attr(n, 'hreflang'), href: attr(n, 'href') })) },
     rendered: { header: renderedText(header),
       desktopAndMobileNavigation: nodes(header, (n) => n.tagName === 'nav').map(renderedText),
-      switcher: renderedText(switchLinks[0]), main: renderedText(main),
-      footer: renderedText(footer) },
+      switcher: switchLinks.map(renderedText), main: renderedText(main),
+      footer: renderedText(footer),
+      accessibilityCopy: nodes(doc, (n) => Boolean(n.attrs)).flatMap((n) =>
+        n.attrs.filter((a) => ['aria-label', 'alt', 'title', 'placeholder'].includes(a.name))
+          .map((a) => ({ tag: n.tagName, attribute: a.name, value: a.value }))) },
   };
 }
 function distManifest(dist) {
@@ -212,6 +215,7 @@ function selfTest(base) {
   assert.throws(() => analyze(html.replace('/en/about/', '/en/contact/'), '/ro/about/'), /wrong switch/);
   assert.throws(() => analyze(html.replace('ro_RO', 'en_US'), '/ro/about/'), /wrong OG locale/);
   assert.throws(() => analyze(html.replace('lang="ro"', 'lang="en"'), '/ro/about/'), /wrong document language/);
+  assert.deepEqual(analyze(html, '/ro/about/').rendered.switcher, ['EN', 'EN']);
   console.log('Romanian QA self-test: unsigned NO-GO, synthetic approval, coverage/signoff/finding and rendered-link regressions passed.');
 }
 function main() {
@@ -233,6 +237,12 @@ function main() {
     assert(existsSync(dist), 'missing built dist');
     digest = distManifest(dist);
     const base = (process.env.ASTRO_BASE || '/').replace(/\/+$/, '');
+    const fallback = parse(readFileSync(join(dist, 'index.html'), 'utf8'));
+    const rootRefresh = nodes(fallback, (n) => n.tagName === 'meta' &&
+      attr(n, 'http-equiv')?.toLowerCase() === 'refresh');
+    assert.equal(rootRefresh.length, 1, 'root must have exactly one English fallback');
+    assert.equal(attr(rootRefresh[0], 'content'), '2;url=' + base + '/en/',
+      'root fallback must target localized English homepage');
     pages = expectedRoutes.map((route) => {
       const file = join(dist, route.slice(1), 'index.html');
       assert(existsSync(file), 'missing localized route ' + route);
@@ -245,7 +255,8 @@ function main() {
       mkdirSync(dirname(output), { recursive: true });
       writeFileSync(output, JSON.stringify({ schemaVersion: 1, verdict: 'STATIC_OK_HUMAN_REVIEW_PENDING',
         candidateGitSha: candidateSha || null, distManifestSha256: digest,
-        coverageKeys: { routes: expectedRoutes, components }, pages }, null, 2) + '\n');
+        coverageKeys: { routes: expectedRoutes, components },
+        rootFallback: { target: base + '/en/', refresh: attr(rootRefresh[0], 'content') }, pages }, null, 2) + '\n');
     }
   }
   const problems = issues(record, candidateSha, digest);
