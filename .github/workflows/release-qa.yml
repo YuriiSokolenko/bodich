@@ -12,6 +12,8 @@ on:
       - 'package.json'
       - 'package-lock.json'
       - 'scripts/release-qa.mjs'
+      - 'scripts/verify-release-qa-install.mjs'
+      - 'scripts/verify-release-qa-dist.mjs'
       - 'scripts/lib/release-qa-policy.mjs'
       - 'scripts/lib/release-manifest.mjs'
       - 'scripts/verify-release-qa.mjs'
@@ -41,8 +43,13 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
 
-      - name: Install locked website dependencies
+      - name: Install website and QA tools from one committed lockfile
         run: npm ci
+
+      - name: Verify full locked dependency tree and reject manifest drift
+        run: |
+          npm run qa:lock:self-test
+          npm run qa:lock:check
 
       - name: Validate evidence matrix and fail-closed self-tests
         run: |
@@ -52,12 +59,16 @@ jobs:
       - name: Build release-safe informational website
         run: npm run build
 
-      # Browser tools are installed AFTER the locked build to avoid changing site output.
-      - name: Install pinned QA tools
-        run: npm install --no-save --package-lock=false playwright@1.64.1 @axe-core/playwright@4.14.0 lighthouse@13.5.0
+      - name: Record exact release-safe build manifest before installing Chromium
+        run: npm run qa:dist:record
 
-      - name: Install full Chromium for axe and Lighthouse
-        run: npx playwright install chromium
+      # Use only the Playwright binary installed by npm ci; no npx registry fallback.
+      # This installs browser binaries, never npm packages or a rebuilt dist tree.
+      - name: Install Chromium matching locked Playwright
+        run: ./node_modules/.bin/playwright install chromium
+
+      - name: Assert Chromium installation did not change release-safe dist
+        run: npm run qa:dist:verify
 
       - name: Start local preview
         shell: bash
@@ -77,6 +88,10 @@ jobs:
         env:
           QA_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         run: npm run qa:release
+
+      - name: Assert release-safe dist is still identical after all audits
+        if: always()
+        run: npm run qa:dist:verify
 
       - name: Upload machine-readable axe findings and raw Lighthouse runs
         if: always()
