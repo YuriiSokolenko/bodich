@@ -59,7 +59,8 @@
     "legal:dist": "node scripts/verify-legal-readiness.mjs --dist",
     "romanian:check": "node scripts/verify-romanian-qa.mjs --check",
     "romanian:self-test": "node scripts/verify-romanian-qa.mjs --self-test",
-    "romanian:dist": "node scripts/verify-romanian-qa.mjs --dist --report=visual-qa/romanian-rendered-review.json"
+    "romanian:dist": "node scripts/verify-romanian-qa.mjs --dist --report=visual-qa/romanian-rendered-review.json",
+    "romanian:dist:preview": "node scripts/verify-romanian-qa.mjs --dist --report=visual-qa/romanian-rendered-preview.json"
   },
   "engines": {
     "node": ">=24 <25"

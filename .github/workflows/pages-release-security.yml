@@ -75,7 +75,7 @@ jobs:
           node scripts/verify-pages-release.mjs dist --no-write
           npm run catalog:products:dist
           npm run seo:routes
-          npm run romanian:dist
+          npm run romanian:dist:preview
           node scripts/verify-base-preview.mjs dist
           node scripts/audit-public-assets.mjs dist --no-write
       - name: Emit digest-based review evidence (no private artifact)

@@ -10,10 +10,10 @@
  * node scripts/verify-release-decision.mjs --decision=/private/release.json --verify-dist --require-go --candidate-sha=<40-hex>
  */
 import assert from 'node:assert/strict';
-import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
-import { existsSync, lstatSync, readFileSync, readdirSync, realpathSync } from 'node:fs';
-import { dirname, join, relative, resolve } from 'node:path';
+import { readFileSync, realpathSync } from 'node:fs';
+import { dirname, join, resolve } from 'node:path';
+import { collectReleaseFiles, distManifestSha256 } from './lib/release-manifest.mjs';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -35,7 +35,6 @@ const DATE = /^\d{4}-\d{2}-\d{2}$/;
 const UTC = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$/;
 const INVALID_VALUE = /^(?:tbd|todo|unknown|placeholder|example|fixture|synthetic|unassigned|pending)$/i;
 const INVALID_IDENTITY = /\b(?:tbd|todo|unknown|placeholder|example|fixture|synthetic|unassigned|pending)\b/i;
-const hash = (bytes) => createHash('sha256').update(bytes).digest('hex');
 const text = (v, min = 4) => typeof v === 'string' && v.trim().length >= min && !INVALID_VALUE.test(v.trim());
 const normalizeName = (v) => typeof v === 'string' ?
   v.normalize('NFKC').trim().replace(/\s+/gu, ' ').toLowerCase() : '';
@@ -43,7 +42,6 @@ const person = (v) => text(v, 5) && v.trim().split(/\s+/u).length >= 2 && !INVAL
 const ref = (v) => text(v, 12) &&
   (/^restricted:[A-Za-z0-9][A-Za-z0-9._/-]{7,}$/.test(v) && !INVALID_IDENTITY.test(v.slice('restricted:'.length)) ||
    /^https:\/\/github\.com\/YuriiSokolenko\/bodich\/(?:issues|pull|actions|commit|runs)\/[A-Za-z0-9/#._-]+$/.test(v));
-const comparePaths = (a, b) => a < b ? -1 : a > b ? 1 : 0;
 function date(value, utc = false, futureAllowed = false) {
   if (typeof value !== 'string' || !(utc ? UTC : DATE).test(value)) return false;
   const parsed = new Date(utc ? value : value + 'T00:00:00Z');
@@ -134,29 +132,10 @@ function problems(record) {
   }
   return errors;
 }
-function collectDist(dist) {
-  assert(existsSync(dist) && lstatSync(dist).isDirectory(), 'missing_dist');
-  const files = [];
-  function walk(path) {
-    for (const entry of readdirSync(path, { withFileTypes: true })) {
-      const absolute = join(path, entry.name);
-      assert(!entry.isSymbolicLink(), 'symlink_in_release');
-      if (entry.isDirectory()) walk(absolute);
-      else {
-        assert(entry.isFile(), 'special_file_in_release');
-        const name = relative(dist, absolute).split('\\').join('/');
-        const bytes = readFileSync(absolute);
-        files.push({ name, pathSha256: hash(name), sha256: hash(bytes), bytes: bytes.length });
-      }
-    }
-  }
-  walk(dist);
-  return files.sort((a, b) => comparePaths(a.name, b.name));
-}
 function verifyDist(record, dist, reportsDir) {
-  const files = collectDist(dist);
+  const files = collectReleaseFiles(dist);
   const minimal = files.map(({ pathSha256, sha256, bytes }) => ({ pathSha256, sha256, bytes }));
-  const manifestSha = hash(JSON.stringify(minimal));
+  const manifestSha = distManifestSha256(files);
   const pages = JSON.parse(readFileSync(join(reportsDir, 'pages-release-evidence.json'), 'utf8'));
   const rights = JSON.parse(readFileSync(join(reportsDir, 'public-asset-rights-audit.json'), 'utf8'));
   assert.equal(pages.schemaVersion, 1);
@@ -250,6 +229,9 @@ function selfTest() {
   assert(ref('restricted:offline-case-12587932'));
   assert(!ref('restricted:example'));
   negative((r) => { r.release.gitSha = '0'.repeat(40); }, 'unsubstantiated_pass');
+  assert.throws(() => assertIndependentRomanianReviewer('Taylor Lane', '  TAYLOR　LANE '),
+    /romanian_reviewer_must_not_authorize_release/);
+  assert.doesNotThrow(() => assertIndependentRomanianReviewer('Taylor Lane', 'Avery Lane'));
   const blocked = structuredClone(base);
   blocked.remediations = [];
   assert(problems(blocked).some((v) => v.startsWith('missing_remediation_')));
@@ -274,6 +256,12 @@ function verifySourceCheckout(expectedSha) {
     git('rev-parse', '--verify', 'HEAD'),
     git('status', '--porcelain', '--untracked-files=all'),
     git('rev-parse', '--show-toplevel'));
+}
+function assertIndependentRomanianReviewer(nativeReviewer, releaseAuthority) {
+  assert(person(nativeReviewer), 'romanian_reviewer_name_missing');
+  assert(person(releaseAuthority), 'release_authority_name_missing');
+  assert.notEqual(normalizeName(nativeReviewer), normalizeName(releaseAuthority),
+    'romanian_reviewer_must_not_authorize_release');
 }
 function assertUnexpiredWindow(ops, now = Date.now()) {
   assert(Date.parse(ops.windowEndUtc) >= now, 'deployment_window_expired');
@@ -318,10 +306,13 @@ function main() {
       assertUnexpiredWindow(record.operations);
       // #68 must independently verify a native human reviewer on the exact built bytes.
       // The signed record lives in restricted custody; a PASS in #71 alone is insufficient.
+      const nativeRecordPath = resolve(option('--romanian-record', DEFAULT_ROMANIAN_RECORD));
+      const nativeRecord = JSON.parse(readFileSync(nativeRecordPath, 'utf8'));
+      assertIndependentRomanianReviewer(nativeRecord.reviewer?.name, record.decisionAuthority.name);
       execFileSync(process.execPath, [
         join(ROOT, 'scripts/verify-romanian-qa.mjs'), '--dist', '--require-pass',
         '--dist-dir=' + dist, '--candidate-sha=' + sha,
-        '--record=' + resolve(option('--romanian-record', DEFAULT_ROMANIAN_RECORD)),
+        '--record=' + nativeRecordPath,
       ], { cwd: ROOT, timeout: 30000, stdio: ['ignore', 'pipe', 'pipe'] });
     }
     const manifest = verifyDist(record, dist, reports);

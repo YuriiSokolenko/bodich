@@ -4,9 +4,10 @@
  * Static checks are NOT Romanian linguistic approval or evidence of browser QA.
  */
 import assert from 'node:assert/strict';
-import { createHash } from 'node:crypto';
-import { existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
-import { dirname, join, relative, resolve } from 'node:path';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { dirname, join, resolve } from 'node:path';
+import { collectReleaseFiles, distManifestSha256, sha256 } from './lib/release-manifest.mjs';
 import { fileURLToPath } from 'node:url';
 import { parse } from 'parse5';
 
@@ -18,9 +19,10 @@ const components = [
   'shared/language-switcher', 'shared/footer', 'shared/accessibility-copy',
   'shared/seo-metadata', 'shared/contact-privacy-copy', 'shared/root-fallback',
 ];
-const sha256 = (data) => createHash('sha256').update(data).digest('hex');
 const SHA = /^[0-9a-f]{40}$/;
 const DIGEST = /^[0-9a-f]{64}$/;
+const normalizeName = (s) => typeof s === 'string' ?
+  s.normalize('NFKC').trim().replace(/\s+/gu, ' ').toLowerCase() : '';
 const identity = (s) => typeof s === 'string' && s.trim().split(/\s+/).length >= 2 &&
   s.trim().length >= 5 && !/\b(?:fixture|example|unknown|tbd|pending|synthetic)\b/i.test(s);
 const evidence = (s) => typeof s === 'string' &&
@@ -57,6 +59,9 @@ function issues(record, candidateSha, distDigest) {
     fail.push('native_reviewer_signoff_missing');
   if (approved && (!identity(record.editorialLead?.name) || !evidence(record.editorialLead?.evidenceRef)))
     fail.push('editorial_lead_missing');
+  if (approved && identity(reviewer.name) && identity(record.editorialLead?.name) &&
+      normalizeName(reviewer.name) === normalizeName(record.editorialLead.name))
+    fail.push('editorial_lead_not_independent');
   const groups = [['routes', expectedRoutes], ['components', components]];
   for (const [group, keys] of groups) {
     const data = record.coverage?.[group];
@@ -114,7 +119,7 @@ function renderedText(node) {
 function meta(doc, key, value) {
   return attr(nodes(doc, (n) => n.tagName === 'meta' && attr(n, key) === value)[0], 'content');
 }
-function analyze(html, route, base = '') {
+function analyze(html, route, base = '', { routes = expectedRoutes, requireAlternates = false } = {}) {
   const doc = parse(html);
   const locale = route.split('/')[1], opposite = locale === 'en' ? 'ro' : 'en';
   assert.equal(attr(first(doc, 'html'), 'lang'), locale, route + ': wrong document language');
@@ -127,6 +132,7 @@ function analyze(html, route, base = '') {
   assert.equal(meta(doc, 'property', 'og:locale'), locale === 'ro' ? 'ro_RO' : 'en_US',
     route + ': wrong OG locale');
   const counterpart = route.replace(/^\/(en|ro)\//, '/' + opposite + '/');
+  assert(routes.includes(counterpart), route + ': opposite-locale route missing from allow-list');
   const switchLinks = nodes(doc, (n) => n.tagName === 'a' && attr(n, 'hreflang') === opposite);
   assert.equal(switchLinks.length, 2, route + ': desktop and mobile language links required');
   for (const link of switchLinks)
@@ -136,13 +142,19 @@ function analyze(html, route, base = '') {
   assert.equal(nodes(main, (n) => n.tagName === 'h1').length, 1, route + ': missing/duplicate main H1');
   assert(nodes(header, (n) => n.tagName === 'nav').length >= 2, route + ': desktop/mobile nav missing');
   assert(nodes(footer, (n) => n.tagName === 'nav').length >= 1, route + ': footer navigation missing');
-  const alternates = nodes(doc, (n) => n.tagName === 'link' && attr(n, 'rel') === 'alternate');
-  if (alternates.length) {
+  const links = nodes(doc, (n) => n.tagName === 'link');
+  const hasCanonical = links.some((n) => attr(n, 'rel')?.split(/\s+/).includes('canonical'));
+  const alternates = links.filter((n) => attr(n, 'rel')?.split(/\s+/).includes('alternate') &&
+    attr(n, 'hreflang') != null);
+  // Domain-less informational previews omit hreflang; final signed GO cannot.
+  if (requireAlternates || hasCanonical || alternates.length) {
     for (const language of ['en', 'ro', 'x-default']) {
-      const link = alternates.find((n) => attr(n, 'hreflang') === language);
-      assert(link, route + ': missing alternate ' + language);
+      const matching = alternates.filter((n) => attr(n, 'hreflang') === language);
+      assert.equal(matching.length, 1, route + ': missing/duplicate alternate ' + language);
       const target = route.replace(/^\/(en|ro)\//, '/' + (language === 'x-default' ? 'en' : language) + '/');
-      assert.equal(new URL(attr(link, 'href')).pathname, base + target,
+      const href = attr(matching[0], 'href');
+      assert(href, route + ': missing alternate href ' + language);
+      assert.equal(new URL(href, 'https://review.invalid').pathname, base + target,
         route + ': wrong alternate ' + language);
     }
   }
@@ -159,25 +171,6 @@ function analyze(html, route, base = '') {
         n.attrs.filter((a) => ['aria-label', 'alt', 'title', 'placeholder'].includes(a.name))
           .map((a) => ({ tag: n.tagName, attribute: a.name, value: a.value }))) },
   };
-}
-function distManifest(dist) {
-  const files = [];
-  function walk(dir) {
-    for (const entry of readdirSync(dir, { withFileTypes: true })) {
-      const path = join(dir, entry.name);
-      assert(!entry.isSymbolicLink(), 'dist_contains_symlink');
-      if (entry.isDirectory()) walk(path);
-      else {
-        assert(entry.isFile(), 'dist_contains_special_file');
-        const name = relative(dist, path).split('\\').join('/');
-        const bytes = readFileSync(path);
-        files.push({ name, pathSha256: sha256(name), sha256: sha256(bytes), bytes: bytes.length });
-      }
-    }
-  }
-  walk(dist);
-  files.sort((a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0);
-  return sha256(JSON.stringify(files.map(({ pathSha256, sha256, bytes }) => ({ pathSha256, sha256, bytes }))));
 }
 function selfTest(base) {
   assert.deepEqual(issues(base), [], 'committed pending register invalid');
@@ -199,6 +192,7 @@ function selfTest(base) {
   negative((r) => { r.coverage.components['shared/footer'].status = 'PENDING'; }, 'unreviewed');
   negative((r) => { r.reviewer.name = 'fixture reviewer'; }, 'native_reviewer');
   negative((r) => { r.reviewer.nativeRomanianConfirmed = false; }, 'native_reviewer');
+  negative((r) => { r.editorialLead.name = '  TAYLOR　REED  '; }, 'editorial_lead_not_independent');
   negative((r) => { r.candidate.gitSha = 'c'.repeat(40); }, 'candidate_sha_mismatch');
   negative((r) => { r.candidate.distManifestSha256 = 'c'.repeat(64); }, 'candidate_dist_mismatch');
   negative((r) => { r.findings = [{ id: 'RO-001', location: '/ro/', element: 'main',
@@ -216,6 +210,39 @@ function selfTest(base) {
   assert.throws(() => analyze(html.replace('ro_RO', 'en_US'), '/ro/about/'), /wrong OG locale/);
   assert.throws(() => analyze(html.replace('lang="ro"', 'lang="en"'), '/ro/about/'), /wrong document language/);
   assert.deepEqual(analyze(html, '/ro/about/').rendered.switcher, ['EN', 'EN']);
+  assert.throws(() => analyze(html, '/ro/about/', '', { routes: ['/ro/about/'] }),
+    /opposite-locale route missing/);
+  assert.throws(() => analyze(html, '/ro/about/', '', { requireAlternates: true }),
+    /missing\/duplicate alternate en/);
+  const withSeo = html.replace('</head>',
+    '<link rel="canonical" href="https://review.invalid/ro/about/">' +
+    '<link rel="alternate" type="application/rss+xml" href="/feed.xml">' +
+    ['en', 'ro', 'x-default'].map((language) =>
+      '<link rel="alternate" hreflang="' + language + '" href="https://review.invalid/' +
+      (language === 'x-default' ? 'en' : language) + '/about/">').join('') + '</head>');
+  assert.equal(analyze(withSeo, '/ro/about/').metadata.alternates.length, 3);
+  assert.throws(() => analyze(withSeo.replace('hreflang="ro"', 'hreflang="ru"'), '/ro/about/'),
+    /missing\/duplicate alternate ro/);
+  const nested = withSeo.replaceAll('href="/en/about/"', 'href="/bodich-preview/en/about/"')
+    .replaceAll('https://review.invalid/en/about/', 'https://review.invalid/bodich-preview/en/about/')
+    .replaceAll('https://review.invalid/ro/about/', 'https://review.invalid/bodich-preview/ro/about/');
+  assert.equal(analyze(nested, '/ro/about/', '/bodich-preview').metadata.alternates.length, 3);
+  assert.throws(() => analyze(nested.replace('href="/bodich-preview/en/about/"',
+    'href="/en/about/"'), '/ro/about/', '/bodich-preview'), /wrong switch destination/);
+  assert.throws(() => analyze(nested.replace('https://review.invalid/bodich-preview/ro/about/',
+    'https://review.invalid/ro/about/'), '/ro/about/', '/bodich-preview'), /wrong alternate ro/);
+  const temp = mkdtempSync(join(tmpdir(), 'romanian-manifest-test-'));
+  try {
+    mkdirSync(join(temp, 'en'));
+    writeFileSync(join(temp, 'en', 'index.html'), 'EN');
+    writeFileSync(join(temp, 'robots.txt'), 'robots');
+    const files = collectReleaseFiles(temp);
+    assert.deepEqual(files.map(({ name }) => name), ['en/index.html', 'robots.txt']);
+    assert.equal(distManifestSha256(files), sha256(JSON.stringify(files.map(
+      ({ pathSha256, sha256: hash, bytes }) => ({ pathSha256, sha256: hash, bytes })))));
+  } finally {
+    rmSync(temp, { recursive: true, force: true });
+  }
   console.log('Romanian QA self-test: unsigned NO-GO, synthetic approval, coverage/signoff/finding and rendered-link regressions passed.');
 }
 function main() {
@@ -228,14 +255,14 @@ function main() {
   if (args.includes('--self-test')) return selfTest(record);
   const requirePass = args.includes('--require-pass');
   assert(!requirePass || args.includes('--dist'), '--require-pass requires --dist');
-  const candidateSha = option('candidate-sha');
+  const candidateSha = option('candidate-sha') || process.env.GITHUB_SHA;
   assert(!candidateSha || SHA.test(candidateSha), 'invalid --candidate-sha');
   if (requirePass) assert(candidateSha, 'human approval requires explicit candidate SHA');
   const dist = resolve(option('dist-dir') || join(ROOT, 'dist'));
   let digest, pages;
   if (args.includes('--dist')) {
     assert(existsSync(dist), 'missing built dist');
-    digest = distManifest(dist);
+    digest = distManifestSha256(collectReleaseFiles(dist));
     const base = (process.env.ASTRO_BASE || '/').replace(/\/+$/, '');
     const fallback = parse(readFileSync(join(dist, 'index.html'), 'utf8'));
     const rootRefresh = nodes(fallback, (n) => n.tagName === 'meta' &&
@@ -246,7 +273,7 @@ function main() {
     pages = expectedRoutes.map((route) => {
       const file = join(dist, route.slice(1), 'index.html');
       assert(existsSync(file), 'missing localized route ' + route);
-      return analyze(readFileSync(file, 'utf8'), route, base);
+      return analyze(readFileSync(file, 'utf8'), route, base, { requireAlternates: requirePass });
     });
     assert.deepEqual(pages.map((p) => p.route), expectedRoutes);
     if (option('report')) {
@@ -254,7 +281,7 @@ function main() {
       assert(!output.startsWith(dist + '/'), 'human review report must not be included in public dist');
       mkdirSync(dirname(output), { recursive: true });
       writeFileSync(output, JSON.stringify({ schemaVersion: 1, verdict: 'STATIC_OK_HUMAN_REVIEW_PENDING',
-        candidateGitSha: candidateSha || null, distManifestSha256: digest,
+        candidateGitSha: candidateSha || null, basePath: base || '/', distManifestSha256: digest,
         coverageKeys: { routes: expectedRoutes, components },
         rootFallback: { target: base + '/en/', refresh: attr(rootRefresh[0], 'content') }, pages }, null, 2) + '\n');
     }
