@@ -32,3 +32,7 @@ visual-qa/pages-release-evidence.json
 
 # Stage 20A generated build media rights inventory — keep out of Git
 visual-qa/public-asset-rights-audit.json
+
+# Stage 20C public-copy review exports; derived files must never be committed
+visual-qa/romanian-rendered-review.json
+visual-qa/romanian-rendered-preview.json

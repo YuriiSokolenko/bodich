@@ -10,14 +10,15 @@
  * node scripts/verify-release-decision.mjs --decision=/private/release.json --verify-dist --require-go --candidate-sha=<40-hex>
  */
 import assert from 'node:assert/strict';
-import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
-import { existsSync, lstatSync, readFileSync, readdirSync, realpathSync } from 'node:fs';
-import { dirname, join, relative, resolve } from 'node:path';
+import { readFileSync, realpathSync } from 'node:fs';
+import { dirname, join, resolve } from 'node:path';
+import { collectReleaseFiles, distManifestSha256 } from './lib/release-manifest.mjs';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const DEFAULT_RECORD = join(ROOT, 'docs/qa/issue-71-release-decision.json');
+const DEFAULT_ROMANIAN_RECORD = join(ROOT, 'docs/qa/issue-68-romanian-review.json');
 const RELEASE_POLICY = JSON.parse(readFileSync(join(ROOT, 'config/pages-release-allowlist.json'), 'utf8'));
 const SOURCE_INVENTORY = JSON.parse(readFileSync(join(ROOT, 'docs/catalog/source-inventory.json'), 'utf8'));
 const DRAFT_COUNT = SOURCE_INVENTORY.products.length;
@@ -34,7 +35,6 @@ const DATE = /^\d{4}-\d{2}-\d{2}$/;
 const UTC = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$/;
 const INVALID_VALUE = /^(?:tbd|todo|unknown|placeholder|example|fixture|synthetic|unassigned|pending)$/i;
 const INVALID_IDENTITY = /\b(?:tbd|todo|unknown|placeholder|example|fixture|synthetic|unassigned|pending)\b/i;
-const hash = (bytes) => createHash('sha256').update(bytes).digest('hex');
 const text = (v, min = 4) => typeof v === 'string' && v.trim().length >= min && !INVALID_VALUE.test(v.trim());
 const normalizeName = (v) => typeof v === 'string' ?
   v.normalize('NFKC').trim().replace(/\s+/gu, ' ').toLowerCase() : '';
@@ -42,7 +42,6 @@ const person = (v) => text(v, 5) && v.trim().split(/\s+/u).length >= 2 && !INVAL
 const ref = (v) => text(v, 12) &&
   (/^restricted:[A-Za-z0-9][A-Za-z0-9._/-]{7,}$/.test(v) && !INVALID_IDENTITY.test(v.slice('restricted:'.length)) ||
    /^https:\/\/github\.com\/YuriiSokolenko\/bodich\/(?:issues|pull|actions|commit|runs)\/[A-Za-z0-9/#._-]+$/.test(v));
-const comparePaths = (a, b) => a < b ? -1 : a > b ? 1 : 0;
 function date(value, utc = false, futureAllowed = false) {
   if (typeof value !== 'string' || !(utc ? UTC : DATE).test(value)) return false;
   const parsed = new Date(utc ? value : value + 'T00:00:00Z');
@@ -133,29 +132,10 @@ function problems(record) {
   }
   return errors;
 }
-function collectDist(dist) {
-  assert(existsSync(dist) && lstatSync(dist).isDirectory(), 'missing_dist');
-  const files = [];
-  function walk(path) {
-    for (const entry of readdirSync(path, { withFileTypes: true })) {
-      const absolute = join(path, entry.name);
-      assert(!entry.isSymbolicLink(), 'symlink_in_release');
-      if (entry.isDirectory()) walk(absolute);
-      else {
-        assert(entry.isFile(), 'special_file_in_release');
-        const name = relative(dist, absolute).split('\\').join('/');
-        const bytes = readFileSync(absolute);
-        files.push({ name, pathSha256: hash(name), sha256: hash(bytes), bytes: bytes.length });
-      }
-    }
-  }
-  walk(dist);
-  return files.sort((a, b) => comparePaths(a.name, b.name));
-}
 function verifyDist(record, dist, reportsDir) {
-  const files = collectDist(dist);
+  const files = collectReleaseFiles(dist);
   const minimal = files.map(({ pathSha256, sha256, bytes }) => ({ pathSha256, sha256, bytes }));
-  const manifestSha = hash(JSON.stringify(minimal));
+  const manifestSha = distManifestSha256(files);
   const pages = JSON.parse(readFileSync(join(reportsDir, 'pages-release-evidence.json'), 'utf8'));
   const rights = JSON.parse(readFileSync(join(reportsDir, 'public-asset-rights-audit.json'), 'utf8'));
   assert.equal(pages.schemaVersion, 1);
@@ -249,6 +229,41 @@ function selfTest() {
   assert(ref('restricted:offline-case-12587932'));
   assert(!ref('restricted:example'));
   negative((r) => { r.release.gitSha = '0'.repeat(40); }, 'unsubstantiated_pass');
+  assert.throws(() => assertIndependentRomanianParticipants('Taylor Lane', 'Casey Brooks', '  TAYLOR　LANE '),
+    /romanian_reviewer_must_not_authorize_release/);
+  assert.throws(() => assertIndependentRomanianParticipants('Taylor Lane', '  TAYLOR　LANE ', 'Avery Lane'),
+    /romanian_reviewer_must_not_be_editorial_lead/);
+  assert.throws(() => assertIndependentRomanianParticipants('Taylor Lane', '  AVERY　LANE ', 'Avery Lane'),
+    /romanian_editorial_lead_must_not_authorize_release/);
+  assert.doesNotThrow(() => assertIndependentRomanianParticipants('Taylor Lane', 'Casey Brooks', 'Avery Lane'));
+  // Fixture-driven integration through the exact GO entrypoint, with read/spawn injected:
+  // no native approval is ever claimed and no external process is started.
+  const fixture = { reviewer: { name: 'Taylor Lane' }, editorialLead: { name: 'Casey Brooks' } };
+  let invocations = 0;
+  const simulate = (record, release) => verifyRomanianForGo(release, '/restricted/romanian-fixture.json',
+    sha, '/synthetic/dist', {
+      readRecord: () => JSON.stringify(record),
+      runValidator: (binary, argv, options) => {
+        invocations += 1;
+        assert.equal(binary, process.execPath);
+        assert(argv.includes('--dist') && argv.includes('--require-pass'));
+        assert(argv.includes('--candidate-sha=' + sha));
+        assert(argv.includes('--record=/restricted/romanian-fixture.json'));
+        assert(argv.includes('--dist-dir=/synthetic/dist'));
+        assert.equal(options.cwd, ROOT);
+      },
+    });
+  simulate(fixture, positive);
+  assert.equal(invocations, 1, 'GO wiring must execute exactly one native review validation');
+  assert.throws(() => simulate({ ...fixture, reviewer: { name: 'Avery Lane' } }, positive),
+    /romanian_reviewer_must_not_authorize_release/);
+  assert.throws(() => simulate({ ...fixture, editorialLead: { name: 'Avery Lane' } }, positive),
+    /romanian_editorial_lead_must_not_authorize_release/);
+  assert.throws(() => simulate({ ...fixture, reviewer: {} }, positive),
+    /romanian_reviewer_name_missing/);
+  assert.throws(() => simulate(fixture, { ...positive, decisionAuthority: null }),
+    /release_authority_name_missing/);
+  assert.equal(invocations, 1, 'Invalid identities must fail before executing native review');
   const blocked = structuredClone(base);
   blocked.remediations = [];
   assert(problems(blocked).some((v) => v.startsWith('missing_remediation_')));
@@ -274,13 +289,38 @@ function verifySourceCheckout(expectedSha) {
     git('status', '--porcelain', '--untracked-files=all'),
     git('rev-parse', '--show-toplevel'));
 }
+function assertIndependentRomanianParticipants(nativeReviewer, editorialLead, releaseAuthority) {
+  assert(person(nativeReviewer), 'romanian_reviewer_name_missing');
+  assert(person(editorialLead), 'romanian_editorial_lead_name_missing');
+  assert(person(releaseAuthority), 'release_authority_name_missing');
+  assert.notEqual(normalizeName(nativeReviewer), normalizeName(editorialLead),
+    'romanian_reviewer_must_not_be_editorial_lead');
+  assert.notEqual(normalizeName(nativeReviewer), normalizeName(releaseAuthority),
+    'romanian_reviewer_must_not_authorize_release');
+  assert.notEqual(normalizeName(editorialLead), normalizeName(releaseAuthority),
+    'romanian_editorial_lead_must_not_authorize_release');
+}
+
+/** Run before Stage 20F GO. Injectable I/O provides an isolated wiring fixture. */
+function verifyRomanianForGo(decision, nativeRecordPath, sha, dist, {
+  readRecord = readFileSync, runValidator = execFileSync,
+} = {}) {
+  const nativeRecord = JSON.parse(readRecord(nativeRecordPath, 'utf8'));
+  assertIndependentRomanianParticipants(nativeRecord.reviewer?.name,
+    nativeRecord.editorialLead?.name, decision.decisionAuthority?.name);
+  runValidator(process.execPath, [
+    join(ROOT, 'scripts/verify-romanian-qa.mjs'), '--dist', '--require-pass',
+    '--dist-dir=' + dist, '--candidate-sha=' + sha,
+    '--record=' + nativeRecordPath,
+  ], { cwd: ROOT, timeout: 30000, stdio: ['ignore', 'pipe', 'pipe'] });
+}
 function assertUnexpiredWindow(ops, now = Date.now()) {
   assert(Date.parse(ops.windowEndUtc) >= now, 'deployment_window_expired');
 }
 function main() {
   const args = process.argv.slice(2);
   const allowed = ['--self-test', '--check', '--verify-dist', '--require-go'];
-  assert(args.every((s) => allowed.includes(s) || /^(--decision|--dist|--reports-dir|--candidate-sha)=.+$/.test(s)),
+  assert(args.every((s) => allowed.includes(s) || /^(--decision|--dist|--reports-dir|--candidate-sha|--romanian-record)=.+$/.test(s)),
     'usage: [--self-test | --check | --verify-dist] [--decision=path] [--dist=path] [--reports-dir=path] [--require-go --candidate-sha=40hex]');
   if (args.includes('--self-test')) {
     assert(args.length === 1);
@@ -315,6 +355,10 @@ function main() {
       }
       verifySourceCheckout(sha);
       assertUnexpiredWindow(record.operations);
+      // #68 must independently verify a native human reviewer on the exact built bytes.
+      // The signed record lives in restricted custody; a PASS in #71 alone is insufficient.
+      verifyRomanianForGo(record,
+        resolve(option('--romanian-record', DEFAULT_ROMANIAN_RECORD)), sha, dist);
     }
     const manifest = verifyDist(record, dist, reports);
     console.log('Stage 20F reviewed candidate manifest SHA-256: ' + manifest);

@@ -59,6 +59,8 @@ jobs:
           git check-ignore -q public/images/turbines/bodich-hero-concept.webp
           git check-ignore -q visual-qa/catalog-review-audit.json
           git check-ignore -q visual-qa/bodich-product-registry-audit.json
+          git check-ignore -q visual-qa/romanian-rendered-review.json
+          git check-ignore -q visual-qa/romanian-rendered-preview.json
           git check-ignore -q docs/catalog/review-ledger.json.tmp
           git check-ignore -q docs/catalog/review-ledger-archive/epoch-002.json.tmp
           npm run catalog:review:ledger:check
@@ -98,6 +100,15 @@ jobs:
         run: npm run catalog:products:dist
       - name: Verify bilingual editorial SEO, crawl policy and safe output
         run: npm run seo:routes
+      - name: Verify rendered bilingual semantic coverage and prepare private native-RO review packet
+        run: npm run romanian:dist
+      - name: Upload rendered bilingual copy for native Romanian human review
+        uses: actions/upload-artifact@v4
+        with:
+          name: bilingual-rendered-public-copy-review
+          path: visual-qa/romanian-rendered-review.json
+          retention-days: 30
+          if-no-files-found: error
       - name: Verify synthetic positive editorial approval in isolated build
         run: npm run seo:fixture
       - name: Block unverified media from public distribution
@@ -135,6 +146,7 @@ jobs:
           npm run media:public
           node scripts/audit-public-assets.mjs dist --no-write
           npm run seo:routes
+          npm run romanian:dist:preview
           npm run catalog:products:dist
       - name: Validate card and detail templates with isolated CI-only records
         run: node scripts/verify-product-fixture.mjs
