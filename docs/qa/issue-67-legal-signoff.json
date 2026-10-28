@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "scope": "informational_only",
+  "decision": "NO_GO",
+  "decisionBasis": "POLICY_DEFAULT_UNSIGNED",
+  "candidate": {
+    "gitSha": null,
+    "distManifestSha256": null,
+    "mediaProfile": "release_safe"
+  },
+  "operator": {
+    "publicLegalName": null,
+    "jurisdiction": null,
+    "markets": [],
+    "approvedPublicContact": null,
+    "approvedBy": null,
+    "operatorEvidenceRef": null,
+    "brandingAuthorityRef": null,
+    "contactPermissionRef": null
+  },
+  "legalReview": {
+    "counselName": null,
+    "counselQualification": null,
+    "determinationDate": null,
+    "legalOpinionRef": null,
+    "browserTraceRef": null,
+    "enRenderedCopyRef": null,
+    "roRenderedCopyRef": null,
+    "gitSha": null,
+    "distManifestSha256": null,
+    "areas": {
+      "operator_disclosures": "PENDING",
+      "privacy_notice": "PENDING",
+      "contact_processing": "PENDING",
+      "cookies_and_storage": "PENDING",
+      "branding_and_trademarks": "PENDING",
+      "governing_markets": "PENDING"
+    },
+    "locales": {
+      "en": "PENDING",
+      "ro": "PENDING"
+    }
+  },
+  "currentTechnicalObservations": {
+    "observedInSource": "Astro static informational site; Contact copy says there is no working form or message database; header includes local JavaScript for menu behavior.",
+    "verifiedLiveBrowserRequests": false,
+    "verifiedLiveCookiesOrStorage": false,
+    "verifiedThirdPartyInfrastructure": false,
+    "verifiedFinalRenderedENRO": false,
+    "staticDistAudit": "run npm run legal:dist on the exact release-safe build",
+    "qualification": "Source inspection and static artifact checks are not a real browser/network/cookie audit."
+  },
+  "blockers": [
+    {
+      "id": "operator",
+      "action": "Have the actual operator confirm legal identity, jurisdiction, governing markets and owner-authorized contact details; store evidence in restricted off-repository custody.",
+      "evidenceRef": null
+    },
+    {
+      "id": "branding",
+      "action": "Validate permission to use the BODICH identity and any applicable trademark, partner or manufacturing representations.",
+      "evidenceRef": null
+    },
+    {
+      "id": "counsel",
+      "action": "Obtain a dated determination by qualified counsel covering applicable Romanian/EU operator disclosures, GDPR/privacy, contact processing and cookies or consent.",
+      "evidenceRef": null
+    },
+    {
+      "id": "behavior",
+      "action": "Observe the exact production-like preview with browser DevTools in both locales: network, requests, cookies, storage, forms, trackers and third parties; capture sanitized evidence off repository.",
+      "evidenceRef": null
+    },
+    {
+      "id": "en_ro",
+      "action": "Have counsel approve the exact final rendered English and Romanian legal/privacy/contact copy and related locale/SEO links, bound to the release SHA and dist digest.",
+      "evidenceRef": null
+    },
+    {
+      "id": "release",
+      "action": "Submit reviewer and evidence pointers to Stage 20F #71; only its independent human release authority may sign GO for an exact build.",
+      "evidenceRef": null
+    }
+  ],
+  "notes": "NO-GO is an unsigned policy default, not a lawyer's decision. No legal or contact details or trademark rights have been independently confirmed. This file must not contain private originals or fabricated approvals."
+}
