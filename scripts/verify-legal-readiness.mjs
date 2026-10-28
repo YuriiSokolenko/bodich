@@ -219,15 +219,73 @@ function auditDist(dir) {
     conclusion: findings.length ? 'TECHNICAL_NO_GO' : 'STATIC_AUDIT_PASSED_HUMAN_NO_GO' };
 }
 function selfTest() {
-  const base = { schemaVersion: 1, scope: 'informational_only', decision: 'NO_GO',
+  const base = { schemaVersion: 1, scope: 'informational_only',
+    decision: 'NO_GO', decisionBasis: 'POLICY_DEFAULT_UNSIGNED',
     operator: {}, legalReview: {
       areas: Object.fromEntries(AREA_IDS.map((k) => [k, 'PENDING'])),
       locales: { en: 'PENDING', ro: 'PENDING' },
     }, blockers: [{ id: 'operator', action: 'Confirm real business owner and authorized contact.' }] };
+  const clone = (record) => structuredClone(record);
+  const invalid = (record, code) =>
+    assert(validateLedger(record).includes(code), 'expected ' + code);
   assert.deepEqual(validateLedger(base), []);
-  assert(validateLedger({ ...base, blockers: [] }).includes('no_go_needs_blockers'));
-  assert(validateLedger({ ...base, decision: 'GO', blockers: [] }).length > 0);
+  const explanatory = clone(base);
+  explanatory.blockers[0].action = 'Confirm the operator, for example the sole trader.';
+  assert.deepEqual(validateLedger(explanatory), []);
+  invalid({ ...base, blockers: [] }, 'no_go_needs_blockers');
+  invalid({ ...base, decisionBasis: 'HUMAN_SIGNED' }, 'invalid_decision_basis');
   assert(validateLedger(base, true).includes('human_legal_go_missing'));
+  // Entirely synthetic, in-memory fixtures: do not write sample identities or
+  // pretend they constitute actual operator/counsel approval.
+  const go = clone(base);
+  go.decision = 'GO';
+  go.decisionBasis = 'HUMAN_SIGNED';
+  go.blockers = [];
+  go.operator = { publicLegalName: 'Illustrative Legal Entity Ltd',
+    jurisdiction: 'Romania', markets: ['Romania'],
+    approvedPublicContact: 'legal@example.invalid', approvedBy: 'Ada Operator',
+    operatorEvidenceRef: 'restricted:legal-operator-001',
+    brandingAuthorityRef: 'restricted:brand-permission-001',
+    contactPermissionRef: 'restricted:contact-approval-001' };
+  go.legalReview = {
+    counselName: 'Bela Counsel', counselQualification: 'Qualified legal reviewer',
+    determinationDate: '2024-01-01',
+    legalOpinionRef: 'restricted:opinion-001',
+    browserTraceRef: 'restricted:browser-trace-001',
+    enRenderedCopyRef: 'restricted:english-copy-001',
+    roRenderedCopyRef: 'restricted:romanian-copy-001',
+    gitSha: 'a'.repeat(40), distManifestSha256: 'b'.repeat(64),
+    areas: Object.fromEntries(AREA_IDS.map((k) => [k, 'APPROVED'])),
+    locales: { en: 'APPROVED', ro: 'APPROVED' },
+  };
+  assert.deepEqual(validateLedger(go), []);
+  assert.deepEqual(validateLedger(go, true), []);
+  const negativeGO = (change, code) => {
+    const test = clone(go);
+    change(test);
+    invalid(test, code);
+  };
+  negativeGO((x) => { x.operator.approvedBy = x.legalReview.counselName; },
+    'missing_independent_legal_reviewer');
+  negativeGO((x) => { x.legalReview.gitSha = 'bad'; },
+    'missing_qualified_build_bound_legal_review');
+  negativeGO((x) => { x.legalReview.distManifestSha256 = 'bad'; },
+    'missing_qualified_build_bound_legal_review');
+  negativeGO((x) => { x.legalReview.determinationDate = '2999-01-01'; },
+    'missing_qualified_build_bound_legal_review');
+  negativeGO((x) => { x.legalReview.legalOpinionRef = 'https://example.invalid'; },
+    'missing_qualified_build_bound_legal_review');
+  negativeGO((x) => { x.legalReview.locales.ro = 'PENDING'; },
+    'unapproved_legal_area_or_locale');
+  negativeGO((x) => { x.legalReview.areas.cookies_and_storage = 'REJECTED'; },
+    'unapproved_legal_area_or_locale');
+  negativeGO((x) => { x.operator.operatorEvidenceRef = null; },
+    'unverified_operator_or_contact');
+  negativeGO((x) => { x.decisionBasis = 'POLICY_DEFAULT_UNSIGNED'; },
+    'invalid_decision_basis');
+  negativeGO((x) => { x.blockers = [{ id: 'new', action: 'Resolve legal issue' }]; },
+    'unresolved_legal_blockers');
+
   const dir = mkdtempSync(join(tmpdir(), 'bodich-legal-test-'));
   try {
     const check = (html, code, extra = {}) => {
@@ -235,27 +293,65 @@ function selfTest() {
       for (const [path, value] of Object.entries(extra)) writeFileSync(join(dir, path), value);
       const result = auditDist(dir);
       assert(result.findings.some((f) => f.code === code), 'missing detection ' + code);
+      assert(result.findings.some((f) => f.path === 'index.html' || f.path === 'app.js' || f.path === 'styles.css'),
+        'findings should print public file paths');
       for (const path of Object.keys(extra)) rmSync(join(dir, path));
     };
     writeFileSync(join(dir, 'index.html'),
       '<!doctype html><html><head><script type="application/ld+json">{"url":"https://schema.org"}</script></head><body><a href="https://example.org">External page</a><script src="/_astro/menu.js"></script></body></html>');
     assert.equal(auditDist(dir).findings.length, 0);
     check('<template><form action="/contact"></form></template>', 'unapproved_collection_or_embed');
-    check('<noscript><iframe src="https://tracker.invalid"></iframe></noscript>', 'unapproved_collection_or_embed');
-    check('<a href="mailto:demo@example.org">mail</a>', 'unapproved_contact_channel');
+    check('<noscript><iframe src="https://tracker.invalid"></iframe></noscript>',
+      'unapproved_collection_or_embed');
+    for (const value of ['mailto:demo@example.org', ' \tmailto:demo@example.org',
+      'tel:12345', 'sms:12345', 'whatsapp:+12345', 'https://wa.me/12345', 'https://t.me/help']) {
+      check('<a href="' + value + '">contact</a>', 'unapproved_contact_channel');
+    }
+    check('<a ping="/collect" href="/en/">navigate</a>', 'unapproved_link_ping');
     check('<script src="https://third-party.invalid/tracker.js"></script>', 'remote_or_embedded_resource');
-    check('<link rel="preconnect" href="https://tracker.invalid">', 'remote_or_embedded_resource');
-    check('<img srcset="https://third-party.invalid/i.webp 2x">', 'remote_srcset_resource');
+    check('<script src="/unexpected.js"></script>', 'unapproved_script_source');
+    for (const rel of ['preconnect', 'dns-prefetch']) {
+      check('<link rel="' + rel + '" href="https://tracker.invalid">', 'remote_or_embedded_resource');
+    }
+    check('<img srcset="/local.webp 1x, https://third-party.invalid/i.webp 2x">',
+      'remote_srcset_resource');
+    check('<link rel="preload" as="image" imagesrcset="/ok.webp 1x, https://tracker.invalid/i.webp 2x">',
+      'remote_srcset_resource');
+    check('<img src="data:image/svg+xml,test">', 'remote_or_embedded_resource');
+    check('<meta http-equiv="set-cookie" content="visitor=1">', 'cookie_header_in_markup');
+    check('<div contenteditable="true"></div>', 'editable_visitor_field');
+    check('<style>.x{background:url(https://tracker.invalid/pixel)}</style>', 'remote_css_resource');
+    check('<div style="background:url(https://tracker.invalid/pixel)"></div>', 'remote_css_resource');
+    check('<style>@import "https://tracker.invalid/style.css";</style>', 'remote_css_import');
     check('<script>localStorage.setItem("id","1")</script>', 'browser_storage');
     check('<script src="/_astro/app.js"></script>', 'network_api',
       { 'app.js': 'fetch("/collect")' });
+    check('<script src="/_astro/app.js"></script>', 'dynamic_remote_import',
+      { 'app.js': 'import("https://tracker.invalid/sdk.js")' });
+    check('<script src="/_astro/app.js"></script>', 'dynamic_resource_creation',
+      { 'app.js': "document.createElement('script')" });
+    check('<script src="/_astro/app.js"></script>', 'worker_or_peer',
+      { 'app.js': "new Worker('/worker.js')" });
+    check('<script src="/_astro/app.js"></script>', 'browser_storage',
+      { 'app.js': "caches.open('v1')" });
     check('<link rel="stylesheet" href="/styles.css">', 'remote_css_resource',
       { 'styles.css': '.x{background:url("https://tracker.invalid/pixel")}' });
+    check('<link rel="stylesheet" href="/styles.css">', 'remote_css_import',
+      { 'styles.css': '@import "https://tracker.invalid/site.css";' });
     writeFileSync(join(dir, 'index.html'), '<main>Safe</main>');
     assert.equal(auditDist(dir).findings.length, 0);
+    rmSync(join(dir, 'index.html'));
+    assert(auditDist(dir).findings.some((x) => x.code === 'missing_root_html'));
+    assert(auditDist(join(dir, 'no-such-build')).findings.some((x) =>
+      x.code === 'missing_dist_directory'));
+    writeFileSync(join(dir, 'index.html'), '<main>Safe</main>');
+    symlinkSync('index.html', join(dir, 'link.js'));
+    assert(auditDist(dir).findings.some((x) => x.code === 'non_regular_dist_entry'));
+    rmSync(join(dir, 'link.js'));
   } finally { rmSync(dir, { recursive: true, force: true }); }
   console.log('Legal/privacy policy regression fixtures passed (not human approval).');
 }
+
 const args = process.argv.slice(2);
 if (args.includes('--self-test')) selfTest();
 else {
