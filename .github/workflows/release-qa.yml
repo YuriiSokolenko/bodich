@@ -91,7 +91,13 @@ jobs:
 
       - name: Assert release-safe dist is still identical after all audits
         if: always()
-        run: npm run qa:dist:verify
+        shell: bash
+        run: |
+          if [ -f visual-qa/release-qa/build-integrity.json ]; then
+            npm run qa:dist:verify
+          else
+            echo "Build baseline unavailable: preceding stage already failed before the build"
+          fi
 
       - name: Upload machine-readable axe findings and raw Lighthouse runs
         if: always()
