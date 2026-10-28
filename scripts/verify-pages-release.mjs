@@ -200,6 +200,9 @@ function htmlProblems(html, name) {
       const attrName = (attr) => (attr.prefix ? attr.prefix + ':' : '') + attr.name.toLowerCase();
       const getAttr = (key) => attrs.find((attr) => attrName(attr) === key);
       if (tag === 'form') report('Unauthorized commerce/contact surface');
+      // A document-level base can silently change how otherwise approved
+      // relative resources navigate or resolve. Do not rely solely on CSP.
+      if (tag === 'base') report('Unapproved HTML base element');
       for (const attr of attrs) {
         const key = attrName(attr);
         if (key.startsWith('on')) report('Inline event handler rejected by CSP');
@@ -235,17 +238,18 @@ function htmlProblems(html, name) {
     // The contents of HTML <template> live outside its childNodes.
     if (node.content) walk(node.content);
   };
-  const malformedSeparators = new Set();
+  let malformedSeparator = false;
   const document = parse(html, {
+    // Browsers with JavaScript disabled interpret <noscript> as markup;
+    // parsing with scripting enabled would hide real forms/handlers as text.
+    scriptingEnabled: false,
     onParseError(error) {
-      // HTML5 allows recovery from stray slashes before attributes.
-      // Even when the recovered token has no standalone on* attribute,
-      // the release gate rejects ambiguous slash-separated markup.
-      if (error.code === 'unexpected-solidus-in-tag')
-        malformedSeparators.add(error.code);
+      // HTML5 recovers from stray slashes before attributes; reject
+      // ambiguous tokenization even without an exposed on* attribute.
+      if (error.code === 'unexpected-solidus-in-tag') malformedSeparator = true;
     },
   });
-  if (malformedSeparators.size) report('Malformed HTML5 attribute separator');
+  if (malformedSeparator) report('Malformed HTML5 attribute separator');
   walk(document);
   return errors;
 }
@@ -400,7 +404,18 @@ function selfTest() {
     ['spoofed JSON-LD with data-type', '<script data-type="application/ld+json">alert(1)</script>', 'Inline executable script'],
     ['spoofed src with data-src', '<script data-src="/_astro/safe.js">alert(1)</script>', 'Inline executable script'],
     ['external script inline fallback', '<script src="/_astro/safe.js">alert(1)</script>', 'Inline executable script'],
+    ['noscript form', '<noscript><form action="/x"></form></noscript>', 'Unauthorized commerce'],
+    ['noscript mailto', '<noscript><a href="mailto:a@b.c">Contact</a></noscript>', 'Unauthorized commerce'],
+    ['noscript event handler', '<noscript><img src=x onerror=alert(1)></noscript>', 'Inline event handler'],
+    ['template form', '<template><form action="/x"></form></template>', 'Unauthorized commerce'],
+    ['nested template event handler', '<template><template><a onclick=alert(1)>Open</a></template></template>', 'Inline event handler'],
+    ['external HTML base', '<base href="https://evil.invalid/"><script src="/_astro/safe.js"></script>', 'Unapproved HTML base'],
+    ['relative HTML base', '<base href="/"><script src="/_astro/safe.js"></script>', 'Unapproved HTML base'],
   ]) negative(label, (m) => m.set('en/index.html', htmlFixture(markup)), message);
+  const withSafeNoscript = new Map(valid);
+  withSafeNoscript.set('en/index.html',
+    htmlFixture('<noscript><p>Site navigation works without JavaScript.</p></noscript>'));
+  assert.deepEqual(run(withSafeNoscript), [], 'Harmless noscript fallback rejected');
   const withStructuredData = new Map(valid);
   withStructuredData.set('en/index.html',
     '<html data-media-profile="release_safe"><script type="application/ld+json">{"@type":"WebPage"}</script></html>');
@@ -441,6 +456,12 @@ function selfTest() {
       '/bodich-preview', 0);
     for (const [, markup, message] of confirmedBypasses)
       verifyFixture(markup, '/', 1, message);
+    verifyFixture('<noscript><form action="/x"></form></noscript>', '/', 1,
+      'Unauthorized commerce/contact surface');
+    verifyFixture('<template><template><a onclick=alert(1)>Open</a></template></template>',
+      '/', 1, 'Inline event handler');
+    verifyFixture('<base href="https://evil.invalid/"><script src="/_astro/safe.js"></script>',
+      '/', 1, 'Unapproved HTML base');
   } finally { rmSync(cliDir, { recursive: true, force: true }); }
   const testDir = mkdtempSync(join(tmpdir(), 'bodich-pages-test-'));
   try {
