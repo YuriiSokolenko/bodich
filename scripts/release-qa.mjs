@@ -27,6 +27,16 @@ if (!/^[0-9a-f]{40}$/.test(sourceSha) || checkoutSha !== sourceSha) {
 // Hash the actual release-safe build using the existing Stage 20F canonical manifest.
 const releaseFiles = collectReleaseFiles(resolve('dist'));
 const releaseDigest = distManifestSha256(releaseFiles);
+// The build was frozen before Chromium installation. A missing/mismatched
+// marker or installed dependency inventory must never produce a passing audit.
+const baseline = JSON.parse(await readFile(resolve(outputDir, 'build-integrity.json'), 'utf8'));
+const installed = JSON.parse(await readFile(resolve(outputDir, 'installed-dependency-tree.json'), 'utf8'));
+assert.equal(baseline.schemaVersion, 1, 'Missing Stage 20D build baseline');
+assert.equal(baseline.sourceSha, checkoutSha, 'Build baseline checkout SHA mismatch');
+assert.equal(baseline.distManifestSha256, releaseDigest, 'Release-safe dist changed before QA');
+assert.equal(baseline.distFileCount, releaseFiles.length, 'Release-safe file count changed before QA');
+assert.equal(installed.schemaVersion, 1, 'Missing locked dependency inventory');
+assert.equal(installed.lockfileSha256, baseline.lockfileSha256, 'QA lockfile differs from build baseline');
 const failures = [];
 const report = {
   schemaVersion: 1,
@@ -36,6 +46,14 @@ const report = {
   githubEventSha: process.env.GITHUB_SHA ?? null, // PR event can reference a synthetic merge SHA.
   distManifestSha256: releaseDigest,
   distFileCount: releaseFiles.length,
+  distManifestSha256AfterQA: null,
+  qaToolchain: {
+    lockfileSha256: installed.lockfileSha256,
+    registryPackages: installed.registryPackages,
+    versions: installed.installedToolVersions,
+    npm: installed.npm,
+    dependencyTreeFile: 'installed-dependency-tree.json',
+  },
   generatedAt: new Date().toISOString(),
   environment: { platform: os.platform(), release: os.release(), arch: os.arch(), node: process.version, runner: process.env.RUNNER_OS ?? null },
   browser: null,
@@ -68,7 +86,11 @@ await mkdir(outputDir, { recursive: true });
 try {
   const browser = await chromium.launch({ headless: true });
   try {
-    report.browser = { engine: 'Chromium', version: browser.version(), simulatedViewport: '390x844', realDevice: false };
+    report.browser = {
+      engine: 'Chromium', version: browser.version(),
+      executablePath: chromium.executablePath(),
+      simulatedViewport: '390x844', realDevice: false,
+    };
     for (const locale of locales) {
       for (const route of routes) {
         const id = locale + '-' + (route || 'home');
@@ -154,6 +176,9 @@ for (const locale of locales) {
           metrics: metricsFromLhr(lhr),
           runtimeError: lhr.runtimeError?.message ?? null,
         };
+        if (run.lighthouseVersion !== report.qaToolchain.versions.lighthouse) {
+          fail(id + ' run ' + iteration + ': Lighthouse runtime version differs from locked package');
+        }
         if (run.runtimeError || Object.values(run.metrics).some((x) => !Number.isFinite(x))) {
           fail(id + ' run ' + iteration + ': missing metrics or Lighthouse runtime error');
         }
@@ -178,6 +203,18 @@ for (const locale of locales) {
       runs, medians, passes, repeatsRequired: repetitions,
     });
   }
+}
+// Re-hash after all 12 lab runs, including failure paths. A changed or missing
+// output tree invalidates QA evidence even if every audit metric passed.
+try {
+  const finalFiles = collectReleaseFiles(resolve('dist'));
+  report.distManifestSha256AfterQA = distManifestSha256(finalFiles);
+  if (report.distManifestSha256AfterQA !== releaseDigest ||
+      finalFiles.length !== releaseFiles.length) {
+    fail('Release-safe dist manifest changed during axe/Lighthouse QA');
+  }
+} catch (error) {
+  fail('Unable to verify final release-safe dist digest: ' + error.message);
 }
 report.status = failures.length ? 'FAIL' : 'PASS_AUTOMATED_ONLY';
 await writeFile(resolve(outputDir, 'summary.json'), JSON.stringify(report, null, 2) + '\n');
