@@ -117,13 +117,66 @@ function isContactHref(value) {
 function jsRisks(js, add) {
   for (const [id, rx] of SCRIPT_RISKS) if (rx.test(js)) add(id);
 }
+// Deliberately fail closed on any remote-looking URL literal in CSS, including
+// quoted image-set candidates and custom properties. There is no implicit host
+// allowlist. Comments are not executable; quoted comment-looking text is retained.
+// Do not treat .data:hover, .blob:focus-visible, etc. as URL schemes.
+const CSS_REMOTE = /https?:\/\/|(?<![\w.#-])(?:data|blob|javascript):|(^|[^\w/.:-])\/\//i;
+function cssWithoutComments(css) {
+  let output = '';
+  let quote = '';
+  for (let i = 0; i < css.length; i++) {
+    const char = css[i];
+    if (char === '\\' && i + 1 < css.length) {
+      output += char + css[++i];
+    } else if (quote) {
+      output += char;
+      if (char === quote) quote = '';
+    } else if (char === '"' || char === "'") {
+      quote = char;
+      output += char;
+    } else if (char === '/' && css[i + 1] === '*') {
+      const end = css.indexOf('*/', i + 2);
+      output += ' ';
+      if (end === -1) break;
+      i = end + 1;
+    } else {
+      output += char;
+    }
+  }
+  return output;
+}
+function decodeCssEscapes(css) {
+  // CSS escapes can hide both function names (u\72l) and the URL scheme/slashes.
+  // Hex escapes consume at most one optional whitespace terminator.
+  return css.replace(/\\(?:([0-9a-f]{1,6})(?:\r\n|[ \t\n\r\f])?|(\r\n|[\r\n\f])|([^\r\n\f]))/gi,
+    (_, hex, newline, escaped) => {
+      if (hex) {
+        const codepoint = Number.parseInt(hex, 16);
+        return codepoint === 0 || codepoint > 0x10ffff ||
+          (codepoint >= 0xd800 && codepoint <= 0xdfff) ? '\uFFFD' :
+          String.fromCodePoint(codepoint);
+      }
+      return newline ? '' : escaped;
+    });
+}
 function cssRisks(css, add) {
-  for (const match of css.matchAll(/url\(\s*['"]?([^'")]+)['"]?\s*\)/gi)) {
-    if (UNTRUSTED.test(normalizedScheme(match[1]))) add('remote_css_resource');
+  const decoded = decodeCssEscapes(cssWithoutComments(css));
+  // WHATWG URL parsing for special schemes treats backslashes as slashes and
+  // strips ASCII TAB/LF/CR. Scan both representations to catch encoded hosts.
+  const urlNormalized = decoded.replace(/[\t\n\r]/g, '').replace(/\\/g, '/');
+  let importRisk = false;
+  let resourceRisk = false;
+  for (const candidate of [decoded, urlNormalized]) {
+    // @import has its own error code; do not duplicate it as a generic resource.
+    const otherCss = candidate.replace(/@import\b[^;{}]*/gi, (rule) => {
+      if (CSS_REMOTE.test(rule)) importRisk = true;
+      return ' ';
+    });
+    if (CSS_REMOTE.test(otherCss)) resourceRisk = true;
   }
-  for (const match of css.matchAll(/@import\s+['"]([^'"]+)['"]/gi)) {
-    if (UNTRUSTED.test(normalizedScheme(match[1]))) add('remote_css_import');
-  }
+  if (importRisk) add('remote_css_import');
+  if (resourceRisk) add('remote_css_resource');
 }
 function htmlRisks(html, add, stats) {
   const doc = parse(html, { scriptingEnabled: false });
@@ -295,9 +348,12 @@ function selfTest() {
       writeFileSync(join(dir, 'index.html'), html);
       for (const [path, value] of Object.entries(extra)) writeFileSync(join(dir, path), value);
       const result = auditDist(dir);
-      assert(result.findings.some((f) => f.code === code), 'missing detection ' + code);
-      assert(result.findings.some((f) => f.path === 'index.html' || f.path === 'app.js' || f.path === 'styles.css'),
-        'findings should print public file paths');
+      const expectedPath = extra['styles.css'] !== undefined ? 'styles.css' :
+        extra['app.js'] !== undefined ? 'app.js' : 'index.html';
+      assert(result.findings.some((f) => f.code === code && f.path === expectedPath &&
+        f.pathSha256 === createHash('sha256').update(expectedPath).digest('hex')),
+      'missing detection/path evidence ' + code + ' in ' + expectedPath);
+      assert.equal(result.conclusion, 'TECHNICAL_NO_GO');
       for (const path of Object.keys(extra)) rmSync(join(dir, path));
     };
     writeFileSync(join(dir, 'index.html'),
@@ -326,6 +382,55 @@ function selfTest() {
     check('<style>.x{background:url(https://tracker.invalid/pixel)}</style>', 'remote_css_resource');
     check('<div style="background:url(https://tracker.invalid/pixel)"></div>', 'remote_css_resource');
     check('<style>@import "https://tracker.invalid/style.css";</style>', 'remote_css_import');
+    // All three dist surfaces share the same CSS guard: external candidates,
+    // escaped syntax and multiple image-set sources must never be skipped.
+    const cssAttacks = [
+      ['remote_css_resource', '.x{background:image-set("https://tracker.invalid/a" 1x, "/local.webp" 2x)}'],
+      ['remote_css_resource', ".x{background:-webkit-image-set('//tracker.invalid/a' 1x)}"],
+      ['remote_css_resource', '.x{background:image-set("/local.webp" 1x, "https://tracker.invalid/b" 2x)}'],
+      ['remote_css_resource', '.x{background:image-set(url(/local.webp) 1x, url(https://tracker.invalid/b) 2x)}'],
+      ['remote_css_resource', '.x{background:u\\72l(https://tracker.invalid/a)}'],
+      ['remote_css_resource', '.x{background:u\\000072 l(\\2f\\2f tracker.invalid/a)}'],
+      ['remote_css_resource', '.x{background:url(\\68 ttps:\\/\\/tracker.invalid/a)}'],
+      ['remote_css_resource', '.x{background:image-set("data:image/svg+xml,test" 1x)}'],
+      ['remote_css_resource', ':root{--remote-image:"https://tracker.invalid/a.webp"}'],
+      ['remote_css_import', '@import /*comment*/ "https://tracker.invalid/a.css";'],
+      ['remote_css_import', '@\\69mport url(//tracker.invalid/a.css);'],
+      // URL-parser normalization (not merely CSS escape decoding).
+      ['remote_css_resource', 'url(/\\\\a.invalid/x)'],
+      ['remote_css_resource', 'url(\\\\/a.invalid/x)'],
+      ['remote_css_resource', 'url("https:' + '\\'.repeat(4) + 'a.invalid/x")'],
+      ['remote_css_resource', 'url("ht\ttps://a.invalid/x")'],
+      ['remote_css_resource', 'url("/\t/a.invalid/x")'],
+      ['remote_css_resource', 'url("ht\\9 tps://a.invalid/x")'],
+      ['remote_css_resource', 'url("ht\\a tps://a.invalid/x")'],
+      ['remote_css_resource', 'url("ht\rtps://a.invalid/x")'],
+      // Conservative policy: a remote URL in a selector string is rejected,
+      // although the selector itself initiates no network request.
+      ['remote_css_resource', 'a[href^="https://"]{color:red}'],
+    ];
+    for (const [code, css] of cssAttacks) {
+      check('<style>' + css + '</style>', code);
+      check('<div style="' + css.replaceAll('"', '&quot;') + '"></div>', code);
+      check('<link rel="stylesheet" href="/styles.css">', code, { 'styles.css': css });
+    }
+    const safeCss = [
+      '.x{background:image-set("/local.webp" 1x,url(../local.webp) 2x)}',
+      "@import url('/local.css');",
+      '/* image-set("https://tracker.invalid/x" 1x); */ .x{color:red}',
+      '.x{content:"Local assets";background:url(/assets/a//nested.webp)}',
+      '.x{background:u\\72l(/assets/local.webp)}',
+      '.metadata:hover{color:blue}', '.data:hover{color:red}',
+      '.blob:focus-visible{outline:1px solid red}',
+      'a[href^="http"]{text-decoration:underline}',
+    ];
+    for (const css of safeCss) {
+      writeFileSync(join(dir, 'index.html'),
+        '<style>' + css + '</style><div style="' + css.replaceAll('"', '&quot;') + '"></div>');
+      writeFileSync(join(dir, 'styles.css'), css);
+      assert.equal(auditDist(dir).findings.length, 0, 'local/comment-only CSS should pass');
+      rmSync(join(dir, 'styles.css'));
+    }
     check('<script>localStorage.setItem("id","1")</script>', 'browser_storage');
     check('<script src="' + fixtureScript + 'app.js"></script>', 'network_api',
       { 'app.js': 'fetch("/collect")' });
@@ -361,6 +466,14 @@ function selfTest() {
     const missing = cmd('--dist=' + join(dir, 'missing'));
     assert.notEqual(missing.status, 0, 'missing dist CLI must fail');
     assert.match(missing.stdout, /missing_dist_directory/);
+    writeFileSync(join(dir, 'styles.css'),
+      '.x{background:-webkit-image-set("//tracker.invalid/cli.webp" 2x)}');
+    const blocked = cmd('--dist=' + dir);
+    assert.notEqual(blocked.status, 0, 'CSS leak in dist must fail CLI');
+    assert.match(blocked.stdout, /TECHNICAL_NO_GO/);
+    assert.match(blocked.stdout, /remote_css_resource/);
+    assert.match(blocked.stdout, /"path": "styles.css"/);
+    rmSync(join(dir, 'styles.css'));
   } finally { rmSync(dir, { recursive: true, force: true }); }
   console.log('Legal/privacy policy regression fixtures passed (not human approval).');
 }
