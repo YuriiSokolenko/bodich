@@ -5,6 +5,7 @@
  */
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
+import { spawnSync } from 'node:child_process';
 import { existsSync, lstatSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, extname, join, resolve } from 'node:path';
@@ -370,6 +371,69 @@ function selfTest() {
     assert(run().findings.some((v) => v.kind.includes('Unpinned external')));
     writeFileSync(join(dist, 'index.html'), '<html></html>');
     writeFileSync(join(dist, '_astro/test.css'), 'body{color:red}');
+    const htmlCases = [
+      ['OG video', '<meta property="og:video" content="https://example.invalid/clip.mp4">', 'Unpinned external'],
+      ['OG audio', '<meta property="og:audio" content="https://example.invalid/music.mp3">', 'Unpinned external'],
+      ['MS tile', '<meta name="msapplication-TileImage" content="https://example.invalid/tile.png">', 'Unpinned external'],
+      ['Manifest', '<link rel="manifest" href="https://example.invalid/site.webmanifest">', 'Unpinned external'],
+      ['Image src link', '<link rel="image_src" href="https://example.invalid/a.jpg">', 'Unpinned external'],
+      ['Alternate media', '<link rel="alternate" type="image/png" href="https://example.invalid/a.png">', 'Unpinned external'],
+      ['lazy image', '<img data-src="https://example.invalid/lazy.png">', 'Unpinned external'],
+      ['lazy image srcset', '<img data-srcset="https://example.invalid/lazy.png 1x">', 'Unpinned external'],
+      ['poster', '<video poster="https://example.invalid/poster.jpg"></video>', 'Unpinned external'],
+      ['style URL', '<div style="background:url(https://example.invalid/bg.jpg)"></div>', 'Unpinned external'],
+      ['icon', '<link rel="icon" href="https://example.invalid/fav.svg">', 'Unpinned external'],
+    ];
+    for (const [label, html, reason] of htmlCases) {
+      writeFileSync(join(dist, 'index.html'), '<html><head>' + html + '</head></html>');
+      assert(run().findings.some((v) => v.kind.includes(reason)), label + ' bypassed audit');
+    }
+    const originalBase = process.env.ASTRO_BASE;
+    try {
+      process.env.ASTRO_BASE = '/bodich-preview';
+      writeFileSync(join(dist, 'index.html'),
+        '<html><link rel="stylesheet" href="/bodich-preview/_astro/test.css"></html>');
+      assert.equal(run().findings.length, 0, 'Non-root base incorrectly blocked a valid local stylesheet');
+      writeFileSync(join(dist, 'index.html'),
+        '<html><link rel="stylesheet" href="/bodich-preview/_astro/missing.css"></html>');
+      assert(run().findings.some((v) => v.kind.includes('Missing or unsafe')),
+        'Missing asset under non-root base must fail');
+    } finally {
+      if (originalBase === undefined) delete process.env.ASTRO_BASE;
+      else process.env.ASTRO_BASE = originalBase;
+    }
+    writeFileSync(join(dist, 'index.html'), '<html></html>');
+    const cssCases = [
+      '@import "https://example.invalid/fonts.css";',
+      'a{background:image-set("https://example.invalid/bg.png" 1x)}',
+      'a{background:-webkit-image-set("https://example.invalid/bg.webp" 1x)}',
+    ];
+    for (const value of cssCases) {
+      writeFileSync(join(dist, '_astro/test.css'), value);
+      assert(run().findings.some((v) => v.kind.includes('Unpinned external')),
+        'CSS import/image-set was not rejected');
+    }
+    writeFileSync(join(dist, '_astro/test.css'), 'body{color:red}');
+    writeFileSync(join(dist, '_astro/test.js'), 'const fine=true;');
+    assert.equal(run().findings.length, 0, 'Plain compiled JavaScript should be permitted');
+    for (const value of [
+      'new Image().src = "https://example.invalid/secret.png";',
+      'const d="data:image/png;base64,AAA";',
+      'const d="<svg width=10></svg>";',
+    ]) {
+      writeFileSync(join(dist, '_astro/test.js'), value);
+      assert(run().findings.some((v) => v.kind.includes('compiled JavaScript')),
+        'JS media literal bypassed audit');
+    }
+    rmSync(join(dist, '_astro/test.js'));
+    writeFileSync(join(dist, '_astro/test.js'), Buffer.from([137,80,78,71,13,10,26,10,1,2,3]));
+    assert(run().findings.some((v) => v.kind.includes('Media signature hidden')),
+      'PNG bytes disguised as JavaScript bypassed audit');
+    rmSync(join(dist, '_astro/test.js'));
+    writeFileSync(join(dist, 'index.html'), Buffer.from([137,80,78,71,13,10,26,10,1,2,3]));
+    assert(run().findings.some((v) => v.kind.includes('Media signature hidden')),
+      'PNG bytes disguised as HTML bypassed audit');
+    writeFileSync(join(dist, 'index.html'), '<html></html>');
     writeFileSync(join(dist, 'unlisted.woff2'), 'font');
     assert(run().findings.some((v) => v.kind.includes('uncleared')));
     rmSync(join(dist, 'unlisted.woff2'));
@@ -378,7 +442,41 @@ function selfTest() {
     rmSync(join(dist, 'leak.svg'));
     const unknown = { ...reviewed, permissionEvidence: null };
     assert.equal(cleared(unknown), false);
-    console.log('Public asset rights self-test passed: exact digest, rights, quarantine, inline SVG, external refs, srcset, CSS/data, unknown fonts, symlink and human NO-GO.');
+    // End-to-end policy parser negatives, not just direct clearance function tests.
+    const policyDir = join(workspace, 'policy');
+    mkdirSync(join(policyDir, 'config'), { recursive: true });
+    const policyFile = join(policyDir, policyPath);
+    const good = { schemaVersion: 1, profile: 'release_safe',
+      policy: 'explicit_human_clearance_only', releaseDecision: 'NO_GO',
+      accountableRightsOwner: 'Riley Parker', assets: [reviewed] };
+    const load = (value) => {
+      writeFileSync(policyFile, JSON.stringify(value));
+      return loadPolicy(policyDir);
+    };
+    assert.equal(load(good).assets.length, 1);
+    assert.throws(() => load({ ...good, accountableRightsOwner: null }),
+      /named accountable rights owner/);
+    assert.throws(() => load({ ...good, assets: [{ ...reviewed, reviewer: 'TBD' }] }),
+      /Clearance requires/);
+    assert.throws(() => load({ ...good, assets: [{ ...reviewed, reviewDate: '2099-01-01' }] }),
+      /Clearance requires/);
+    assert.throws(() => load({ ...good, assets: [reviewed, reviewed] }),
+      /Duplicate release asset rights entry/);
+    assert.throws(() => load({ ...good, releaseDecision: 'GO' }),
+      /A GO requires independent/);
+    assert.equal(load({ ...good, assets: [] }).assets.length, 0);
+    // Exercise the real CLI no-write path, without touching any preexisting audit.
+    const reportPath = join(root, 'visual-qa/public-asset-rights-audit.json');
+    const reportBefore = existsSync(reportPath) ? readFileSync(reportPath) : null;
+    const result = spawnSync(process.execPath,
+      [fileURLToPath(import.meta.url), dist, '--no-write'], {
+        cwd: root, encoding: 'utf8', env: { ...process.env, ASTRO_BASE: '/' },
+      });
+    assert.ifError(result.error);
+    assert.equal(result.status, 0, result.stderr);
+    assert.deepEqual(existsSync(reportPath) ? readFileSync(reportPath) : null, reportBefore,
+      '--no-write must leave report untouched');
+    console.log('Public asset rights self-test passed: independent/nonfuture rights, policy parser, quarantine, remote HTML/CSS/JS, binary signatures, nonroot base, symlink and no-write CLI.');
   } finally { rmSync(workspace, { recursive: true, force: true }); }
 }
 
