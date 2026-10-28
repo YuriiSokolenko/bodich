@@ -39,17 +39,24 @@ function walk(dir, prefix = '') {
     if (item.isDirectory()) files.push(...walk(full, name));
     else files.push({ name, bytes: readFileSync(full) });
   }
-  return files.sort((a, b) => a.name.localeCompare(b.name, 'en'));
+  return files.sort((a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0);
 }
 
+// Formatting checks are safeguards against obvious fabrications, not identity verification.
+const placeholder = /(?:^|[^a-z])(?:tbd|tba|n\/a|unknown|example|synthetic|fixture|todo|placeholder|test[-_ ]?only)(?:$|[^a-z])/i;
+const meaningful = (value) => typeof value === 'string' && value.trim().length >= 3 &&
+  !placeholder.test(value);
+const presentDate = (value) => typeof value === 'string' && validDate(value) &&
+  value <= new Date().toISOString().slice(0, 10);
+
 function cleared(entry) {
-  return entry.status === 'cleared' && typeof entry.rightsOwner === 'string' &&
-    entry.rightsOwner.trim().length > 0 && typeof entry.sourceRef === 'string' &&
-    entry.sourceRef.trim().length > 0 && typeof entry.generatorOrProvenance === 'string' &&
-    entry.generatorOrProvenance.trim().length > 0 &&
-    /^restricted:[A-Za-z0-9._/-]+$/.test(entry.permissionEvidence ?? '') &&
-    typeof entry.reviewer === 'string' && entry.reviewer.trim().length > 0 &&
-    validDate(entry.reviewDate) && Array.isArray(entry.permittedUses) &&
+  return entry.status === 'cleared' && meaningful(entry.rightsOwner) &&
+    meaningful(entry.reviewer) &&
+    entry.rightsOwner.trim().toLowerCase() !== entry.reviewer.trim().toLowerCase() &&
+    meaningful(entry.sourceRef) && meaningful(entry.generatorOrProvenance) &&
+    /^restricted:[A-Za-z0-9._/-]{8,}$/.test(entry.permissionEvidence ?? '') &&
+    !placeholder.test(entry.permissionEvidence ?? '') &&
+    presentDate(entry.reviewDate) && Array.isArray(entry.permittedUses) &&
     entry.permittedUses.includes('public_website') && digestRe.test(entry.sha256 ?? '');
 }
 
@@ -59,8 +66,7 @@ function loadPolicy(dir) {
   assert.equal(data.profile, 'release_safe');
   assert.equal(data.policy, 'explicit_human_clearance_only');
   assert.equal(data.releaseDecision, 'NO_GO', 'A GO requires independent Stage 20 sign-off (#71)');
-  assert.ok(data.accountableRightsOwner === null ||
-    (typeof data.accountableRightsOwner === 'string' && data.accountableRightsOwner.trim()),
+  assert.ok(data.accountableRightsOwner === null || meaningful(data.accountableRightsOwner),
     'Rights owner must remain unknown or name an actual accountable person');
   assert.ok(Array.isArray(data.assets));
   const unique = new Set();
@@ -72,7 +78,10 @@ function loadPolicy(dir) {
     assert.ok(!unique.has(a.path), 'Duplicate release asset rights entry');
     unique.add(a.path);
     assert.ok(!a.sha256 || digestRe.test(a.sha256), 'Invalid rights digest');
-    if (a.status === 'cleared') assert.ok(cleared(a), 'Clearance requires a named owner, actual reviewer, date, evidence, exact digest and permitted use');
+    if (a.status === 'cleared') {
+      assert.ok(data.accountableRightsOwner, 'A cleared asset requires a named accountable rights owner');
+      assert.ok(cleared(a), 'Clearance requires distinct named owner/reviewer, nonfuture date, evidence, digest and allowed use');
+    }
     if (a.classification === 'ai_concept' || a.classification === 'technical_illustration')
       assert.notEqual(a.representation, 'product_photograph', 'Concepts are never exact-product photographs');
     // A raw contract, URL to private storage, or pasted permission is never a public register pointer.
@@ -187,6 +196,10 @@ export function audit(dir, policy, legacy = []) {
   const knownUncleared = new Set(legacy.filter((r) => r.status === 'present' &&
     r.rightsStatus !== 'cleared_with_evidence' && r.sha256).map((r) => r.sha256));
   const base = process.env.ASTRO_BASE?.startsWith('/') ? process.env.ASTRO_BASE.replace(/\/+$/, '') || '/' : '/';
+  // The caller cannot bypass the accountable owner requirement by calling audit() directly.
+  if (!policy.accountableRightsOwner && policy.assets.some((a) => a.status === 'cleared'))
+    findings.push({ kind: 'Cleared asset without accountable rights owner', id: pathId('missing-accountable-owner') });
+  const distributedDigests = new Set(fileList.map(({ bytes }) => sha(bytes)));
   const records = [];
   for (const { name, bytes } of fileList) {
     const digest = sha(bytes);
@@ -198,6 +211,8 @@ export function audit(dir, policy, legacy = []) {
       'src/pages/ and public/_headers';
     let classification = kind;
     let reviewer = null, reviewDate = null, rightsOwner = null, evidenceRef = null;
+    if (knownUncleared.has(digest))
+      findings.push({ kind: 'Quarantined media bytes found in release file', id: pathId(name) });
     if (kind === 'media') {
       classification = entry?.classification ?? 'unknown';
       state = entry?.status ?? 'unknown';
@@ -206,7 +221,7 @@ export function audit(dir, policy, legacy = []) {
       reviewDate = entry?.reviewDate ?? null;
       rightsOwner = entry?.rightsOwner ?? null;
       evidenceRef = entry?.permissionEvidence ?? null;
-      if (!entry || !cleared(entry) || entry.sha256 !== digest || knownUncleared.has(digest))
+      if (!entry || !cleared(entry) || !policy.accountableRightsOwner || entry.sha256 !== digest || knownUncleared.has(digest))
         findings.push({ kind: 'Unknown, uncleared, altered or quarantined media asset', id: pathId(name) });
     } else if (!knownGenerated(name)) {
       findings.push({ kind: 'Unclassified release output', id: pathId(name) });
@@ -225,8 +240,11 @@ export function audit(dir, policy, legacy = []) {
   }
   const quarantined = legacy.map((entry) => ({
     pathSha256: pathId(entry.path), sourceRegistry: 'docs/catalog/media-rights.json (+ art-manifest)',
-    sha256: entry.sha256, classification: entry.classification, status: entry.rightsStatus,
-    usage: entry.usage, distributed: false, reviewer: null, reviewDate: null,
+    // Do not expose the private full digest in public CI artifacts.
+    sha256Prefix: entry.sha256?.slice(0, 12) ?? null,
+    classification: entry.classification, status: entry.rightsStatus,
+    usage: entry.usage, distributed: Boolean(entry.sha256 && distributedDigests.has(entry.sha256)),
+    reviewer: null, reviewDate: null,
     remediation: 'Keep out of release-safe dist until attributable, evidence-backed human approval.',
   }));
   return {
@@ -257,18 +275,30 @@ function selfTest() {
     const pinned = sha(readFileSync(join(dist, 'favicon.svg')));
     policy.assets.push({ path: 'favicon.svg', classification: 'ui_icon', status: 'pending', sha256: pinned });
     assert(run().findings.some((v) => v.kind.includes('uncleared')));
-    const reviewed = { ...policy.assets[0], status: 'cleared', rightsOwner: 'Example rights holder',
+    const reviewed = { ...policy.assets[0], status: 'cleared', rightsOwner: 'Alex Morgan',
       sourceRef: 'src/original.svg', generatorOrProvenance: 'original authored file',
-      permissionEvidence: 'restricted:fixture-only', reviewer: 'Synthetic reviewer',
+      permissionEvidence: 'restricted:case-2026-384201', reviewer: 'Taylor Chen',
       reviewDate: '2026-10-26', permittedUses: ['public_website'] };
+    assert(!cleared({ ...reviewed, reviewer: ' ALEX MORGAN ' }));
+    assert(!cleared({ ...reviewed, reviewer: 'TBD' }));
+    assert(!cleared({ ...reviewed, rightsOwner: 'unknown' }));
+    assert(!cleared({ ...reviewed, reviewer: 'Synthetic reviewer' }));
+    assert(!cleared({ ...reviewed, reviewer: 'TODO review' }));
+    assert(!cleared({ ...reviewed, reviewDate: '2099-01-01' }));
+    assert(!cleared({ ...reviewed, permissionEvidence: 'restricted:x' }));
     policy.assets[0] = reviewed;
+    assert(run().findings.some((v) => v.kind.includes('without accountable rights owner')));
+    policy.accountableRightsOwner = 'Riley Parker';
     assert.equal(run().findings.length, 0);
     assert.equal(run().records.find((v) => v.path === 'favicon.svg').state, 'cleared');
     writeFileSync(join(dist, 'favicon.svg'), '<svg>tampered</svg>');
     assert(run().findings.some((v) => v.kind.includes('altered')));
     writeFileSync(join(dist, 'favicon.svg'), '<svg></svg>');
-    assert(audit(dist, policy, [{ path: 'private/original.svg', sha256: pinned, status: 'present',
-      rightsStatus: 'unverified' }]).findings.some((v) => v.kind.includes('quarantined')));
+    const quarantineReport = audit(dist, policy, [{ path: 'private/original.svg',
+      sha256: pinned, status: 'present', rightsStatus: 'unverified' }]);
+    assert(quarantineReport.findings.some((v) => v.kind.includes('Quarantined media')));
+    assert.equal(quarantineReport.quarantinedRegistry[0].distributed, true);
+    assert.equal(quarantineReport.quarantinedRegistry[0].sha256Prefix, pinned.slice(0, 12));
     policy.assets[0] = { ...reviewed, status: 'denied' };
     assert(run().findings.length);
     policy.assets[0] = reviewed;
