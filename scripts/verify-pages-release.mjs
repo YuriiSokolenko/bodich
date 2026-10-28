@@ -217,6 +217,8 @@ function htmlProblems(html, name) {
         // is exempt from the external-script rule.
         if (type?.value === 'application/ld+json' && !src) {
           // JSON-LD content remains separately checked by the SEO validator.
+        } else if (type?.value === 'application/ld+json' && src) {
+          report('Inert JSON-LD must not reference an external script');
         } else if (!src) {
           report('Inline executable script rejected by CSP');
         } else {
@@ -383,7 +385,7 @@ function selfTest() {
     ['encoded contact href', '<a href="&#109;ailto:x@example.org">x</a>', 'Unauthorized commerce'],
     ['HTML5 separated form', '<form/action="/"></form>', 'Unauthorized commerce'],
     ['inline srcdoc', '<iframe srcdoc="<script>alert(1)</script>"></iframe>', 'Inline HTML srcdoc'],
-    ['JSON-LD with src', '<script type="application/ld+json" src="/_astro/safe.js">{}</script>', 'Inline executable script'],
+    ['JSON-LD with src', '<script type="application/ld+json" src="/_astro/safe.js"></script>', 'Inert JSON-LD'],
     ['spoofed JSON-LD with data-type', '<script data-type="application/ld+json">alert(1)</script>', 'Inline executable script'],
     ['spoofed src with data-src', '<script data-src="/_astro/safe.js">alert(1)</script>', 'Inline executable script'],
     ['external script inline fallback', '<script src="/_astro/safe.js">alert(1)</script>', 'Inline executable script'],
