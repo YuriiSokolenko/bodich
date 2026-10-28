@@ -98,7 +98,24 @@ function evaluate(record) {
         fail(errors, target.id + ': three reproducible runs and raw artifact required');
         continue;
       }
+      if (!/^[0-9a-f]{40}$/.test(target.sourceSha ?? '') ||
+          !/^[0-9a-f]{64}$/.test(target.distManifestSha256 ?? '') ||
+          target.sourceSha !== record.candidateSha ||
+          target.distManifestSha256 !== record.distManifestSha256) {
+        fail(errors, target.id + ': lab target source/digest differs from release candidate');
+      }
+      if (new Set(target.runs.map((r) => r.file)).size !== REQUIRED_LAB_RUNS ||
+          new Set(target.runs.map((r) => r.iteration)).size !== REQUIRED_LAB_RUNS ||
+          target.runs.some((r) => !Number.isInteger(r.iteration) || r.iteration < 1 || r.iteration > REQUIRED_LAB_RUNS)) {
+        fail(errors, target.id + ': distinct run indices and artifact files required');
+      }
       for (const run of target.runs) {
+        if (!/^[0-9a-f]{40}$/.test(run.sourceSha ?? '') ||
+            !/^[0-9a-f]{64}$/.test(run.distManifestSha256 ?? '') ||
+            run.sourceSha !== target.sourceSha ||
+            run.distManifestSha256 !== target.distManifestSha256) {
+          fail(errors, target.id + ': lab run source/digest differs from lab target');
+        }
         if (Object.keys(limits).some((k) => !isMetric(run.metrics?.[k])) ||
             !isText(run.lighthouseVersion) || !isText(run.userAgent) ||
             !isText(run.fetchTime) || !isText(run.file) ||
@@ -174,8 +191,12 @@ if (args.includes('--self-test')) {
   for (const target of good.lab.targets) {
     target.status = 'PASS';
     target.artifactRef = 'restricted:qa/lighthouse/fixture-v1';
+    target.sourceSha = good.candidateSha;
+    target.distManifestSha256 = good.distManifestSha256;
     target.runs = Array.from({ length: REQUIRED_LAB_RUNS }, (_, index) => ({
       iteration: index + 1,
+      sourceSha: good.candidateSha,
+      distManifestSha256: good.distManifestSha256,
       file: 'lighthouse-' + target.id + '-' + (index + 1) + '.json',
       lighthouseVersion: 'fixture-13',
       userAgent: 'Fixture Chromium',
@@ -211,6 +232,24 @@ if (args.includes('--self-test')) {
   reject('extra lab measurements', (x) => {
     x.lab.targets[0].runs.push(structuredClone(x.lab.targets[0].runs[0]));
   }, 'three reproducible runs');
+  reject('lab target source mismatch', (x) => {
+    x.lab.targets[0].sourceSha = 'c'.repeat(40);
+  }, 'lab target source/digest differs');
+  reject('lab target digest mismatch', (x) => {
+    x.lab.targets[0].distManifestSha256 = 'c'.repeat(64);
+  }, 'lab target source/digest differs');
+  reject('lab run source mismatch', (x) => {
+    x.lab.targets[0].runs[1].sourceSha = 'c'.repeat(40);
+  }, 'lab run source/digest differs');
+  reject('lab run digest mismatch', (x) => {
+    x.lab.targets[0].runs[2].distManifestSha256 = 'c'.repeat(64);
+  }, 'lab run source/digest differs');
+  reject('duplicate lab run file', (x) => {
+    x.lab.targets[0].runs[1].file = x.lab.targets[0].runs[0].file;
+  }, 'distinct run indices');
+  reject('duplicate lab run index', (x) => {
+    x.lab.targets[0].runs[1].iteration = 1;
+  }, 'distinct run indices');
   reject('median budget', (x) => {
     x.lab.targets[0].runs[0].metrics.lcpMs = 3000;
     x.lab.targets[0].runs[1].metrics.lcpMs = 3000;
