@@ -243,7 +243,7 @@ function selfTest() {
   go.blockers = [];
   go.operator = { publicLegalName: 'Illustrative Legal Entity Ltd',
     jurisdiction: 'Romania', markets: ['Romania'],
-    approvedPublicContact: 'legal@example.invalid', approvedBy: 'Ada Operator',
+    approvedPublicContact: 'legal@illustrative.invalid', approvedBy: 'Ada Operator',
     operatorEvidenceRef: 'restricted:legal-operator-001',
     brandingAuthorityRef: 'restricted:brand-permission-001',
     contactPermissionRef: 'restricted:contact-approval-001' };
