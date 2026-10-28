@@ -3,6 +3,7 @@
   "issue": 69,
   "releaseGate": "NO_GO",
   "candidateSha": null,
+  "distManifestSha256": null,
   "qaLead": null,
   "independentReviewer": null,
   "reviewedAt": null,
@@ -359,24 +360,32 @@
       {
         "id": "en-home",
         "status": "NOT_RUN",
+        "sourceSha": null,
+        "distManifestSha256": null,
         "runs": [],
         "artifactRef": null
       },
       {
         "id": "en-products",
         "status": "NOT_RUN",
+        "sourceSha": null,
+        "distManifestSha256": null,
         "runs": [],
         "artifactRef": null
       },
       {
         "id": "ro-home",
         "status": "NOT_RUN",
+        "sourceSha": null,
+        "distManifestSha256": null,
         "runs": [],
         "artifactRef": null
       },
       {
         "id": "ro-products",
         "status": "NOT_RUN",
+        "sourceSha": null,
+        "distManifestSha256": null,
         "runs": [],
         "artifactRef": null
       }
@@ -392,6 +401,5 @@
     "clsP75": null,
     "reason": "No verified field sample has been supplied. Do not use TBT as INP."
   },
-  "notes": "Unsigned planning baseline. No real devices, screen readers or performance runs are asserted. This file is not a release approval.",
-  "distManifestSha256": null
+  "notes": "Unsigned planning baseline. No real devices, screen readers or performance runs are asserted. This file is not a release approval."
 }
