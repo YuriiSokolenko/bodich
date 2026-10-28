@@ -190,7 +190,9 @@ function normalizedScheme(value) {
 }
 function htmlProblems(html, name) {
   const errors = [];
-  const base = (process.env.ASTRO_BASE || '/').replace(/\/+$/, '');
+  // Mirror Astro's root-relative base normalization. Only the exact
+  // base-prefixed English homepage can be the root refresh destination.
+  const base = ('/' + (process.env.ASTRO_BASE || '').replace(/^\/+/, '')).replace(/\/+$/, '');
   const prefix = base + '/_astro/';
   const report = (message) => errors.push(finding(message, name));
   let approvedRootRefreshes = 0;
@@ -339,6 +341,11 @@ function selfTest() {
   ];
   for (const [i, bad] of badHeaders.entries())
     assert(headerProblems(bad).length, 'Unsafe CSP fixture accepted: ' + i);
+  // The closed Pages header allow-list must also block HTTP Refresh navigation.
+  for (const header of ['Refresh', 'rEfReSh']) {
+    assert(headerProblems(safeHeaders + '\n  ' + header + ': 0;url=https://evil.invalid\n')
+      .includes('Unapproved Pages header'), 'HTTP Refresh response header accepted');
+  }
   const valid = new Map([...routeSet].map((name) => [
     name, name === 'robots.txt' ? 'User-agent: *\nDisallow: /\n' :
       name === 'sitemap.xml' ? '<?xml version="1.0"?><urlset></urlset>' :
@@ -368,6 +375,9 @@ function selfTest() {
   negative('mailto link', (m) => m.set('en/index.html',
     '<html data-media-profile="release_safe"><a href="mailto:x@example.org">Send</a></html>'), 'Unauthorized commerce');
   negative('missing headers', (m) => m.delete('_headers'), 'Missing Cloudflare Pages _headers');
+  negative('HTTP Refresh response header',
+    (m) => m.set('_headers', safeHeaders + '\n  Refresh: 0;url=https://evil.invalid/\n'),
+    'Unapproved Pages header');
   negative('inline executable JavaScript', (m) => m.set('en/index.html',
     '<html data-media-profile="release_safe"><script type="module">alert(1)</script></html>'),
     'Inline executable script');
@@ -449,8 +459,10 @@ function selfTest() {
   const rootRefresh = (target, attr = 'http-equiv', directive = 'refresh') =>
     '<html><head><meta ' + attr + '="' + directive +
     '" content="2;url=' + target + '"></head><body>Redirect</body></html>';
-  // Astro 7.4.x's built-in status-302 redirect template emits a two-second
-  // refresh after a bare title (parse5 reconstructs the missing <head>).
+  // Mirrors Astro 7.4.2's core/routing/3xx.ts status-302 template, including
+  // its two-second refresh and bare title (parse5 reconstructs the <head>).
+  // On an Astro upgrade, investigate failing real-build verification against
+  // the new generated markup/delay; never loosen the release allow-list.
   const astroRoot = (target) =>
     '<!doctype html><title>Redirecting to: ' + target + '</title>' +
     '<meta http-equiv="refresh" content="2;url=' + target + '">' +
@@ -471,6 +483,8 @@ function selfTest() {
     const emittedByAstro = new Map(valid);
     emittedByAstro.set('index.html', astroRoot(target));
     assert.deepEqual(runWithBase(base, emittedByAstro), [], 'Built-in Astro 302 template rejected for ' + base);
+    if (base !== '/') assert.deepEqual(runWithBase(base.slice(1), emittedByAstro), [],
+      'Astro-compatible base without leading slash rejected');
   }
   function rejectRootRefresh(label, html, base = '/') {
     const modified = new Map(valid);
@@ -543,6 +557,7 @@ function selfTest() {
       '/bodich-preview', 0);
     verifyFixture(astroRoot('/en/'), '/', 0, undefined, 'index.html');
     verifyFixture(astroRoot('/bodich-preview/en/'), '/bodich-preview', 0, undefined, 'index.html');
+    verifyFixture(astroRoot('/bodich-preview/en/'), 'bodich-preview', 0, undefined, 'index.html');
     verifyFixture(rootRefresh('/en/'), '/bodich-preview', 1, 'Unapproved HTML meta refresh', 'index.html');
     verifyFixture(rootRefresh('https://evil.invalid/'), '/', 1, 'Unapproved HTML meta refresh', 'index.html');
     verifyFixture('<meta HTTP-EQUIV="ReFrEsH" CONTENT="0;url=https://evil.invalid/' +
