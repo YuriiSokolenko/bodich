@@ -207,7 +207,7 @@ function htmlProblems(html, name) {
         if (httpEquiv !== undefined &&
             httpEquiv.replace(/[\u0000-\u0020\u007f]/g, '').toLowerCase() === 'refresh') {
           const content = getAttr('content')?.value;
-          // The sole exception is Astro's single, zero-delay root language
+          // The sole exception is Astro's single, status-302 root language
           // redirect in the document head. No other route or target is trusted.
           const rootHead = name === 'index.html' &&
             node.parentNode?.tagName === 'head' &&
@@ -215,7 +215,7 @@ function htmlProblems(html, name) {
             node.parentNode.parentNode.parentNode?.nodeName === '#document';
           const approved = rootHead &&
             httpEquiv.trim().toLowerCase() === 'refresh' &&
-            content === `0;url=${base}/en/` &&
+            content === `2;url=${base}/en/` &&
             ++approvedRootRefreshes === 1;
           if (!approved) report('Unapproved HTML meta refresh navigation');
         }
@@ -448,7 +448,14 @@ function selfTest() {
   ]) negative(label, (m) => m.set('en/index.html', htmlFixture(markup)), message);
   const rootRefresh = (target, attr = 'http-equiv', directive = 'refresh') =>
     '<html><head><meta ' + attr + '="' + directive +
-    '" content="0;url=' + target + '"></head><body>Redirect</body></html>';
+    '" content="2;url=' + target + '"></head><body>Redirect</body></html>';
+  // Astro 7.4.x's built-in status-302 redirect template emits a two-second
+  // refresh after a bare title (parse5 reconstructs the missing <head>).
+  const astroRoot = (target) =>
+    '<!doctype html><title>Redirecting to: ' + target + '</title>' +
+    '<meta http-equiv="refresh" content="2;url=' + target + '">' +
+    '<meta name="robots" content="noindex"><link rel="canonical" href="' + target + '">' +
+    '<body><a href="' + target + '">Redirecting</a></body>';
   const runWithBase = (base, items) => {
     const previous = process.env.ASTRO_BASE;
     process.env.ASTRO_BASE = base;
@@ -461,6 +468,9 @@ function selfTest() {
     const approved = new Map(valid);
     approved.set('index.html', rootRefresh(target, 'HTTP-EQUIV', 'ReFrEsH'));
     assert.deepEqual(runWithBase(base, approved), [], 'Legitimate Astro root refresh rejected for ' + base);
+    const emittedByAstro = new Map(valid);
+    emittedByAstro.set('index.html', astroRoot(target));
+    assert.deepEqual(runWithBase(base, emittedByAstro), [], 'Built-in Astro 302 template rejected for ' + base);
   }
   function rejectRootRefresh(label, html, base = '/') {
     const modified = new Map(valid);
@@ -469,16 +479,18 @@ function selfTest() {
       'Unauthorized root refresh accepted: ' + label);
   }
   rejectRootRefresh('external root target', rootRefresh('https://evil.invalid/'));
+  rejectRootRefresh('unexpected zero-delay variant',
+    '<html><head><meta http-equiv=refresh content="0;url=/en/"></head></html>');
   rejectRootRefresh('other locale', rootRefresh('/ro/'));
   rejectRootRefresh('relative path', rootRefresh('en/'));
   rejectRootRefresh('wrong base', rootRefresh('/en/'), '/bodich-preview');
-  rejectRootRefresh('root refresh in body', '<html><body><meta http-equiv=refresh content="0;url=/en/"></body></html>');
+  rejectRootRefresh('root refresh in body', '<html><body><meta http-equiv=refresh content="2;url=/en/"></body></html>');
   rejectRootRefresh('duplicate root refresh',
-    '<html><head><meta http-equiv=refresh content="0;url=/en/"><meta http-equiv=refresh content="0;url=/en/"></head></html>');
+    '<html><head><meta http-equiv=refresh content="2;url=/en/"><meta http-equiv=refresh content="2;url=/en/"></head></html>');
   rejectRootRefresh('root refresh in nested template',
-    '<html><head><template><template><meta http-equiv=refresh content="0;url=/en/"></template></template></head></html>');
+    '<html><head><template><template><meta http-equiv=refresh content="2;url=/en/"></template></template></head></html>');
   rejectRootRefresh('root refresh in noscript',
-    '<html><head><noscript><meta http-equiv=refresh content="0;url=/en/"></noscript></head></html>');
+    '<html><head><noscript><meta http-equiv=refresh content="2;url=/en/"></noscript></head></html>');
   const withSafeNoscript = new Map(valid);
   withSafeNoscript.set('en/index.html',
     htmlFixture('<noscript><p>Site navigation works without JavaScript.</p></noscript>'));
@@ -529,8 +541,8 @@ function selfTest() {
       '/', 0);
     verifyFixture('<script src="/bodich-preview/_astro/safe.js"></script><script type="application/ld+json">{}</script>',
       '/bodich-preview', 0);
-    verifyFixture(rootRefresh('/en/'), '/', 0, undefined, 'index.html');
-    verifyFixture(rootRefresh('/bodich-preview/en/'), '/bodich-preview', 0, undefined, 'index.html');
+    verifyFixture(astroRoot('/en/'), '/', 0, undefined, 'index.html');
+    verifyFixture(astroRoot('/bodich-preview/en/'), '/bodich-preview', 0, undefined, 'index.html');
     verifyFixture(rootRefresh('/en/'), '/bodich-preview', 1, 'Unapproved HTML meta refresh', 'index.html');
     verifyFixture(rootRefresh('https://evil.invalid/'), '/', 1, 'Unapproved HTML meta refresh', 'index.html');
     verifyFixture('<meta HTTP-EQUIV="ReFrEsH" CONTENT="0;url=https://evil.invalid/' +
