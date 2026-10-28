@@ -18,6 +18,7 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const DEFAULT_RECORD = join(ROOT, 'docs/qa/issue-71-release-decision.json');
+const DEFAULT_ROMANIAN_RECORD = join(ROOT, 'docs/qa/issue-68-romanian-review.json');
 const RELEASE_POLICY = JSON.parse(readFileSync(join(ROOT, 'config/pages-release-allowlist.json'), 'utf8'));
 const SOURCE_INVENTORY = JSON.parse(readFileSync(join(ROOT, 'docs/catalog/source-inventory.json'), 'utf8'));
 const DRAFT_COUNT = SOURCE_INVENTORY.products.length;
@@ -280,7 +281,7 @@ function assertUnexpiredWindow(ops, now = Date.now()) {
 function main() {
   const args = process.argv.slice(2);
   const allowed = ['--self-test', '--check', '--verify-dist', '--require-go'];
-  assert(args.every((s) => allowed.includes(s) || /^(--decision|--dist|--reports-dir|--candidate-sha)=.+$/.test(s)),
+  assert(args.every((s) => allowed.includes(s) || /^(--decision|--dist|--reports-dir|--candidate-sha|--romanian-record)=.+$/.test(s)),
     'usage: [--self-test | --check | --verify-dist] [--decision=path] [--dist=path] [--reports-dir=path] [--require-go --candidate-sha=40hex]');
   if (args.includes('--self-test')) {
     assert(args.length === 1);
@@ -315,6 +316,13 @@ function main() {
       }
       verifySourceCheckout(sha);
       assertUnexpiredWindow(record.operations);
+      // #68 must independently verify a native human reviewer on the exact built bytes.
+      // The signed record lives in restricted custody; a PASS in #71 alone is insufficient.
+      execFileSync(process.execPath, [
+        join(ROOT, 'scripts/verify-romanian-qa.mjs'), '--dist', '--require-pass',
+        '--dist-dir=' + dist, '--candidate-sha=' + sha,
+        '--record=' + resolve(option('--romanian-record', DEFAULT_ROMANIAN_RECORD)),
+      ], { cwd: ROOT, timeout: 30000, stdio: ['ignore', 'pipe', 'pipe'] });
     }
     const manifest = verifyDist(record, dist, reports);
     console.log('Stage 20F reviewed candidate manifest SHA-256: ' + manifest);

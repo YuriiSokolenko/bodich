@@ -54,6 +54,7 @@ jobs:
           npm run catalog:products:dist
           npm run catalog:reconcile:routes
           npm run seo:routes
+          npm run romanian:dist
           npm run media:public
           npm run assets:release
       - name: Reject unapproved visitor-data collection in static distribution
@@ -74,6 +75,7 @@ jobs:
           node scripts/verify-pages-release.mjs dist --no-write
           npm run catalog:products:dist
           npm run seo:routes
+          npm run romanian:dist
           node scripts/verify-base-preview.mjs dist
           node scripts/audit-public-assets.mjs dist --no-write
       - name: Emit digest-based review evidence (no private artifact)

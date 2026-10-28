@@ -71,6 +71,13 @@ jobs:
           npm run catalog:review:self-test
           npm run catalog:review:build
           npm run catalog:review:check
+      - name: Upload rendered bilingual copy for native Romanian human review
+        uses: actions/upload-artifact@v4
+        with:
+          name: private-romanian-rendered-review
+          path: visual-qa/romanian-rendered-review.json
+          retention-days: 7
+          if-no-files-found: error
       - name: Upload private catalog review gallery
         uses: actions/upload-artifact@v4
         with:
@@ -98,6 +105,8 @@ jobs:
         run: npm run catalog:products:dist
       - name: Verify bilingual editorial SEO, crawl policy and safe output
         run: npm run seo:routes
+      - name: Verify rendered bilingual semantic coverage and prepare private native-RO review packet
+        run: npm run romanian:dist
       - name: Verify synthetic positive editorial approval in isolated build
         run: npm run seo:fixture
       - name: Block unverified media from public distribution
@@ -135,6 +144,7 @@ jobs:
           npm run media:public
           node scripts/audit-public-assets.mjs dist --no-write
           npm run seo:routes
+          npm run romanian:dist
           npm run catalog:products:dist
       - name: Validate card and detail templates with isolated CI-only records
         run: node scripts/verify-product-fixture.mjs

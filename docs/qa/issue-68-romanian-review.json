@@ -1,0 +1,183 @@
+{
+  "schemaVersion": 1,
+  "scope": "informational_only",
+  "status": "PENDING",
+  "candidate": {
+    "profile": "release_safe",
+    "gitSha": null,
+    "distManifestSha256": null
+  },
+  "reviewer": {
+    "name": null,
+    "nativeRomanianConfirmed": false,
+    "signedAt": null,
+    "signatureEvidence": null
+  },
+  "editorialLead": {
+    "name": null,
+    "evidenceRef": null
+  },
+  "coverage": {
+    "routes": {
+      "/en/": {
+        "status": "PENDING",
+        "reviewedAt": null,
+        "evidenceRef": null
+      },
+      "/en/about/": {
+        "status": "PENDING",
+        "reviewedAt": null,
+        "evidenceRef": null
+      },
+      "/en/accessories/": {
+        "status": "PENDING",
+        "reviewedAt": null,
+        "evidenceRef": null
+      },
+      "/en/accessories/ecu-controls/": {
+        "status": "PENDING",
+        "reviewedAt": null,
+        "evidenceRef": null
+      },
+      "/en/accessories/electrical-components/": {
+        "status": "PENDING",
+        "reviewedAt": null,
+        "evidenceRef": null
+      },
+      "/en/accessories/fuel-systems/": {
+        "status": "PENDING",
+        "reviewedAt": null,
+        "evidenceRef": null
+      },
+      "/en/accessories/mounting-hardware/": {
+        "status": "PENDING",
+        "reviewedAt": null,
+        "evidenceRef": null
+      },
+      "/en/contact/": {
+        "status": "PENDING",
+        "reviewedAt": null,
+        "evidenceRef": null
+      },
+      "/en/products/": {
+        "status": "PENDING",
+        "reviewedAt": null,
+        "evidenceRef": null
+      },
+      "/en/products/turbine-engines/": {
+        "status": "PENDING",
+        "reviewedAt": null,
+        "evidenceRef": null
+      },
+      "/en/support/": {
+        "status": "PENDING",
+        "reviewedAt": null,
+        "evidenceRef": null
+      },
+      "/ro/": {
+        "status": "PENDING",
+        "reviewedAt": null,
+        "evidenceRef": null
+      },
+      "/ro/about/": {
+        "status": "PENDING",
+        "reviewedAt": null,
+        "evidenceRef": null
+      },
+      "/ro/accessories/": {
+        "status": "PENDING",
+        "reviewedAt": null,
+        "evidenceRef": null
+      },
+      "/ro/accessories/ecu-controls/": {
+        "status": "PENDING",
+        "reviewedAt": null,
+        "evidenceRef": null
+      },
+      "/ro/accessories/electrical-components/": {
+        "status": "PENDING",
+        "reviewedAt": null,
+        "evidenceRef": null
+      },
+      "/ro/accessories/fuel-systems/": {
+        "status": "PENDING",
+        "reviewedAt": null,
+        "evidenceRef": null
+      },
+      "/ro/accessories/mounting-hardware/": {
+        "status": "PENDING",
+        "reviewedAt": null,
+        "evidenceRef": null
+      },
+      "/ro/contact/": {
+        "status": "PENDING",
+        "reviewedAt": null,
+        "evidenceRef": null
+      },
+      "/ro/products/": {
+        "status": "PENDING",
+        "reviewedAt": null,
+        "evidenceRef": null
+      },
+      "/ro/products/turbine-engines/": {
+        "status": "PENDING",
+        "reviewedAt": null,
+        "evidenceRef": null
+      },
+      "/ro/support/": {
+        "status": "PENDING",
+        "reviewedAt": null,
+        "evidenceRef": null
+      }
+    },
+    "components": {
+      "shared/header": {
+        "status": "PENDING",
+        "reviewedAt": null,
+        "evidenceRef": null
+      },
+      "shared/desktop-navigation": {
+        "status": "PENDING",
+        "reviewedAt": null,
+        "evidenceRef": null
+      },
+      "shared/mobile-navigation": {
+        "status": "PENDING",
+        "reviewedAt": null,
+        "evidenceRef": null
+      },
+      "shared/language-switcher": {
+        "status": "PENDING",
+        "reviewedAt": null,
+        "evidenceRef": null
+      },
+      "shared/footer": {
+        "status": "PENDING",
+        "reviewedAt": null,
+        "evidenceRef": null
+      },
+      "shared/accessibility-copy": {
+        "status": "PENDING",
+        "reviewedAt": null,
+        "evidenceRef": null
+      },
+      "shared/seo-metadata": {
+        "status": "PENDING",
+        "reviewedAt": null,
+        "evidenceRef": null
+      },
+      "shared/contact-privacy-copy": {
+        "status": "PENDING",
+        "reviewedAt": null,
+        "evidenceRef": null
+      },
+      "shared/root-fallback": {
+        "status": "PENDING",
+        "reviewedAt": null,
+        "evidenceRef": null
+      }
+    }
+  },
+  "findings": [],
+  "notes": "Unsigned NO-GO planning record. Human native-RO reviewer must examine the final rendered release candidate, not source translations or AI output. Never publish personal/offline evidence in this repository."
+}
