@@ -58,7 +58,9 @@ try {
     for (const locale of locales) {
       for (const route of routes) {
         const id = locale + '-' + (route || 'home');
-        const page = await browser.newPage({ viewport: { width: 390, height: 844 }, reducedMotion: 'reduce' });
+        // axe-core requires an explicit BrowserContext; browser.newPage() creates an implicit owned context.
+        const context = await browser.newContext({ viewport: { width: 390, height: 844 }, reducedMotion: 'reduce' });
+        const page = await context.newPage();
         try {
           const response = await page.goto(urlFor(locale, route), { waitUntil: 'load', timeout: 30000 });
           if (response?.status() !== 200 || (await page.locator('html').getAttribute('lang')) !== locale) {
@@ -94,7 +96,7 @@ try {
         } catch (error) {
           fail('axe ' + id + ': ' + error.message);
         } finally {
-          await page.close();
+          await context.close();
         }
       }
     }
