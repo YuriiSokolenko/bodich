@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "profile": "release_safe",
+  "policy": "explicit_human_clearance_only",
+  "purpose": "Stage 20A full public-build asset rights audit; zero preapproved public media",
+  "legacyMediaRegistry": "docs/catalog/media-rights.json",
+  "releaseDecision": "NO_GO",
+  "accountableRightsOwner": null,
+  "planningTarget": "2026-11-03 (provisional, unaccepted)",
+  "notes": "Release-safe media (including image, logo, icon, font, social preview and other distributable assets) must have one exact dist path, SHA-256, provenance, rights owner, restricted evidence pointer, independent named human reviewer, review date and permitted use. No review-only concept, supplier diagram or synthetic photograph is approved here. Remote/data assets must be replaced with pinned local files. Generated HTML/CSS/JS also receive per-byte digests in the report but require separate build-wide #71 human sign-off. Production GO cannot be issued by this registry.",
+  "assets": []
+}
