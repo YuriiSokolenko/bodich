@@ -11,12 +11,18 @@
  */
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
-import { existsSync, lstatSync, readFileSync, readdirSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
+import { existsSync, lstatSync, readFileSync, readdirSync, realpathSync } from 'node:fs';
 import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const DEFAULT_RECORD = join(ROOT, 'docs/qa/issue-71-release-decision.json');
+const RELEASE_POLICY = JSON.parse(readFileSync(join(ROOT, 'config/pages-release-allowlist.json'), 'utf8'));
+const SOURCE_INVENTORY = JSON.parse(readFileSync(join(ROOT, 'docs/catalog/source-inventory.json'), 'utf8'));
+const DRAFT_COUNT = SOURCE_INVENTORY.products.length;
+assert(Number.isInteger(DRAFT_COUNT) && DRAFT_COUNT > 0 && RELEASE_POLICY.supplierDraftCount === DRAFT_COUNT,
+  'supplier_draft_count_policy_mismatch');
 const GATES = new Map([
   ['rights', 66], ['legal', 67], ['romanian', 68], ['qa', 69],
   ['security', 70], ['isolation', 70], ['operations', 70], ['candidate', 71],
@@ -24,14 +30,19 @@ const GATES = new Map([
 const SHA = /^[0-9a-f]{40}$/;
 const DIGEST = /^[0-9a-f]{64}$/;
 const DATE = /^\d{4}-\d{2}-\d{2}$/;
-const UTC = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z$/;
-const INVALID = /\b(tbd|todo|unknown|placeholder|example|fixture|synthetic|unassigned|pending)\b/i;
+// Date validation accepts canonical UTC seconds or precisely three fractional digits.
+const UTC = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$/;
+const INVALID_VALUE = /^(?:tbd|todo|unknown|placeholder|example|fixture|synthetic|unassigned|pending)$/i;
+const INVALID_IDENTITY = /\b(?:tbd|todo|unknown|placeholder|example|fixture|synthetic|unassigned|pending)\b/i;
 const hash = (bytes) => createHash('sha256').update(bytes).digest('hex');
-const text = (v, min = 4) => typeof v === 'string' && v.trim().length >= min && !INVALID.test(v);
-const person = (v) => text(v, 5) && v.trim().split(/\s+/).length >= 2;
+const text = (v, min = 4) => typeof v === 'string' && v.trim().length >= min && !INVALID_VALUE.test(v.trim());
+const normalizeName = (v) => typeof v === 'string' ?
+  v.normalize('NFKC').trim().replace(/\s+/gu, ' ').toLowerCase() : '';
+const person = (v) => text(v, 5) && v.trim().split(/\s+/u).length >= 2 && !INVALID_IDENTITY.test(v);
 const ref = (v) => text(v, 12) &&
-  (/^restricted:[A-Za-z0-9][A-Za-z0-9._/-]{7,}$/.test(v) ||
+  (/^restricted:[A-Za-z0-9][A-Za-z0-9._/-]{7,}$/.test(v) && !INVALID_IDENTITY.test(v.slice('restricted:'.length)) ||
    /^https:\/\/github\.com\/YuriiSokolenko\/bodich\/(?:issues|pull|actions|commit|runs)\/[A-Za-z0-9/#._-]+$/.test(v));
+const comparePaths = (a, b) => a < b ? -1 : a > b ? 1 : 0;
 function date(value, utc = false, futureAllowed = false) {
   if (typeof value !== 'string' || !(utc ? UTC : DATE).test(value)) return false;
   const parsed = new Date(utc ? value : value + 'T00:00:00Z');
@@ -51,7 +62,7 @@ function problems(record) {
   const signed = record.decisionBasis === 'HUMAN_SIGNED';
   if (go && !signed) fail('go_must_be_human_signed');
   const release = record.release ?? {};
-  if (release.profile !== 'release_safe' || release.supplierDraftCount !== 132) fail('wrong_release_profile');
+  if (release.profile !== 'release_safe' || release.supplierDraftCount !== DRAFT_COUNT) fail('wrong_release_profile');
   if (release.gitSha != null && !SHA.test(release.gitSha)) fail('invalid_release_sha');
   if (release.distManifestSha256 != null && !DIGEST.test(release.distManifestSha256)) fail('invalid_artifact_digest');
   if ((go || signed) && (!SHA.test(release.gitSha ?? '') || !DIGEST.test(release.distManifestSha256 ?? '')))
@@ -81,8 +92,16 @@ function problems(record) {
           gate.gitSha !== release.gitSha ||
           gate.distManifestSha256 !== release.distManifestSha256)
         fail('unsubstantiated_pass_' + gate.id);
-      if (gate.id === 'rights' && gate.owner.trim().toLowerCase() === gate.reviewer.trim().toLowerCase())
-        fail('rights_owner_must_have_independent_reviewer');
+      if (person(gate.owner) && person(gate.reviewer) &&
+          normalizeName(gate.owner) === normalizeName(gate.reviewer))
+        fail('gate_requires_independent_reviewer_' + gate.id);
+      if (signed && person(actor.name) && person(gate.reviewer) &&
+          normalizeName(actor.name) === normalizeName(gate.reviewer))
+        fail('decision_authority_cannot_self_review_' + gate.id);
+      // Gate reviews are dated to a day; reject any review dated after the signing day.
+      if (signed && date(gate.reviewedAt) && date(actor.signedAt, true) &&
+          gate.reviewedAt > actor.signedAt.slice(0, 10))
+        fail('review_after_decision_' + gate.id);
     }
     if (gate.status !== 'PASS' && go) fail('go_has_nonpassing_gate_' + gate.id);
     if (gate.status !== 'PASS' && !text(gate.reason, 16)) fail('block_needs_explanation_' + gate.id);
@@ -131,7 +150,7 @@ function collectDist(dist) {
     }
   }
   walk(dist);
-  return files.sort((a, b) => a.name.localeCompare(b.name, 'en'));
+  return files.sort((a, b) => comparePaths(a.name, b.name));
 }
 function verifyDist(record, dist, reportsDir) {
   const files = collectDist(dist);
@@ -141,7 +160,7 @@ function verifyDist(record, dist, reportsDir) {
   const rights = JSON.parse(readFileSync(join(reportsDir, 'public-asset-rights-audit.json'), 'utf8'));
   assert.equal(pages.schemaVersion, 1);
   assert.equal(pages.releaseProfile, 'release_safe');
-  assert.equal(pages.supplierDraftsQuarantined, 132);
+  assert.equal(pages.supplierDraftsQuarantined, DRAFT_COUNT, 'draft_inventory_drift');
   assert.equal(pages.verdict, 'offline_checks_passed_live_owner_approval_pending');
   assert.deepEqual(pages.findings, []);
   assert.deepEqual(pages.files, minimal, 'stale_pages_manifest_or_dist_changed');
@@ -177,8 +196,14 @@ function selfTest() {
     name: 'Avery Lane', role: 'Verified BODICH release authority',
     signatureEvidence: 'restricted:offline-case-12587932', signedAt: '2026-10-01T08:30:00Z',
   };
-  positive.gates = positive.gates.map((g) => ({
-    ...g, status: 'PASS', owner: 'Avery Lane', reviewer: 'Morgan Reed',
+  const gateParticipants = [
+    ['Riley Stone', 'Morgan Reed'], ['Jordan Vale', 'Harper Quinn'],
+    ['Casey Brooks', 'Taylor Lane'], ['Dakota Ray', 'Skyler North'],
+    ['Parker Wells', 'Cameron Dale'], ['Jamie Ellis', 'Robin Miles'],
+    ['Reese Cooper', 'Morgan Reed'], ['Sage Miller', 'Taylor Lane'],
+  ];
+  positive.gates = positive.gates.map((g, index) => ({
+    ...g, status: 'PASS', owner: gateParticipants[index][0], reviewer: gateParticipants[index][1],
     gitSha: sha, distManifestSha256: digest,
     evidenceRef: 'restricted:offline-case-12587932', reviewedAt: '2026-10-01',
     reason: 'Reviewed exact release candidate with independently retained evidence.',
@@ -187,7 +212,7 @@ function selfTest() {
     ...positive.operations,
     authorizedDomain: 'bodich.invalid', cloudflareProject: 'preview-pages-project',
     accountAuthorizationRef: 'restricted:offline-case-12587932',
-    deploymentOwner: 'Avery Lane',
+    deploymentOwner: 'Riley Stone',
     windowStartUtc: '2026-10-01T09:00:00Z',
     windowEndUtc: '2026-10-01T10:00:00Z',
     previousProductionDeploymentId: 'prior-deployment-123',
@@ -208,7 +233,10 @@ function selfTest() {
   negative((r) => { r.gates[0].status = 'N_A'; }, 'go_has_nonpassing_gate');
   negative((r) => { r.gates[1].reviewer = null; }, 'unsubstantiated_pass');
   negative((r) => { r.gates[1].distManifestSha256 = 'd'.repeat(64); }, 'unsubstantiated_pass');
-  negative((r) => { r.gates[0].reviewer = 'Avery Lane'; }, 'rights_owner_must_have_independent_reviewer');
+  negative((r) => { r.gates[0].reviewer = 'Riley  Stone'; }, 'gate_requires_independent_reviewer');
+  negative((r) => { r.gates[1].reviewer = '  JORDAN   vale '; }, 'gate_requires_independent_reviewer');
+  negative((r) => { r.gates[1].reviewer = 'Avery  Lane'; }, 'decision_authority_cannot_self_review');
+  negative((r) => { r.decisionAuthority.signedAt = '2026-09-30T08:30:00Z'; }, 'review_after_decision');
   negative((r) => { r.gates.pop(); }, 'missing_gate');
   negative((r) => { r.gates.push(r.gates[0]); }, 'unknown_or_duplicate_gate');
   negative((r) => { r.operations.accountAuthorizationRef = null; }, 'missing_operations_evidence');
@@ -216,11 +244,38 @@ function selfTest() {
   negative((r) => { r.operations.windowEndUtc = r.operations.windowStartUtc; }, 'invalid_deployment_window');
   negative((r) => { r.decisionAuthority.signatureEvidence = 'restricted:example'; }, 'missing_attributable_signature');
   negative((r) => { r.decisionAuthority.signedAt = '2026-02-31T08:30:00Z'; }, 'missing_attributable_signature');
+  negative((r) => { r.decisionAuthority.signedAt = '2026-10-01T08:30:00.5Z'; }, 'missing_attributable_signature');
+  assert(text('Awaiting pending counsel review', 12));
+  assert(ref('restricted:offline-case-12587932'));
+  assert(!ref('restricted:example'));
   negative((r) => { r.release.gitSha = '0'.repeat(40); }, 'unsubstantiated_pass');
   const blocked = structuredClone(base);
   blocked.remediations = [];
   assert(problems(blocked).some((v) => v.startsWith('missing_remediation_')));
+  assert.throws(() => validateSourceState(sha, 'f'.repeat(40), '', ROOT), /candidate_checkout_mismatch/);
+  assert.throws(() => validateSourceState(sha, sha, ' M src/pages/index.astro', ROOT), /dirty_candidate_checkout/);
+  assert.throws(() => validateSourceState(sha, sha, '', join(ROOT, 'elsewhere')), /wrong_checkout_repository/);
+  assert.doesNotThrow(() => validateSourceState(sha, sha, '', ROOT));
+  assert.throws(() => assertUnexpiredWindow(positive.operations, Date.parse('2026-10-02T00:00:00Z')),
+    /deployment_window_expired/);
+  assert.doesNotThrow(() => assertUnexpiredWindow(positive.operations, Date.parse('2026-10-01T09:30:00Z')));
   console.log('Stage 20F release-decision self-test passed (policy NO_GO, synthetic GO, negative signer/gate/SHA/operations/remediation fixtures).');
+}
+function validateSourceState(expectedSha, actualSha, dirty, gitRoot) {
+  assert.equal(actualSha, expectedSha, 'candidate_checkout_mismatch');
+  assert.equal(resolve(gitRoot), realpathSync(ROOT), 'wrong_checkout_repository');
+  assert.equal(dirty, '', 'dirty_candidate_checkout');
+}
+function verifySourceCheckout(expectedSha) {
+  const git = (...args) => execFileSync('git', args, { cwd: ROOT, encoding: 'utf8',
+    timeout: 10000, stdio: ['ignore', 'pipe', 'pipe'] }).trim();
+  validateSourceState(expectedSha,
+    git('rev-parse', '--verify', 'HEAD'),
+    git('status', '--porcelain', '--untracked-files=all'),
+    git('rev-parse', '--show-toplevel'));
+}
+function assertUnexpiredWindow(ops, now = Date.now()) {
+  assert(Date.parse(ops.windowEndUtc) >= now, 'deployment_window_expired');
 }
 function main() {
   const args = process.argv.slice(2);
@@ -245,17 +300,21 @@ function main() {
     console.error('Release decision NO_GO: human-signed GO and --verify-dist required');
     process.exitCode = 1; return;
   }
-  if (record.decision === 'GO' && !verify) {
-    console.error('Release decision GO requires independent dist verification');
+  if (record.decision === 'GO' && (!verify || !requireGo)) {
+    console.error('Release decision GO requires explicit --require-go and independent dist verification');
     process.exitCode = 1; return;
   }
   if (verify) {
     const dist = resolve(option('--dist', join(ROOT, 'dist')));
     const reports = resolve(option('--reports-dir', join(ROOT, 'visual-qa')));
     const sha = option('--candidate-sha', null);
-    if (record.decision === 'GO' && (!SHA.test(sha ?? '') || record.release.gitSha !== sha)) {
-      console.error('Release decision: GO candidate SHA must match explicitly supplied --candidate-sha');
-      process.exitCode = 1; return;
+    if (record.decision === 'GO') {
+      if (!SHA.test(sha ?? '') || record.release.gitSha !== sha) {
+        console.error('Release decision: GO candidate SHA must match explicitly supplied --candidate-sha');
+        process.exitCode = 1; return;
+      }
+      verifySourceCheckout(sha);
+      assertUnexpiredWindow(record.operations);
     }
     const manifest = verifyDist(record, dist, reports);
     console.log('Stage 20F reviewed candidate manifest SHA-256: ' + manifest);
@@ -264,4 +323,12 @@ function main() {
     (record.decisionBasis === 'POLICY_DEFAULT' ? ' (unsigned default; deployment forbidden)' :
       ' (recorded human signature; identity/evidence require independent verification)'));
 }
-main();
+try {
+  main();
+} catch (error) {
+  // Machine-readable, path-free diagnostic; no stack traces or private evidence.
+  const message = typeof error?.message === 'string' && /^[a-z][a-z0-9_]{3,64}$/.test(error.message) ?
+    error.message : 'verification_failed';
+  console.error('Release decision failure: ' + message);
+  process.exitCode = 1;
+}
