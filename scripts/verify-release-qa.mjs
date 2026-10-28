@@ -129,8 +129,13 @@ const matrix = JSON.parse(await readFile(matrixFile, 'utf8'));
 if (args.includes('--self-test')) {
   const baseline = evaluate(matrix);
   assert(baseline.length > 0, 'Unsigned baseline must remain NO-GO');
-  assert(baseline.some((x) => x.includes('screenReader')), 'Must require real screen-reader coverage');
-  assert(baseline.some((x) => x.includes('three reproducible runs')), 'Must require three Lighthouse runs');
+  const pendingMobile = structuredClone(matrix);
+  pendingMobile.rows[0].status = 'PASS';
+  assert(evaluate(pendingMobile).some((x) => x.includes('screenReader')), 'Must require real screen-reader coverage');
+  const pendingLab = structuredClone(matrix);
+  pendingLab.lab.status = 'PASS';
+  pendingLab.lab.targets.forEach((t) => { t.status = 'PASS'; });
+  assert(evaluate(pendingLab).some((x) => x.includes('three reproducible runs')), 'Must require three Lighthouse runs');
   const missingRow = structuredClone(matrix);
   missingRow.rows.pop();
   assert(evaluate(missingRow).some((x) => x.includes('10 rows')));
