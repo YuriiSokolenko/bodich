@@ -1,10 +1,13 @@
-import { execFile } from 'node:child_process';
+import assert from 'node:assert/strict';
+import { execFile, execFileSync } from 'node:child_process';
 import { promisify } from 'node:util';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import os from 'node:os';
 import { chromium } from 'playwright';
 import AxeBuilder from '@axe-core/playwright';
+import { collectReleaseFiles, distManifestSha256 } from './lib/release-manifest.mjs';
+import { AXE_TAGS, LAB_THRESHOLDS, REQUIRED_LAB_RUNS, median } from './lib/release-qa-policy.mjs';
 
 const execFileAsync = promisify(execFile);
 const baseUrl = new URL(process.env.QA_BASE_URL ?? 'http://127.0.0.1:4321');
@@ -15,24 +18,35 @@ const outputDir = resolve(process.env.QA_OUTPUT_DIR ?? 'visual-qa/release-qa');
 const locales = ['en', 'ro'];
 const routes = ['', 'products', 'accessories', 'support', 'about', 'contact'];
 const labRoutes = ['', 'products'];
-const repetitions = 3;
+const repetitions = REQUIRED_LAB_RUNS;
+const checkoutSha = execFileSync('git', ['rev-parse', '--verify', 'HEAD'], { encoding: 'utf8' }).trim();
+const sourceSha = process.env.QA_HEAD_SHA || checkoutSha;
+if (!/^[0-9a-f]{40}$/.test(sourceSha) || checkoutSha !== sourceSha) {
+  throw new Error('QA source SHA must match the exact checked-out PR head / dispatch commit');
+}
+// Hash the actual release-safe build using the existing Stage 20F canonical manifest.
+const releaseFiles = collectReleaseFiles(resolve('dist'));
+const releaseDigest = distManifestSha256(releaseFiles);
 const failures = [];
 const report = {
   schemaVersion: 1,
   scope: 'release_safe_informational_preview',
-  source: process.env.GITHUB_SHA ?? null,
+  source: sourceSha,
+  checkoutSha,
+  githubEventSha: process.env.GITHUB_SHA ?? null, // PR event can reference a synthetic merge SHA.
+  distManifestSha256: releaseDigest,
+  distFileCount: releaseFiles.length,
   generatedAt: new Date().toISOString(),
   environment: { platform: os.platform(), release: os.release(), arch: os.arch(), node: process.version, runner: process.env.RUNNER_OS ?? null },
   browser: null,
   axeVersion: null,
   axe: [],
   lab: [],
-  thresholds: { performance: 90, accessibility: 95, lcpMs: 2500, cls: 0.1, tbtMs: 200 },
+  thresholds: LAB_THRESHOLDS,
   fieldCwv: { status: 'NO_FIELD_DATA', inpP75Ms: null, note: 'INP is a real-user field metric; TBT is not INP.' },
   failures,
 };
 const urlFor = (locale, route) => new URL('/' + locale + '/' + (route ? route + '/' : ''), baseUrl).href;
-const median = (values) => [...values].sort((a, b) => a - b)[Math.floor(values.length / 2)];
 function fail(message) {
   failures.push(message);
   console.error('FAIL ' + message);
@@ -68,7 +82,7 @@ try {
             continue;
           }
           const result = await new AxeBuilder({ page })
-            .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'])
+            .withTags(AXE_TAGS)
             .analyze();
           report.axeVersion = result.testEngine.version;
           const violations = result.violations.map((v) => ({
@@ -82,7 +96,9 @@ try {
           if (!route) {
             const menu = page.locator('[data-mobile-navigation]');
             await menu.locator('summary').click();
-            const open = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa']).analyze();
+            assert.equal(await menu.evaluate((element) => element.open), true, 'Mobile details menu must actually open');
+            assert.equal(await menu.locator('nav').isVisible(), true, 'Expanded mobile navigation must be visible');
+            const open = await new AxeBuilder({ page }).withTags(AXE_TAGS).analyze();
             const severeOpen = open.violations.filter((v) => ['critical', 'serious'].includes(v.impact));
             if (severeOpen.length) fail(id + ': expanded navigation ' + severeOpen.map((v) => v.id).join(', '));
             report.axe.push({
