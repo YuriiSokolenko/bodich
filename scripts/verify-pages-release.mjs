@@ -5,10 +5,12 @@
  * Only the committed route/asset allow-list can widen publication.
  */
 import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { existsSync, lstatSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join, relative, resolve } from 'node:path';
+import { dirname, join, relative, resolve } from 'node:path';
+import { parse } from 'parse5';
 import { fileURLToPath } from 'node:url';
 
 const root = resolve(fileURLToPath(new URL('..', import.meta.url)));
@@ -175,6 +177,83 @@ function gather(dir, prefix = '') {
   }
   return result;
 }
+// parse5 exposes HTML5-tokenized elements and entity-decoded attributes, unlike
+// regex tag scans (which misread slash separators, quotes and character references).
+const urlAttributes = new Set([
+  'href', 'src', 'action', 'formaction', 'xlink:href', 'data', 'poster',
+  'srcset', 'ping', 'background', 'cite', 'longdesc', 'manifest',
+]);
+function normalizedScheme(value) {
+  // URL parsing discards ASCII tabs/LF/CR inside a scheme and strips leading /
+  // trailing C0 controls and spaces. parse5 has already decoded HTML entities.
+  return value.replace(/[\t\n\r]/g, '').replace(/^[\u0000-\u0020]+|[\u0000-\u0020]+$/g, '');
+}
+function htmlProblems(html, name) {
+  const errors = [];
+  const base = (process.env.ASTRO_BASE || '/').replace(/\/+$/, '');
+  const prefix = base + '/_astro/';
+  const report = (message) => errors.push(finding(message, name));
+  const walk = (node) => {
+    if (node.tagName) {
+      const tag = node.tagName.toLowerCase();
+      const attrs = node.attrs ?? [];
+      const attrName = (attr) => (attr.prefix ? attr.prefix + ':' : '') + attr.name.toLowerCase();
+      const getAttr = (key) => attrs.find((attr) => attrName(attr) === key);
+      if (tag === 'form') report('Unauthorized commerce/contact surface');
+      // A document-level base can silently change how otherwise approved
+      // relative resources navigate or resolve. Do not rely solely on CSP.
+      if (tag === 'base') report('Unapproved HTML base element');
+      for (const attr of attrs) {
+        const key = attrName(attr);
+        if (key.startsWith('on')) report('Inline event handler rejected by CSP');
+        if (urlAttributes.has(key) && /^javascript:/i.test(normalizedScheme(attr.value)))
+          report('JavaScript URL rejected by CSP');
+        if (key === 'href' && /^(?:mailto|tel):/i.test(normalizedScheme(attr.value)))
+          report('Unauthorized commerce/contact surface');
+        // srcdoc is nested HTML not traversed as ordinary child nodes.
+        if (key === 'srcdoc') report('Inline HTML srcdoc rejected by CSP');
+      }
+      if (tag === 'script') {
+        const src = getAttr('src');
+        const type = getAttr('type');
+        // Only the literal inert JSON-LD type, without even an empty src,
+        // is exempt from the external-script rule.
+        if (type?.value === 'application/ld+json' && !src) {
+          // JSON-LD content remains separately checked by the SEO validator.
+        } else if (type?.value === 'application/ld+json' && src) {
+          report('Inert JSON-LD must not reference an external script');
+        } else if (!src) {
+          report('Inline executable script rejected by CSP');
+        } else {
+          if (!src.value.startsWith(prefix) ||
+              !/^[a-zA-Z0-9_.-]+\.js$/.test(src.value.slice(prefix.length)))
+            report('Executable script source is outside approved static assets');
+          // No inline fallback payload even when the src itself is approved.
+          if (node.childNodes?.some((child) => child.nodeName === '#text' && child.value.trim()))
+            report('Inline executable script rejected by CSP');
+        }
+      }
+    }
+    for (const child of node.childNodes ?? []) walk(child);
+    // The contents of HTML <template> live outside its childNodes.
+    if (node.content) walk(node.content);
+  };
+  let malformedSeparator = false;
+  const document = parse(html, {
+    // Browsers with JavaScript disabled interpret <noscript> as markup;
+    // parsing with scripting enabled would hide real forms/handlers as text.
+    scriptingEnabled: false,
+    onParseError(error) {
+      // HTML5 recovers from stray slashes before attributes; reject
+      // ambiguous tokenization even without an exposed on* attribute.
+      if (error.code === 'unexpected-solidus-in-tag') malformedSeparator = true;
+    },
+  });
+  if (malformedSeparator) report('Malformed HTML5 attribute separator');
+  walk(document);
+  return errors;
+}
+
 function audit(entries) {
   const errors = [];
   const allowed = filesForRoutes();
@@ -188,35 +267,7 @@ function audit(entries) {
       const html = bytes.toString('utf8');
       if (name !== 'index.html' && !html.includes('data-media-profile="release_safe"'))
         errors.push(finding('Non-release-safe HTML', name));
-      if (/<form\b|href=["'](?:mailto:|tel:)/i.test(html))
-        errors.push(finding('Unauthorized commerce/contact surface', name));
-      // CSP also blocks inline event handlers and javascript: navigation; reject
-      // those patterns proactively so future UI behaviour cannot silently break.
-      for (const tag of html.matchAll(/<[a-z][a-z0-9:-]*\b[^>]*>/gi)) {
-        const openTag = tag[0];
-        if (/\s+on[a-z][a-z0-9_-]*\s*=/i.test(openTag))
-          errors.push(finding('Inline event handler rejected by CSP', name));
-        if (/\s+(?:href|src|action|formaction|xlink:href)\s*=\s*(?:["']\s*|\s*)javascript\s*:/i.test(openTag))
-          errors.push(finding('JavaScript URL rejected by CSP', name));
-      }
-      // Only externally hosted executable scripts are compatible with CSP.
-      // JSON-LD is inert and independently checked by the SEO validator.
-      for (const script of html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi)) {
-        const attrs = script[1];
-        // Attribute names must start at whitespace/start, never inside data-type/data-src.
-        const type = attrs.match(/(?:^|\s)type\s*=\s*["']([^"']+)["']/i)?.[1]?.toLowerCase();
-        const src = attrs.match(/(?:^|\s)src\s*=\s*["']([^"']+)["']/i)?.[1];
-        if (type === 'application/ld+json' && !src) continue;
-        if (!src) {
-          errors.push(finding('Inline executable script rejected by CSP', name));
-          continue;
-        }
-        const base = (process.env.ASTRO_BASE || '/').replace(/\/+$/, '');
-        const prefix = base + '/_astro/';
-        if (!src.startsWith(prefix) ||
-            !/^[a-zA-Z0-9_.-]+\.js$/.test(src.slice(prefix.length)))
-          errors.push(finding('Executable script source is outside approved static assets', name));
-      }
+      errors.push(...htmlProblems(html, name));
     }
   }
   if (!present.has('_headers')) errors.push('Missing Cloudflare Pages _headers');
@@ -323,6 +374,48 @@ function selfTest() {
   negative('remote executable JavaScript', (m) => m.set('en/index.html',
     '<html data-media-profile="release_safe"><script src="https://evil.invalid/a.js"></script></html>'),
     'outside approved static assets');
+  const htmlFixture = (markup) =>
+    '<html data-media-profile="release_safe"><main>' + markup + '</main></html>';
+  const confirmedBypasses = [
+    ['slash-separated img handler', '<img/src=x/onerror=alert(1)>', 'Malformed HTML5 attribute separator'],
+    ['quoted > before handler', '<a title=">" onclick=alert(1)>x</a>', 'Inline event handler'],
+    ['numeric entity javascript protocol', '<a href="&#106;avascript:alert(1)">x</a>', 'JavaScript URL'],
+    ['ASCII tab entity in protocol', '<a href="java&#9;script:alert(1)">x</a>', 'JavaScript URL'],
+  ];
+  for (const [label, markup, message] of confirmedBypasses)
+    negative(label, (m) => m.set('en/index.html', htmlFixture(markup)), message);
+  for (const [label, markup, message] of [
+    ['slash plus quoted attribute', '<a/title=">"/onmouseover=alert(1)>x</a>', 'Inline event handler'],
+    ['nested quoted attribute', '<div><a data-note="a > b" ONCLICK=alert(1)>x</a></div>', 'Inline event handler'],
+    ['mixed-case handler', '<img src=x OnErRoR=alert(1)>', 'Inline event handler'],
+    ['mixed-case protocol', '<a HREF="JaVaScRiPt:alert(1)">x</a>', 'JavaScript URL'],
+    ['hexadecimal entity protocol', '<a href="&#x6a;avascript:alert(1)">x</a>', 'JavaScript URL'],
+    ['named entity protocol', '<a href="java&Tab;script:alert(1)">x</a>', 'JavaScript URL'],
+    ['LF entity protocol', '<a href="java&#10;script:alert(1)">x</a>', 'JavaScript URL'],
+    ['CR entity protocol', '<a href="java&#13;script:alert(1)">x</a>', 'JavaScript URL'],
+    ['literal newline in protocol', '<a href="java\nscript:alert(1)">x</a>', 'JavaScript URL'],
+    ['C0 leading whitespace in protocol', '<a href="&#1; javascript:alert(1)">x</a>', 'JavaScript URL'],
+    ['SVG xlink protocol', '<svg><a xlink:href="javascript:alert(1)">x</a></svg>', 'JavaScript URL'],
+    ['unquoted slash scheme', '<a/href=javascript:alert(1)>x</a>', 'JavaScript URL'],
+    ['encoded contact href', '<a href="&#109;ailto:x@example.org">x</a>', 'Unauthorized commerce'],
+    ['HTML5 separated form', '<form/action="/"></form>', 'Unauthorized commerce'],
+    ['inline srcdoc', '<iframe srcdoc="<script>alert(1)</script>"></iframe>', 'Inline HTML srcdoc'],
+    ['JSON-LD with src', '<script type="application/ld+json" src="/_astro/safe.js"></script>', 'Inert JSON-LD'],
+    ['spoofed JSON-LD with data-type', '<script data-type="application/ld+json">alert(1)</script>', 'Inline executable script'],
+    ['spoofed src with data-src', '<script data-src="/_astro/safe.js">alert(1)</script>', 'Inline executable script'],
+    ['external script inline fallback', '<script src="/_astro/safe.js">alert(1)</script>', 'Inline executable script'],
+    ['noscript form', '<noscript><form action="/x"></form></noscript>', 'Unauthorized commerce'],
+    ['noscript mailto', '<noscript><a href="mailto:a@b.c">Contact</a></noscript>', 'Unauthorized commerce'],
+    ['noscript event handler', '<noscript><img src=x onerror=alert(1)></noscript>', 'Inline event handler'],
+    ['template form', '<template><form action="/x"></form></template>', 'Unauthorized commerce'],
+    ['nested template event handler', '<template><template><a onclick=alert(1)>Open</a></template></template>', 'Inline event handler'],
+    ['external HTML base', '<base href="https://evil.invalid/"><script src="/_astro/safe.js"></script>', 'Unapproved HTML base'],
+    ['relative HTML base', '<base href="/"><script src="/_astro/safe.js"></script>', 'Unapproved HTML base'],
+  ]) negative(label, (m) => m.set('en/index.html', htmlFixture(markup)), message);
+  const withSafeNoscript = new Map(valid);
+  withSafeNoscript.set('en/index.html',
+    htmlFixture('<noscript><p>Site navigation works without JavaScript.</p></noscript>'));
+  assert.deepEqual(run(withSafeNoscript), [], 'Harmless noscript fallback rejected');
   const withStructuredData = new Map(valid);
   withStructuredData.set('en/index.html',
     '<html data-media-profile="release_safe"><script type="application/ld+json">{"@type":"WebPage"}</script></html>');
@@ -338,6 +431,38 @@ function selfTest() {
   const errors = run(secretsInNames);
   assert(errors.length && errors.every((e) => !e.includes(leaked)),
     'Private filename escaped into a public finding');
+  // Exercise the real pages:verify CLI on isolated, fully allow-listed dist
+  // fixtures, not merely the in-process audit helper.
+  const cliDir = mkdtempSync(join(tmpdir(), 'bodich-pages-cli-'));
+  try {
+    for (const [file, body] of valid) {
+      mkdirSync(join(cliDir, dirname(file)), { recursive: true });
+      writeFileSync(join(cliDir, file), body);
+    }
+    function verifyFixture(markup, base, expectedStatus, message) {
+      writeFileSync(join(cliDir, 'en/index.html'), htmlFixture(markup));
+      const result = spawnSync(process.execPath,
+        [fileURLToPath(import.meta.url), cliDir, '--no-write'], {
+          cwd: root, encoding: 'utf8', env: { ...process.env, ASTRO_BASE: base },
+        });
+      assert.ifError(result.error);
+      assert.equal(result.status, expectedStatus, 'Unexpected pages:verify fixture exit');
+      if (message) assert(result.stderr.includes(message), 'Missing sanitized CLI finding');
+      assert(!result.stderr.includes('en/index.html'), 'CLI exposed a raw filename');
+    }
+    verifyFixture('<script src="/_astro/safe.js"></script><script type="application/ld+json">{}</script>',
+      '/', 0);
+    verifyFixture('<script src="/bodich-preview/_astro/safe.js"></script><script type="application/ld+json">{}</script>',
+      '/bodich-preview', 0);
+    for (const [, markup, message] of confirmedBypasses)
+      verifyFixture(markup, '/', 1, message);
+    verifyFixture('<noscript><form action="/x"></form></noscript>', '/', 1,
+      'Unauthorized commerce/contact surface');
+    verifyFixture('<template><template><a onclick=alert(1)>Open</a></template></template>',
+      '/', 1, 'Inline event handler');
+    verifyFixture('<base href="https://evil.invalid/"><script src="/_astro/safe.js"></script>',
+      '/', 1, 'Unapproved HTML base');
+  } finally { rmSync(cliDir, { recursive: true, force: true }); }
   const testDir = mkdtempSync(join(tmpdir(), 'bodich-pages-test-'));
   try {
     mkdirSync(join(testDir, '_astro'));
@@ -346,7 +471,7 @@ function selfTest() {
     writeFileSync(join(testDir, 'secret.json'), '{}');
     assert(!permittedFile('secret.json', routeSet));
   } finally { rmSync(testDir, { recursive: true, force: true }); }
-  console.log('Cloudflare Pages release regression fixtures passed (full dist audit, scripts, CSP, metadata, quarantine, HSTS).');
+  console.log('Cloudflare Pages release regression fixtures passed (HTML5 parser, isolated dist CLI, CSP, metadata, quarantine, HSTS).');
 }
 
 if (process.argv.includes('--self-test')) {
