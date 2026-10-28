@@ -7,7 +7,7 @@ import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { existsSync, lstatSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { dirname, extname, join, posix, resolve } from 'node:path';
+import { dirname, extname, join, resolve } from 'node:path';
 import { parse, serialize } from 'parse5';
 import { fileURLToPath } from 'node:url';
 import { collectMedia, registryEntries } from './catalog-media-policy.mjs';
@@ -59,7 +59,9 @@ function loadPolicy(dir) {
   assert.equal(data.profile, 'release_safe');
   assert.equal(data.policy, 'explicit_human_clearance_only');
   assert.equal(data.releaseDecision, 'NO_GO', 'A GO requires independent Stage 20 sign-off (#71)');
-  assert.equal(data.accountableRightsOwner, null, 'No human rights owner has accepted responsibility yet');
+  assert.ok(data.accountableRightsOwner === null ||
+    (typeof data.accountableRightsOwner === 'string' && data.accountableRightsOwner.trim()),
+    'Rights owner must remain unknown or name an actual accountable person');
   assert.ok(Array.isArray(data.assets));
   const unique = new Set();
   for (const a of data.assets) {
@@ -140,11 +142,9 @@ function inspectHtml(html, at, files, base, findings, references, rightsByPath) 
       const attrs = new Map((node.attrs ?? []).map((a) => [a.name.toLowerCase(), a.value]));
       if (tag === 'svg') {
         const id = 'inline-svg:' + sha(serialize(node));
-        const registered = rightsByPath.get(id);
-        if (!registered || !cleared(registered))
-          findings.push({ kind: 'Uncleared inline SVG artwork', id: pathId(at + id) });
+        findings.push({ kind: 'Uncleared inline SVG artwork', id: pathId(at + id) });
         references.push({ originPathSha256: pathId(at), resourceSha256: id.slice('inline-svg:'.length),
-          kind: 'inline_svg', status: registered && cleared(registered) ? 'cleared' : 'blocked',
+          kind: 'inline_svg', status: 'blocked',
           remediation: 'Replace with CSS/text or separately clear and pin this inline artwork.' });
       }
       if (attrs.has('style')) inspectCss(attrs.get('style'), at, files, base, findings, references);
@@ -211,7 +211,7 @@ export function audit(dir, policy, legacy = []) {
     } else if (!knownGenerated(name)) {
       findings.push({ kind: 'Unclassified release output', id: pathId(name) });
     }
-    records.push({ path: kind === 'media' && !entry ? null : name, pathSha256: pathId(name),
+    records.push({ path: kind === 'media' && (!entry || !cleared(entry)) ? null : name, pathSha256: pathId(name),
       sha256: digest, bytes: bytes.length, kind, classification,
       sourceRef, generatorOrProvenance: entry?.generatorOrProvenance ?? (kind === 'media' ? null : 'Astro static build / repository sources'),
       rightsOwner, evidenceRef, reviewer, reviewDate, state, remediation: remediation(kind) });
