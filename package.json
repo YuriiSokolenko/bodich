@@ -64,16 +64,23 @@
     "qa:release": "node scripts/release-qa.mjs",
     "qa:evidence:check": "node scripts/verify-release-qa.mjs --check",
     "qa:evidence:self-test": "node scripts/verify-release-qa.mjs --self-test",
-    "qa:evidence:require-go": "node scripts/verify-release-qa.mjs --require-go"
+    "qa:evidence:require-go": "node scripts/verify-release-qa.mjs --require-go",
+    "qa:lock:check": "node scripts/verify-release-qa-install.mjs --check",
+    "qa:lock:self-test": "node scripts/verify-release-qa-install.mjs --self-test",
+    "qa:dist:record": "node scripts/verify-release-qa-dist.mjs --record",
+    "qa:dist:verify": "node scripts/verify-release-qa-dist.mjs --verify"
   },
   "engines": {
     "node": ">=24 <25"
   },
   "devDependencies": {
     "@astrojs/check": "0.9.10",
+    "@axe-core/playwright": "4.14.0",
     "@tailwindcss/vite": "4.3.3",
     "astro": "7.4.2",
+    "lighthouse": "13.5.0",
     "parse5": "8.0.1",
+    "playwright": "1.64.1",
     "sharp": "0.35.5",
     "tailwindcss": "4.3.3",
     "typescript": "5.9.3"
