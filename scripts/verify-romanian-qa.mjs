@@ -256,9 +256,13 @@ function main() {
   if (args.includes('--self-test')) return selfTest(record);
   const requirePass = args.includes('--require-pass');
   assert(!requirePass || args.includes('--dist'), '--require-pass requires --dist');
-  const candidateSha = option('candidate-sha') || process.env.GITHUB_SHA;
+  // Only an explicit CLI SHA may authorize human review. On PR workflows
+  // GITHUB_SHA identifies GitHub's synthetic merge commit, not the PR head.
+  const candidateSha = option('candidate-sha');
+  const buildCheckoutSha = process.env.GITHUB_SHA || null;
   assert(!candidateSha || SHA.test(candidateSha), 'invalid --candidate-sha');
-  if (requirePass) assert(candidateSha, 'human approval requires explicit candidate SHA');
+  assert(!buildCheckoutSha || SHA.test(buildCheckoutSha), 'invalid GITHUB_SHA');
+  if (requirePass) assert(candidateSha, 'human approval requires explicit --candidate-sha');
   const dist = resolve(option('dist-dir') || join(ROOT, 'dist'));
   let digest, pages;
   if (args.includes('--dist')) {
@@ -282,7 +286,8 @@ function main() {
       assert(!output.startsWith(dist + '/'), 'human review report must not be included in public dist');
       mkdirSync(dirname(output), { recursive: true });
       writeFileSync(output, JSON.stringify({ schemaVersion: 1, verdict: 'STATIC_OK_HUMAN_REVIEW_PENDING',
-        candidateGitSha: candidateSha || null, basePath: base || '/', distManifestSha256: digest,
+        candidateGitSha: candidateSha || null, buildCheckoutSha,
+        basePath: base || '/', distManifestSha256: digest,
         coverageKeys: { routes: expectedRoutes, components },
         rootFallback: { target: base + '/en/', refresh: attr(rootRefresh[0], 'content') }, pages }, null, 2) + '\n');
     }

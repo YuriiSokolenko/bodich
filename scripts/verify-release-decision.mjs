@@ -229,9 +229,41 @@ function selfTest() {
   assert(ref('restricted:offline-case-12587932'));
   assert(!ref('restricted:example'));
   negative((r) => { r.release.gitSha = '0'.repeat(40); }, 'unsubstantiated_pass');
-  assert.throws(() => assertIndependentRomanianReviewer('Taylor Lane', '  TAYLOR　LANE '),
+  assert.throws(() => assertIndependentRomanianParticipants('Taylor Lane', 'Casey Brooks', '  TAYLOR　LANE '),
     /romanian_reviewer_must_not_authorize_release/);
-  assert.doesNotThrow(() => assertIndependentRomanianReviewer('Taylor Lane', 'Avery Lane'));
+  assert.throws(() => assertIndependentRomanianParticipants('Taylor Lane', '  TAYLOR　LANE ', 'Avery Lane'),
+    /romanian_reviewer_must_not_be_editorial_lead/);
+  assert.throws(() => assertIndependentRomanianParticipants('Taylor Lane', '  AVERY　LANE ', 'Avery Lane'),
+    /romanian_editorial_lead_must_not_authorize_release/);
+  assert.doesNotThrow(() => assertIndependentRomanianParticipants('Taylor Lane', 'Casey Brooks', 'Avery Lane'));
+  // Fixture-driven integration through the exact GO entrypoint, with read/spawn injected:
+  // no native approval is ever claimed and no external process is started.
+  const fixture = { reviewer: { name: 'Taylor Lane' }, editorialLead: { name: 'Casey Brooks' } };
+  let invocations = 0;
+  const simulate = (record, release) => verifyRomanianForGo(release, '/restricted/romanian-fixture.json',
+    sha, '/synthetic/dist', {
+      readRecord: () => JSON.stringify(record),
+      runValidator: (binary, argv, options) => {
+        invocations += 1;
+        assert.equal(binary, process.execPath);
+        assert(argv.includes('--dist') && argv.includes('--require-pass'));
+        assert(argv.includes('--candidate-sha=' + sha));
+        assert(argv.includes('--record=/restricted/romanian-fixture.json'));
+        assert(argv.includes('--dist-dir=/synthetic/dist'));
+        assert.equal(options.cwd, ROOT);
+      },
+    });
+  simulate(fixture, positive);
+  assert.equal(invocations, 1, 'GO wiring must execute exactly one native review validation');
+  assert.throws(() => simulate({ ...fixture, reviewer: { name: 'Avery Lane' } }, positive),
+    /romanian_reviewer_must_not_authorize_release/);
+  assert.throws(() => simulate({ ...fixture, editorialLead: { name: 'Avery Lane' } }, positive),
+    /romanian_editorial_lead_must_not_authorize_release/);
+  assert.throws(() => simulate({ ...fixture, reviewer: {} }, positive),
+    /romanian_reviewer_name_missing/);
+  assert.throws(() => simulate(fixture, { ...positive, decisionAuthority: null }),
+    /release_authority_name_missing/);
+  assert.equal(invocations, 1, 'Invalid identities must fail before executing native review');
   const blocked = structuredClone(base);
   blocked.remediations = [];
   assert(problems(blocked).some((v) => v.startsWith('missing_remediation_')));
@@ -257,11 +289,30 @@ function verifySourceCheckout(expectedSha) {
     git('status', '--porcelain', '--untracked-files=all'),
     git('rev-parse', '--show-toplevel'));
 }
-function assertIndependentRomanianReviewer(nativeReviewer, releaseAuthority) {
+function assertIndependentRomanianParticipants(nativeReviewer, editorialLead, releaseAuthority) {
   assert(person(nativeReviewer), 'romanian_reviewer_name_missing');
+  assert(person(editorialLead), 'romanian_editorial_lead_name_missing');
   assert(person(releaseAuthority), 'release_authority_name_missing');
+  assert.notEqual(normalizeName(nativeReviewer), normalizeName(editorialLead),
+    'romanian_reviewer_must_not_be_editorial_lead');
   assert.notEqual(normalizeName(nativeReviewer), normalizeName(releaseAuthority),
     'romanian_reviewer_must_not_authorize_release');
+  assert.notEqual(normalizeName(editorialLead), normalizeName(releaseAuthority),
+    'romanian_editorial_lead_must_not_authorize_release');
+}
+
+/** Run before Stage 20F GO. Injectable I/O provides an isolated wiring fixture. */
+function verifyRomanianForGo(decision, nativeRecordPath, sha, dist, {
+  readRecord = readFileSync, runValidator = execFileSync,
+} = {}) {
+  const nativeRecord = JSON.parse(readRecord(nativeRecordPath, 'utf8'));
+  assertIndependentRomanianParticipants(nativeRecord.reviewer?.name,
+    nativeRecord.editorialLead?.name, decision.decisionAuthority?.name);
+  runValidator(process.execPath, [
+    join(ROOT, 'scripts/verify-romanian-qa.mjs'), '--dist', '--require-pass',
+    '--dist-dir=' + dist, '--candidate-sha=' + sha,
+    '--record=' + nativeRecordPath,
+  ], { cwd: ROOT, timeout: 30000, stdio: ['ignore', 'pipe', 'pipe'] });
 }
 function assertUnexpiredWindow(ops, now = Date.now()) {
   assert(Date.parse(ops.windowEndUtc) >= now, 'deployment_window_expired');
@@ -306,14 +357,8 @@ function main() {
       assertUnexpiredWindow(record.operations);
       // #68 must independently verify a native human reviewer on the exact built bytes.
       // The signed record lives in restricted custody; a PASS in #71 alone is insufficient.
-      const nativeRecordPath = resolve(option('--romanian-record', DEFAULT_ROMANIAN_RECORD));
-      const nativeRecord = JSON.parse(readFileSync(nativeRecordPath, 'utf8'));
-      assertIndependentRomanianReviewer(nativeRecord.reviewer?.name, record.decisionAuthority.name);
-      execFileSync(process.execPath, [
-        join(ROOT, 'scripts/verify-romanian-qa.mjs'), '--dist', '--require-pass',
-        '--dist-dir=' + dist, '--candidate-sha=' + sha,
-        '--record=' + nativeRecordPath,
-      ], { cwd: ROOT, timeout: 30000, stdio: ['ignore', 'pipe', 'pipe'] });
+      verifyRomanianForGo(record,
+        resolve(option('--romanian-record', DEFAULT_ROMANIAN_RECORD)), sha, dist);
     }
     const manifest = verifyDist(record, dist, reports);
     console.log('Stage 20F reviewed candidate manifest SHA-256: ' + manifest);
