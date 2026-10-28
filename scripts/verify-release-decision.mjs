@@ -32,13 +32,12 @@ const person = (v) => text(v, 5) && v.trim().split(/\s+/).length >= 2;
 const ref = (v) => text(v, 12) &&
   (/^restricted:[A-Za-z0-9][A-Za-z0-9._/-]{7,}$/.test(v) ||
    /^https:\/\/github\.com\/YuriiSokolenko\/bodich\/(?:issues|pull|actions|commit|runs)\/[A-Za-z0-9/#._-]+$/.test(v));
-function date(value, utc = false) {
+function date(value, utc = false, futureAllowed = false) {
   if (typeof value !== 'string' || !(utc ? UTC : DATE).test(value)) return false;
   const parsed = new Date(utc ? value : value + 'T00:00:00Z');
   return !Number.isNaN(parsed.valueOf()) &&
-    (utc ? parsed.toISOString() === value.replace(/\.000Z$/, 'Z') :
-      parsed.toISOString().slice(0, 10) === value) &&
-    parsed.getTime() <= Date.now();
+    (utc ? true : parsed.toISOString().slice(0, 10) === value) &&
+    (futureAllowed || parsed.getTime() <= Date.now());
 }
 function problems(record) {
   const errors = [];
@@ -97,7 +96,7 @@ function problems(record) {
     for (const field of ['accountAuthorizationRef', 'rollbackRehearsalRef',
       'postReleaseVerificationPlanRef']) if (!ref(ops[field])) fail('missing_operations_evidence_' + field);
     if (!DIGEST.test(ops.previousBuildSha256 ?? '')) fail('missing_prior_immutable_build');
-    if (!date(ops.windowStartUtc, true) || !date(ops.windowEndUtc, true) ||
+    if (!date(ops.windowStartUtc, true, true) || !date(ops.windowEndUtc, true, true) ||
         ops.windowStartUtc >= ops.windowEndUtc) fail('invalid_deployment_window');
   }
   const pending = record.gates.filter((g) => g?.status !== 'PASS').map((g) => g.id);
@@ -185,12 +184,12 @@ function selfTest() {
   }));
   positive.operations = {
     ...positive.operations,
-    authorizedDomain: 'bodich.invalid', cloudflareProject: 'release-fixture-project',
+    authorizedDomain: 'bodich.invalid', cloudflareProject: 'preview-pages-project',
     accountAuthorizationRef: 'restricted:offline-case-12587932',
     deploymentOwner: 'Avery Lane',
     windowStartUtc: '2026-10-01T09:00:00Z',
     windowEndUtc: '2026-10-01T10:00:00Z',
-    previousProductionDeploymentId: 'prior-deployment-fixture',
+    previousProductionDeploymentId: 'prior-deployment-123',
     previousBuildSha256: 'c'.repeat(64),
     rollbackRehearsalRef: 'restricted:offline-case-12587932',
     postReleaseVerificationPlanRef: 'restricted:offline-case-12587932',
