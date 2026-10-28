@@ -128,8 +128,9 @@ function analyze(html, route, base = '') {
     route + ': wrong OG locale');
   const counterpart = route.replace(/^\/(en|ro)\//, '/' + opposite + '/');
   const switchLinks = nodes(doc, (n) => n.tagName === 'a' && attr(n, 'hreflang') === opposite);
-  assert.equal(switchLinks.length, 1, route + ': missing/duplicate switch language link');
-  assert.equal(attr(switchLinks[0], 'href'), base + counterpart, route + ': wrong switch destination');
+  assert.equal(switchLinks.length, 2, route + ': desktop and mobile language links required');
+  for (const link of switchLinks)
+    assert.equal(attr(link, 'href'), base + counterpart, route + ': wrong switch destination');
   const header = first(doc, 'header'), main = first(doc, 'main'), footer = first(doc, 'footer');
   assert(header && main && footer, route + ': shared content region missing');
   assert.equal(nodes(main, (n) => n.tagName === 'h1').length, 1, route + ': missing/duplicate main H1');
@@ -204,7 +205,8 @@ function selfTest(base) {
   const html = '<!doctype html><html lang="ro"><head><title>RO | BODICH</title>' +
     '<meta name="description" content="descripție"><meta property="og:title" content="RO">' +
     '<meta property="og:description" content="descripție"><meta property="og:locale" content="ro_RO"></head>' +
-    '<body><header><nav></nav><nav></nav><a hreflang="en" href="/en/about/">EN</a></header>' +
+    '<body><header><nav></nav><nav></nav><a hreflang="en" href="/en/about/">EN</a>' +
+    '<a hreflang="en" href="/en/about/">EN</a></header>' +
     '<main><h1>Titlu</h1></main><footer><nav></nav></footer></body></html>';
   assert.equal(analyze(html, '/ro/about/').counterpart, '/en/about/');
   assert.throws(() => analyze(html.replace('/en/about/', '/en/contact/'), '/ro/about/'), /wrong switch/);
