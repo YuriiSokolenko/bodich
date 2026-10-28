@@ -3,11 +3,6 @@
   "scope": "informational_only",
   "decision": "NO_GO",
   "decisionBasis": "POLICY_DEFAULT_UNSIGNED",
-  "candidate": {
-    "gitSha": null,
-    "distManifestSha256": null,
-    "mediaProfile": "release_safe"
-  },
   "operator": {
     "publicLegalName": null,
     "jurisdiction": null,
@@ -82,5 +77,5 @@
       "evidenceRef": null
     }
   ],
-  "notes": "NO-GO is an unsigned policy default, not a lawyer's decision. No legal or contact details or trademark rights have been independently confirmed. This file must not contain private originals or fabricated approvals."
+  "notes": "NO-GO is an unsigned policy default, not a lawyer's decision. No legal or contact details or trademark rights have been independently confirmed. This file must not contain private originals or fabricated approvals. Exact source SHA and artifact-digest binding and deployment GO are verified only by Stage 20F #71, not this standalone legal ledger checker."
 }
