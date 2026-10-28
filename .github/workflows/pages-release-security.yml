@@ -56,6 +56,8 @@ jobs:
           npm run seo:routes
           npm run media:public
           npm run assets:release
+      - name: Reject unapproved visitor-data collection in static distribution
+        run: npm run legal:dist
       - name: Bind Stage 20F evidence to exact built release bytes (no GO authorization)
         run: npm run release:decision:verify
       - name: Scan built dist artifact for secrets (Gitleaks pinned image)
