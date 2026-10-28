@@ -169,13 +169,13 @@ function verifyProtection(protection) {
   for (const context of fixedContexts) {
     assert(installed.has(context), 'GitHub branch protection missing required check: ' + context);
   }
-  console.log('PASS live GitHub branch protection: main; strict=true; admins=true; ' +
-    fixedContexts.join(', '));
 }
 
 async function verifyLive() {
   validatePolicy(policy);
   verifyProtection(await githubApi(protectionPath));
+  console.log('PASS live GitHub branch protection: main; strict=true; admins=true; ' +
+    fixedContexts.join(', '));
 }
 
 async function applyLive() {
