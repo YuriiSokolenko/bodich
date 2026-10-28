@@ -89,6 +89,8 @@ jobs:
           QA_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         run: npm run qa:release
 
+      # Also compares checkout source SHA and committed lockfile SHA-256 to the
+      # pre-audit baseline; the step never merely checks for an existing dist/.
       - name: Assert release-safe dist is still identical after all audits
         if: always()
         shell: bash
