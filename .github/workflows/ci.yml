@@ -102,6 +102,8 @@ jobs:
         run: npm run seo:fixture
       - name: Block unverified media from public distribution
         run: npm run media:public
+      - name: Reconcile exact release assets against the human rights register
+        run: npm run assets:release
       - name: Check generated localized routes
         run: |
           test -f dist/index.html
@@ -125,6 +127,7 @@ jobs:
           npm run catalog:review:check
           node scripts/verify-base-preview.mjs dist
           npm run media:public
+          node scripts/audit-public-assets.mjs dist --no-write
           npm run seo:routes
           npm run catalog:products:dist
       - name: Validate card and detail templates with isolated CI-only records
