@@ -440,6 +440,7 @@ function selfTest() {
     symlinkSync('favicon.svg', join(dist, 'leak.svg'));
     assert.throws(run, /Unsafe release filesystem entry/);
     rmSync(join(dist, 'leak.svg'));
+    rmSync(join(dist, 'favicon.svg'));
     const unknown = { ...reviewed, permissionEvidence: null };
     assert.equal(cleared(unknown), false);
     // End-to-end policy parser negatives, not just direct clearance function tests.
