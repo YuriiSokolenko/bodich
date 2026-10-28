@@ -1,0 +1,164 @@
+{
+  "schemaVersion": 1,
+  "scope": "informational_only",
+  "decision": "NO_GO",
+  "decisionBasis": "POLICY_DEFAULT",
+  "release": {
+    "gitSha": null,
+    "distManifestSha256": null,
+    "profile": "release_safe",
+    "supplierDraftCount": 132
+  },
+  "decisionAuthority": {
+    "name": null,
+    "role": "Verified BODICH legal operator / release authority",
+    "signatureEvidence": null,
+    "signedAt": null
+  },
+  "gates": [
+    {
+      "id": "rights",
+      "issue": 66,
+      "status": "BLOCKED",
+      "owner": null,
+      "reviewer": null,
+      "gitSha": null,
+      "distManifestSha256": null,
+      "evidenceRef": null,
+      "reviewedAt": null,
+      "reason": "Public rights register has no named accountable rights-owner approval or cleared release evidence."
+    },
+    {
+      "id": "legal",
+      "issue": 67,
+      "status": "BLOCKED",
+      "owner": null,
+      "reviewer": null,
+      "gitSha": null,
+      "distManifestSha256": null,
+      "evidenceRef": null,
+      "reviewedAt": null,
+      "reason": "Operator identity, contact/privacy/cookie disclosures and qualified legal approval are unverified."
+    },
+    {
+      "id": "romanian",
+      "issue": 68,
+      "status": "BLOCKED",
+      "owner": null,
+      "reviewer": null,
+      "gitSha": null,
+      "distManifestSha256": null,
+      "evidenceRef": null,
+      "reviewedAt": null,
+      "reason": "A native Romanian reviewer has not signed final rendered EN/RO routes and metadata."
+    },
+    {
+      "id": "qa",
+      "issue": 69,
+      "status": "BLOCKED",
+      "owner": null,
+      "reviewer": null,
+      "gitSha": null,
+      "distManifestSha256": null,
+      "evidenceRef": null,
+      "reviewedAt": null,
+      "reason": "Real Android/iOS/desktop browser, assistive technology, WCAG 2.2 AA and performance evidence is missing."
+    },
+    {
+      "id": "security",
+      "issue": 70,
+      "status": "BLOCKED",
+      "owner": null,
+      "reviewer": null,
+      "gitSha": null,
+      "distManifestSha256": null,
+      "evidenceRef": null,
+      "reviewedAt": null,
+      "reason": "Cloudflare/CI security and real hosted-preview checks are not signed for an exact candidate."
+    },
+    {
+      "id": "isolation",
+      "issue": 70,
+      "status": "BLOCKED",
+      "owner": null,
+      "reviewer": null,
+      "gitSha": null,
+      "distManifestSha256": null,
+      "evidenceRef": null,
+      "reviewedAt": null,
+      "reason": "No final candidate-specific signed proof of zero draft/product/commerce exposure exists."
+    },
+    {
+      "id": "operations",
+      "issue": 70,
+      "status": "BLOCKED",
+      "owner": null,
+      "reviewer": null,
+      "gitSha": null,
+      "distManifestSha256": null,
+      "evidenceRef": null,
+      "reviewedAt": null,
+      "reason": "Domain/account authorization, named deployment owner/window, previous production build and rollback rehearsal remain unconfirmed."
+    },
+    {
+      "id": "candidate",
+      "issue": 71,
+      "status": "BLOCKED",
+      "owner": null,
+      "reviewer": null,
+      "gitSha": null,
+      "distManifestSha256": null,
+      "evidenceRef": null,
+      "reviewedAt": null,
+      "reason": "No immutable release commit and exact public dist artifact digest has been designated."
+    }
+  ],
+  "operations": {
+    "authorizedDomain": null,
+    "cloudflareProject": null,
+    "accountAuthorizationRef": null,
+    "deploymentOwner": null,
+    "windowStartUtc": null,
+    "windowEndUtc": null,
+    "previousProductionDeploymentId": null,
+    "previousBuildSha256": null,
+    "rollbackRunbook": "docs/deployment/cloudflare-pages.md",
+    "rollbackRehearsalRef": null,
+    "postReleaseVerificationPlanRef": null
+  },
+  "remediations": [
+    {
+      "gateId": "rights",
+      "action": "Obtain asset-by-asset rights clearance and independent human sign-off on exact build."
+    },
+    {
+      "gateId": "legal",
+      "action": "Confirm legal operator and qualified counsel sign-off on final EN/RO content and actual site behavior."
+    },
+    {
+      "gateId": "romanian",
+      "action": "Complete native-speaker rendered route, legal copy and SEO-language review."
+    },
+    {
+      "gateId": "qa",
+      "action": "Record device/OS/browser versions, accessibility findings and three Lighthouse mobile runs."
+    },
+    {
+      "gateId": "security",
+      "action": "Attach immutable CI checks, sanitized security results and actual preview-header review."
+    },
+    {
+      "gateId": "isolation",
+      "action": "Audit actual candidate dist, including all 132 draft identities, public route allow-list and commerce exclusions."
+    },
+    {
+      "gateId": "operations",
+      "action": "Obtain Cloudflare account/domain authority and rehearse rollback plus post-release verification."
+    },
+    {
+      "gateId": "candidate",
+      "action": "Freeze a release SHA, verify exact output digests and collect dated reviews bound to both identifiers."
+    }
+  ],
+  "notes": "Unapproved policy-default NO_GO; no human sign-off is claimed. No deploy or product authorization."
+}
