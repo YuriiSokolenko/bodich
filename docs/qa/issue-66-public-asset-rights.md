@@ -7,18 +7,18 @@ Complements catalog media safeguards #55 and the unpublished-draft program #24.
 
 ## Source of truth and boundaries
 
-- [\`config/public-asset-rights.json\`](../../config/public-asset-rights.json) is the deny-by-default rights register for **public release assets**. The initial \`assets\` collection is deliberately **empty**: no image, logo, icon, social preview, font or other media is asserted to be cleared.
-- [\`docs/catalog/media-rights.json\`](../catalog/media-rights.json) plus the 132-item [art manifest](../catalog/art-manifest.json) are the **review-only source registries**. Existing AI concepts, SVGs, derivatives and generated diagrams remain \`unverified\`, not published. A release file whose SHA-256 matches a known uncleared source is rejected even if renamed and separately claimed as approved. A genuinely approved release would need the source rights to be reconciled too.
-- \`scripts/audit-public-assets.mjs\` walks **every regular file in the actual \`dist\` tree**, computes SHA-256 from its bytes, records its path or sanitized path identifier, provenance and review state. HTML, compiled CSS/JS, \`_headers\`, sitemap and robots are included in the build-wide digest report. Generated code/markup is not treated as independently media-cleared: its legal/source review and exact-artifact human release sign-off remain pending in #71.
+- [`config/public-asset-rights.json`](../../config/public-asset-rights.json) is the deny-by-default rights register for **public release assets**. The initial `assets` collection is deliberately **empty**: no image, logo, icon, social preview, font or other media is asserted to be cleared.
+- [`docs/catalog/media-rights.json`](../catalog/media-rights.json) plus the 132-item [art manifest](../catalog/art-manifest.json) are the **review-only source registries**. Existing AI concepts, SVGs, derivatives and generated diagrams remain `unverified`, not published. A release file whose SHA-256 matches a known uncleared source is rejected even if renamed and separately claimed as approved. A genuinely approved release would need the source rights to be reconciled too.
+- `scripts/audit-public-assets.mjs` walks **every regular file in the actual `dist` tree**, computes SHA-256 from its bytes, records its path or sanitized path identifier, provenance and review state. HTML, compiled CSS/JS, `_headers`, sitemap and robots are included in the build-wide digest report. Generated code/markup is not treated as independently media-cleared: its legal/source review and exact-artifact human release sign-off remain pending in #71.
 - Every distributed **media** file, including a local image, SVG, brand mark, favicon, video, PDF, web manifest, font or preview, must have an individual register entry with matching **dist-relative path and SHA-256**. Missing, unknown, pending, denied, modified or unpinned media blocks the technical check. Symlinks and special filesystem entries are rejected.
-- Referenced local resources from HTML \`src\`, \`srcset\`, \`poster\`, preload/stylesheet/icon links, OpenGraph/Twitter image metadata and CSS \`url()\`/\`@import\` are checked against actual built files. Remote, protocol-relative, embedded \`data:\`/\`blob:\` resources and inline SVG are blocked by this gate; self-host and register an approved exact file instead. External **navigation** links and canonical/hreflang/OG page URLs are not downloaded images. This is an asset-reference check, *not* a complete CSS/JavaScript analyzer or web sanitizer; #70/#73 separately enforce HTML5, CSP and leak checks.
+- Referenced local resources from HTML `src`, `srcset`, `poster`, preload/stylesheet/icon links, OpenGraph/Twitter image metadata and CSS `url()`/`@import` are checked against actual built files. Remote, protocol-relative, embedded `data:`/`blob:` resources and inline SVG are blocked by this gate; self-host and register an approved exact file instead. External **navigation** links and canonical/hreflang/OG page URLs are not downloaded images. This is an asset-reference check, *not* a complete CSS/JavaScript analyzer or web sanitizer; #70/#73 separately enforce HTML5, CSP and leak checks.
 - The two historical, unverified inline menu SVG icons have been replaced with system-font text symbols in the release-safe header. This changes no supplier catalog image, product approval or demo art rights.
 
 ## Required fields for each newly cleared media asset
 
 Add one entry for each actual emitted media path:
 
-\`\`\`json
+```json
 {
   "path": "images/example-approved.svg",
   "classification": "ui_icon",
@@ -33,32 +33,32 @@ Add one entry for each actual emitted media path:
   "permittedUses": ["public_website"],
   "representation": "illustrative_icon"
 }
-\`\`\`
+```
 
-The example is a **schema illustration, not an approval**. Do not commit fabricated names, approvals, evidence, original permission documents, signatures, full generation originals or private personal details to this public repository. \`restricted:\` is only a non-sensitive pointer to evidence held in an authorized, access-controlled location **outside** GitHub/source/CI artifacts; the validator cannot independently prove that evidence exists. Human reviewers must validate it.
+The example is a **schema illustration, not an approval**. Do not commit fabricated names, approvals, evidence, original permission documents, signatures, full generation originals or private personal details to this public repository. `restricted:` is only a non-sensitive pointer to evidence held in an authorized, access-controlled location **outside** GitHub/source/CI artifacts; the validator cannot independently prove that evidence exists. Human reviewers must validate it.
 
-Valid classifications are \`ai_concept\`, \`technical_illustration\`, \`product_photograph\`, \`brand_logo\`, \`ui_icon\`, \`font\`, \`social_preview\`, and \`other_media\`. The identity/type of a concept **does not change** after rights clearance; a synthetic illustration is never documentary photography of an actual BODICH product. License/permission, authorship and accurate product representation are different approval questions.
+Valid classifications are `ai_concept`, `technical_illustration`, `product_photograph`, `brand_logo`, `ui_icon`, `font`, `social_preview`, and `other_media`. The identity/type of a concept **does not change** after rights clearance; a synthetic illustration is never documentary photography of an actual BODICH product. License/permission, authorship and accurate product representation are different approval questions.
 
-An unapproved candidate may be recorded with \`status: pending | denied | unknown\`, but **must be removed from \`dist\`** before a technically passing release build. A cleared entry missing its named reviewer, date, rights holder, evidence reference, allowed use or exact SHA-256 is rejected. A stale entry referring to a missing release file is also rejected; update the registry and evidence together.
+An unapproved candidate may be recorded with `status: pending | denied | unknown`, but **must be removed from `dist`** before a technically passing release build. A cleared entry missing its named reviewer, date, rights holder, evidence reference, allowed use or exact SHA-256 is rejected. A stale entry referring to a missing release file is also rejected; update the registry and evidence together.
 
 ## Reproducible audit and evidence
 
-\`\`\`sh
+```sh
 npm ci
 npm run check                  # includes negative asset-rights fixtures
 npm run build                  # release_safe only; NOT build:beta
 npm run assets:release        # hashes every dist file; machine gate fails on violations
 node scripts/audit-public-assets.mjs dist --no-write
-\`\`\`
+```
 
-The machine-readable audit is \`visual-qa/public-asset-rights-audit.json\`, ignored by Git and uploaded as a short-retention CI artifact by **Pages release security**. It contains SHA-256, a safe path or path hash, classification, source/generator, claimed status, owner, off-repo evidence reference, reviewer, confirmation date and remediation for each distributable asset. The separate \`quarantinedRegistry\` collection covers the 11 checked-in review images plus the 528 generated reference diagram paths, with unknown reviewer/date explicitly \`null\` and no invented rights. For human mapping to internal draft paths, run the offline \`npm run media:inventory\` and inspect the existing registry; public CI logs use path-hash identifiers to avoid leaking unpublished inventory names.
+The machine-readable audit is `visual-qa/public-asset-rights-audit.json`, ignored by Git and uploaded as a short-retention CI artifact by **Pages release security**. It contains SHA-256, a safe path or path hash, classification, source/generator, claimed status, owner, off-repo evidence reference, reviewer, confirmation date and remediation for each distributable asset. The separate `quarantinedRegistry` collection covers the 11 checked-in review images plus the 528 generated reference diagram paths, with unknown reviewer/date explicitly `null` and no invented rights. For human mapping to internal draft paths, run the offline `npm run media:inventory` and inspect the existing registry; public CI logs use path-hash identifiers to avoid leaking unpublished inventory names.
 
 Audit verdicts:
 
-- \`TECHNICAL_NO_GO\`: something unregistered, altered, missing or uncleared reached the build (or a forbidden reference exists); the command exits nonzero.
-- \`OFFLINE_AUDIT_PASSED_HUMAN_NO_GO\`: machine checks passed, but a verified human sign-off of the **exact release SHA/artifact** is still absent. No automatic production deployment or "approved" statement.
+- `TECHNICAL_NO_GO`: something unregistered, altered, missing or uncleared reached the build (or a forbidden reference exists); the command exits nonzero.
+- `OFFLINE_AUDIT_PASSED_HUMAN_NO_GO`: machine checks passed, but a verified human sign-off of the **exact release SHA/artifact** is still absent. No automatic production deployment or "approved" statement.
 
-Build the normal root and \`ASTRO_BASE=/bodich-preview\` preview in CI, rerun the rights scanner on both outputs, and run the independent \`pages:verify\`, \`media:public\` and secret/privacy checks. Neither \`noindex\` nor a demo/beta flag grants rights. The separately requested \`build:beta\` still deliberately shows labeled AI artwork for presentation, but its images are **not** cleared release-safe inventory and **must not** be promoted by this gate.
+Build the normal root and `ASTRO_BASE=/bodich-preview` preview in CI, rerun the rights scanner on both outputs, and run the independent `pages:verify`, `media:public` and secret/privacy checks. Neither `noindex` nor a demo/beta flag grants rights. The separately requested `build:beta` still deliberately shows labeled AI artwork for presentation, but its images are **not** cleared release-safe inventory and **must not** be promoted by this gate.
 
 ## Remaining manual blockers
 
