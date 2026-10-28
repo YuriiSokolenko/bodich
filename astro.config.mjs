@@ -18,6 +18,8 @@ export default defineConfig({
     },
   },
   vite: {
+    // Keep client scripts external: the Pages CSP intentionally rejects inline JS.
+    build: { assetsInlineLimit: 0 },
     plugins: [tailwindcss()],
   },
 });

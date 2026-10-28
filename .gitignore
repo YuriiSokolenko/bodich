@@ -26,3 +26,6 @@ docs/catalog/review-ledger-archive/*.tmp
 
 # Stage 18: derived private registry audit, never committed or served
 visual-qa/bodich-product-registry-audit.json
+
+# Stage 20E immutable static preview release digest manifest
+visual-qa/pages-release-evidence.json

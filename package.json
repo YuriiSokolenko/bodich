@@ -46,7 +46,9 @@
     "catalog:products:check": "node scripts/catalog-product-registry.mjs --check",
     "catalog:products:self-test": "node scripts/catalog-product-registry.mjs --self-test",
     "catalog:products:export": "node scripts/catalog-product-registry.mjs --export",
-    "catalog:products:dist": "node scripts/catalog-product-registry.mjs --dist-check dist"
+    "catalog:products:dist": "node scripts/catalog-product-registry.mjs --dist-check dist",
+    "pages:verify": "node scripts/verify-pages-release.mjs dist",
+    "pages:self-test": "node scripts/verify-pages-release.mjs --self-test"
   },
   "engines": {
     "node": ">=24 <25"
