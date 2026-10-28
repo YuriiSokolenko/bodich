@@ -29,3 +29,6 @@ visual-qa/bodich-product-registry-audit.json
 
 # Stage 20E immutable static preview release digest manifest
 visual-qa/pages-release-evidence.json
+
+# Stage 20A generated build media rights inventory — keep out of Git
+visual-qa/public-asset-rights-audit.json
