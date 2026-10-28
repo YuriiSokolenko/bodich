@@ -1,0 +1,376 @@
+{
+  "schemaVersion": 1,
+  "issue": 69,
+  "releaseGate": "NO_GO",
+  "candidateSha": null,
+  "qaLead": null,
+  "independentReviewer": null,
+  "reviewedAt": null,
+  "scope": "informational_only_release_safe",
+  "rows": [
+    {
+      "id": "android-chrome-en",
+      "platform": "android-chrome",
+      "locale": "en",
+      "targetDevice": "Android phone",
+      "targetBrowser": "Chrome stable",
+      "status": "NOT_RUN",
+      "testedAt": null,
+      "tester": null,
+      "deviceModel": null,
+      "osVersion": null,
+      "browserVersion": null,
+      "reportRef": null,
+      "orientations": {
+        "portrait": "NOT_RUN",
+        "landscape": "NOT_RUN"
+      },
+      "checks": {
+        "keyboard": "NOT_RUN",
+        "touch": "NOT_RUN",
+        "images": "NOT_RUN",
+        "semanticControls": "NOT_RUN",
+        "zoom": "NOT_RUN",
+        "reducedMotion": "NOT_RUN",
+        "languageSwitch": "NOT_RUN",
+        "wcag22AA": "NOT_RUN",
+        "axe": "NOT_RUN",
+        "screenReader": "NOT_RUN"
+      },
+      "defects": [],
+      "retest": "NOT_RUN",
+      "retestRef": null
+    },
+    {
+      "id": "android-chrome-ro",
+      "platform": "android-chrome",
+      "locale": "ro",
+      "targetDevice": "Android phone",
+      "targetBrowser": "Chrome stable",
+      "status": "NOT_RUN",
+      "testedAt": null,
+      "tester": null,
+      "deviceModel": null,
+      "osVersion": null,
+      "browserVersion": null,
+      "reportRef": null,
+      "orientations": {
+        "portrait": "NOT_RUN",
+        "landscape": "NOT_RUN"
+      },
+      "checks": {
+        "keyboard": "NOT_RUN",
+        "touch": "NOT_RUN",
+        "images": "NOT_RUN",
+        "semanticControls": "NOT_RUN",
+        "zoom": "NOT_RUN",
+        "reducedMotion": "NOT_RUN",
+        "languageSwitch": "NOT_RUN",
+        "wcag22AA": "NOT_RUN",
+        "axe": "NOT_RUN",
+        "screenReader": "NOT_RUN"
+      },
+      "defects": [],
+      "retest": "NOT_RUN",
+      "retestRef": null
+    },
+    {
+      "id": "iphone-safari-en",
+      "platform": "iphone-safari",
+      "locale": "en",
+      "targetDevice": "iPhone",
+      "targetBrowser": "Safari",
+      "status": "NOT_RUN",
+      "testedAt": null,
+      "tester": null,
+      "deviceModel": null,
+      "osVersion": null,
+      "browserVersion": null,
+      "reportRef": null,
+      "orientations": {
+        "portrait": "NOT_RUN",
+        "landscape": "NOT_RUN"
+      },
+      "checks": {
+        "keyboard": "NOT_RUN",
+        "touch": "NOT_RUN",
+        "images": "NOT_RUN",
+        "semanticControls": "NOT_RUN",
+        "zoom": "NOT_RUN",
+        "reducedMotion": "NOT_RUN",
+        "languageSwitch": "NOT_RUN",
+        "wcag22AA": "NOT_RUN",
+        "axe": "NOT_RUN",
+        "screenReader": "NOT_RUN"
+      },
+      "defects": [],
+      "retest": "NOT_RUN",
+      "retestRef": null
+    },
+    {
+      "id": "iphone-safari-ro",
+      "platform": "iphone-safari",
+      "locale": "ro",
+      "targetDevice": "iPhone",
+      "targetBrowser": "Safari",
+      "status": "NOT_RUN",
+      "testedAt": null,
+      "tester": null,
+      "deviceModel": null,
+      "osVersion": null,
+      "browserVersion": null,
+      "reportRef": null,
+      "orientations": {
+        "portrait": "NOT_RUN",
+        "landscape": "NOT_RUN"
+      },
+      "checks": {
+        "keyboard": "NOT_RUN",
+        "touch": "NOT_RUN",
+        "images": "NOT_RUN",
+        "semanticControls": "NOT_RUN",
+        "zoom": "NOT_RUN",
+        "reducedMotion": "NOT_RUN",
+        "languageSwitch": "NOT_RUN",
+        "wcag22AA": "NOT_RUN",
+        "axe": "NOT_RUN",
+        "screenReader": "NOT_RUN"
+      },
+      "defects": [],
+      "retest": "NOT_RUN",
+      "retestRef": null
+    },
+    {
+      "id": "desktop-chromium-en",
+      "platform": "desktop-chromium",
+      "locale": "en",
+      "targetDevice": "Desktop",
+      "targetBrowser": "Chromium stable",
+      "status": "NOT_RUN",
+      "testedAt": null,
+      "tester": null,
+      "deviceModel": null,
+      "osVersion": null,
+      "browserVersion": null,
+      "reportRef": null,
+      "orientations": {
+        "landscape": "NOT_RUN"
+      },
+      "checks": {
+        "keyboard": "NOT_RUN",
+        "touch": "N_A",
+        "images": "NOT_RUN",
+        "semanticControls": "NOT_RUN",
+        "zoom": "NOT_RUN",
+        "reducedMotion": "NOT_RUN",
+        "languageSwitch": "NOT_RUN",
+        "wcag22AA": "NOT_RUN",
+        "axe": "NOT_RUN",
+        "screenReader": "N_A"
+      },
+      "defects": [],
+      "retest": "NOT_RUN",
+      "retestRef": null
+    },
+    {
+      "id": "desktop-chromium-ro",
+      "platform": "desktop-chromium",
+      "locale": "ro",
+      "targetDevice": "Desktop",
+      "targetBrowser": "Chromium stable",
+      "status": "NOT_RUN",
+      "testedAt": null,
+      "tester": null,
+      "deviceModel": null,
+      "osVersion": null,
+      "browserVersion": null,
+      "reportRef": null,
+      "orientations": {
+        "landscape": "NOT_RUN"
+      },
+      "checks": {
+        "keyboard": "NOT_RUN",
+        "touch": "N_A",
+        "images": "NOT_RUN",
+        "semanticControls": "NOT_RUN",
+        "zoom": "NOT_RUN",
+        "reducedMotion": "NOT_RUN",
+        "languageSwitch": "NOT_RUN",
+        "wcag22AA": "NOT_RUN",
+        "axe": "NOT_RUN",
+        "screenReader": "N_A"
+      },
+      "defects": [],
+      "retest": "NOT_RUN",
+      "retestRef": null
+    },
+    {
+      "id": "desktop-firefox-en",
+      "platform": "desktop-firefox",
+      "locale": "en",
+      "targetDevice": "Desktop",
+      "targetBrowser": "Firefox stable",
+      "status": "NOT_RUN",
+      "testedAt": null,
+      "tester": null,
+      "deviceModel": null,
+      "osVersion": null,
+      "browserVersion": null,
+      "reportRef": null,
+      "orientations": {
+        "landscape": "NOT_RUN"
+      },
+      "checks": {
+        "keyboard": "NOT_RUN",
+        "touch": "N_A",
+        "images": "NOT_RUN",
+        "semanticControls": "NOT_RUN",
+        "zoom": "NOT_RUN",
+        "reducedMotion": "NOT_RUN",
+        "languageSwitch": "NOT_RUN",
+        "wcag22AA": "NOT_RUN",
+        "axe": "NOT_RUN",
+        "screenReader": "N_A"
+      },
+      "defects": [],
+      "retest": "NOT_RUN",
+      "retestRef": null
+    },
+    {
+      "id": "desktop-firefox-ro",
+      "platform": "desktop-firefox",
+      "locale": "ro",
+      "targetDevice": "Desktop",
+      "targetBrowser": "Firefox stable",
+      "status": "NOT_RUN",
+      "testedAt": null,
+      "tester": null,
+      "deviceModel": null,
+      "osVersion": null,
+      "browserVersion": null,
+      "reportRef": null,
+      "orientations": {
+        "landscape": "NOT_RUN"
+      },
+      "checks": {
+        "keyboard": "NOT_RUN",
+        "touch": "N_A",
+        "images": "NOT_RUN",
+        "semanticControls": "NOT_RUN",
+        "zoom": "NOT_RUN",
+        "reducedMotion": "NOT_RUN",
+        "languageSwitch": "NOT_RUN",
+        "wcag22AA": "NOT_RUN",
+        "axe": "NOT_RUN",
+        "screenReader": "N_A"
+      },
+      "defects": [],
+      "retest": "NOT_RUN",
+      "retestRef": null
+    },
+    {
+      "id": "macos-safari-en",
+      "platform": "macos-safari",
+      "locale": "en",
+      "targetDevice": "Mac",
+      "targetBrowser": "Safari",
+      "status": "NOT_RUN",
+      "testedAt": null,
+      "tester": null,
+      "deviceModel": null,
+      "osVersion": null,
+      "browserVersion": null,
+      "reportRef": null,
+      "orientations": {
+        "landscape": "NOT_RUN"
+      },
+      "checks": {
+        "keyboard": "NOT_RUN",
+        "touch": "N_A",
+        "images": "NOT_RUN",
+        "semanticControls": "NOT_RUN",
+        "zoom": "NOT_RUN",
+        "reducedMotion": "NOT_RUN",
+        "languageSwitch": "NOT_RUN",
+        "wcag22AA": "NOT_RUN",
+        "axe": "NOT_RUN",
+        "screenReader": "N_A"
+      },
+      "defects": [],
+      "retest": "NOT_RUN",
+      "retestRef": null
+    },
+    {
+      "id": "macos-safari-ro",
+      "platform": "macos-safari",
+      "locale": "ro",
+      "targetDevice": "Mac",
+      "targetBrowser": "Safari",
+      "status": "NOT_RUN",
+      "testedAt": null,
+      "tester": null,
+      "deviceModel": null,
+      "osVersion": null,
+      "browserVersion": null,
+      "reportRef": null,
+      "orientations": {
+        "landscape": "NOT_RUN"
+      },
+      "checks": {
+        "keyboard": "NOT_RUN",
+        "touch": "N_A",
+        "images": "NOT_RUN",
+        "semanticControls": "NOT_RUN",
+        "zoom": "NOT_RUN",
+        "reducedMotion": "NOT_RUN",
+        "languageSwitch": "NOT_RUN",
+        "wcag22AA": "NOT_RUN",
+        "axe": "NOT_RUN",
+        "screenReader": "N_A"
+      },
+      "defects": [],
+      "retest": "NOT_RUN",
+      "retestRef": null
+    }
+  ],
+  "lab": {
+    "status": "NOT_RUN",
+    "targets": [
+      {
+        "id": "en-home",
+        "status": "NOT_RUN",
+        "runs": [],
+        "artifactRef": null
+      },
+      {
+        "id": "en-products",
+        "status": "NOT_RUN",
+        "runs": [],
+        "artifactRef": null
+      },
+      {
+        "id": "ro-home",
+        "status": "NOT_RUN",
+        "runs": [],
+        "artifactRef": null
+      },
+      {
+        "id": "ro-products",
+        "status": "NOT_RUN",
+        "runs": [],
+        "artifactRef": null
+      }
+    ]
+  },
+  "fieldCwv": {
+    "status": "NO_FIELD_DATA",
+    "source": null,
+    "period": null,
+    "samples": null,
+    "lcpP75Ms": null,
+    "inpP75Ms": null,
+    "clsP75": null,
+    "reason": "No verified field sample has been supplied. Do not use TBT as INP."
+  },
+  "notes": "Unsigned planning baseline. No real devices, screen readers or performance runs are asserted. This file is not a release approval."
+}
