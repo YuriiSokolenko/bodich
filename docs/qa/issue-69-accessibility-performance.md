@@ -16,25 +16,36 @@ For every applicable locale/platform manually test: keyboard focus order, skip l
 
 ## Repeatable automated lab (supporting evidence only)
 
-The dedicated **Stage 20D Release QA (automated only)** GitHub Actions workflow checks out the exact PR head SHA (not the synthetic GitHub merge ref), builds the release-safe informational profile, serves it only on loopback, installs exact-version Playwright/axe/Lighthouse tooling **after** building and runs:
+The dedicated **Stage 20D Release QA (automated only)** GitHub Actions workflow checks out the exact PR head SHA (not the synthetic GitHub merge ref), installs the website **and** Playwright/axe/Lighthouse from a single committed root npm lockfile, builds the release-safe informational profile, then installs only the locked Playwright Chromium browser binary **after** the build. It serves the site exclusively on loopback and runs:
 
-~~~
+~~~sh
+# Clean checkout on Node 24 (see .nvmrc), no existing node_modules needed:
+nvm use
+npm ci
+npm run check
+npm run qa:lock:self-test
+npm run qa:lock:check
 npm run qa:evidence:check
 npm run qa:evidence:self-test
 npm run build
-# From the repository root, after the build, on Node 24:
-npm install --no-save --package-lock=false playwright@1.64.1 @axe-core/playwright@4.14.0 lighthouse@13.5.0
-npx playwright install chromium
+npm run qa:dist:record
+./node_modules/.bin/playwright install chromium
+npm run qa:dist:verify
 npm run preview -- --host 127.0.0.1 --port 4321
-# In a separate terminal, from the same repository:
+# In another terminal, with preview still running:
 npm run qa:release
+npm run qa:dist:verify
 ~~~
 
 The audit scans all six public informational route types in **both languages** with WCAG A/AA axe rules, including expanded mobile menus, and records critical/serious issues and incomplete/manual-review cases. Its 390px Chromium viewport is a **simulation**, never a substitute for a phone.
 
 Lighthouse makes **exactly three independent mobile lab runs** for each EN/RO homepage and products journey (12 runs). Raw Lighthouse JSON and a summary are uploaded as a **30-day Actions artifact**. Each report includes the **exact git checkout/source SHA** (PR head for PR events), the separately reported GitHub event SHA, **Stage 20F-compatible canonical SHA-256 of the complete dist manifest**, execution timestamp, exact tool/browser versions, host environment, CPU/network throttling and screen configuration, per-run metrics and median. Preserve raw files in controlled storage for release sign-off. Each Lighthouse target and run repeats those identifiers to make copying results across different builds visibly inconsistent. This is a lab evidence identity, **not** an attestation that a PR-head build equals the eventual signed production build. Rebuild and verify the frozen release candidate's exact SHA and dist digest before final authorization. 
       
-The first-party website build uses npm ci and its committed lockfile. The three QA packages are installed at **exact top-level versions** after the build; their transitive dependency tree is **not currently lockfile-pinned**, so byte-for-byte reinstall reproducibility is not guaranteed. Do not present this workflow as a fully hermetic dependency resolution. A separate QA lockfile is recommended before long-term archival/certification; keep the exact per-run tool versions, Lighthouse settings and CI artifact to support audit review. Never drop a failed run or treat an incomplete run group as passing.
+The website and QA packages are now installed together by `npm ci` from `package.json` and the committed root `package-lock.json`, including resolved transitive dependency versions and npm integrity hashes. QA direct dependencies are exact-version dev dependencies: `playwright@1.64.1`, `@axe-core/playwright@4.14.0`, and `lighthouse@13.5.0`. CI runs a fail-closed offline manifest/lockfile mismatch probe and `npm ls --all --json` against the installed tree. It retains `installed-dependency-tree.json`, the lockfile SHA-256, Node/npm and installed tool versions with the QA artifact. The installed Playwright binary (`./node_modules/.bin/playwright`) installs its matching Chromium; no `npx` registry fallback is allowed.
+
+The canonical Stage 20F-compatible `dist` manifest hash and checkout SHA are frozen in `build-integrity.json` immediately after `npm run build`. The workflow verifies that identity after Chromium installation and after the audit, and `qa:release` refuses a missing or mismatched baseline and records the final digest in `summary.json`. The Chromium executable path and actual launched browser version, axe engine version and per-run Lighthouse runtime versions are recorded. All four targets and twelve raw Lighthouse files retain their exact source SHA and dist digest. The build is **not rebuilt or changed** by QA tooling. This is a reproducible npm resolution and automated lab provenance check, not a claim of complete OS/browser hermeticity, physical-device approval, real-user INP or signed release GO. Never drop a failed run or treat an incomplete run group as passing.
+
+To intentionally update QA dependencies, edit the exact versions in `package.json`, run `nvm use` followed by `npm install --package-lock-only --ignore-scripts --no-audit --no-fund`, commit **both** manifests, and run `npm ci`, `npm run qa:lock:self-test`, `npm run qa:lock:check`, `npm run check`, `npm run build`, and the full Stage 20D audit. Review the lockfile's transitive changes; never regenerate or repair a lockfile inside the CI audit. A manifest-only or lockfile-only version mismatch must fail `npm ci`.
 
 | Measurable gate | Threshold |
 | --- | --- |
