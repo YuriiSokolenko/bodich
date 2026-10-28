@@ -1,0 +1,42 @@
+# Temporary trusted bootstrap for issue #85; remove before merge.
+name: Issue 85 one-time npm lock bootstrap
+
+on:
+  push:
+    branches: [chore/lock-release-qa-deps]
+
+permissions:
+  contents: write
+
+jobs:
+  lock:
+    if: github.repository == 'YuriiSokolenko/bodich'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: chore/lock-release-qa-deps
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version-file: .nvmrc
+      - name: Generate exact dependency lockfile (bootstrap only)
+        run: npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+      - name: Store reproducible lockfile
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: issue-85-generated-lockfile
+          path: package-lock.json
+          retention-days: 1
+      - name: Commit lockfile to own feature branch
+        shell: bash
+        run: |
+          if git diff --quiet -- package-lock.json; then
+            echo "Committed lockfile already matches manifest"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add package-lock.json
+          git commit -m "chore(qa): lock exact audit dependency tree"
+          git push origin HEAD:chore/lock-release-qa-deps
