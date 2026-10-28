@@ -120,7 +120,8 @@ function jsRisks(js, add) {
 // Deliberately fail closed on any remote-looking URL literal in CSS, including
 // quoted image-set candidates and custom properties. There is no implicit host
 // allowlist. Comments are not executable; quoted comment-looking text is retained.
-const CSS_REMOTE = /https?:\/\/|(?:data|blob|javascript):|(^|[^\w/.:-])\/\//i;
+// Do not treat .data:hover, .blob:focus-visible, etc. as URL schemes.
+const CSS_REMOTE = /https?:\/\/|(?<![\w.#-])(?:data|blob|javascript):|(^|[^\w/.:-])\/\//i;
 function cssWithoutComments(css) {
   let output = '';
   let quote = '';
@@ -161,13 +162,21 @@ function decodeCssEscapes(css) {
 }
 function cssRisks(css, add) {
   const decoded = decodeCssEscapes(cssWithoutComments(css));
-  // Report @import distinctly; every other CSS remote marker, including one in
-  // image-set(), url(), @font-face or a custom property, is a resource risk.
-  const otherCss = decoded.replace(/@import\b[^;{}]*/gi, (rule) => {
-    if (CSS_REMOTE.test(rule)) add('remote_css_import');
-    return ' ';
-  });
-  if (CSS_REMOTE.test(otherCss)) add('remote_css_resource');
+  // WHATWG URL parsing for special schemes treats backslashes as slashes and
+  // strips ASCII TAB/LF/CR. Scan both representations to catch encoded hosts.
+  const urlNormalized = decoded.replace(/[\t\n\r]/g, '').replace(/\\/g, '/');
+  let importRisk = false;
+  let resourceRisk = false;
+  for (const candidate of [decoded, urlNormalized]) {
+    // @import has its own error code; do not duplicate it as a generic resource.
+    const otherCss = candidate.replace(/@import\b[^;{}]*/gi, (rule) => {
+      if (CSS_REMOTE.test(rule)) importRisk = true;
+      return ' ';
+    });
+    if (CSS_REMOTE.test(otherCss)) resourceRisk = true;
+  }
+  if (importRisk) add('remote_css_import');
+  if (resourceRisk) add('remote_css_resource');
 }
 function htmlRisks(html, add, stats) {
   const doc = parse(html, { scriptingEnabled: false });
@@ -387,6 +396,18 @@ function selfTest() {
       ['remote_css_resource', ':root{--remote-image:"https://tracker.invalid/a.webp"}'],
       ['remote_css_import', '@import /*comment*/ "https://tracker.invalid/a.css";'],
       ['remote_css_import', '@\\69mport url(//tracker.invalid/a.css);'],
+      // URL-parser normalization (not merely CSS escape decoding).
+      ['remote_css_resource', 'url(/\\\\a.invalid/x)'],
+      ['remote_css_resource', 'url(\\\\/a.invalid/x)'],
+      ['remote_css_resource', 'url("https:' + '\\'.repeat(4) + 'a.invalid/x")'],
+      ['remote_css_resource', 'url("ht\ttps://a.invalid/x")'],
+      ['remote_css_resource', 'url("/\t/a.invalid/x")'],
+      ['remote_css_resource', 'url("ht\\9 tps://a.invalid/x")'],
+      ['remote_css_resource', 'url("ht\\a tps://a.invalid/x")'],
+      ['remote_css_resource', 'url("ht\rtps://a.invalid/x")'],
+      // Conservative policy: a remote URL in a selector string is rejected,
+      // although the selector itself initiates no network request.
+      ['remote_css_resource', 'a[href^="https://"]{color:red}'],
     ];
     for (const [code, css] of cssAttacks) {
       check('<style>' + css + '</style>', code);
@@ -399,6 +420,9 @@ function selfTest() {
       '/* image-set("https://tracker.invalid/x" 1x); */ .x{color:red}',
       '.x{content:"Local assets";background:url(/assets/a//nested.webp)}',
       '.x{background:u\\72l(/assets/local.webp)}',
+      '.metadata:hover{color:blue}', '.data:hover{color:red}',
+      '.blob:focus-visible{outline:1px solid red}',
+      'a[href^="http"]{text-decoration:underline}',
     ];
     for (const css of safeCss) {
       writeFileSync(join(dir, 'index.html'),
