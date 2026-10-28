@@ -113,7 +113,23 @@ function selfTest() {
     assert.throws(() => validateWorkflow(target, changed),
       'workflow regression must not be silently accepted');
   }
-  console.log('PASS branch policy negative fixtures: drift, missing/filtered/conditional contexts');
+  const goodProtection = {
+    required_status_checks: { strict: true, contexts: fixedContexts, checks: [] },
+    enforce_admins: { enabled: true },
+  };
+  assert.doesNotThrow(() => verifyProtection(goodProtection));
+  for (const change of [
+    (p) => { p.required_status_checks.strict = false; },
+    (p) => { p.enforce_admins.enabled = false; },
+    (p) => { p.required_status_checks.contexts.pop(); },
+    (p) => { p.required_status_checks = null; },
+  ]) {
+    const candidate = structuredClone(goodProtection);
+    change(candidate);
+    assert.throws(() => verifyProtection(candidate),
+      'incomplete live GitHub protection must never verify');
+  }
+  console.log('PASS branch policy negative fixtures: drift, missing/filtered/conditional contexts and live gate');
 }
 
 async function githubApi(path, method = 'GET', body) {
