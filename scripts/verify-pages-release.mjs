@@ -437,7 +437,7 @@ function selfTest() {
     ['delayed internal refresh', '<meta http-equiv=refresh content="5;url=/en/">', 'Unapproved HTML meta refresh'],
     ['noscript refresh', '<noscript><meta http-equiv=refresh content="0;url=/en/"></noscript>', 'Unapproved HTML meta refresh'],
     ['nested template refresh', '<template><template><meta http-equiv=refresh content="0;url=/en/"></template></template>', 'Unapproved HTML meta refresh'],
-    ['HTML5 slash-separated refresh', '<meta/http-equiv=refresh/content="0;url=https://evil.invalid/">', 'Unapproved HTML meta refresh'],
+    ['HTML5 slash-separated refresh', '<meta/http-equiv=refresh/content="0;url=https://evil.invalid/">', 'Malformed HTML5 attribute separator'],
     ['noscript form', '<noscript><form action="/x"></form></noscript>', 'Unauthorized commerce'],
     ['noscript mailto', '<noscript><a href="mailto:a@b.c">Contact</a></noscript>', 'Unauthorized commerce'],
     ['noscript event handler', '<noscript><img src=x onerror=alert(1)></noscript>', 'Inline event handler'],
