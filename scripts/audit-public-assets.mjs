@@ -141,6 +141,14 @@ function inspectCss(css, at, files, base, findings, references) {
     referencedAsset(match[1] ?? match[2] ?? match[3], at, files, base, findings, references, 'css-url');
   for (const match of css.matchAll(/@import\s+(?:"([^"]+)"|'([^']+)')/gi))
     referencedAsset(match[1] ?? match[2], at, files, base, findings, references, 'css-import');
+  // CSS image-set accepts bare quoted URLs (without url()). Catch those too.
+  for (const fn of css.matchAll(/(?:-webkit-)?image-set\s*\(([^)]*)\)/gi))
+    for (const match of fn[1].matchAll(/(?:"([^"]+)"|'([^']+)')/g)) {
+      const asset = match[1] ?? match[2];
+      if (/^(?:https?:|\/\/|data:|blob:)/i.test(asset) ||
+          /\.(?:png|jpe?g|svg|webp|gif|avif|ico)(?:[?#]|$)/i.test(asset))
+        referencedAsset(asset, at, files, base, findings, references, 'css-image-set');
+    }
 }
 
 function inspectHtml(html, at, files, base, findings, references, rightsByPath) {
@@ -167,19 +175,64 @@ function inspectHtml(html, at, files, base, findings, references, rightsByPath) 
         if (attrs.has(field)) referencedAsset(attrs.get(field), at, files, base, findings, references, tag + '-' + field);
         if (tag === 'video' && attrs.has('src'))
           referencedAsset(attrs.get('src'), at, files, base, findings, references, 'video-src');
-        if (attrs.has('srcset'))
-          for (const item of attrs.get('srcset').split(','))
-            referencedAsset(item.trim().split(/\s+/)[0], at, files, base, findings, references, 'srcset');
+        // Popular lazy-load conventions cannot silently bypass public rights checks.
+        for (const key of ['data-src', 'data-original', 'data-lazy-src', 'data-background',
+          'data-bg', 'data-poster', 'data-srcset', 'srcset']) {
+          if (!attrs.has(key)) continue;
+          const value = attrs.get(key);
+          if (key.endsWith('srcset'))
+            for (const item of value.split(','))
+              referencedAsset(item.trim().split(/\s+/)[0], at, files, base, findings, references, key);
+          else referencedAsset(value, at, files, base, findings, references, key);
+        }
       }
-      if (tag === 'link' && /\b(?:stylesheet|icon|preload|modulepreload|apple-touch-icon|mask-icon)\b/i.test(attrs.get('rel') ?? ''))
-        referencedAsset(attrs.get('href'), at, files, base, findings, references, 'link');
-      if (tag === 'meta' && /^(?:og:image(?::.*)?|twitter:image(?::.*)?)$/i.test(attrs.get('property') ?? attrs.get('name') ?? ''))
+      if (tag === 'link') {
+        const rel = attrs.get('rel') ?? '';
+        const href = attrs.get('href') ?? '';
+        if (/\b(?:stylesheet|icon|preload|modulepreload|apple-touch-icon|mask-icon|manifest|image_src)\b/i.test(rel) ||
+            (/\balternate\b/i.test(rel) &&
+              (/^(?:image|audio|video)\//i.test(attrs.get('type') ?? '') ||
+                /\.(?:png|jpe?g|svg|webp|gif|avif|ico|mp4|webm|mp3)(?:[?#]|$)/i.test(href))))
+          referencedAsset(href, at, files, base, findings, references, 'link');
+        if (attrs.has('imagesrcset'))
+          for (const item of attrs.get('imagesrcset').split(','))
+            referencedAsset(item.trim().split(/\s+/)[0], at, files, base, findings, references, 'imagesrcset');
+      }
+      if (tag === 'meta' && /^(?:og:(?:image|video|audio)(?::.*)?|twitter:(?:image|player|audio|video)(?::.*)?|msapplication-tileimage|msapplication-square\d+x\d+logo|msapplication-wide\d+x\d+logo)$/i.test(attrs.get('property') ?? attrs.get('name') ?? ''))
         referencedAsset(attrs.get('content'), at, files, base, findings, references, 'social-preview');
       scan(node.childNodes);
       if (node.content) scan(node.content.childNodes);
     }
   }
   scan(document.childNodes);
+}
+
+// A narrow, conservative compiled-JS detector. It deliberately does not pretend
+// to evaluate all JS expressions, dynamic fetches, string concatenation or obfuscation.
+function inspectJs(js, at, findings) {
+  const suspect = [
+    /data:(?:image|font|audio|video)\//gi,
+    /(?:https?:)?\/\/[^\s'"\x60<>]+?\.(?:svg|png|jpe?g|webp|avif|gif|ico|woff2?|ttf|otf|mp4|webm|mp3|ogg|wav)(?:[?#][^\s'"\x60<>]*)?/gi,
+    /<svg(?:\s|>)/gi,
+  ];
+  for (const expression of suspect) {
+    for (const match of js.matchAll(expression)) {
+      findings.push({ kind: 'Potential embedded or remote media in compiled JavaScript',
+        id: pathId(at + '|js|' + match.index + '|' + match[0]) });
+    }
+  }
+}
+
+function disguisedMedia(bytes) {
+  // High-confidence signatures only; the remaining bytes are not a legal/media proof.
+  const start = bytes.subarray(0, 16);
+  const ascii = start.toString('latin1');
+  return start.subarray(0, 8).equals(Buffer.from([137,80,78,71,13,10,26,10])) ||
+    start.subarray(0, 3).equals(Buffer.from([255,216,255])) ||
+    /^GIF8[79]a/.test(ascii) || /^%PDF-/.test(ascii) ||
+    /^(?:wOFF|wOF2|OTTO|\x00\x01\x00\x00)/.test(ascii) ||
+    /^RIFF....WEBP/s.test(ascii) || ascii.slice(4, 8) === 'ftyp' ||
+    /^\s*(?:<\?xml[^>]*>\s*)?<svg(?:\s|>)/i.test(bytes.subarray(0, 512).toString('utf8'));
 }
 
 /**
@@ -213,6 +266,8 @@ export function audit(dir, policy, legacy = []) {
     let reviewer = null, reviewDate = null, rightsOwner = null, evidenceRef = null;
     if (knownUncleared.has(digest))
       findings.push({ kind: 'Quarantined media bytes found in release file', id: pathId(name) });
+    if (kind !== 'media' && disguisedMedia(bytes))
+      findings.push({ kind: 'Media signature hidden behind generated nonmedia extension', id: pathId(name) });
     if (kind === 'media') {
       classification = entry?.classification ?? 'unknown';
       state = entry?.status ?? 'unknown';
@@ -232,6 +287,7 @@ export function audit(dir, policy, legacy = []) {
       rightsOwner, evidenceRef, reviewer, reviewDate, state, remediation: remediation(kind) });
     if (name.endsWith('.html')) inspectHtml(bytes.toString('utf8'), name, files, base, findings, references, rightsByPath);
     if (name.endsWith('.css')) inspectCss(bytes.toString('utf8'), name, files, base, findings, references);
+    if (name.endsWith('.js')) inspectJs(bytes.toString('utf8'), name, findings);
   }
   // Disallow stale approvals and declared files that the audited distribution omits.
   for (const entry of policy.assets) {
