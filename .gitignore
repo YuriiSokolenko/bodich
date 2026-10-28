@@ -39,3 +39,6 @@ visual-qa/romanian-rendered-preview.json
 
 # Stage 20D generated axe/Lighthouse reports (private, retained only as CI artifacts)
 visual-qa/release-qa/
+
+# Stage 20D / Issue #87 automated Linux Firefox/WebKit audit output
+visual-qa/cross-browser-qa/

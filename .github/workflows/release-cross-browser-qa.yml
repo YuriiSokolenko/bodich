@@ -1,0 +1,100 @@
+name: Stage 20D Firefox and WebKit Smoke (automated only)
+
+on:
+  # No path filters: a required compatibility-smoke check must also run on docs-only PRs.
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: stage-20d-cross-browser-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  compatibility-smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      QA_OUTPUT_DIR: visual-qa/cross-browser-qa
+      QA_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - name: Checkout exact PR head / dispatch commit
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+
+      - name: Node 24 from repository pin
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install exactly one committed npm tree
+        run: npm ci
+
+      - name: Verify locked QA tools and complete dependency tree
+        run: npm run qa:lock:check
+
+      - name: Validate source, policy, and negative regression fixture
+        run: |
+          npm run check
+          node scripts/release-cross-browser-qa.mjs --self-test
+
+      - name: Build release-safe public EN/RO pages (never build:beta)
+        run: npm run build
+
+      - name: Freeze source SHA, lock SHA-256 and canonical Stage 20F dist digest
+        id: freeze
+        run: npm run qa:dist:record
+
+      # Install only Playwright-managed browser binaries and their OS prerequisites.
+      # npm dependencies were already locked by npm ci; no npx/npm install or rebuild.
+      - name: Install locked Linux Firefox and WebKit browsers
+        run: ./node_modules/.bin/playwright install --with-deps firefox webkit
+
+      - name: Assert browser installation preserved release-safe source and dist
+        run: npm run qa:dist:verify
+
+      - name: Start loopback-only release-safe preview
+        shell: bash
+        run: |
+          npm run preview -- --host 127.0.0.1 --port 4321 --strictPort > /tmp/bodich-cross-browser-preview.log 2>&1 &
+          for attempt in $(seq 1 45); do
+            if curl --fail --silent http://127.0.0.1:4321/en/ > /dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/bodich-cross-browser-preview.log
+          exit 1
+
+      - name: Exercise 48 EN/RO route cells and eight interactive journeys
+        run: node scripts/release-cross-browser-qa.mjs
+
+      - name: Show bounded preview diagnostics on failure
+        if: failure()
+        shell: bash
+        run: |
+          if [ -f /tmp/bodich-cross-browser-preview.log ]; then
+            tail -n 100 /tmp/bodich-cross-browser-preview.log
+          fi
+
+      - name: Assert source, lock and release-safe dist unchanged after QA
+        if: always() && steps.freeze.outcome == 'success'
+        run: npm run qa:dist:verify
+
+      - name: Upload sanitized summary and failure-only screenshots
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: stage-20d-cross-browser-${{ github.run_id }}
+          path: |
+            visual-qa/cross-browser-qa/summary.json
+            visual-qa/cross-browser-qa/build-integrity.json
+            visual-qa/cross-browser-qa/screenshots/
+          if-no-files-found: warn
+          retention-days: 14
