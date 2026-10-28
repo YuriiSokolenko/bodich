@@ -41,11 +41,11 @@ if (args.includes('--self-test')) {
   const dir = mkdtempSync(join(tmpdir(), 'bodich-qa-lock-'));
   try {
     const changed = structuredClone(pkg);
-    changed.devDependencies.playwright = '0.0.0-invalid-lock-fixture';
+    changed.devDependencies.playwright = '1.63.0'; // Valid release, deliberately not the locked 1.64.1
     writeFileSync(join(dir, 'package.json'), JSON.stringify(changed, null, 2) + '\n');
     writeFileSync(join(dir, 'package-lock.json'), lockBytes);
     const result = spawnSync('npm',
-      ['ci', '--offline', '--ignore-scripts', '--no-audit', '--no-fund'],
+      ['ci', '--ignore-scripts', '--no-audit', '--no-fund'],
       { cwd: dir, encoding: 'utf8', timeout: 30000 });
     const output = (result.stdout ?? '') + '\n' + (result.stderr ?? '');
     assert.notEqual(result.status, 0, 'npm ci must reject an out-of-sync QA manifest');
@@ -53,7 +53,7 @@ if (args.includes('--self-test')) {
       'Mismatch must fail due to npm lock validation, not a network error');
     assert.equal(digest(readFileSync(join(dir, 'package-lock.json'))), digest(lockBytes),
       'Rejected npm ci must not rewrite the committed lockfile');
-    console.log('QA lockfile negative probe passed: mismatched manifest fails closed offline.');
+    console.log('QA lockfile negative probe passed: mismatched manifest fails closed without rewriting the lock.');
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }
