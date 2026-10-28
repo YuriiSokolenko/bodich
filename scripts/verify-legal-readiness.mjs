@@ -4,6 +4,7 @@
  */
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
+import { spawnSync } from 'node:child_process';
 import { existsSync, mkdtempSync, mkdirSync, readFileSync, readdirSync, rmSync, lstatSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join, relative, resolve } from 'node:path';
@@ -348,6 +349,16 @@ function selfTest() {
     symlinkSync('index.html', join(dir, 'link.js'));
     assert(auditDist(dir).findings.some((x) => x.code === 'non_regular_dist_entry'));
     rmSync(join(dir, 'link.js'));
+    // End-to-end CLI regression: --dist=<absolute-path> must actually run
+    // the scanner, not merely print the legal ledger.
+    const cmd = (...args) => spawnSync(process.execPath,
+      [fileURLToPath(import.meta.url), ...args], { encoding: 'utf8' });
+    const valid = cmd('--dist=' + dir);
+    assert.equal(valid.status, 0, valid.stderr);
+    assert.match(valid.stdout, /"html": 1/);
+    const missing = cmd('--dist=' + join(dir, 'missing'));
+    assert.notEqual(missing.status, 0, 'missing dist CLI must fail');
+    assert.match(missing.stdout, /missing_dist_directory/);
   } finally { rmSync(dir, { recursive: true, force: true }); }
   console.log('Legal/privacy policy regression fixtures passed (not human approval).');
 }
