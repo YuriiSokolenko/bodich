@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev",
-    "check": "astro check && npm run media:check && npm run media:self-test && node scripts/validate-catalog.mjs && node scripts/validate-catalog.mjs --self-test && npm run catalog:review:ledger:check && npm run catalog:review:ledger:self-test && npm run catalog:genuine:check && npm run catalog:genuine:self-test && npm run catalog:products:check && npm run catalog:products:self-test && npm run catalog:source:check && npm run catalog:reconcile && npm run seo:check && npm run seo:self-test && npm run assets:self-test && npm run release:decision:check && npm run release:decision:self-test",
+    "check": "astro check && npm run media:check && npm run media:self-test && node scripts/validate-catalog.mjs && node scripts/validate-catalog.mjs --self-test && npm run catalog:review:ledger:check && npm run catalog:review:ledger:self-test && npm run catalog:genuine:check && npm run catalog:genuine:self-test && npm run catalog:products:check && npm run catalog:products:self-test && npm run catalog:source:check && npm run catalog:reconcile && npm run seo:check && npm run seo:self-test && npm run assets:self-test && npm run release:decision:check && npm run release:decision:self-test && npm run legal:check && npm run legal:self-test",
     "build": "astro build",
     "build:beta": "BODICH_MEDIA_PROFILE=beta_presentation npm run media:stage-beta && BODICH_MEDIA_PROFILE=beta_presentation npm run build && BODICH_MEDIA_PROFILE=beta_presentation npm run media:beta",
     "preview": "astro preview",
@@ -53,7 +53,10 @@
     "assets:release": "node scripts/audit-public-assets.mjs dist",
     "release:decision:check": "node scripts/verify-release-decision.mjs --check",
     "release:decision:self-test": "node scripts/verify-release-decision.mjs --self-test",
-    "release:decision:verify": "node scripts/verify-release-decision.mjs --verify-dist"
+    "release:decision:verify": "node scripts/verify-release-decision.mjs --verify-dist",
+    "legal:check": "node scripts/verify-legal-readiness.mjs",
+    "legal:self-test": "node scripts/verify-legal-readiness.mjs --self-test",
+    "legal:dist": "node scripts/verify-legal-readiness.mjs --dist"
   },
   "engines": {
     "node": ">=24 <25"

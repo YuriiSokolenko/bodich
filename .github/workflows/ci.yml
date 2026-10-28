@@ -104,6 +104,8 @@ jobs:
         run: npm run media:public
       - name: Reconcile exact release assets against the human rights register
         run: npm run assets:release
+      - name: Audit final static build for unapproved contact forms, trackers and storage
+        run: npm run legal:dist
       - name: Validate Stage 20F evidence packet against built public files
         run: |
           npm run pages:verify
