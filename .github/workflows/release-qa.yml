@@ -1,0 +1,79 @@
+name: Stage 20D Release QA (automated only)
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'public/**'
+      - 'astro.config.mjs'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'scripts/release-qa.mjs'
+      - 'scripts/verify-release-qa.mjs'
+      - 'docs/qa/issue-69-*'
+      - '.github/workflows/release-qa.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: stage-20d-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  automated-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install locked website dependencies
+        run: npm ci
+
+      - name: Validate evidence matrix and fail-closed self-tests
+        run: |
+          npm run qa:evidence:check
+          npm run qa:evidence:self-test
+
+      - name: Build release-safe informational website
+        run: npm run build
+
+      # Browser tools are installed AFTER the locked build to avoid changing site output.
+      - name: Install pinned QA tools
+        run: npm install --no-save --package-lock=false playwright@1.64.1 @axe-core/playwright@4.14.0 lighthouse@13.5.0
+
+      - name: Install full Chromium for axe and Lighthouse
+        run: npx playwright install chromium
+
+      - name: Start local preview
+        shell: bash
+        run: |
+          npm run preview -- --host 127.0.0.1 --port 4321 > /tmp/bodich-release-qa-preview.log 2>&1 &
+          echo $! > /tmp/bodich-release-qa-preview.pid
+          for attempt in $(seq 1 45); do
+            if curl --fail --silent http://127.0.0.1:4321/en/ > /dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/bodich-release-qa-preview.log
+          exit 1
+
+      - name: WCAG 2.2 axe scans and three-run mobile Lighthouse budgets
+        run: npm run qa:release
+
+      - name: Upload machine-readable axe findings and raw Lighthouse runs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stage-20d-automated-qa-${{ github.run_id }}
+          path: visual-qa/release-qa/
+          if-no-files-found: warn
+          retention-days: 30
