@@ -104,6 +104,10 @@ jobs:
         run: npm run media:public
       - name: Reconcile exact release assets against the human rights register
         run: npm run assets:release
+      - name: Validate Stage 20F evidence packet against built public files
+        run: |
+          npm run pages:verify
+          npm run release:decision:verify
       - name: Check generated localized routes
         run: |
           test -f dist/index.html

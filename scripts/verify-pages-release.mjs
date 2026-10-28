@@ -612,7 +612,7 @@ if (process.argv.includes('--self-test')) {
     'Usage: node scripts/verify-pages-release.mjs [dist] [--no-write]');
   const folder = resolve(positions[0] ?? 'dist');
   assert(existsSync(folder), 'Missing static dist directory');
-  const entries = gather(folder).sort((a, b) => a.name.localeCompare(b.name, 'en'));
+  const entries = gather(folder).sort((a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0);
   const failures = audit(entries);
   const report = {
     schemaVersion: 1, kind: 'cloudflare_pages_static_release_gate',
