@@ -61,14 +61,11 @@ jobs:
           npm run check
           npm run build:beta
 
-      # Test the explicit labelled presentation-beta profile, not the release-safe build.
-      # Browser tooling is added only after the review build is created:
-      # no post-install changes can affect the tested Astro output.
-      - name: Install pinned browser test library (after build)
-        run: npm install --no-save --package-lock=false playwright@1.64.1
-
-      - name: Install headless Chromium (runner provides Linux system libraries)
-        run: npx playwright install --only-shell chromium
+      # Test the explicitly labelled presentation-beta build.
+      # Playwright was already installed from the same immutable npm ci lockfile.
+      # Install only its matching Chromium shell, not another npm dependency tree.
+      - name: Install headless Chromium matching locked Playwright
+        run: ./node_modules/.bin/playwright install --only-shell chromium
 
       - name: Launch production preview
         shell: bash
