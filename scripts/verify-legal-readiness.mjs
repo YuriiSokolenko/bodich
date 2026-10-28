@@ -103,7 +103,7 @@ function htmlRisks(html, add, stats) {
         if (resourceAttrs.has(tag + ':' + key) && UNTRUSTED.test(value.trim()))
           add('remote_or_embedded_resource');
         if (tag === 'link' && key === 'href' &&
-            /\b(?:stylesheet|icon|preload|modulepreload|prefetch|manifest)\b/i.test(a.rel ?? '') &&
+            /\b(?:stylesheet|icon|preload|modulepreload|prefetch|preconnect|dns-prefetch|manifest)\b/i.test(a.rel ?? '') &&
             UNTRUSTED.test(value.trim())) add('remote_or_embedded_resource');
       }
       for (const value of sourceUrls(a.srcset)) {
@@ -189,6 +189,7 @@ function selfTest() {
     check('<noscript><iframe src="https://tracker.invalid"></iframe></noscript>', 'unapproved_collection_or_embed');
     check('<a href="mailto:demo@example.org">mail</a>', 'unapproved_contact_channel');
     check('<script src="https://third-party.invalid/tracker.js"></script>', 'remote_or_embedded_resource');
+    check('<link rel="preconnect" href="https://tracker.invalid">', 'remote_or_embedded_resource');
     check('<img srcset="https://third-party.invalid/i.webp 2x">', 'remote_srcset_resource');
     check('<script>localStorage.setItem("id","1")</script>', 'browser_storage');
     check('<script src="/_astro/app.js"></script>', 'network_api',
