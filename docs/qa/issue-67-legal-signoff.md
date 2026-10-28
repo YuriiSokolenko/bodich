@@ -1,0 +1,37 @@
+# Stage 20B — site operator, legal/privacy and contact sign-off (#67)
+
+Parent: [Stage 20 launch-readiness epic #60](https://github.com/YuriiSokolenko/bodich/issues/60). Feeds the mandatory legal gate in [final decision #71](issue-71-release-decision.md). Related editorial review: [#57](../editorial/publication-policy.md).
+
+**Status: NO-GO (unsigned policy default).** The actual site's legal operator, authorized brand use, governing markets, permitted contact details and qualified legal reviewer are not verified. No legal opinion, cookie determination or bilingual legal-copy approval is asserted. The provisional 2026-11-05 planning date is not an agreed deadline.
+
+## Existing site surface (initial source inspection, not a network trace)
+
+- The website is a static Astro EN/RO informational preview. The existing Contact text in both languages explicitly says no enquiry form or visitor-message database operates; it contains no approved email address or phone number. Do not turn an unverified personal contact into a business contact.
+- The navigation uses a local bundled JavaScript enhancement for keyboard/pointer handling. The current source imports system fonts; there is no approved analytics, mailing list, customer-data backend, advertising pixel or cookie-consent integration.
+- Static inspection **cannot establish** whether Cloudflare, DNS, deployed response headers, injected third-party scripts, CDN services, privacy proxies or a visitor browser set cookies, store data or send third-party requests. Those observations require a real hosted-preview/browser capture by an authorized reviewer.
+- This implementation does not create a privacy policy or cookie banner without a legal determination. If any non-essential collection is proposed, remove it or obtain verified counsel-approved consent and implementation, then repeat the full review.
+
+## Machine audit: strictly narrower than legal approval
+
+Run on the exact release-safe Astro build (never the presentation beta):
+
+    npm ci
+    npm run check
+    npm run build
+    npm run legal:dist
+
+Ledger validation and adversarial fixture tests are part of npm run check. The CI website and Pages-security workflows run legal:dist against actual compiled HTML/CSS/JS. The scanner parses HTML5 with scripting disabled, including nested template/noscript, and rejects contact forms, visitor inputs, iframes/embeds, mailto/tel contact endpoints, third-party or embedded resource URLs, resource srcsets, obvious storage/cookie and browser-network APIs and remote CSS resources. External ordinary navigation links are counted, not assumed to be third-party automatic requests. Findings use path hashes, not internal file names. Any finding fails the technical gate.
+
+**Static scanner limitations:** it is a conservative regex/DOM inventory, not a JavaScript data-flow engine or comprehensive runtime policy; dynamically constructed addresses, nonstandard APIs, encoded strings, browser extensions, DNS/CDN behavior, real requests and Set-Cookie headers may escape detection. A zero-finding result means only STATIC_AUDIT_PASSED_HUMAN_NO_GO. Do not claim cookie-free or GDPR-compliant operation from CI. Existing CSP and release-data isolation are covered separately by #70/#71.
+
+## Human evidence required before a potential GO
+
+1. **Legal operator and branding authority.** Actual operator identifies company or sole trader as applicable, legal jurisdiction, target markets, what operator/company disclosures and registered contact information are required, and who can authorize public BODICH brand/manufacturer/supplier statements. Only details explicitly permitted for publication belong in the website.
+2. **Qualified legal determination.** Named, qualified reviewer dates an opinion on applicable Romanian/EU legal notices, GDPR/privacy disclosures, controller/processor roles (if relevant), purpose/retention and lawful basis for contact handling, cookies and non-essential storage/consent, branding/trademarks, and cross-border audiences. The reviewer decides applicability rather than the repository assuming every obligation applies identically.
+3. **Actual technical behavior.** On a controlled real preview of the exact release-safe candidate, inspect both EN and RO pages using a fresh profile: Network initiators and external hosts; request/response headers including Set-Cookie; Cookies, Local/Session Storage, IndexedDB, Cache Storage and service workers; forms, email links, any dynamic tools; Cloudflare and other infrastructure. Record exact URL, build SHA, artifact hash, browser/OS version, time, findings and remediations. Check before and after interactions, language switch and consent controls if any. A negative observation is scoped to the tested configuration, not all environments.
+4. **Final EN/RO text.** Counsel approves both rendered legal/privacy/contact copies, links and locale parity for exactly the reviewed build. Native Romanian language review remains an independent #68 obligation; English-only approval is insufficient. No invented company address, email, approval, trademark right or manufacturing claim.
+5. **Independent evidence and release decision.** Store contracts, business identity records, screenshots with personal information, signed legal advice and browser traces in controlled **off-repository** storage. Refer only to opaque restricted: IDs in the public [status ledger](issue-67-legal-signoff.json). Require a named operator and distinct qualified reviewer, dated scope, legal opinion reference, reviewed Git SHA and dist digest. The Stage 20F #71 authority independently verifies evidence and signs a separate final GO/NO-GO; even a legal GO never deploys by itself.
+
+## Current blockers and safe next action
+
+The JSON ledger records operator, brand, counsel, live network/storage inspection, both language approvals and candidate-level sign-off as explicit pending blockers. Keep decision = NO_GO until real people and evidence exist. Work on the release-safe code and test these gates in parallel; do not publish, insert guessed legal/contact text or auto-promote the site. A future authorized contact channel needs an explicit, reviewed update to the conservative mailto/tel/forms policy and corresponding regression fixtures, not a silent exception.
