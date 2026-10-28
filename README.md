@@ -101,8 +101,7 @@ The browser tests are implemented in [`scripts/visual-qa.mjs`](scripts/visual-qa
 npm ci
 npm run check
 npm run build:beta
-npm install --no-save --package-lock=false playwright@1.64.1
-npx playwright install --only-shell chromium
+./node_modules/.bin/playwright install --only-shell chromium
 npm run preview -- --host 127.0.0.1 --port 4321
 ```
 
