@@ -39,7 +39,9 @@
       },
       "defects": [],
       "retest": "NOT_RUN",
-      "retestRef": null
+      "retestRef": null,
+      "retester": null,
+      "retestedAt": null
     },
     {
       "id": "android-chrome-ro",
@@ -72,7 +74,9 @@
       },
       "defects": [],
       "retest": "NOT_RUN",
-      "retestRef": null
+      "retestRef": null,
+      "retester": null,
+      "retestedAt": null
     },
     {
       "id": "iphone-safari-en",
@@ -105,7 +109,9 @@
       },
       "defects": [],
       "retest": "NOT_RUN",
-      "retestRef": null
+      "retestRef": null,
+      "retester": null,
+      "retestedAt": null
     },
     {
       "id": "iphone-safari-ro",
@@ -138,7 +144,9 @@
       },
       "defects": [],
       "retest": "NOT_RUN",
-      "retestRef": null
+      "retestRef": null,
+      "retester": null,
+      "retestedAt": null
     },
     {
       "id": "desktop-chromium-en",
@@ -170,7 +178,9 @@
       },
       "defects": [],
       "retest": "NOT_RUN",
-      "retestRef": null
+      "retestRef": null,
+      "retester": null,
+      "retestedAt": null
     },
     {
       "id": "desktop-chromium-ro",
@@ -202,7 +212,9 @@
       },
       "defects": [],
       "retest": "NOT_RUN",
-      "retestRef": null
+      "retestRef": null,
+      "retester": null,
+      "retestedAt": null
     },
     {
       "id": "desktop-firefox-en",
@@ -234,7 +246,9 @@
       },
       "defects": [],
       "retest": "NOT_RUN",
-      "retestRef": null
+      "retestRef": null,
+      "retester": null,
+      "retestedAt": null
     },
     {
       "id": "desktop-firefox-ro",
@@ -266,7 +280,9 @@
       },
       "defects": [],
       "retest": "NOT_RUN",
-      "retestRef": null
+      "retestRef": null,
+      "retester": null,
+      "retestedAt": null
     },
     {
       "id": "macos-safari-en",
@@ -298,7 +314,9 @@
       },
       "defects": [],
       "retest": "NOT_RUN",
-      "retestRef": null
+      "retestRef": null,
+      "retester": null,
+      "retestedAt": null
     },
     {
       "id": "macos-safari-ro",
@@ -330,7 +348,9 @@
       },
       "defects": [],
       "retest": "NOT_RUN",
-      "retestRef": null
+      "retestRef": null,
+      "retester": null,
+      "retestedAt": null
     }
   ],
   "lab": {
@@ -372,5 +392,6 @@
     "clsP75": null,
     "reason": "No verified field sample has been supplied. Do not use TBT as INP."
   },
-  "notes": "Unsigned planning baseline. No real devices, screen readers or performance runs are asserted. This file is not a release approval."
+  "notes": "Unsigned planning baseline. No real devices, screen readers or performance runs are asserted. This file is not a release approval.",
+  "distManifestSha256": null
 }
