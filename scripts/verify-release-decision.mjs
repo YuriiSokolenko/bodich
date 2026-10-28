@@ -36,7 +36,8 @@ function date(value, utc = false, futureAllowed = false) {
   if (typeof value !== 'string' || !(utc ? UTC : DATE).test(value)) return false;
   const parsed = new Date(utc ? value : value + 'T00:00:00Z');
   return !Number.isNaN(parsed.valueOf()) &&
-    (utc ? true : parsed.toISOString().slice(0, 10) === value) &&
+    (utc ? parsed.toISOString().replace(/\.000Z$/, 'Z') === value.replace(/\.000Z$/, 'Z') :
+      parsed.toISOString().slice(0, 10) === value) &&
     (futureAllowed || parsed.getTime() <= Date.now());
 }
 function problems(record) {
@@ -158,7 +159,7 @@ function verifyDist(record, dist, reportsDir) {
   }
   assert(rights.quarantinedRegistry.every((row) => row.distributed === false),
     'uncleared_supplier_media_in_dist');
-  if (record.decision === 'GO') {
+  if (record.release.distManifestSha256 != null) {
     assert.equal(record.release.distManifestSha256, manifestSha, 'candidate_digest_mismatch');
   }
   return manifestSha;
@@ -214,6 +215,7 @@ function selfTest() {
   negative((r) => { r.operations.previousBuildSha256 = null; }, 'missing_prior_immutable_build');
   negative((r) => { r.operations.windowEndUtc = r.operations.windowStartUtc; }, 'invalid_deployment_window');
   negative((r) => { r.decisionAuthority.signatureEvidence = 'restricted:example'; }, 'missing_attributable_signature');
+  negative((r) => { r.decisionAuthority.signedAt = '2026-02-31T08:30:00Z'; }, 'missing_attributable_signature');
   negative((r) => { r.release.gitSha = '0'.repeat(40); }, 'unsubstantiated_pass');
   const blocked = structuredClone(base);
   blocked.remediations = [];
