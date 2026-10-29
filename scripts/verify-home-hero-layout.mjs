@@ -1,7 +1,10 @@
 import assert from 'node:assert/strict';
 import { createServer } from 'node:http';
-import { readFile } from 'node:fs/promises';
+import { spawnSync } from 'node:child_process';
+import { mkdtemp, readFile, rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
 import { extname, join, normalize, resolve, sep } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright';
 import sharp from 'sharp';
 
@@ -322,10 +325,12 @@ function launchBrowser() {
 
 async function run(distDirectory) {
   const server = await startStaticServer(distDirectory);
-  const browser = await launchBrowser();
+  let browser;
   const failures = [];
   let checked = 0;
   try {
+    // Launch inside the cleanup scope: a missing Chromium must not leave the HTTP server open.
+    browser = await launchBrowser();
     const page = await browser.newPage({ viewport: { width: 1280, height: viewportHeight }, reducedMotion: 'reduce' });
     for (const locale of locales) {
       for (const viewport of viewports) {
@@ -345,7 +350,7 @@ async function run(distDirectory) {
       }
     }
   } finally {
-    await browser.close();
+    await browser?.close();
     await server.close();
   }
   assert.equal(failures.length, 0, `${failures.length} of ${checked} release-safe hero layout checks failed (issue #96)`);
@@ -429,7 +434,23 @@ async function selfTest() {
   } finally {
     await browser.close();
   }
-  console.log('Hero layout self-test passed: accepts the in-flow fixture and rejects overlap, shade obscuration, absolute copy and darkened text.');
+
+  // Startup failure: with no usable Chromium the run must exit non-zero promptly instead of
+  // hanging on the still-listening static server.
+  const emptyDist = await mkdtemp(join(tmpdir(), 'bodich-hero-'));
+  try {
+    const child = spawnSync(process.execPath, [fileURLToPath(import.meta.url), emptyDist], {
+      env: { ...process.env, BODICH_QA_CHROMIUM_PATH: join(emptyDist, 'missing-chromium') },
+      encoding: 'utf8',
+      timeout: 60000,
+    });
+    assert.notEqual(child.error?.code, 'ETIMEDOUT', 'A Chromium launch failure must not leave the process hanging');
+    assert.equal(child.status, 1, `A Chromium launch failure must exit with status 1 (got ${child.status})`);
+    assert(/executable|chromium|browser/i.test(`${child.stderr}`), `Launch failure must be reported: ${child.stderr}`);
+  } finally {
+    await rm(emptyDist, { recursive: true, force: true });
+  }
+  console.log('Hero layout self-test passed: accepts the in-flow fixture and rejects overlap, shade obscuration, absolute copy and darkened text, and exits cleanly when Chromium cannot launch.');
 }
 
 const argument = process.argv[2];
