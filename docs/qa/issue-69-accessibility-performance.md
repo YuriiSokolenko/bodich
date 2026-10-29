@@ -64,8 +64,8 @@ To intentionally update QA dependencies, edit the exact versions in `package.jso
 
 **Different builds must never be conflated.** The mandatory `compatibility-smoke` job in
 `.github/workflows/release-cross-browser-qa.yml` runs on **every pull request to `main`**, with no
-path filters. It is one of the three status contexts enforced by active branch Ruleset
-`#26119822` (alongside `checks` and `cloudflare-static-release`). This is an automated
+path filters. It is one of the three status contexts enforced by active branch Ruleset configured in `config/required-main-checks.json`
+(alongside `checks` and `cloudflare-static-release`). This is an automated
 gate, **not** release authorization or a substitute for physical device review.
 
 * From the **exact PR head**, it runs `npm ci`, `npm run check`, a fresh
@@ -73,7 +73,7 @@ gate, **not** release authorization or a substitute for physical device review.
   `npm run qa:dist:verify` around browser installation and after testing. The gate does not
   reuse beta `dist`. The verifier checks source SHA, committed-lockfile SHA-256, and the
   same canonical `distManifestSha256` required by Stage 20F. Nothing is signed or deployed.
-* It installs the browser versions associated with the root-locked `playwright@1.64.1`:
+* It installs the browser versions associated with the root-locked Playwright declared in `package.json`:
   headless Chromium plus Firefox and WebKit. `npm run qa:hero:layout:self-test`
   deliberately recreates the **pre-#96** absolute-copy/short-media/shade collision and
   verifies the geometry and pixel-readback guards fail, independently in EN and RO.
@@ -120,8 +120,10 @@ goldens, pin the browser and fonts, independently inspect both-language images,
 record the approved candidate source SHA and digest, and update baseline files in a
 separate reviewed PR. CI must never auto-create or auto-update baseline images;
 geometry/occlusion is the decisive current gate, while screenshots support review.
-Font antialiasing, OS version and text wrapping are not grounds for accepting
-structural collisions. The CI time budget is **55 minutes** for this combined required
+The required workflow policy rejects step-level skip/continue-on-error on the
+layout, fixture, build and digest steps, binds the integrity flag to the layout step
+and verifies their execution order. Font antialiasing, OS version and text wrapping are not grounds for accepting
+structural collisions. The CI time budget is **45 minutes** for this combined required
 cross-engine workflow, not a promise of real-device testing.
 
 **Still NO-GO:** manual macOS Chrome/Safari and native-RO review, real iPhone
