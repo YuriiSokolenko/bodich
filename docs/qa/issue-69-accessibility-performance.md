@@ -60,6 +60,75 @@ To intentionally update QA dependencies, edit the exact versions in `package.jso
 
 **TBT is not INP.** Field INP can only come from actual real-user measurement. Obtain p75 from a credible field source (e.g. CrUX or compliant RUM), with recorded sampling period, eligibility and provenance. If no sufficient real-user sample exists, keep **NO_FIELD_DATA** with null p75 numbers and an explicit reason; never substitute lab TBT or invent a passing field metric. Representative Lighthouse targets do not waive real-device/manual checks on the other routes.
 
+## Required PR layout regression gate (issue #97; built on #96)
+
+**Different builds must never be conflated.** The mandatory `compatibility-smoke` job in
+`.github/workflows/release-cross-browser-qa.yml` runs on **every pull request to `main`**, with no
+path filters. It is one of the three status contexts enforced by active branch Ruleset
+`#26119822` (alongside `checks` and `cloudflare-static-release`). This is an automated
+gate, **not** release authorization or a substitute for physical device review.
+
+* From the **exact PR head**, it runs `npm ci`, `npm run check`, a fresh
+  `npm run build` (the real **release-safe** profile), `npm run qa:dist:record`, and
+  `npm run qa:dist:verify` around browser installation and after testing. The gate does not
+  reuse beta `dist`. The verifier checks source SHA, committed-lockfile SHA-256, and the
+  same canonical `distManifestSha256` required by Stage 20F. Nothing is signed or deployed.
+* It installs the browser versions associated with the root-locked `playwright@1.64.1`:
+  headless Chromium plus Firefox and WebKit. `npm run qa:hero:layout:self-test`
+  deliberately recreates the **pre-#96** absolute-copy/short-media/shade collision and
+  verifies the geometry and pixel-readback guards fail, independently in EN and RO.
+  `QA_REQUIRE_INTEGRITY=1 npm run qa:hero:layout` then tests both **actual release-safe
+  homepages**. The separately maintained `scripts/release-cross-browser-qa.mjs` keeps
+  its 48 route cells and eight keyboard/menu/language-switch journeys in Firefox/WebKit.
+  Browser HTTP, JavaScript failures and incomplete matrix cases are blocking errors.
+* `scripts/verify-home-hero-layout.mjs` checks `html[data-media-profile="release_safe"]`,
+  `[data-hero-layout="flow"]`, the single visible `[data-media-withheld]` notice and
+  absence of product hero images or `[data-hero-shade]`. It measures the preview label,
+  hero, hero copy, H1, intro, CTA, notice, explore H2/intro and all three feature cards:
+  bounding rectangles on **both axes**, parent containment, horizontal document
+  overflow, minimum section gap, overlapping boxes and positive-z painted overlays
+  (which `elementFromPoint` alone misses when `pointer-events:none`). It also tests
+  CTA/card hit targets, composed CSS contrast and pixel readback for darkened rendered
+  text. It does **not** declare ordinary natural line wrapping a failure.
+* The deterministic headless Chromium matrix is **EN and RO** at CSS widths 320, 390,
+  768, 1024, 1280, 1366, 1440, 1920, plus 640 (200% reflow-equivalent from 1280)
+  and another 320 (400% equivalent). Height is 900, device scale factor 1, reduced
+  motion on, fixed UTC timezone, stable locale and font readiness. The simulated
+  200%/400% cases are **not** a claim of real browser text-only zoom or human reflow
+  sign-off. Native user-controlled font scaling remains for manual QA.
+* The 14-day Actions artifact `stage-20d-cross-browser-<run-id>` includes
+  `hero-layout-summary.json` with each cell's selectors, rectangle/position/z-index
+  diagnostics, overlap areas, problems, source SHA and canonical dist digest, plus full-page
+  Chromium screenshots for every cell and focused hero/explore screenshots at 390,
+  1366 and 1440 for **each locale**. Filenames carry the profile, engine, CSS viewport
+  and short source/digest identifiers; the JSON carries the full values. Failed pages
+  also attempt failure screenshots. Screenshots are **public release-safe content only**.
+  Retrieve them from the specific PR run; archive accepted evidence in approved storage
+  if a sign-off requires retention beyond Actions' 14 days.
+* `.github/workflows/visual-qa.yml` is a separate **presentation-beta-only**
+  screenshot and interaction suite on `npm run build:beta`: it permits the explicitly
+  labelled concept image and intentional dark gradient/overlay. Its path triggers include
+  source/layout, QA scripts, CSS, Docker configuration, lockfile and workflow changes.
+  This workflow must **not** be used as release-safe proof. `checks` also builds beta
+  separately for safety. Neither beta screenshots nor WebKit on Linux certify macOS
+  Chrome, real Safari or a physical iPhone.
+
+**Image baseline policy:** The 390/1366/1440 focus captures are fixed, reviewable
+candidates, **not** automatically accepted pixel goldens. Do not label the absence
+of reviewed goldens a snapshot-diff pass. When explicitly approving future
+goldens, pin the browser and fonts, independently inspect both-language images,
+record the approved candidate source SHA and digest, and update baseline files in a
+separate reviewed PR. CI must never auto-create or auto-update baseline images;
+geometry/occlusion is the decisive current gate, while screenshots support review.
+Font antialiasing, OS version and text wrapping are not grounds for accepting
+structural collisions. The CI time budget is **55 minutes** for this combined required
+cross-engine workflow, not a promise of real-device testing.
+
+**Still NO-GO:** manual macOS Chrome/Safari and native-RO review, real iPhone
+Safari + VoiceOver, real Android + TalkBack, independent retesting and Stage 20F
+release authority evidence are outstanding. Issues #69/#71 remain NO_GO even when
+all browser workflows pass.
+
 ## Human report and release procedure
 
 1. Keep the public [matrix](issue-69-matrix.json) as NO-GO until real reports exist. Each device/locale row starts NOT_RUN. Fill exact version numbers, test date, tester, report reference, both orientations for phones, applicable test results and independent retest. N_A may only apply to desktop touch and mobile-specific screen-reader fields; it cannot waive a required check.
