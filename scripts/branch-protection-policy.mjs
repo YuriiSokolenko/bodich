@@ -82,6 +82,56 @@ function validateWorkflow(check, source) {
     assert.doesNotMatch(job, /^ {4}needs:/m,
       check.context + ': required job cannot depend on skippable jobs');
   }
+  if (check.context === 'compatibility-smoke') {
+    // The required status alone is not sufficient: a step-level if/continue-on-error
+    // can turn the test into a green bypass. Read bounded YAML step blocks instead
+    // of searching for commands anywhere inside the job.
+    const stepsText = section(job, 'steps', 4);
+    const steps = [];
+    for (const line of stepsText.split(/\r?\n/)) {
+      if (/^ {6}- /.test(line)) {
+        assert.match(line, /^ {6}- name: .+$/, 'unnamed or malformed required job step');
+        steps.push({ name: line.slice(14), source: line + '\n' });
+      } else if (steps.length) {
+        steps.at(-1).source += line + '\n';
+      } else {
+        assert(/^\s*(?:#.*)?$/.test(line), 'unexpected content before first required job step');
+      }
+    }
+    assert(steps.length > 0, 'required compatibility-smoke steps missing');
+    const required = (name, command, { condition = null, integrity = false } = {}) => {
+      const matches = steps.map((step, index) => ({ ...step, index }))
+        .filter((step) => step.name === name);
+      assert.equal(matches.length, 1, 'required step missing or duplicated: ' + name);
+      const step = matches[0];
+      assert.equal([...step.source.matchAll(/^ {8}run:/gm)].length, 1,
+        'required step must have a single run command: ' + name);
+      assert.match(step.source, new RegExp('^ {8}run: ' + command.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '$', 'm'),
+        'required command changed: ' + name);
+      assert.doesNotMatch(step.source, /^ {8}continue-on-error:/m,
+        'required step cannot ignore failures: ' + name);
+      const conditions = [...step.source.matchAll(/^ {8}if: (.*)$/gm)].map((m) => m[1]);
+      assert.deepEqual(conditions, condition === null ? [] : [condition],
+        'required step condition changed: ' + name);
+      if (integrity) {
+        assert.match(step.source, /^ {8}env:\r?\n {10}QA_REQUIRE_INTEGRITY: '1'$/m,
+          'layout step must itself set QA_REQUIRE_INTEGRITY=1');
+      }
+      return step.index;
+    };
+    const order = [
+      required('Build release-safe public EN/RO pages (never build:beta)', 'npm run build'),
+      required('Freeze source SHA, lock SHA-256 and canonical Stage 20F dist digest', 'npm run qa:dist:record'),
+      required('Assert browser installation preserved release-safe source and dist', 'npm run qa:dist:verify'),
+      required('Prove both EN and RO regression fixtures fail before fix and pass after', 'npm run qa:hero:layout:self-test'),
+      required('Enforce release-safe hero and feature layout matrix with screenshot evidence', 'npm run qa:hero:layout', { integrity: true }),
+      required('Exercise 48 EN/RO route cells and eight interactive journeys', 'node scripts/release-cross-browser-qa.mjs'),
+      required('Assert source, lock and release-safe dist unchanged after QA', 'npm run qa:dist:verify',
+        { condition: "always() && steps.freeze.outcome == 'success'" }),
+    ];
+    assert(order.every((position, i) => i === 0 || position > order[i - 1]),
+      'required release-safe build, fixture, layout, cross-browser and post-QA verification steps are out of order');
+  }
 }
 
 function checkWorkflows(loader = (path) => readFileSync(new URL('../' + path, import.meta.url), 'utf8')) {
@@ -140,6 +190,37 @@ async function selfTest() {
       replaceOnce(jobAnchor,
         '\n  ' + check.job + ':\n    continue-on-error: true\n'),
     ];
+    if (check.context === 'compatibility-smoke') {
+      mutations.push(replaceOnce('        run: npm run qa:hero:layout\n',
+        '        run: echo LAYOUT_CHECK_DISABLED\n'));
+      mutations.push(replaceOnce("          QA_REQUIRE_INTEGRITY: '1'",
+        "          QA_REQUIRE_INTEGRITY: '0'"));
+      mutations.push(replaceOnce('        run: npm run qa:hero:layout:self-test',
+        '        run: echo NEGATIVE_FIXTURE_DISABLED'));
+      mutations.push(replaceOnce('        run: npm run build',
+        '        run: echo RELEASE_BUILD_DISABLED'));
+      mutations.push(replaceOnce('        run: npm run qa:dist:record',
+        '        run: echo DIST_FREEZE_DISABLED'));
+      mutations.push(replaceOnce('        run: npm run qa:hero:layout\n',
+        '        if: false\n        run: npm run qa:hero:layout\n'));
+      mutations.push(replaceOnce('        run: npm run qa:hero:layout\n',
+        '        continue-on-error: true\n        run: npm run qa:hero:layout\n'));
+      mutations.push(replaceOnce('        run: npm run qa:hero:layout:self-test',
+        '        if: false\n        run: npm run qa:hero:layout:self-test'));
+      mutations.push(replaceOnce('        run: npm run qa:dist:record',
+        '        continue-on-error: true\n        run: npm run qa:dist:record'));
+      mutations.push(replaceOnce("        env:\n          QA_REQUIRE_INTEGRITY: '1'\n        run: npm run qa:hero:layout",
+        "        run: npm run qa:hero:layout\n        env:\n          QA_REQUIRE_INTEGRITY: '1'\n        if: false"));
+      mutations.push(replaceOnce(
+        "      - name: Prove both EN and RO regression fixtures fail before fix and pass after\n        run: npm run qa:hero:layout:self-test\n\n      - name: Enforce release-safe hero and feature layout matrix with screenshot evidence\n        env:\n          QA_REQUIRE_INTEGRITY: '1'\n        run: npm run qa:hero:layout",
+        "      - name: Enforce release-safe hero and feature layout matrix with screenshot evidence\n        env:\n          QA_REQUIRE_INTEGRITY: '1'\n        run: npm run qa:hero:layout\n\n      - name: Prove both EN and RO regression fixtures fail before fix and pass after\n        run: npm run qa:hero:layout:self-test"));
+      mutations.push(replaceOnce(
+        "        if: always() && steps.freeze.outcome == 'success'\n        run: npm run qa:dist:verify",
+        "        if: false\n        run: npm run qa:dist:verify"));
+      mutations.push(replaceOnce(
+        "        if: always() && steps.freeze.outcome == 'success'\n        run: npm run qa:dist:verify",
+        "        if: always() && steps.freeze.outcome == 'success'\n        continue-on-error: true\n        run: npm run qa:dist:verify"));
+    }
     if (check.job === 'checks') {
       const bootstrapAnchor = "if: github.event_name == 'push' && github.ref == 'refs/heads/feature/project-foundation'";
       mutations.push(replaceOnce(bootstrapAnchor, 'if: true'));
