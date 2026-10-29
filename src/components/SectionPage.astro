@@ -24,6 +24,12 @@ const homeFeatures = ['products', 'accessories', 'support'] as const;
 const catalogSection = page === 'products' || page === 'accessories' ? page : null;
 const sectionHasApprovedProducts = catalogSection !== null
   && categoriesFor(catalogSection).some((category) => productsInCategory(category).length > 0);
+// The overlay hero (absolutely positioned copy on top of a gradient-shaded concept image) only
+// works when a large image supplies the hero height. Release-safe output withholds that image and
+// renders a short notice instead, so its copy must stay in normal flow (stack, then two-column grid
+// on desktop) to size the hero itself; otherwise EN/RO text overlaps the notice and the next section.
+const heroOverlayClass = 'relative z-10 lg:absolute lg:inset-y-0 lg:left-0 lg:flex lg:w-[32%] lg:flex-col lg:justify-center lg:py-3';
+const heroFlowClass = 'relative z-10 min-w-0';
 ---
 
 <SiteLayout locale={locale} page={page}>
@@ -35,15 +41,21 @@ const sectionHasApprovedProducts = catalogSection !== null
           {t.previewLabel}
         </p>
         {page === 'home' ? (
-          <div data-hero class="relative">
-            <div
-              aria-hidden="true"
-              data-hero-shade
-              class="pointer-events-none absolute left-0 top-0 z-[1] hidden aspect-[1672/941] w-full bg-gradient-to-r from-bodich-canvas/95 via-bodich-canvas/30 to-transparent lg:block"
-            ></div>
+          <div
+            data-hero
+            data-hero-layout={presentationMedia ? 'overlay' : 'flow'}
+            class:list={['relative', !presentationMedia && 'lg:grid lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:items-center lg:gap-10']}
+          >
+            {presentationMedia && (
+              <div
+                aria-hidden="true"
+                data-hero-shade
+                class="pointer-events-none absolute left-0 top-0 z-[1] hidden aspect-[1672/941] w-full bg-gradient-to-r from-bodich-canvas/95 via-bodich-canvas/30 to-transparent lg:block"
+              ></div>
+            )}
             <div
               data-hero-copy
-              class="relative z-10 lg:absolute lg:inset-y-0 lg:left-0 lg:flex lg:w-[32%] lg:flex-col lg:justify-center lg:py-3"
+              class={presentationMedia ? heroOverlayClass : heroFlowClass}
             >
               <h1 class="font-display text-4xl font-black leading-tight tracking-tight text-bodich-ink sm:text-5xl lg:text-4xl xl:text-5xl">
                 {t.pages.home.title}
@@ -72,7 +84,7 @@ const sectionHasApprovedProducts = catalogSection !== null
                 class="mt-10 lg:mt-0"
               />
             ) : (
-              <div data-media-withheld role="status" class="mt-10 rounded-control border border-bodich-border bg-bodich-panel p-8 text-center text-bodich-muted lg:mt-0">{t.mediaWithheldNotice}</div>
+              <div data-media-withheld role="status" class="mt-10 min-w-0 rounded-control border border-bodich-border bg-bodich-panel p-8 text-center text-bodich-muted lg:mt-0">{t.mediaWithheldNotice}</div>
             )}
           </div>
         ) : (
