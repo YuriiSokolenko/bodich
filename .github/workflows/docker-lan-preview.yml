@@ -47,6 +47,13 @@ jobs:
         run: docker compose up --build --detach
       - name: Check EN/RO routes, assets, and HTTP security
         run: python3 scripts/docker-preview-smoke.py http://127.0.0.1:4321/
+      - name: Check browser CSS/JS loads and EN/RO navigation over HTTP
+        env:
+          TARGET_PLATFORM: ${{ matrix.platform }}
+        run: |
+          docker build --platform "$TARGET_PLATFORM" --target browser-smoke -t bodich-preview-browser:local .
+          docker run --rm --network host --platform "$TARGET_PLATFORM" \
+            bodich-preview-browser:local http://127.0.0.1:4321
       - name: Verify runtime isolation and exact build provenance
         env:
           EXPECTED_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}

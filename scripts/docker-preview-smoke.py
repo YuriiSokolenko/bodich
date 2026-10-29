@@ -47,6 +47,10 @@ def fetch(path, method="GET", expected=200):
         headers = {k.lower(): v for k, v in response.headers.items()}
         for name, expected_value in REQUIRED_HEADERS.items():
             assert headers.get(name, "").startswith(expected_value), f"{path}: missing/incorrect {name}"
+        csp = headers.get("content-security-policy", "").lower()
+        assert "upgrade-insecure-requests" not in csp, (
+            "HTTP-only Docker preview must not upgrade requests to HTTPS"
+        )
         return response.read(), headers
 
 

@@ -30,6 +30,15 @@ RUN npm run check \
 FROM build AS fail-closed-fixture
 RUN echo "INTENTIONAL_FAIL_CLOSED_FIXTURE" && exit 73
 
+# CI-only browser runner. It reuses the exact Playwright package installed by
+# npm ci and the matching preinstalled browsers; it is never shipped in runtime.
+FROM mcr.microsoft.com/playwright:v1.64.1-noble@sha256:47b510dd9230bf0b9bfc9b20102241e577ea7a99334ab4c3ca19f19770e9b8ea AS browser-smoke
+WORKDIR /qa
+COPY --from=dependencies /app/node_modules/playwright ./node_modules/playwright
+COPY --from=dependencies /app/node_modules/playwright-core ./node_modules/playwright-core
+COPY scripts/docker-preview-browser-smoke.mjs ./docker-preview-browser-smoke.mjs
+ENTRYPOINT ["node", "/qa/docker-preview-browser-smoke.mjs"]
+
 FROM nginx:1.31.8-alpine3.24@sha256:785835ea65db4bba6f021acc0f3be91b0fef76a53fe41f8588c6698d2aed0606 AS runtime
 ARG BODICH_GIT_SHA=UNKNOWN
 ARG BODICH_SOURCE_STATE=UNKNOWN
