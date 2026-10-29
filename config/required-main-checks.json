@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "repository": "YuriiSokolenko/bodich",
   "branch": "main",
   "strict": true,
@@ -20,5 +20,11 @@
       "workflow": ".github/workflows/release-cross-browser-qa.yml",
       "job": "compatibility-smoke"
     }
-  ]
+  ],
+  "rulesetId": 26119822,
+  "requiredIntegrationId": 15368,
+  "requirePullRequest": true,
+  "requiredApprovals": 0,
+  "disallowForcePushes": true,
+  "disallowDeletions": true
 }
