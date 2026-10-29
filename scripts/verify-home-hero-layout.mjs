@@ -377,6 +377,20 @@ async function loadBuildIdentity(distDirectory) {
   return identity;
 }
 
+// Fixture mode intentionally bypasses build identity: it only proves a missing
+// Chromium executable cannot strand a live HTTP listener. It never records PASS.
+async function launchFailureFixture(directory) {
+  const server = await startStaticServer(directory);
+  let browser;
+  try {
+    browser = await launchBrowser();
+    throw new Error('Invalid Chromium executable unexpectedly launched');
+  } finally {
+    await browser?.close();
+    await server.close();
+  }
+}
+
 async function run(distDirectory) {
   await mkdir(screenshotsDir, { recursive: true });
   const report = {
@@ -488,6 +502,9 @@ async function run(distDirectory) {
     await writeFile(join(evidenceDir, 'hero-layout-summary.json'), JSON.stringify(report, null, 2) + '\n');
     console.log('Issue #97 release-safe layout: ' + report.status + ', ' +
       report.cases.filter(c => c.status === 'PASS').length + '/' + (locales.length * viewports.length));
+    for (const failure of report.failures) {
+      console.error('FAIL ' + failure.id + ': ' + failure.problems.join('; '));
+    }
     if (report.failures.length) process.exitCode = 1;
   }
 }
@@ -584,7 +601,7 @@ async function selfTest() {
   // hanging on the still-listening static server.
   const emptyDist = await mkdtemp(join(tmpdir(), 'bodich-hero-'));
   try {
-    const child = spawnSync(process.execPath, [fileURLToPath(import.meta.url), emptyDist], {
+    const child = spawnSync(process.execPath, [fileURLToPath(import.meta.url), '--launch-failure-fixture', emptyDist], {
       env: { ...process.env, BODICH_QA_CHROMIUM_PATH: join(emptyDist, 'missing-chromium') },
       encoding: 'utf8',
       timeout: 60000,
@@ -601,7 +618,9 @@ async function selfTest() {
 const argument = process.argv[2];
 try {
   if (argument === '--self-test') await selfTest();
-  else await run(argument ?? 'dist');
+  else if (argument === '--launch-failure-fixture') await launchFailureFixture(process.argv[3]);
+  else if (!argument || argument === 'dist') await run('dist');
+  else throw new Error('Expected dist, --self-test or --launch-failure-fixture');
 } catch (error) {
   console.error(error?.message ?? error);
   process.exitCode = 1;
