@@ -16,7 +16,7 @@ concurrency:
 jobs:
   compatibility-smoke:
     runs-on: ubuntu-24.04
-    timeout-minutes: 45
+    timeout-minutes: 55
     env:
       QA_OUTPUT_DIR: visual-qa/cross-browser-qa
       QA_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
@@ -56,6 +56,9 @@ jobs:
       - name: Install locked Linux Firefox and WebKit browsers
         run: ./node_modules/.bin/playwright install --with-deps firefox webkit
 
+      - name: Install matching locked headless Chromium shell for mandatory layout QA
+        run: ./node_modules/.bin/playwright install --with-deps --only-shell chromium
+
       - name: Assert browser installation preserved release-safe source and dist
         run: npm run qa:dist:verify
 
@@ -71,6 +74,14 @@ jobs:
           done
           cat /tmp/bodich-cross-browser-preview.log
           exit 1
+
+      - name: Prove both EN and RO regression fixtures fail before fix and pass after
+        run: npm run qa:hero:layout:self-test
+
+      - name: Enforce release-safe hero and feature layout matrix with screenshot evidence
+        env:
+          QA_REQUIRE_INTEGRITY: '1'
+        run: npm run qa:hero:layout
 
       - name: Exercise 48 EN/RO route cells and eight interactive journeys
         run: node scripts/release-cross-browser-qa.mjs
@@ -96,5 +107,7 @@ jobs:
             visual-qa/cross-browser-qa/summary.json
             visual-qa/cross-browser-qa/build-integrity.json
             visual-qa/cross-browser-qa/screenshots/
+            visual-qa/cross-browser-qa/hero-layout-summary.json
+            visual-qa/cross-browser-qa/hero-layout-screenshots/
           if-no-files-found: warn
           retention-days: 14
