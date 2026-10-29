@@ -105,6 +105,9 @@ async function selfTest() {
       assert(original.includes(oldText), check.context + ': missing fixture anchor');
       return original.replace(oldText, replacement);
     };
+    const jobAnchor = '\n  ' + check.job + ':\n';
+    assert.equal(original.split(jobAnchor).length, 2,
+      check.context + ': require a unique exact-indentation job anchor');
     const mutations = [
       replaceOnce('  pull_request:\n    branches: [main]',
         '  pull_request:\n    branches: [main]\n    paths:\n      - "src/**"'),
@@ -112,13 +115,13 @@ async function selfTest() {
         '  pull_request:\n    branches: [main]\n    types: [synchronize]'),
       replaceOnce('  pull_request:\n    branches: [main]',
         '  pull_request:\n    branches: [develop]'),
-      replaceOnce('  ' + check.job + ':', '  renamed-' + check.job + ':'),
-      replaceOnce('  ' + check.job + ':',
-        '  ' + check.job + ':\n    name: Renamed GitHub check'),
-      replaceOnce('  ' + check.job + ':',
-        '  ' + check.job + ':\n    strategy:\n      matrix:\n        version: [24, 25]'),
-      replaceOnce('  ' + check.job + ':',
-        '  ' + check.job + ':\n    continue-on-error: true'),
+      replaceOnce(jobAnchor, '\n  renamed-' + check.job + ':\n'),
+      replaceOnce(jobAnchor,
+        '\n  ' + check.job + ':\n    name: Renamed GitHub check\n'),
+      replaceOnce(jobAnchor,
+        '\n  ' + check.job + ':\n    strategy:\n      matrix:\n        version: [24, 25]\n'),
+      replaceOnce(jobAnchor,
+        '\n  ' + check.job + ':\n    continue-on-error: true\n'),
     ];
     if (check.job === 'checks') {
       const bootstrapAnchor = "if: github.event_name == 'push' && github.ref == 'refs/heads/feature/project-foundation'";
@@ -126,10 +129,10 @@ async function selfTest() {
       const ifAnchor = "always() && (needs.create-lockfile.result == 'success' || needs.create-lockfile.result == 'skipped')";
       mutations.push(replaceOnce(ifAnchor, 'always()'));
     } else {
-      mutations.push(replaceOnce('  ' + check.job + ':',
-        '  ' + check.job + ':\n    if: false'));
-      mutations.push(replaceOnce('  ' + check.job + ':',
-        '  ' + check.job + ':\n    needs: [another-job]'));
+      mutations.push(replaceOnce(jobAnchor,
+        '\n  ' + check.job + ':\n    if: false\n'));
+      mutations.push(replaceOnce(jobAnchor,
+        '\n  ' + check.job + ':\n    needs: [another-job]\n'));
     }
     for (const changed of mutations) {
       assert.throws(() => validateWorkflow(check, changed),
@@ -156,6 +159,12 @@ async function selfTest() {
     assert.throws(() => verifyProtection(candidate),
       'incomplete live GitHub protection must never verify');
   }
+  assert.doesNotThrow(() => requireAdminToken('synthetic_valid_token'));
+  for (const badToken of ['', null, 'token with space', 'token\twith-tab',
+    'token\nwith-newline', 'token\rwith-carriage-return']) {
+    assert.throws(() => requireAdminToken(badToken), /GH_ADMIN_TOKEN/,
+      'tokens containing whitespace must fail before the HTTP request');
+  }
   await testApiAndApplyFixtures();
   console.log('PASS branch policy negative fixtures: workflow context drift, API 404 handling, ' +
     'missing/conditional jobs and admin branch-protection apply/verify');
@@ -176,9 +185,14 @@ async function interpretGithubResponse(response, method, path) {
   return response.json();
 }
 
+function requireAdminToken(token) {
+  assert(token && !/\s/.test(token),
+    'GH_ADMIN_TOKEN with repository Administration permission is required');
+}
+
 async function githubApi(path, method = 'GET', body) {
   const token = process.env.GH_ADMIN_TOKEN;
-  assert(token && !/\\s/.test(token), 'GH_ADMIN_TOKEN with repository Administration permission is required');
+  requireAdminToken(token);
   const response = await fetch('https://api.github.com' + path, {
     method,
     headers: {
