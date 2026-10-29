@@ -44,6 +44,14 @@ export function validatePreviewOptions(options) {
   return { host: options.host, port };
 }
 
+export function createLanPreviewEnvironment(environment) {
+  const normalized = { ...environment };
+  for (const variable of ['BODICH_MEDIA_PROFILE', 'ASTRO_BASE', 'SITE_URL']) {
+    delete normalized[variable];
+  }
+  return normalized;
+}
+
 export function findLanIpv4Addresses(networkInterfaces) {
   const found = [];
   for (const [interfaceName, entries] of Object.entries(networkInterfaces ?? {})) {
@@ -58,18 +66,31 @@ export function findLanIpv4Addresses(networkInterfaces) {
 }
 
 export function advertisedUrls(host, port, addresses) {
+  const hostIsIpv4Loopback = isIP(host) === 4 && host.startsWith('127.');
+  const hostIsIpv6Loopback = isIP(host) === 6 && (host === '::1' || host.toLowerCase() === '0:0:0:0:0:0:0:1');
+  if (hostIsIpv4Loopback || hostIsIpv6Loopback) {
+    const urlHost = hostIsIpv6Loopback ? `[${host}]` : host;
+    return {
+      urls: [`http://${urlHost}:${port}/en/`, `http://${urlHost}:${port}/ro/`],
+      fallback: null,
+      localOnly: true,
+    };
+  }
+
   let address;
-  if (host !== '0.0.0.0' && host !== '::' && isIP(host) === 4 && !host.startsWith('127.')) address = host;
+  if (host !== '0.0.0.0' && host !== '::' && isIP(host) === 4) address = host;
   else if (addresses.length === 1) address = addresses[0].address;
   if (!address || isIP(address) !== 4) {
     return {
       urls: [],
       fallback: 'LAN address is unavailable or ambiguous. On macOS, run `networksetup -listallhardwareports`, find the Wi-Fi Device, then run `ipconfig getifaddr <device>`. Restart with `npm run qa:lan:preview -- --host <IPv4>` using that address.',
+      localOnly: false,
     };
   }
   return {
     urls: [`http://${address}:${port}/en/`, `http://${address}:${port}/ro/`],
     fallback: null,
+    localOnly: false,
   };
 }
 
@@ -101,6 +122,7 @@ export async function bootstrapLanPreview(options, deps) {
   const addresses = deps.findLanAddresses();
   const advertised = advertisedUrls(normalized.host, normalized.port, addresses);
   deps.log(`Binding Astro preview to ${normalized.host}:${normalized.port}`);
+  if (advertised.localOnly) deps.log('Local-only URLs (reachable from this Mac only):');
   if (advertised.urls.length) {
     deps.log(`English: ${advertised.urls[0]}`);
     deps.log(`Romanian: ${advertised.urls[1]}`);

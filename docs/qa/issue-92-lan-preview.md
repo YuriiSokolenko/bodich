@@ -14,7 +14,7 @@ npm ci
 npm run qa:lan:preview
 ```
 
-The command requires Node 24 and the locked `npm ci` install. It removes any previous `dist`, runs the source check, makes a new normal `npm run build`, and runs the existing Pages, public-content, product-registry, editorial, Romanian, legal, asset-rights and release-decision checks before opening a port. Any missing or failing gate stops startup. It never runs `build:beta`. The output includes Git HEAD, whether the source tree was dirty at startup, the canonical public `dist` manifest SHA-256, the preview PID, and the English and Romanian URLs when one LAN IPv4 address can be identified.
+The command requires Node 24 and the locked `npm ci` install. It removes any previous `dist`, runs the source check, makes a new normal `npm run build`, and runs the existing Pages, public-content, product-registry, editorial, Romanian, legal, asset-rights and release-decision checks before opening a port. Any missing or failing gate stops startup. It never runs `build:beta`. The command clears inherited `BODICH_MEDIA_PROFILE`, `ASTRO_BASE` and `SITE_URL` values from every build, validation and preview subprocess so the release-safe root build and printed URLs stay aligned. The output includes Git HEAD, whether the source tree was dirty at startup, the canonical public `dist` manifest SHA-256, the preview PID, and the English and Romanian URLs when one LAN IPv4 address can be identified.
 
 `0.0.0.0` is the default **bind address**; it is not an address to enter on a phone or tablet. The command prints device URLs in this form when detection is unambiguous:
 
@@ -24,6 +24,8 @@ http://<Mac-LAN-IP>:4321/ro/
 ```
 
 These are examples, not the MacBook's actual address. Open the exact URLs printed by the command. Use `--port 4322` to choose another port. If the Mac has multiple active adapters, the command does not guess or print the adapter inventory. On macOS, run `networksetup -listallhardwareports`, identify the Wi-Fi `Device`, then run `ipconfig getifaddr <device>`. Restart with `npm run qa:lan:preview -- --host <that-IPv4>` to bind and advertise that address. The selected address must belong to the Mac.
+
+If started with a loopback bind such as `--host 127.0.0.1` or `--host ::1`, the output labels the printed links **local-only**. Those links work on the MacBook and cannot be used from Android or iPad.
 
 Keep the MacBook, Android phone and iPad on the same trusted Wi-Fi. Approve the macOS firewall's incoming-connection prompt for Node if shown. If another device cannot connect, check that VPNs are disconnected, the Wi-Fi does not enable client/AP isolation, the selected Mac address is on that Wi-Fi, and the chosen port is available. The command does not change firewall rules, configure a proxy, or open a tunnel. Stop it with **Ctrl-C** in the terminal; SIGINT and SIGTERM are forwarded to the preview process.
 

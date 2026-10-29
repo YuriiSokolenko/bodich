@@ -5,6 +5,7 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
   bootstrapLanPreview,
+  createLanPreviewEnvironment,
   digestDist,
   findLanIpv4Addresses,
   installSignalHandlers,
@@ -46,9 +47,8 @@ function createDependencies() {
     removeDist() {
       rmSync(resolve(root, 'dist'), { recursive: true, force: true });
     },
-    runNpmScript(script, { clearBetaProfile = false } = {}) {
-      const env = { ...process.env };
-      if (clearBetaProfile) delete env.BODICH_MEDIA_PROFILE;
+    runNpmScript(script) {
+      const env = createLanPreviewEnvironment(process.env);
       const result = spawnSync('npm', ['run', script], { cwd: root, env, stdio: 'inherit' });
       if (result.error) throw new Error(`Could not run npm run ${script}: ${result.error.message}`);
       if (result.status !== 0) throw new Error(`Validation failed: npm run ${script} (exit ${result.status ?? 'unknown'}). LAN preview was not started.`);
@@ -60,8 +60,7 @@ function createDependencies() {
       return findLanIpv4Addresses(networkInterfaces());
     },
     startPreview({ host, port }) {
-      const env = { ...process.env };
-      delete env.BODICH_MEDIA_PROFILE;
+      const env = createLanPreviewEnvironment(process.env);
       // Astro auto-backgrounds preview servers inside agent sessions; keep the
       // server attached so Ctrl-C/SIGTERM always reaches this command.
       env.ASTRO_PREVIEW_BACKGROUND = 'foreground';

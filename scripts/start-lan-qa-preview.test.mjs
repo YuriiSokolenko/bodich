@@ -5,6 +5,7 @@ import {
   RELEASE_GATES,
   advertisedUrls,
   bootstrapLanPreview,
+  createLanPreviewEnvironment,
   findLanIpv4Addresses,
   installSignalHandlers,
   parsePreviewArgs,
@@ -19,7 +20,7 @@ function dependencies(overrides = {}) {
     readHeadSha: () => 'a'.repeat(40),
     isDirty: () => false,
     removeDist: () => calls.push('remove-dist'),
-    runNpmScript: (script, options) => calls.push(`gate:${script}:${options.clearBetaProfile ? 'clean-env' : 'inherit-env'}`),
+    runNpmScript: (script) => calls.push(`gate:${script}`),
     readDistDigest: () => 'b'.repeat(64),
     findLanAddresses: () => [{ interfaceName: 'en0', address: '192.168.1.24' }],
     startPreview: (options) => {
@@ -62,6 +63,35 @@ test('reports one LAN adapter and falls back without exposing ambiguous adapter 
   ]);
 });
 
+test('loopback binds advertise only local URLs even when LAN adapters exist', () => {
+  const adapters = [{ interfaceName: 'en0', address: '192.168.1.24' }];
+  const ipv4 = advertisedUrls('127.0.0.1', 4321, adapters);
+  assert.deepEqual(ipv4.urls, [
+    'http://127.0.0.1:4321/en/',
+    'http://127.0.0.1:4321/ro/',
+  ]);
+  assert.equal(ipv4.localOnly, true);
+  assert.equal(ipv4.fallback, null);
+
+  const ipv6 = advertisedUrls('::1', 4321, adapters);
+  assert.deepEqual(ipv6.urls, [
+    'http://[::1]:4321/en/',
+    'http://[::1]:4321/ro/',
+  ]);
+  assert.equal(ipv6.localOnly, true);
+});
+
+test('clears inherited beta and deployment URL/base variables for every subprocess', () => {
+  const env = createLanPreviewEnvironment({
+    PATH: '/usr/bin',
+    BODICH_MEDIA_PROFILE: 'beta_presentation',
+    ASTRO_BASE: '/bodich-preview',
+    SITE_URL: 'https://example.invalid',
+    OTHER_SETTING: 'preserved',
+  });
+  assert.deepEqual(env, { PATH: '/usr/bin', OTHER_SETTING: 'preserved' });
+});
+
 test('runs every release gate before starting Astro preview', async () => {
   const { deps, calls } = dependencies();
   const result = await bootstrapLanPreview({ host: '0.0.0.0', port: 4321 }, deps);
@@ -69,9 +99,9 @@ test('runs every release gate before starting Astro preview', async () => {
   assert.equal(result.digest, 'b'.repeat(64));
   assert.equal(result.child.pid, 54321);
   assert.equal(calls.filter((call) => call.startsWith('gate:')).length, RELEASE_GATES.length);
-  assert.ok(calls.indexOf('remove-dist') < calls.indexOf('gate:check:clean-env'));
-  assert.ok(calls.indexOf('gate:release:decision:verify:clean-env') < calls.indexOf('start:0.0.0.0:4321'));
-  assert.equal(calls.filter((call) => call.endsWith(':clean-env')).length, RELEASE_GATES.length);
+  assert.ok(calls.indexOf('remove-dist') < calls.indexOf('gate:check'));
+  assert.ok(calls.indexOf('gate:release:decision:verify') < calls.indexOf('start:0.0.0.0:4321'));
+  assert.equal(calls.filter((call) => call.startsWith('gate:')).length, RELEASE_GATES.length);
 });
 
 test('fails closed before bind when a validation gate fails', async () => {
