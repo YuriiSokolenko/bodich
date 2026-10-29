@@ -51,7 +51,12 @@ function validateWorkflow(check, source) {
   const jobs = section(source, 'jobs', 0);
   const job = section(jobs, check.job, 2);
   assert.match(job, /^ {4}runs-on:/m, check.context + ': missing runnable job');
-  assert.doesNotMatch(job, /^ {4}continue-on-error: true$/m, 'required jobs cannot ignore failures');
+  // GitHub check contexts become job.name or job (matrix-value) when present;
+  // requiring the unmodified job ID would leave every PR permanently pending.
+  assert.doesNotMatch(job, /^ {4}name:/m, check.context + ': job name changes required context');
+  assert.doesNotMatch(job, /^ {4}strategy:/m, check.context + ': matrix changes required context');
+  assert.doesNotMatch(job, /^ {4}continue-on-error:/m,
+    check.context + ': required jobs may not ignore failures');
   const conditions = [...job.matchAll(/^ {4}if: (.*)$/gm)].map((m) => m[1]);
   if (check.job === 'checks') {
     // create-lockfile is skipped on PRs, but checks explicitly run on this skipped dependency.
@@ -92,26 +97,44 @@ function selfTest() {
     assert.throws(() => validatePolicy(candidate), 'weakening policy must fail');
   }
 
-  const target = policy.requiredChecks.find((c) => c.context === 'compatibility-smoke');
-  const original = readFileSync(new URL('../' + target.workflow, import.meta.url), 'utf8');
-  const mutate = (oldText, newText) => {
-    assert(original.includes(oldText), 'fixture source unexpectedly changed');
-    return original.replace(oldText, newText);
-  };
-  for (const changed of [
-    mutate('  pull_request:\n    branches: [main]',
-      '  pull_request:\n    branches: [main]\n    paths:\n      - "src/**"'),
-    mutate('  pull_request:\n    branches: [main]',
-      '  pull_request:\n    branches: [main]\n    types: [synchronize]'),
-    mutate('    branches: [main]', '    branches: [develop]'),
-    mutate('  compatibility-smoke:', '  renamed-smoke:'),
-    mutate('    runs-on: ubuntu-24.04',
-      '    if: false\n    runs-on: ubuntu-24.04'),
-    mutate('    runs-on: ubuntu-24.04',
-      '    continue-on-error: true\n    runs-on: ubuntu-24.04'),
-  ]) {
-    assert.throws(() => validateWorkflow(target, changed),
-      'workflow regression must not be silently accepted');
+  // Exercise *each* required context, including the specially-handled
+  // checks/bootstrap dependency. Make mutations against exact PR sections.
+  for (const check of policy.requiredChecks) {
+    const original = readFileSync(new URL('../' + check.workflow, import.meta.url), 'utf8');
+    const replaceOnce = (oldText, replacement) => {
+      assert(original.includes(oldText), check.context + ': missing fixture anchor');
+      return original.replace(oldText, replacement);
+    };
+    const mutations = [
+      replaceOnce('  pull_request:\n    branches: [main]',
+        '  pull_request:\n    branches: [main]\n    paths:\n      - "src/**"'),
+      replaceOnce('  pull_request:\n    branches: [main]',
+        '  pull_request:\n    branches: [main]\n    types: [synchronize]'),
+      replaceOnce('  pull_request:\n    branches: [main]',
+        '  pull_request:\n    branches: [develop]'),
+      replaceOnce('  ' + check.job + ':', '  renamed-' + check.job + ':'),
+      replaceOnce('  ' + check.job + ':',
+        '  ' + check.job + ':\n    name: Renamed GitHub check'),
+      replaceOnce('  ' + check.job + ':',
+        '  ' + check.job + ':\n    strategy:\n      matrix:\n        version: [24, 25]'),
+      replaceOnce('  ' + check.job + ':',
+        '  ' + check.job + ':\n    continue-on-error: true'),
+    ];
+    if (check.job === 'checks') {
+      const bootstrapAnchor = "if: github.event_name == 'push' && github.ref == 'refs/heads/feature/project-foundation'";
+      mutations.push(replaceOnce(bootstrapAnchor, 'if: true'));
+      const ifAnchor = "always() && (needs.create-lockfile.result == 'success' || needs.create-lockfile.result == 'skipped')";
+      mutations.push(replaceOnce(ifAnchor, 'always()'));
+    } else {
+      mutations.push(replaceOnce('  ' + check.job + ':',
+        '  ' + check.job + ':\n    if: false'));
+      mutations.push(replaceOnce('  ' + check.job + ':',
+        '  ' + check.job + ':\n    needs: [another-job]'));
+    }
+    for (const changed of mutations) {
+      assert.throws(() => validateWorkflow(check, changed),
+        check.context + ': workflow regression must fail closed');
+    }
   }
   const goodProtection = {
     required_status_checks: { strict: true, contexts: fixedContexts, checks: [] },
