@@ -514,6 +514,15 @@ const fixtureStyles = `
 `;
 
 function fixture(layout, locale = 'en') {
+  const copy = locale === 'ro' ? {
+    title: 'Descoperiți turbinele miniaturale și informațiile bilingve despre prezentarea site-ului',
+    intro: 'Explorați structura demonstrativă și categoriile de turbine miniaturale pentru prezentare.',
+    notice: 'Imagine conceptuală indisponibilă — drepturile de publicare nu au fost încă verificate.',
+  } : {
+    title: 'Miniature turbine learning and site preview with a deliberately long translated title',
+    intro: 'Explore how miniature turbines work and browse a bilingual website preview.',
+    notice: 'Concept image withheld — publication rights have not been verified.',
+  };
   const shade = layout === 'overlay' ? '<div aria-hidden="true" data-hero-shade></div>' : '';
   return `<!doctype html><html lang="${locale}" data-media-profile="release_safe"><head><meta charset="utf-8"><style>${fixtureStyles}</style></head><body>
     <header>site header</header>
@@ -522,11 +531,11 @@ function fixture(layout, locale = 'en') {
       <div data-hero data-hero-layout="${layout}">
         ${shade}
         <div data-hero-copy>
-          <h1>Miniature turbine learning and site preview with a deliberately long translated title</h1>
-          <p>Explore how miniature turbines work and browse a bilingual website preview.</p>
+          <h1>${copy.title}</h1>
+          <p>${copy.intro}</p>
           <a href="/products/" style="display:inline-block;padding:12px 20px;background:#ff4f64;color:#111">Explore products</a>
         </div>
-        <div data-media-withheld role="status">Concept image withheld — publication rights have not been verified.</div>
+        <div data-media-withheld role="status">${copy.notice}</div>
       </div>
       <section data-home-explore>
         <h2 id="home-explore-heading">Explore the BODICH preview</h2>
