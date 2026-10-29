@@ -46,6 +46,8 @@ jobs:
           cache: npm
       - name: Install dependencies
         run: npm ci
+      - name: Test LAN preview bootstrap safety without binding a network interface
+        run: npm run qa:lan:preview:test
       - name: Validate Astro and TypeScript
         run: npm run check
       - name: Generate and validate all unpublished catalog illustrations

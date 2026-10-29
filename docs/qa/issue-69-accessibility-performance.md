@@ -69,3 +69,5 @@ To intentionally update QA dependencies, edit the exact versions in `package.jso
 5. The separate [Stage 20F release decision](issue-71-release-decision.json) keeps its QA row **BLOCKED** until the release authority verifies the actual dated QA sign-offs against the identical candidate SHA and dist digest. A new commit or changed build invalidates prior sign-off. The public record must include candidateSha and distManifestSha256 matching the actually tested build, with dated and separate initial/retest evidence.
 
 **Planning target:** November 9, 2026, provisional and dependent on access to physical Android/iPhone devices, Safari on macOS, and a named QA lead. No waiver exists for unavailable devices.
+
+For the reproducible trusted-LAN preview and supplemental Android/iPad/Mac manual setup, see [Issue #92 — trusted-LAN QA preview](issue-92-lan-preview.md). iPad results do not replace the mandatory iPhone Safari + VoiceOver reports and do not change this matrix.

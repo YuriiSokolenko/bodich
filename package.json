@@ -9,6 +9,8 @@
     "build": "astro build",
     "build:beta": "BODICH_MEDIA_PROFILE=beta_presentation npm run media:stage-beta && BODICH_MEDIA_PROFILE=beta_presentation npm run build && BODICH_MEDIA_PROFILE=beta_presentation npm run media:beta",
     "preview": "astro preview",
+    "qa:lan:preview": "node scripts/start-lan-qa-preview.mjs",
+    "qa:lan:preview:test": "node --test scripts/start-lan-qa-preview.test.mjs",
     "catalog:intake": "node scripts/validate-catalog.mjs --intake",
     "catalog:source:check": "node scripts/audit-kingtech-source.mjs --self-test && node scripts/validate-source-inventory.mjs && node scripts/validate-source-inventory.mjs --self-test && node scripts/validate-accessories.mjs && node scripts/validate-accessories.mjs --self-test && node scripts/validate-consumables.mjs && node scripts/validate-consumables.mjs --self-test && node scripts/validate-commerce-references.mjs && node scripts/validate-commerce-references.mjs --self-test && npm run catalog:art:manifest && npm run catalog:art:self-test && npm run catalog:copy:check && npm run catalog:copy:self-test",
     "catalog:reconcile": "node scripts/reconcile-catalog-release.mjs --check && node scripts/reconcile-catalog-release.mjs --self-test",
