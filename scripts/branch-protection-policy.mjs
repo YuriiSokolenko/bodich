@@ -5,10 +5,21 @@ import { readFileSync } from 'node:fs';
 const policy = JSON.parse(readFileSync(new URL('../config/required-main-checks.json', import.meta.url), 'utf8'));
 const fixedContexts = ['checks', 'cloudflare-static-release', 'compatibility-smoke'];
 const expectedRepository = 'YuriiSokolenko/bodich';
-const protectionPath = '/repos/' + expectedRepository + '/branches/main/protection';
+const repositoryPath = '/repos/' + expectedRepository;
+const rulesetPath = repositoryPath + '/rulesets/' + policy.rulesetId;
+const expectedRulesetId = 26119822;
+const expectedIntegrationId = 15368;
+const requiredRuleTypes = ['deletion', 'non_fast_forward', 'pull_request', 'required_status_checks'];
 
 function validatePolicy(candidate) {
-  assert.equal(candidate.schemaVersion, 1, 'policy schema version');
+  assert.equal(candidate.schemaVersion, 2, 'policy schema version');
+  assert.equal(candidate.rulesetId, expectedRulesetId, 'ruleset ID must be pinned');
+  assert.equal(candidate.requiredIntegrationId, expectedIntegrationId,
+    'GitHub Actions integration ID must be pinned');
+  assert.equal(candidate.requirePullRequest, true, 'PR requirement may not be disabled');
+  assert.equal(candidate.requiredApprovals, 0, 'approval policy drift requires review');
+  assert.equal(candidate.disallowForcePushes, true, 'force pushes may not be allowed');
+  assert.equal(candidate.disallowDeletions, true, 'branch deletion may not be allowed');
   assert.equal(candidate.repository, expectedRepository, 'repository must be pinned');
   assert.equal(candidate.branch, 'main', 'protected branch must be main');
   assert.equal(candidate.strict, true, 'branch must be up to date before merge');
@@ -91,6 +102,12 @@ async function selfTest() {
     (p) => { p.requiredChecks.pop(); },
     (p) => { p.requiredChecks[2].context = p.requiredChecks[0].context; },
     (p) => { p.requiredChecks[1].job = 'incorrect-id'; },
+    (p) => { p.rulesetId = 123; },
+    (p) => { p.requiredIntegrationId = -1; },
+    (p) => { p.requirePullRequest = false; },
+    (p) => { p.requiredApprovals = 1; },
+    (p) => { p.disallowForcePushes = false; },
+    (p) => { p.disallowDeletions = false; },
   ]) {
     const candidate = clone();
     change(candidate);
@@ -139,284 +156,205 @@ async function selfTest() {
         check.context + ': workflow regression must fail closed');
     }
   }
-  const goodProtection = {
-    required_status_checks: { strict: true, contexts: fixedContexts, checks: [] },
-    enforce_admins: { enabled: true },
-    allow_force_pushes: { enabled: false },
-    allow_deletions: { enabled: false },
-  };
-  assert.doesNotThrow(() => verifyProtection(goodProtection));
-  for (const change of [
-    (p) => { p.required_status_checks.strict = false; },
-    (p) => { p.enforce_admins.enabled = false; },
-    (p) => { p.required_status_checks.contexts.pop(); },
-    (p) => { p.required_status_checks = null; },
-    (p) => { p.allow_force_pushes.enabled = true; },
-    (p) => { p.allow_deletions.enabled = true; },
-  ]) {
-    const candidate = structuredClone(goodProtection);
-    change(candidate);
-    assert.throws(() => verifyProtection(candidate),
-      'incomplete live GitHub protection must never verify');
-  }
-  assert.doesNotThrow(() => requireAdminToken('synthetic_valid_token'));
-  for (const badToken of ['', null, 'token with space', 'token\twith-tab',
-    'token\nwith-newline', 'token\rwith-carriage-return']) {
-    assert.throws(() => requireAdminToken(badToken), /GH_ADMIN_TOKEN/,
-      'tokens containing whitespace must fail before the HTTP request');
-  }
-  await testApiAndApplyFixtures();
-  console.log('PASS branch policy negative fixtures: workflow context drift, API 404 handling, ' +
-    'missing/conditional jobs and admin branch-protection apply/verify');
+  // All network calls are mocked here. CI must never need API credentials.
+  await selfTestReadOnlyRuleset();
+  console.log('PASS branch policy negative fixtures: workflow contexts, ' +
+    'ruleset drift, required checks, bypasses, strict mode, and GET-only API');
 }
 
-async function interpretGithubResponse(response, method, path) {
-  if (response.status === 404 && method === 'GET' && path === protectionPath) {
-    // A 404 can also mean invalid credentials, hidden repository or wrong branch.
-    // Only GitHub's explicit unprotected-branch response authorizes creation.
-    const payload = await response.json().catch(() => null);
-    if (payload?.message === 'Branch not protected') return null;
+function validateRuleset(ruleset, repository) {
+  validatePolicy(policy);
+  assert(repository && repository.full_name === expectedRepository,
+    'GitHub repository identity mismatch');
+  assert.equal(repository.default_branch, policy.branch,
+    'repository default branch has drifted');
+  assert(ruleset && typeof ruleset === 'object', 'ruleset missing');
+  assert.equal(ruleset.id, policy.rulesetId, 'wrong ruleset ID');
+  assert.equal(ruleset.source_type, 'Repository', 'ruleset must belong to repository');
+  assert.equal(ruleset.source, expectedRepository, 'ruleset repository mismatch');
+  assert.equal(ruleset.target, 'branch', 'ruleset must target branches');
+  assert.equal(ruleset.enforcement, 'active', 'ruleset is not actively enforced');
+  assert.deepEqual(ruleset.conditions?.ref_name?.include, ['~DEFAULT_BRANCH'],
+    'ruleset must target the default branch exactly');
+  assert.deepEqual(ruleset.conditions?.ref_name?.exclude, [],
+    'ruleset must not exclude a target branch');
+  assert.deepEqual(ruleset.bypass_actors, [], 'ruleset bypass list must be empty');
+  // The API field is user-specific; an unknown/bypass-enabled result is not proof.
+  assert.equal(ruleset.current_user_can_bypass, 'never',
+    'ruleset caller bypass status is unsafe or cannot be verified');
+
+  assert(Array.isArray(ruleset.rules), 'missing ruleset rules');
+  const types = ruleset.rules.map((rule) => rule.type);
+  assert.equal(new Set(types).size, types.length, 'duplicate ruleset rule types');
+  assert.deepEqual([...types].sort(), [...requiredRuleTypes].sort(),
+    'ruleset rule types drifted (including unwanted restrict-updates)');
+  const byType = new Map(ruleset.rules.map((rule) => [rule.type, rule]));
+
+  const pr = byType.get('pull_request')?.parameters;
+  assert.equal(pr?.required_approving_review_count, policy.requiredApprovals,
+    'PR approval requirement changed');
+  assert(pr?.allowed_merge_methods?.includes('squash'),
+    'squash merge must remain permitted');
+
+  const params = byType.get('required_status_checks')?.parameters;
+  assert.equal(params?.strict_required_status_checks_policy, policy.strict,
+    'required checks must use the latest main head');
+  assert.equal(params?.do_not_enforce_on_create, false,
+    'required checks may not be bypassed when creating matching refs');
+  const checks = params?.required_status_checks;
+  assert(Array.isArray(checks), 'missing required check contexts');
+  assert.equal(new Set(checks.map((check) => check.context)).size, checks.length,
+    'duplicate required check contexts');
+  assert.deepEqual(checks.map((check) => check.context).sort(), [...fixedContexts].sort(),
+    'missing or unexpected required check contexts');
+  for (const check of checks) {
+    assert.equal(check.integration_id, policy.requiredIntegrationId,
+      'check is not pinned to the GitHub Actions app');
   }
+  return true;
+}
+
+function validateReadToken(token) {
+  if (token === undefined) return; // Public Ruleset GET needs no credentials.
+  assert(typeof token === 'string' && token.length > 0 && !/\s/.test(token),
+    'GH_TOKEN must be nonempty and contain no whitespace');
+}
+
+async function githubRead(path) {
+  assert(path === repositoryPath || path === rulesetPath,
+    'read-only auditor permits only repository and pinned Ruleset GET paths');
+  const token = process.env.GH_TOKEN;
+  validateReadToken(token);
+  const headers = {
+    Accept: 'application/vnd.github+json',
+    'X-GitHub-Api-Version': '2022-11-28',
+  };
+  if (token !== undefined) headers.Authorization = 'Bearer ' + token;
+  const response = await fetch('https://api.github.com' + path, {
+    method: 'GET',
+    headers,
+    signal: AbortSignal.timeout(20000),
+  });
   if (!response.ok) {
-    // Never reveal tokens, headers or arbitrary response contents.
-    throw new Error('GitHub ' + method + ' ' + path + ' failed: HTTP ' + response.status);
+    // Do not log authentication headers or user-supplied response bodies.
+    throw new Error('GitHub read ' + path + ' failed: HTTP ' + response.status);
   }
-  if (response.status === 204) return {};
   return response.json();
 }
 
-function requireAdminToken(token) {
-  assert(token && !/\s/.test(token),
-    'GH_ADMIN_TOKEN with repository Administration permission is required');
-}
-
-async function githubApi(path, method = 'GET', body) {
-  const token = process.env.GH_ADMIN_TOKEN;
-  requireAdminToken(token);
-  const response = await fetch('https://api.github.com' + path, {
-    method,
-    headers: {
-      Accept: 'application/vnd.github+json',
-      Authorization: 'Bearer ' + token,
-      'Content-Type': 'application/json',
-      'X-GitHub-Api-Version': '2022-11-28',
-    },
-    body: body === undefined ? undefined : JSON.stringify(body),
-    signal: AbortSignal.timeout(20000),
-  });
-  return interpretGithubResponse(response, method, path);
-}
-
-function existingContexts(protection) {
-  const checks = protection?.required_status_checks?.checks ?? [];
-  const names = protection?.required_status_checks?.contexts ?? [];
-  return new Set([...names, ...checks.map((c) => c.context)]);
-}
-
-function verifyProtection(protection) {
-  assert(protection, 'branch protection is missing (or unreadable with this token)');
-  assert.equal(protection.required_status_checks?.strict, true, 'strict required checks are disabled');
-  assert.equal(protection.enforce_admins?.enabled, true, 'admin enforcement is disabled');
-  // On existing protection we preserve these settings rather than mutate them.
-  // Unsafe values require explicit admin remediation, not a false PASS.
-  assert.equal(protection.allow_force_pushes?.enabled, false,
-    'force pushes are allowed or cannot be verified');
-  assert.equal(protection.allow_deletions?.enabled, false,
-    'branch deletions are allowed or cannot be verified');
-  const installed = existingContexts(protection);
-  for (const context of fixedContexts) {
-    assert(installed.has(context), 'GitHub branch protection missing required check: ' + context);
-  }
-}
-
-async function verifyLive(api = githubApi, announce = true) {
-  validatePolicy(policy);
-  verifyProtection(await api(protectionPath));
+async function verifyLive(api = githubRead, announce = true) {
+  // Fail closed on a renamed/path-filtered workflow even with a valid live rule.
+  checkWorkflows();
+  const repository = await api(repositoryPath);
+  const ruleset = await api(rulesetPath);
+  validateRuleset(ruleset, repository);
   if (announce) {
-    console.log('PASS live GitHub branch protection: main; strict=true; admins=true; ' +
-      'force-pushes/deletions disabled; ' + fixedContexts.join(', '));
+    console.log('PASS live GitHub Ruleset #' + expectedRulesetId +
+      ': active, default branch main, no bypass, PR required, deletion/force pushes blocked, ' +
+      'strict up-to-date checks: ' + fixedContexts.join(', '));
   }
 }
 
-function requiredChecksPatch(previous) {
-  const old = previous.required_status_checks ?? {};
-  const result = new Map();
-  for (const check of old.checks ?? []) {
-    assert(typeof check.context === 'string' && check.context.length, 'invalid existing GitHub check');
-    assert(!result.has(check.context), 'duplicate existing check context');
-    const entry = { context: check.context };
-    // GitHub GET may return app_id:null. PATCH accepts only integers; do
-    // not lose genuine app pinning or relax it to "any app" (-1).
-    if (check.app_id !== undefined && check.app_id !== null) {
-      assert(Number.isSafeInteger(check.app_id), 'invalid existing app_id');
-      entry.app_id = check.app_id;
-    }
-    result.set(check.context, entry);
-  }
-  // Preserve all context-only check entries even when GET has both fields.
-  for (const context of old.contexts ?? []) {
-    assert(typeof context === 'string' && context.length, 'invalid existing status context');
-    if (!result.has(context)) result.set(context, { context });
-  }
-  for (const context of fixedContexts) {
-    if (!result.has(context)) result.set(context, { context });
-  }
-  return { strict: true, checks: [...result.values()] };
-}
-
-async function applyLive(api = githubApi,
-  confirmed = process.argv.includes('--confirm=' + expectedRepository + ':main'),
-  announce = true) {
-  validatePolicy(policy);
-  assert(confirmed, 'explicit --confirm=' + expectedRepository + ':main is required');
-  const previous = await api(protectionPath);
-  if (!previous) {
-    // Creation only: no pre-existing classic branch protection to overwrite.
-    // Require checks, forbid destructive pushes; do not impose approval count.
-    await api(protectionPath, 'PUT', {
-      required_status_checks: { strict: true, contexts: fixedContexts },
-      enforce_admins: true,
-      required_pull_request_reviews: null,
-      restrictions: null,
-      required_linear_history: false,
-      allow_force_pushes: false,
-      allow_deletions: false,
-      block_creations: false,
-      required_conversation_resolution: false,
-      lock_branch: false,
-      allow_fork_syncing: false,
-    });
-    if (announce) console.log('Created classic branch protection on main');
-  } else {
-    // Fail before writing if the existing branch allows bypass via force push
-    // or deletion. Admins must handle this explicitly in repository settings.
-    assert.equal(previous.allow_force_pushes?.enabled, false,
-      'existing protection permits force pushes or does not expose this setting');
-    assert.equal(previous.allow_deletions?.enabled, false,
-      'existing protection permits deletion or does not expose this setting');
-    // Preserve existing approvals, restrictions and pinned check-app sources.
-    await api(protectionPath + '/required_status_checks', 'PATCH', requiredChecksPatch(previous));
-    if (!previous.enforce_admins?.enabled) {
-      await api(protectionPath + '/enforce_admins', 'POST');
-    }
-    if (announce) console.log('Updated required checks and admin enforcement without replacing restrictions');
-  }
-  // Always fetch the policy from GitHub again; a successful write is not proof.
-  await verifyLive(api, announce);
-}
-
-async function testApiAndApplyFixtures() {
-  const response = (status, body) => ({
-    status, ok: status >= 200 && status < 300,
-    json: async () => body,
-  });
-  assert.equal(await interpretGithubResponse(
-    response(404, { message: 'Branch not protected' }), 'GET', protectionPath), null);
-  for (const [message, method, path] of [
-    ['Not Found', 'GET', protectionPath],
-    ['Resource not accessible by integration', 'GET', protectionPath],
-    ['Branch not protected', 'GET', protectionPath + '/required_status_checks'],
-    ['Branch not protected', 'PATCH', protectionPath],
-  ]) {
-    await assert.rejects(() => interpretGithubResponse(response(404, { message }), method, path),
-      /HTTP 404/, 'untrusted 404 must never trigger a protection PUT');
-  }
-
-  function mockApi(initial) {
-    let state = structuredClone(initial);
-    const calls = [];
-    const api = async (path, method = 'GET', body) => {
-      calls.push({ path, method, body: structuredClone(body) });
-      if (path === protectionPath && method === 'GET') return structuredClone(state);
-      if (path === protectionPath && method === 'PUT') {
-        assert.equal(state, null, 'creation must never replace existing protection');
-        state = {
-          required_status_checks: {
-            strict: body.required_status_checks.strict,
-            contexts: [...body.required_status_checks.contexts],
-            checks: body.required_status_checks.contexts.map((context) => ({ context, app_id: null })),
-          },
-          enforce_admins: { enabled: body.enforce_admins },
-          allow_force_pushes: { enabled: body.allow_force_pushes },
-          allow_deletions: { enabled: body.allow_deletions },
-        };
-        return structuredClone(state);
-      }
-      if (path === protectionPath + '/required_status_checks' && method === 'PATCH') {
-        assert(state, 'cannot patch missing protection');
-        state.required_status_checks = {
-          ...body, contexts: body.checks.map((check) => check.context),
-        };
-        return structuredClone(state.required_status_checks);
-      }
-      if (path === protectionPath + '/enforce_admins' && method === 'POST') {
-        assert(state, 'cannot set admins on missing protection');
-        state.enforce_admins.enabled = true;
-        return {};
-      }
-      assert.fail('unexpected GitHub method/path during branch protection test');
-    };
-    return { api, calls, snapshot: () => structuredClone(state) };
-  }
-
-  const missing = mockApi(null);
-  await assert.rejects(() => applyLive(missing.api, false, false), /--confirm=/);
-  assert.equal(missing.calls.length, 0, 'unconfirmed command must not call the API');
-  await applyLive(missing.api, true, false);
-  assert.deepEqual(missing.calls.map((c) => c.method), ['GET', 'PUT', 'GET']);
-  assert.deepEqual(missing.calls[1].body.required_status_checks,
-    { strict: true, contexts: fixedContexts });
-  assert.equal(missing.calls[1].body.enforce_admins, true);
-  assert.equal(missing.calls[1].body.allow_force_pushes, false);
-  assert.equal(missing.calls[1].body.allow_deletions, false);
-
-  const protectedBranch = {
-    required_status_checks: {
-      strict: false, contexts: ['pinned-check', 'legacy-context'],
-      checks: [{ context: 'pinned-check', app_id: 12345 }, { context: 'legacy-null-app', app_id: null }],
-    },
-    enforce_admins: { enabled: false },
-    allow_force_pushes: { enabled: false },
-    allow_deletions: { enabled: false },
-    required_pull_request_reviews: { required_approving_review_count: 2 },
-    restrictions: { users: ['release-owner'] },
-  };
-  const existing = mockApi(protectedBranch);
-  await applyLive(existing.api, true, false);
-  assert.deepEqual(existing.calls.map((c) => c.method), ['GET', 'PATCH', 'POST', 'GET']);
-  assert.equal(existing.calls[1].path, protectionPath + '/required_status_checks');
-  assert.deepEqual(existing.calls[1].body, {
-    strict: true,
-    checks: [
-      { context: 'pinned-check', app_id: 12345 },
-      { context: 'legacy-null-app' },
-      { context: 'legacy-context' },
-      ...fixedContexts.map((context) => ({ context })),
+async function selfTestReadOnlyRuleset() {
+  const goodRepository = { full_name: expectedRepository, default_branch: 'main' };
+  const goodRuleset = {
+    id: expectedRulesetId,
+    source_type: 'Repository',
+    source: expectedRepository,
+    target: 'branch',
+    enforcement: 'active',
+    conditions: { ref_name: { include: ['~DEFAULT_BRANCH'], exclude: [] } },
+    bypass_actors: [],
+    current_user_can_bypass: 'never',
+    rules: [
+      { type: 'deletion' },
+      { type: 'non_fast_forward' },
+      { type: 'pull_request', parameters: {
+        required_approving_review_count: 0, allowed_merge_methods: ['merge', 'squash', 'rebase'],
+      } },
+      { type: 'required_status_checks', parameters: {
+        strict_required_status_checks_policy: true,
+        do_not_enforce_on_create: false,
+        required_status_checks: fixedContexts.map((context) => ({
+          context, integration_id: expectedIntegrationId,
+        })),
+      } },
     ],
-  }, 'existing app pinning, unrelated checks and null app_id must survive PATCH');
-  assert.deepEqual(existing.snapshot().required_pull_request_reviews,
-    protectedBranch.required_pull_request_reviews);
-  assert.deepEqual(existing.snapshot().restrictions, protectedBranch.restrictions);
-
-  const alreadyEnforced = mockApi({ ...protectedBranch, enforce_admins: { enabled: true } });
-  await applyLive(alreadyEnforced.api, true, false);
-  assert.deepEqual(alreadyEnforced.calls.map((c) => c.method), ['GET', 'PATCH', 'GET'],
-    'admins already enforced must not receive an unnecessary POST');
-
-  for (const unsafeKey of ['allow_force_pushes', 'allow_deletions']) {
-    const unsafe = mockApi({ ...protectedBranch, [unsafeKey]: { enabled: true } });
-    await assert.rejects(() => applyLive(unsafe.api, true, false), /permits|does not expose/);
-    assert.deepEqual(unsafe.calls.map((c) => c.method), ['GET'],
-      'unsafe existing protection must not be silently overwritten');
+  };
+  assert.doesNotThrow(() => validateRuleset(goodRuleset, goodRepository));
+  const mutations = [
+    (r) => { r.id += 1; },
+    (r) => { r.source_type = 'Organization'; },
+    (r) => { r.source = 'someone/else'; },
+    (r) => { r.target = 'tag'; },
+    (r) => { r.enforcement = 'evaluate'; },
+    (r) => { r.conditions.ref_name.include = ['refs/heads/dev']; },
+    (r) => { r.conditions.ref_name.exclude = ['main']; },
+    (r) => { r.bypass_actors.push({ actor_type: 'RepositoryRole', actor_id: 5 }); },
+    (r) => { r.current_user_can_bypass = 'always'; },
+    (r) => { r.current_user_can_bypass = undefined; },
+    (r) => { r.rules.pop(); },
+    (r) => { r.rules.push({ type: 'update' }); },
+    (r) => { r.rules.push({ type: 'deletion' }); },
+    (r) => { r.rules.find((x) => x.type === 'pull_request')
+      .parameters.required_approving_review_count = 1; },
+    (r) => { r.rules.find((x) => x.type === 'pull_request')
+      .parameters.allowed_merge_methods = ['merge']; },
+    (r) => { r.rules.find((x) => x.type === 'required_status_checks')
+      .parameters.strict_required_status_checks_policy = false; },
+    (r) => { r.rules.find((x) => x.type === 'required_status_checks')
+      .parameters.do_not_enforce_on_create = true; },
+    (r) => { r.rules.find((x) => x.type === 'required_status_checks')
+      .parameters.required_status_checks.pop(); },
+    (r) => { r.rules.find((x) => x.type === 'required_status_checks')
+      .parameters.required_status_checks.push({ context: 'unexpected', integration_id: 15368 }); },
+    (r) => { r.rules.find((x) => x.type === 'required_status_checks')
+      .parameters.required_status_checks[0].integration_id = -1; },
+  ];
+  for (const mutate of mutations) {
+    const candidate = structuredClone(goodRuleset);
+    mutate(candidate);
+    assert.throws(() => validateRuleset(candidate, goodRepository),
+      'ruleset weakened or changed must never validate');
   }
+  assert.throws(() => validateRuleset(goodRuleset, {
+    ...goodRepository, default_branch: 'development',
+  }), /default branch/);
+  assert.throws(() => validateRuleset(goodRuleset, {
+    ...goodRepository, full_name: 'someone/else',
+  }), /identity/);
+
+  assert.doesNotThrow(() => validateReadToken(undefined));
+  assert.doesNotThrow(() => validateReadToken('synthetic_read_token'));
+  for (const bad of ['', null, 'token with space', 'token\twith-tab',
+    'token\nwith-newline', 'token\rwith-return']) {
+    assert.throws(() => validateReadToken(bad), /GH_TOKEN/);
+  }
+  const calls = [];
+  const fakeApi = async (path, method) => {
+    calls.push({ path, method });
+    assert.equal(method, undefined, 'auditor must never request a write method');
+    if (path === repositoryPath) return structuredClone(goodRepository);
+    if (path === rulesetPath) return structuredClone(goodRuleset);
+    assert.fail('unexpected API path');
+  };
+  await verifyLive(fakeApi, false);
+  assert.deepEqual(calls.map((call) => call.path), [repositoryPath, rulesetPath],
+    'verify-live must make only the two documented read requests');
+  // A missing/forbidden response must fail, never invent a passing rule.
+  await assert.rejects(() => verifyLive(async (path) => {
+    if (path === repositoryPath) return goodRepository;
+    throw new Error('HTTP 403');
+  }, false), /HTTP 403/);
+  console.log('PASS Ruleset API fixtures: read-only GET, strict mode, no bypass and pinned checks');
 }
 
 const args = process.argv.slice(2);
-const modes = ['--self-test', '--check-workflows', '--verify-live', '--apply'].filter((v) => args.includes(v));
-if (modes.length !== 1) {
-  throw new Error('Select exactly one: --self-test, --check-workflows, --verify-live, or --apply');
+if (args.length !== 1 ||
+  !['--self-test', '--check-workflows', '--verify-live'].includes(args[0])) {
+  throw new Error('Select exactly one: --self-test, --check-workflows or --verify-live. ' +
+    'The old --apply command is disabled; manage Ruleset #26119822 in GitHub settings.');
 }
-if (modes[0] === '--self-test') await selfTest();
-else if (modes[0] === '--check-workflows') checkWorkflows();
-else if (modes[0] === '--verify-live') await verifyLive();
-else await applyLive();
+if (args[0] === '--self-test') await selfTest();
+else if (args[0] === '--check-workflows') checkWorkflows();
+else await verifyLive();
