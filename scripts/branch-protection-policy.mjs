@@ -82,6 +82,20 @@ function validateWorkflow(check, source) {
     assert.doesNotMatch(job, /^ {4}needs:/m,
       check.context + ': required job cannot depend on skippable jobs');
   }
+  if (check.context === 'compatibility-smoke') {
+    // Ruleset checks a context name, not the commands within it. Refuse a green
+    // required job that quietly stops testing the actual release-safe layout.
+    assert.match(job, /^ {8}run: npm run qa:hero:layout$/m,
+      'required compatibility-smoke must execute the release-safe layout QA');
+    assert.match(job, /^ {10}QA_REQUIRE_INTEGRITY: '1'$/m,
+      'release-safe layout QA must verify the frozen PR-head/dist identity');
+    assert.match(job, /^ {8}run: npm run qa:hero:layout:self-test$/m,
+      'required layout gate must prove its negative regression fixture');
+    assert.match(job, /^ {8}run: npm run build$/m,
+      'required layout gate must build the release-safe profile');
+    assert.match(job, /^ {8}run: npm run qa:dist:record$/m,
+      'required layout gate must record the canonical dist digest');
+  }
 }
 
 function checkWorkflows(loader = (path) => readFileSync(new URL('../' + path, import.meta.url), 'utf8')) {
@@ -140,6 +154,14 @@ async function selfTest() {
       replaceOnce(jobAnchor,
         '\n  ' + check.job + ':\n    continue-on-error: true\n'),
     ];
+    if (check.context === 'compatibility-smoke') {
+      mutations.push(replaceOnce('        run: npm run qa:hero:layout\n',
+        '        run: echo LAYOUT_CHECK_DISABLED\n'));
+      mutations.push(replaceOnce("          QA_REQUIRE_INTEGRITY: '1'",
+        "          QA_REQUIRE_INTEGRITY: '0'"));
+      mutations.push(replaceOnce('        run: npm run qa:hero:layout:self-test',
+        '        run: echo NEGATIVE_FIXTURE_DISABLED'));
+    }
     if (check.job === 'checks') {
       const bootstrapAnchor = "if: github.event_name == 'push' && github.ref == 'refs/heads/feature/project-foundation'";
       mutations.push(replaceOnce(bootstrapAnchor, 'if: true'));
