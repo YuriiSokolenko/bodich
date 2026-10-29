@@ -16,7 +16,7 @@ concurrency:
 jobs:
   compatibility-smoke:
     runs-on: ubuntu-24.04
-    timeout-minutes: 55
+    timeout-minutes: 45
     env:
       QA_OUTPUT_DIR: visual-qa/cross-browser-qa
       QA_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
@@ -98,7 +98,7 @@ jobs:
         if: always() && steps.freeze.outcome == 'success'
         run: npm run qa:dist:verify
 
-      - name: Upload sanitized summary and failure-only screenshots
+      - name: Upload sanitized layout evidence, cross-browser summary and screenshots
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
