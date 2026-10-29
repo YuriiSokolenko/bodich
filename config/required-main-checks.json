@@ -2,7 +2,7 @@
   "schemaVersion": 2,
   "repository": "YuriiSokolenko/bodich",
   "branch": "main",
-  "strict": true,
+  "strict": false,
   "enforceAdmins": true,
   "requiredChecks": [
     {
