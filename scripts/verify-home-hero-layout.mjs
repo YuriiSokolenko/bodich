@@ -1,12 +1,13 @@
 import assert from 'node:assert/strict';
 import { createServer } from 'node:http';
-import { spawnSync } from 'node:child_process';
-import { mkdtemp, readFile, rm } from 'node:fs/promises';
+import { execFileSync, spawnSync } from 'node:child_process';
+import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { extname, join, normalize, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright';
 import sharp from 'sharp';
+import { sha256, collectReleaseFiles, distManifestSha256 } from './lib/release-manifest.mjs';
 
 // Issue #96 regression: the release-safe homepage hero must stay in normal flow.
 //
@@ -31,10 +32,13 @@ const viewports = [
   { name: '1280', width: 1280 },
   { name: '1366', width: 1366 },
   { name: '1440', width: 1440 },
+  { name: '1920', width: 1920 },
   { name: '200% zoom @1280', width: 640 },
   { name: '400% zoom @1280', width: 320 },
 ];
 const viewportHeight = 900;
+const evidenceDir = resolve(process.env.QA_OUTPUT_DIR ?? 'visual-qa/hero-layout');
+const screenshotsDir = join(evidenceDir, 'hero-layout-screenshots');
 const tolerance = 1;
 const minimumSeparation = 16;
 const minimumContrast = 4.5;
@@ -198,7 +202,17 @@ function collectHeroMetrics() {
     ...cards.map((card, index) => [`feature card ${index + 1} description`, card.querySelector('p')]),
   ].filter(([, el]) => el).map(([name, el]) => ({ name, contrast: contrastOf(el) }));
 
+  const shade = hero?.querySelector('[data-hero-shade]');
   return {
+    mediaProfile: document.documentElement.getAttribute('data-media-profile'),
+    withheldCount: document.querySelectorAll('[data-media-withheld]').length,
+    heroImageCount: hero?.querySelectorAll('img').length ?? 0,
+    shade: shade ? {
+      rect: rectOf(shade),
+      position: getComputedStyle(shade).position,
+      zIndex: getComputedStyle(shade).zIndex,
+      backgroundImage: getComputedStyle(shade).backgroundImage,
+    } : null,
     viewportWidth: document.documentElement.clientWidth,
     scrollWidth: document.documentElement.scrollWidth,
     layout: hero?.getAttribute('data-hero-layout') ?? null,
@@ -210,7 +224,12 @@ function collectHeroMetrics() {
     header: header ? rectOf(header) : null,
     hero: heroRect,
     copy: copy ? rectOf(copy) : null,
-    blocks: present.map(([name, el]) => ({ name, rect: rectOf(el) })),
+    blocks: present.map(([name, el]) => ({
+      name, rect: rectOf(el),
+      position: getComputedStyle(el).position,
+      zIndex: getComputedStyle(el).zIndex,
+      overflow: getComputedStyle(el).overflow,
+    })),
     h2: h2 ? rectOf(h2) : null,
     overlays,
     escaped,
@@ -238,6 +257,10 @@ function findGeometryViolations(m) {
     problems.push('hero uses the beta overlay layout; this check validates the release-safe build only (use npm run build)');
     return problems;
   }
+  if (m.mediaProfile !== 'release_safe') problems.push('expected data-media-profile=release_safe, got ' + m.mediaProfile);
+  if (m.layout !== 'flow') problems.push('expected data-hero-layout=flow, got ' + m.layout);
+  if (m.withheldCount !== 1) problems.push('release-safe must have exactly one withheld media notice');
+  if (m.heroImageCount !== 0) problems.push('unapproved hero image included in release-safe output');
   if (m.missing.length) problems.push(`missing elements: ${m.missing.join(', ')}`);
   if (m.scrollWidth > m.viewportWidth + tolerance) problems.push(`horizontal scroll: ${m.scrollWidth}px > ${m.viewportWidth}px`);
   if (m.h1Count !== 1) problems.push(`expected exactly one H1, found ${m.h1Count}`);
@@ -259,7 +282,11 @@ function findGeometryViolations(m) {
   for (let i = 0; i < m.blocks.length; i += 1) {
     for (let j = i + 1; j < m.blocks.length; j += 1) {
       if (intersects(m.blocks[i].rect, m.blocks[j].rect)) {
-        problems.push(`overlap: ${m.blocks[i].name} x ${m.blocks[j].name}`);
+        const a = m.blocks[i].rect;
+        const b = m.blocks[j].rect;
+        const area = Math.round((Math.min(a.right, b.right) - Math.max(a.left, b.left)) *
+          (Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top)));
+        problems.push(`overlap: ${m.blocks[i].name} x ${m.blocks[j].name}, area=${area}px², rects=${JSON.stringify([a, b])}`);
       }
     }
   }
@@ -323,38 +350,146 @@ function launchBrowser() {
   });
 }
 
+function currentBuildIdentity() {
+  const files = collectReleaseFiles(resolve('dist'));
+  return {
+    sourceSha: execFileSync('git', ['rev-parse', '--verify', 'HEAD'], { encoding: 'utf8' }).trim(),
+    lockfileSha256: null, // resolved from the pinned root lockfile below
+    distManifestSha256: distManifestSha256(files),
+    distFileCount: files.length,
+  };
+}
+
+async function loadBuildIdentity(distDirectory) {
+  const identity = currentBuildIdentity();
+  identity.lockfileSha256 = sha256(await readFile('package-lock.json'));
+  // The release gate explicitly pins dist; a caller cannot substitute untracked HTML.
+  assert.equal(resolve(distDirectory), resolve('dist'), 'layout QA must inspect the canonical dist directory');
+  if (process.env.QA_REQUIRE_INTEGRITY === '1') {
+    const baseline = JSON.parse(await readFile(join(evidenceDir, 'build-integrity.json'), 'utf8'));
+    assert.equal(baseline.schemaVersion, 1, 'missing canonical Stage 20D baseline');
+    for (const key of ['sourceSha', 'lockfileSha256', 'distManifestSha256', 'distFileCount']) {
+      assert.equal(identity[key], baseline[key], 'layout QA build identity drift: ' + key);
+    }
+    assert.equal(process.env.QA_HEAD_SHA ?? identity.sourceSha, identity.sourceSha,
+      'layout QA checkout must use exact PR head');
+  }
+  return identity;
+}
+
 async function run(distDirectory) {
-  const server = await startStaticServer(distDirectory);
+  await mkdir(screenshotsDir, { recursive: true });
+  const report = {
+    schemaVersion: 1, issue: 97, profile: 'release_safe',
+    scope: 'linux_playwright_automated_only', generatedAt: new Date().toISOString(),
+    sourceSha: null, distManifestSha256: null, lockfileSha256: null,
+    browser: 'chromium', browserVersion: null,
+    viewportHeight, locales, viewports, cases: [], failures: [],
+    status: 'FAIL', caveat: 'Headless Chromium is not physical Mac Safari, iPhone or Android device QA.',
+  };
+  let server;
   let browser;
-  const failures = [];
-  let checked = 0;
+  let baseline;
   try {
-    // Launch inside the cleanup scope: a missing Chromium must not leave the HTTP server open.
+    baseline = await loadBuildIdentity(distDirectory);
+    Object.assign(report, baseline);
+    server = await startStaticServer(distDirectory);
     browser = await launchBrowser();
-    const page = await browser.newPage({ viewport: { width: 1280, height: viewportHeight }, reducedMotion: 'reduce' });
+    report.browserVersion = browser.version();
+    const page = await browser.newPage({
+      viewport: { width: 1280, height: viewportHeight },
+      deviceScaleFactor: 1, reducedMotion: 'reduce',
+      locale: 'en-US', timezoneId: 'UTC',
+    });
+    const errors = [];
+    page.on('pageerror', error => errors.push('pageerror: ' + error.message));
+    page.on('console', message => {
+      if (message.type() === 'error') errors.push('console.error: ' + message.text());
+    });
+    page.on('response', response => {
+      if (response.status() >= 400) errors.push('HTTP ' + response.status() + ': ' + response.url());
+    });
+    page.on('requestfailed', request => {
+      if (!/^(net::ERR_ABORTED)$/.test(request.failure()?.errorText ?? '')) {
+        errors.push('requestfailed: ' + request.url() + ': ' + request.failure()?.errorText);
+      }
+    });
     for (const locale of locales) {
       for (const viewport of viewports) {
-        await page.setViewportSize({ width: viewport.width, height: viewportHeight });
-        const response = await page.goto(`${server.url}/${locale}/`, { waitUntil: 'load', timeout: 30000 });
-        assert.equal(response?.status(), 200, `${locale} homepage did not load`);
-        const problems = await inspect(page);
-        checked += 1;
-        const label = `${locale} @ ${viewport.name}px`;
-        if (problems.length) {
-          failures.push({ label, problems });
-          console.log(`FAIL ${label}`);
-          for (const problem of problems) console.log(`  - ${problem}`);
+        const id = locale + '-' + viewport.name.replace(/[^a-z0-9]+/gi, '_');
+        const prefix = id + '-release_safe-chromium-' + baseline.sourceSha.slice(0, 12) +
+          '-' + baseline.distManifestSha256.slice(0, 12);
+        const testcase = { id, locale, viewport, status: 'FAIL', problems: [],
+          metrics: null, screenshots: [], browserErrors: [] };
+        errors.length = 0;
+        try {
+          await page.setViewportSize({ width: viewport.width, height: viewportHeight });
+          const response = await page.goto(server.url + '/' + locale + '/', { waitUntil: 'load', timeout: 30000 });
+          assert.equal(response?.status(), 200, locale + ' homepage must return 200');
+          await page.evaluate(async () => {
+            await document.fonts.ready;
+            await Promise.all([...document.images].map(img => img.decode()));
+          });
+          const metrics = await page.evaluate(collectHeroMetrics);
+          testcase.metrics = metrics;
+          testcase.problems.push(...findGeometryViolations(metrics));
+          if (metrics.layout !== 'overlay') {
+            testcase.problems.push(...await findRenderedTextProblems(page, metrics));
+          }
+          testcase.browserErrors = [...errors];
+          testcase.problems.push(...errors);
+          const screenshot = join(screenshotsDir, prefix + '-full.png');
+          await page.screenshot({ path: screenshot, fullPage: true, animations: 'disabled', caret: 'hide' });
+          testcase.screenshots.push(screenshot);
+          // Stable bounded comparison set for manual image review (no automatic baseline writes).
+          if ([390, 1366, 1440].includes(viewport.width) && !viewport.name.includes('%')) {
+            for (const [kind, selector] of [['hero', '[data-hero]'], ['features', '[data-home-explore]']]) {
+              const focus = join(screenshotsDir, prefix + '-' + kind + '.png');
+              await page.locator(selector).screenshot({ path: focus, animations: 'disabled', caret: 'hide' });
+              testcase.screenshots.push(focus);
+            }
+          }
+          testcase.status = testcase.problems.length ? 'FAIL' : 'PASS';
+        } catch (error) {
+          testcase.problems.push(String(error?.stack ?? error).slice(0, 2400));
+          // Keep evidence when geometry validation itself throws.
+          try {
+            const failureScreenshot = join(screenshotsDir, prefix + '-failure.png');
+            await page.screenshot({ path: failureScreenshot, fullPage: true, timeout: 5000 });
+            testcase.screenshots.push(failureScreenshot);
+          } catch {}
+        }
+        report.cases.push(testcase);
+        if (testcase.status !== 'PASS') {
+          report.failures.push({ id, problems: testcase.problems });
+          console.error('FAIL ' + id + ': ' + testcase.problems.join('; '));
         } else {
-          console.log(`PASS ${label}`);
+          console.log('PASS ' + id);
         }
       }
     }
+  } catch (error) {
+    report.failures.push({ id: 'setup', problems: [String(error?.stack ?? error).slice(0, 2400)] });
   } finally {
-    await browser?.close();
-    await server.close();
+    await browser?.close().catch(() => {});
+    await server?.close().catch(() => {});
+    if (baseline) {
+      try {
+        const after = await loadBuildIdentity(distDirectory);
+        assert.deepEqual(after, baseline, 'release-safe dist changed during layout QA');
+      } catch (error) {
+        report.failures.push({ id: 'integrity', problems: [String(error?.message ?? error)] });
+      }
+    }
+    if (report.cases.length !== locales.length * viewports.length) {
+      report.failures.push({ id: 'matrix', problems: ['incomplete release-safe viewport matrix'] });
+    }
+    report.status = report.failures.length ? 'FAIL' : 'PASS_AUTOMATED_ONLY';
+    await writeFile(join(evidenceDir, 'hero-layout-summary.json'), JSON.stringify(report, null, 2) + '\n');
+    console.log('Issue #97 release-safe layout: ' + report.status + ', ' +
+      report.cases.filter(c => c.status === 'PASS').length + '/' + (locales.length * viewports.length));
+    if (report.failures.length) process.exitCode = 1;
   }
-  assert.equal(failures.length, 0, `${failures.length} of ${checked} release-safe hero layout checks failed (issue #96)`);
-  console.log(`Release-safe homepage hero layout verified: ${checked} EN/RO viewport checks passed.`);
 }
 
 // --- self-test: the same assertions must flag the pre-fix layout and accept the fixed one -------
@@ -378,9 +513,9 @@ const fixtureStyles = `
   .cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
 `;
 
-function fixture(layout) {
+function fixture(layout, locale = 'en') {
   const shade = layout === 'overlay' ? '<div aria-hidden="true" data-hero-shade></div>' : '';
-  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><style>${fixtureStyles}</style></head><body>
+  return `<!doctype html><html lang="${locale}" data-media-profile="release_safe"><head><meta charset="utf-8"><style>${fixtureStyles}</style></head><body>
     <header>site header</header>
     <main>
       <p style="margin:80px 0 24px">WEBSITE PREVIEW</p>
@@ -409,14 +544,14 @@ async function selfTest() {
   const browser = await launchBrowser();
   try {
     const page = await browser.newPage({ viewport: { width: 1280, height: viewportHeight }, reducedMotion: 'reduce' });
-
-    await page.setContent(fixture('flow'));
+    for (const locale of locales) {
+    await page.setContent(fixture('flow', locale));
     const accepted = await inspect(page);
     assert.deepEqual(accepted, [], `Fixed in-flow hero fixture must pass: ${accepted.join('; ')}`);
 
     // Pre-fix shape: absolutely positioned copy plus a full-width shade over a short hero.
     // The geometry rules ask for "flow", so reuse them by checking the overlay metrics directly.
-    await page.setContent(fixture('overlay'));
+    await page.setContent(fixture('overlay', locale));
     const broken = await page.evaluate(collectHeroMetrics);
     assert.equal(broken.layout, 'overlay');
     const asFlow = { ...broken, layout: 'flow' };
@@ -431,6 +566,7 @@ async function selfTest() {
 
     // The guard must refuse to certify the beta overlay layout as release-safe output.
     assert(findGeometryViolations(broken)[0].includes('release-safe'), 'Non-flow layouts must not be accepted as release-safe');
+    }
   } finally {
     await browser.close();
   }
