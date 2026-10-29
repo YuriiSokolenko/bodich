@@ -1,20 +1,22 @@
-# Issue #89 — required PR checks on `main`
+# Issue #89 — verify required GitHub Ruleset on `main`
 
-This change keeps the expected GitHub branch-protection policy under version control. **A passing CI run does not activate repository branch protection.** Applying the policy is a separate, repository-admin operation, verified against the live GitHub API.
+BODICH uses the active **repository branch Ruleset [#26119822](https://github.com/YuriiSokolenko/bodich/settings/rules/26119822)**: `Protect main — required CI`. This is **not classic Branch Protection**. The policy in [`config/required-main-checks.json`](../../config/required-main-checks.json) declares the expected settings; [`scripts/branch-protection-policy.mjs`](../../scripts/branch-protection-policy.mjs) validates source workflows and audits the **actual Ruleset with GET only**.
 
-## Required contexts
+**No apply/write operation exists.** In particular, do not run the obsolete `--apply --confirm=...` command from earlier versions of PR #90; it would attempt to create an unnecessary second, classic branch-protection rule. Changes to rules are made only by an authorized repository administrator in the [GitHub Ruleset settings](https://github.com/YuriiSokolenko/bodich/settings/rules/26119822).
 
-| GitHub required check (job ID) | Workflow | PR coverage |
+## Required job contexts
+
+| Required GitHub check (job ID) | Workflow | PR coverage |
 | --- | --- | --- |
-| `checks` | `.github/workflows/ci.yml` | Every PR to `main`; `create-lockfile` is skipped on PR and the `checks` job explicitly accepts that skipped dependency |
+| `checks` | `.github/workflows/ci.yml` | Every PR to `main`; `create-lockfile` is skipped on PRs and the `checks` job explicitly tolerates that skipped dependency |
 | `cloudflare-static-release` | `.github/workflows/pages-release-security.yml` | Every PR to `main` |
-| `compatibility-smoke` | `.github/workflows/release-cross-browser-qa.yml` | Every PR to `main`; path filters were removed in #87 |
+| `compatibility-smoke` | `.github/workflows/release-cross-browser-qa.yml` | Every PR to `main`; no path filters |
 
-Do not add `automated-qa` from `release-qa.yml` to mandatory status checks until its `pull_request.paths` filter is removed. Do not require `create-lockfile`, which is intentionally skipped on PRs. Required status names are job IDs, **not** workflow display names. The validator prohibits job-level `name:` and `strategy:` on required jobs, since renaming or expanding a matrix would change GitHub's reported check context.
+The Ruleset requires these three check contexts from **GitHub Actions** (`integration_id=15368`) and an **up-to-date branch** (`strict_required_status_checks_policy=true`). The runner rejects job-level `name:`, `strategy:`, conditional skips and incompatible event/path filters that could change or prevent the contexts.
 
-The policy resides at [`config/required-main-checks.json`](../../config/required-main-checks.json), with the bounded CLI at [`scripts/branch-protection-policy.mjs`](../../scripts/branch-protection-policy.mjs).
+Do **not** require `automated-qa` while `release-qa.yml` has a `pull_request.paths` filter, or `create-lockfile` (intentionally skipped on pull requests).
 
-## Automated tests / drift prevention
+## Local and CI tests
 
 ```bash
 npm run branch:policy:self-test
@@ -22,42 +24,36 @@ npm run branch:policy:check
 npm run check
 ```
 
-The first command validates the three real PR workflows and exercises negative mutations: missing/duplicated checks, wrong protected branch, non-strict enforcement, a renamed job, filtered PR trigger, narrowed event type, a conditional/skippable job, job-level `name:` or matrix, and `continue-on-error` for **each** required context. Additional offline API fixtures exercise creation, non-destructive PATCH with pinned/unpinned app IDs, extra unrelated check preservation, admin enforcement, explicit confirmation, unsafe force-push/deletion rejection and guarded 404 interpretation. These tests run as part of `npm run check` in existing Website CI and Pages security workflows. The script intentionally never accesses the GitHub API during CI.
+The policy self-test is part of `npm run check`, which runs on every PR to `main`. It tests policy drift, the exact required workflow triggers/job IDs, job-name and matrix regressions, and **simulated Ruleset API responses**. Fixture mutations cover active/enforcement status, default-branch targeting, bypass permissions, required PR rule, approvals, force pushes/deletions, strict up-to-date checks, GitHub Actions integration IDs, missing/extra checks, unexpected rules and read-only GET behavior.
 
-## Apply live branch protection (repository administrator)
+These CI tests **do not call the live GitHub API** and cannot establish that the remote Ruleset is active.
 
-The tooling used to prepare this PR **could not read or mutate branch protection**. A repository administrator must execute this one-time step separately; no admin token is committed to this repository, installed as a GitHub Actions secret, or shown in PR logs.
+## Audit the actual active Ruleset
 
-GitHub REST [branch protection administration](https://docs.github.com/en/rest/branches/branch-protection) requires repository **Administration: write** permissions to update it. Use a short-lived fine-grained GitHub token restricted to **only BODICH**, supplied through the environment and never via command-line arguments or a committed file.
-
-From a checked-out `main` after merging the implementation PR:
+From a checkout of the updated PR or merged `main`:
 
 ```bash
-# Terminal with an authorized fine-grained GitHub token; input is hidden.
-read -rs GH_ADMIN_TOKEN && export GH_ADMIN_TOKEN && echo
-node scripts/branch-protection-policy.mjs --apply --confirm=YuriiSokolenko/bodich:main
 node scripts/branch-protection-policy.mjs --verify-live
-unset GH_ADMIN_TOKEN
 ```
 
-The apply operation:
-- Creates classic protection when missing, with strict checks, `enforce_admins=true`, and force pushes/deletions blocked.
-- On an already protected branch, **patches only required check contexts and admin enforcement**, retaining existing reviews, integer check-app ID pins, restrictions, and unrelated required contexts. GitHub GET may report an unpinned check with `app_id: null`, which is omitted (not sent as invalid `null`) in PATCH. It does not blindly PUT a replacement for an existing rule.
-- Requires existing protection to report **force pushes and deletion disabled**; if either is enabled or unverifiable, abort before writing and let an administrator remedy the settings explicitly. After apply, a fresh GET verifies both are still disabled.
-- Treats an HTTP 404 as an unprotected branch **only** if GitHub explicitly returns `Branch not protected` on the full branch protection GET. Other 404s (e.g., missing permissions, wrong branch or hidden repo) fail without any PUT. Fails on insufficient permissions or other HTTP errors, then checks live API state after apply. Running `--verify-live` separately is an explicit second read.
+The verifier performs exactly two read-only public GitHub API operations:
+- `GET /repos/YuriiSokolenko/bodich`: verify the repository identity and `default_branch=main`.
+- `GET /repos/YuriiSokolenko/bodich/rulesets/26119822`: verify `active` enforcement, exact default-branch targeting, empty bypass list (`current_user_can_bypass=never`), deletion restriction, non-fast-forward restriction, PR requirement, zero approvals, strict and unskippable status checks and their expected GitHub Actions app IDs.
 
-If your account uses repository **rulesets** rather than classic protection, inspect [GitHub Rules settings](https://github.com/YuriiSokolenko/bodich/settings/rules) and their effective bypass exemptions before applying. The script verifies only classic branch protection, not inherited organization rulesets. Do not assert enforcement unless the active ruleset or branch protection is independently verified.
+The endpoint is readable without any administrator token for this public repository. If GitHub enforces an anonymous rate limit, an optional read-capable `GH_TOKEN` environment variable is supported. Do not put tokens into committed files, PR comments or command arguments. HTTP errors, missing fields and unexpected values **fail closed**; neither the CLI nor the automated tests send PUT, PATCH, POST or DELETE requests.
 
-## Acceptance and manual negative control
+To modify the configuration, edit the active Ruleset in GitHub and then rerun the audit. Do not install overlapping classic branch protection as a workaround.
 
-After applying, record a dated screenshot or admin API result **outside public artifacts** showing:
-1. `main` requires these exact three check contexts and a current head (`strict=true`).
-2. The same checks apply to repository admins, including the owner.
-3. A disposable PR with one missing/failing required check is **blocked**, even if other checks pass. With `strict=true`, PRs must also be updated to the latest `main` head before merging. Do not deliberately break `main` or bypass a failed check.
-4. A representative green PR is mergeable, while Stage 20D manual device sign-offs and Stage 20F human release approvals remain **NO-GO**.
+## Prove actual merge enforcement before closing #89
 
-Only then check off the live-configuration acceptance criteria and close #89. A green implementation PR alone is **not sufficient**.
+After reviewing and merging PR #90, the authorized maintainer should record dated evidence that:
+1. The live Ruleset still matches `main`, has no bypass actors, `strict_required_status_checks_policy=true`, and requires the three named GitHub Actions checks.
+2. An isolated, disposable pull request with a **failed or missing required check** is blocked from merging. Verify this using the GitHub PR UI/API. Never deliberately break `main`; do not bypass or manufacture a success.
+3. An up-to-date PR with all required checks green can merge through the normal workflow; a stale PR needs an update to the latest `main`.
+4. The release decision remains **NO-GO** until independent human Stage 20D real-device QA and Stage 20F legal/owner signoffs are completed (#60, #69, #71). The ruleset audit does not authorize a production launch.
 
-## Limitations
+The first live audit verifies the Ruleset's **configuration**, not an actual negative merge attempt. Keep issue #89 open until the enforcement probe is documented.
 
-GitHub hosted Actions and GitHub's branch protection are different enforcement layers. The CLI uses **classic branch protection** only and cannot prove effective organization/repository ruleset bypass settings; check those separately in GitHub. This policy preserves the existing `automated-qa` path filter and avoids false claims that Linux WebKit is Safari. No production deployment, legal approval, Romanian sign-off, product verification or human launch authorization is implied.
+## Scope and limitations
+
+The verifier checks repository Ruleset **#26119822**; it does not read or change the classic branch-protection endpoint, detect the impact of other organizational rules, or promise a human legal/compliance sign-off. Do not conflate automated Linux WebKit with Safari real-device QA. The public site stays release-safe, informational-only; no catalog approval, commerce change or deployment follows from this issue.
