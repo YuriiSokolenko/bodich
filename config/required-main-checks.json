@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 2,
+  "repository": "YuriiSokolenko/bodich",
+  "branch": "main",
+  "strict": true,
+  "enforceAdmins": true,
+  "requiredChecks": [
+    {
+      "context": "checks",
+      "workflow": ".github/workflows/ci.yml",
+      "job": "checks"
+    },
+    {
+      "context": "cloudflare-static-release",
+      "workflow": ".github/workflows/pages-release-security.yml",
+      "job": "cloudflare-static-release"
+    },
+    {
+      "context": "compatibility-smoke",
+      "workflow": ".github/workflows/release-cross-browser-qa.yml",
+      "job": "compatibility-smoke"
+    }
+  ],
+  "rulesetId": 26119822,
+  "requiredIntegrationId": 15368,
+  "requirePullRequest": true,
+  "requiredApprovals": 0,
+  "disallowForcePushes": true,
+  "disallowDeletions": true
+}
