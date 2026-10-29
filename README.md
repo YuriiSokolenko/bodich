@@ -121,6 +121,18 @@ A standalone **offline, non-production** review gallery for the 132 supplier-ref
 
 ## Getting started
 
+### Docker LAN QA preview (no host Node.js required)
+
+With Docker Desktop and Compose v2, build and start the release-safe EN/RO site for local or trusted-LAN QA:
+
+```bash
+docker compose up --build -d
+```
+
+Node.js 24 and `npm ci` run inside the multi-architecture Docker builder; the small Nginx runtime contains no Node/npm or project source. Open `http://localhost:4321/en/` or `/ro/` on the MacBook. For Android/iPad access and security details, follow the [Docker-first LAN QA guide](docs/qa/docker-lan-preview.md).
+
+### Optional host development
+
 Prerequisites: Node.js 24 and npm. `.nvmrc` contains the expected Node.js major version.
 
 ```bash
@@ -141,6 +153,7 @@ Astro prints the development URL (typically `http://localhost:4321`). Browse `/e
 | `npm run check` | Validate Astro components and TypeScript |
 | `npm run build` | Generate the static website into `dist/` |
 | `npm run preview` | Preview generated pages locally |
+| `docker compose up --build -d` | Build and serve the release-safe LAN QA preview (Node/npm run inside Docker) |
 
 Use `npm ci` for reproducible installation from the committed lockfile. GitHub Actions runs installation, type checking, production build and route checks on pull requests to `main` and pushes to `main` (plus a temporary bootstrap feature-branch trigger, pending CI cleanup).
 

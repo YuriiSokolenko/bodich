@@ -1,0 +1,25 @@
+# Keep the build context limited to committed application inputs.
+.git
+.astro
+node_modules
+dist
+.env
+.env.*
+!.env.example
+.npmrc
+*.pem
+*.key
+coverage
+tmp
+*.log
+.DS_Store
+.vscode
+.idea
+
+# These files are generated locally for private review and are never needed by
+# the public release-safe build. Source policy/evidence under docs/catalog is
+# intentionally retained because release gates validate it.
+visual-qa
+docs/catalog/draft-assets
+/public/images/turbines
+/public/favicon.svg
