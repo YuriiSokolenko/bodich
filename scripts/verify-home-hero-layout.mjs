@@ -410,24 +410,8 @@ async function run(distDirectory) {
     server = await startStaticServer(distDirectory);
     browser = await launchBrowser();
     report.browserVersion = browser.version();
-    const page = await browser.newPage({
-      viewport: { width: 1280, height: viewportHeight },
-      deviceScaleFactor: 1, reducedMotion: 'reduce',
-      locale: 'en-US', timezoneId: 'UTC',
-    });
-    const errors = [];
-    page.on('pageerror', error => errors.push('pageerror: ' + error.message));
-    page.on('console', message => {
-      if (message.type() === 'error') errors.push('console.error: ' + message.text());
-    });
-    page.on('response', response => {
-      if (response.status() >= 400) errors.push('HTTP ' + response.status() + ': ' + response.url());
-    });
-    page.on('requestfailed', request => {
-      if (!/^(net::ERR_ABORTED)$/.test(request.failure()?.errorText ?? '')) {
-        errors.push('requestfailed: ' + request.url() + ': ' + request.failure()?.errorText);
-      }
-    });
+    // A fresh page per case prevents a late pageerror/request failure from the
+    // previous viewport being incorrectly attributed to the next one.
     for (const locale of locales) {
       for (const viewport of viewports) {
         const id = locale + '-' + viewport.name.replace(/[^a-z0-9]+/gi, '_');
@@ -435,14 +419,37 @@ async function run(distDirectory) {
           '-' + baseline.distManifestSha256.slice(0, 12);
         const testcase = { id, locale, viewport, status: 'FAIL', problems: [],
           metrics: null, screenshots: [], browserErrors: [] };
-        errors.length = 0;
+        const page = await browser.newPage({
+          viewport: { width: viewport.width, height: viewportHeight },
+          deviceScaleFactor: 1, reducedMotion: 'reduce',
+          locale: 'en-US', timezoneId: 'UTC',
+        });
+        const errors = [];
+        page.on('pageerror', error => errors.push('pageerror: ' + error.message));
+        page.on('console', message => {
+          if (message.type() === 'error') errors.push('console.error: ' + message.text());
+        });
+        page.on('response', response => {
+          if (response.status() >= 400) errors.push('HTTP ' + response.status() + ': ' + response.url());
+        });
+        page.on('requestfailed', request => {
+          if (request.failure()?.errorText !== 'net::ERR_ABORTED') {
+            errors.push('requestfailed: ' + request.url() + ': ' + request.failure()?.errorText);
+          }
+        });
         try {
-          await page.setViewportSize({ width: viewport.width, height: viewportHeight });
           const response = await page.goto(server.url + '/' + locale + '/', { waitUntil: 'load', timeout: 30000 });
           assert.equal(response?.status(), 200, locale + ' homepage must return 200');
           await page.evaluate(async () => {
             await document.fonts.ready;
-            await Promise.all([...document.images].map(img => img.decode()));
+            await Promise.all([...document.images].map(async img => {
+              try {
+                await img.decode();
+              } catch (error) {
+                const path = new URL(img.currentSrc || img.src, location.href).pathname.slice(0, 160);
+                throw new Error('image failed to decode: ' + path + ': ' + String(error?.message ?? error));
+              }
+            }));
           });
           const metrics = await page.evaluate(collectHeroMetrics);
           testcase.metrics = metrics;
@@ -450,8 +457,6 @@ async function run(distDirectory) {
           if (metrics.layout !== 'overlay') {
             testcase.problems.push(...await findRenderedTextProblems(page, metrics));
           }
-          testcase.browserErrors = [...errors];
-          testcase.problems.push(...errors);
           const screenshot = join(screenshotsDir, prefix + '-full.png');
           await page.screenshot({ path: screenshot, fullPage: true, animations: 'disabled', caret: 'hide' });
           testcase.screenshots.push(screenshot);
@@ -463,7 +468,6 @@ async function run(distDirectory) {
               testcase.screenshots.push(focus);
             }
           }
-          testcase.status = testcase.problems.length ? 'FAIL' : 'PASS';
         } catch (error) {
           testcase.problems.push(String(error?.stack ?? error).slice(0, 2400));
           // Keep evidence when geometry validation itself throws.
@@ -472,7 +476,12 @@ async function run(distDirectory) {
             await page.screenshot({ path: failureScreenshot, fullPage: true, timeout: 5000 });
             testcase.screenshots.push(failureScreenshot);
           } catch {}
+        } finally {
+          testcase.browserErrors = [...errors];
+          testcase.problems.push(...errors);
+          await page.close().catch(() => {});
         }
+        testcase.status = testcase.problems.length ? 'FAIL' : 'PASS';
         report.cases.push(testcase);
         if (testcase.status !== 'PASS') {
           report.failures.push({ id, problems: testcase.problems });
@@ -535,32 +544,50 @@ function fixture(layout, locale = 'en') {
     title: 'Descoperiți turbinele miniaturale și informațiile bilingve despre prezentarea site-ului',
     intro: 'Explorați structura demonstrativă și categoriile de turbine miniaturale pentru prezentare.',
     notice: 'Imagine conceptuală indisponibilă — drepturile de publicare nu au fost încă verificate.',
+    preview: 'PREVIZUALIZARE SITE',
+    cta: 'Explorați produsele',
+    exploreTitle: 'Explorați prezentarea BODICH',
+    exploreIntro: 'Descoperiți structura propusă a site-ului.',
+    features: [
+      ['Concepte de turbine', 'Explorați categoria de turbine propusă.'],
+      ['Categorii de accesorii', 'Răsfoiți grupurile de produse planificate.'],
+      ['Informații de asistență', 'Aflați ce resurse sunt în curs de pregătire.'],
+    ],
   } : {
     title: 'Miniature turbine learning and site preview with a deliberately long translated title',
     intro: 'Explore how miniature turbines work and browse a bilingual website preview.',
     notice: 'Concept image withheld — publication rights have not been verified.',
+    preview: 'WEBSITE PREVIEW',
+    cta: 'Explore products',
+    exploreTitle: 'Explore the BODICH preview',
+    exploreIntro: 'Discover the proposed site structure.',
+    features: [
+      ['Turbine concepts', 'Explore the proposed turbine category.'],
+      ['Accessory categories', 'Browse planned groups.'],
+      ['Support information', 'Learn which resources are pending.'],
+    ],
   };
   const shade = layout === 'overlay' ? '<div aria-hidden="true" data-hero-shade></div>' : '';
   return `<!doctype html><html lang="${locale}" data-media-profile="release_safe"><head><meta charset="utf-8"><style>${fixtureStyles}</style></head><body>
     <header>site header</header>
     <main>
-      <p style="margin:80px 0 24px">WEBSITE PREVIEW</p>
+      <p style="margin:80px 0 24px">${copy.preview}</p>
       <div data-hero data-hero-layout="${layout}">
         ${shade}
         <div data-hero-copy>
           <h1>${copy.title}</h1>
           <p>${copy.intro}</p>
-          <a href="/products/" style="display:inline-block;padding:12px 20px;background:#ff4f64;color:#111">Explore products</a>
+          <a href="/products/" style="display:inline-block;padding:12px 20px;background:#ff4f64;color:#111">${copy.cta}</a>
         </div>
         <div data-media-withheld role="status">${copy.notice}</div>
       </div>
       <section data-home-explore>
-        <h2 id="home-explore-heading">Explore the BODICH preview</h2>
-        <p>Discover the proposed site structure.</p>
+        <h2 id="home-explore-heading">${copy.exploreTitle}</h2>
+        <p>${copy.exploreIntro}</p>
         <div class="cards">
-          <a href="/products/" data-home-feature="products"><h3>Turbine concepts</h3><p>Explore the proposed turbine category.</p></a>
-          <a href="/accessories/" data-home-feature="accessories"><h3>Accessory categories</h3><p>Browse planned groups.</p></a>
-          <a href="/support/" data-home-feature="support"><h3>Support information</h3><p>Learn which resources are pending.</p></a>
+          <a href="/products/" data-home-feature="products"><h3>${copy.features[0][0]}</h3><p>${copy.features[0][1]}</p></a>
+          <a href="/accessories/" data-home-feature="accessories"><h3>${copy.features[1][0]}</h3><p>${copy.features[1][1]}</p></a>
+          <a href="/support/" data-home-feature="support"><h3>${copy.features[2][0]}</h3><p>${copy.features[2][1]}</p></a>
         </div>
       </section>
     </main></body></html>`;
@@ -571,27 +598,27 @@ async function selfTest() {
   try {
     const page = await browser.newPage({ viewport: { width: 1280, height: viewportHeight }, reducedMotion: 'reduce' });
     for (const locale of locales) {
-    await page.setContent(fixture('flow', locale));
-    const accepted = await inspect(page);
-    assert.deepEqual(accepted, [], `Fixed in-flow hero fixture must pass: ${accepted.join('; ')}`);
+      await page.setContent(fixture('flow', locale));
+      const accepted = await inspect(page);
+      assert.deepEqual(accepted, [], `Fixed in-flow hero fixture must pass: ${accepted.join('; ')}`);
 
-    // Pre-fix shape: absolutely positioned copy plus a full-width shade over a short hero.
-    // The geometry rules ask for "flow", so reuse them by checking the overlay metrics directly.
-    await page.setContent(fixture('overlay', locale));
-    const broken = await page.evaluate(collectHeroMetrics);
-    assert.equal(broken.layout, 'overlay');
-    const asFlow = { ...broken, layout: 'flow' };
-    const problems = findGeometryViolations(asFlow);
-    assert(problems.some((p) => p.startsWith('overlap:')), `Overlapping blocks must be detected: ${problems.join('; ')}`);
-    assert(problems.some((p) => p.startsWith('obscured:')), `A painted shade over content must be detected: ${problems.join('; ')}`);
-    assert(problems.some((p) => p.includes('[data-hero-shade]')), 'Rendering the shade in the release-safe layout must be rejected');
-    assert(problems.some((p) => p.includes('normal flow')), 'Absolutely positioned hero copy must be rejected');
-    assert(problems.some((p) => p.includes('outside the hero container')), 'Content spilling out of the hero must be detected');
-    const rendered = await findRenderedTextProblems(page, asFlow);
-    assert(rendered.some((p) => p.includes('darkening')), `Pixel read-back must detect darkened text: ${rendered.join('; ')}`);
+      // Pre-fix shape: absolutely positioned copy plus a full-width shade over a short hero.
+      // The geometry rules ask for "flow", so reuse them by checking the overlay metrics directly.
+      await page.setContent(fixture('overlay', locale));
+      const broken = await page.evaluate(collectHeroMetrics);
+      assert.equal(broken.layout, 'overlay');
+      const asFlow = { ...broken, layout: 'flow' };
+      const problems = findGeometryViolations(asFlow);
+      assert(problems.some((p) => p.startsWith('overlap:')), `Overlapping blocks must be detected: ${problems.join('; ')}`);
+      assert(problems.some((p) => p.startsWith('obscured:')), `A painted shade over content must be detected: ${problems.join('; ')}`);
+      assert(problems.some((p) => p.includes('[data-hero-shade]')), 'Rendering the shade in the release-safe layout must be rejected');
+      assert(problems.some((p) => p.includes('normal flow')), 'Absolutely positioned hero copy must be rejected');
+      assert(problems.some((p) => p.includes('outside the hero container')), 'Content spilling out of the hero must be detected');
+      const rendered = await findRenderedTextProblems(page, asFlow);
+      assert(rendered.some((p) => p.includes('darkening')), `Pixel read-back must detect darkened text: ${rendered.join('; ')}`);
 
-    // The guard must refuse to certify the beta overlay layout as release-safe output.
-    assert(findGeometryViolations(broken)[0].includes('release-safe'), 'Non-flow layouts must not be accepted as release-safe');
+      // The guard must refuse to certify the beta overlay layout as release-safe output.
+      assert(findGeometryViolations(broken)[0].includes('release-safe'), 'Non-flow layouts must not be accepted as release-safe');
     }
   } finally {
     await browser.close();
