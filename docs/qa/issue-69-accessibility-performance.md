@@ -70,4 +70,4 @@ To intentionally update QA dependencies, edit the exact versions in `package.jso
 
 **Planning target:** November 9, 2026, provisional and dependent on access to physical Android/iPhone devices, Safari on macOS, and a named QA lead. No waiver exists for unavailable devices.
 
-For the reproducible trusted-LAN preview and supplemental Android/iPad/Mac manual setup, see [Issue #92 — trusted-LAN QA preview](issue-92-lan-preview.md). iPad results do not replace the mandatory iPhone Safari + VoiceOver reports and do not change this matrix.
+For Docker-first trusted-LAN preview setup with no host Node.js requirement and supplemental Android/iPad/Mac instructions, see [Docker LAN QA preview](docker-lan-preview.md). The optional host-native route remains in [Issue #92 — trusted-LAN QA preview](issue-92-lan-preview.md). iPad results do not replace the mandatory iPhone Safari + VoiceOver reports and do not change this matrix.

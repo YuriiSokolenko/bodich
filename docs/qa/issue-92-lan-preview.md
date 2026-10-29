@@ -2,7 +2,9 @@
 
 This is an opt-in HTTP preview of a freshly built, release-safe static site on a MacBook. It is for QA on a trusted local network only. It does not deploy the site, publish the private catalog, authorize launch, or change the NO-GO state of [Stage 20D #69](issue-69-accessibility-performance.md) or [Stage 20F #71](issue-71-release-decision.md).
 
-## Start the MacBook preview
+For the Docker-first option that does not require host Node.js/npm/nvm, use the [Docker LAN QA preview guide](docker-lan-preview.md). This page documents the existing optional host-native workflow for developers who already have Node.js 24 installed.
+
+## Optional host-native preview
 
 From a clean checkout of `main` on the MacBook:
 

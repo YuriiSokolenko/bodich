@@ -1,0 +1,23 @@
+services:
+  bodich-preview:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        BODICH_GIT_SHA: ${BODICH_GIT_SHA:-UNKNOWN}
+        BODICH_SOURCE_STATE: ${BODICH_SOURCE_STATE:-UNKNOWN}
+    image: bodich-lan-preview:local
+    ports:
+      - "${BODICH_BIND_IP:-0.0.0.0}:${BODICH_PORT:-4321}:8080"
+    read_only: true
+    init: true
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    pids_limit: 64
+    mem_limit: 512m
+    cpus: 1.0
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,nodev,size=16m,mode=1777
