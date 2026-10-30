@@ -3,7 +3,7 @@
  * Neither supplier references nor their diagrams become company-approved stock.
  */
 import assert from 'node:assert/strict';
-import { copyFileSync, existsSync, lstatSync, mkdirSync, readFileSync } from 'node:fs';
+import { copyFileSync, existsSync, lstatSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 
 assert.equal(process.env.BODICH_MEDIA_PROFILE, 'qa_full', 'QA staging/audit is opt-in only');
@@ -22,11 +22,13 @@ assert.equal(sourceIds.size, count);
 assert.equal(overlayById.size, count);
 assert.equal(new Set(overrides.records.map((item) => item.slug)).size, count);
 const seen = new Set();
+const artForQa = [];
 for (const entry of manifest.entries) {
   const id = entry.sourceId;
   assert.match(id, /^kt-(?:[0-9]+|sq-[A-Z0-9]+)$/);
   assert.ok(sourceIds.has(id) && !seen.has(id), 'Invalid or duplicate artwork source ID: ' + id);
   seen.add(id);
+  artForQa.push({ sourceId: id, alt: entry.alt });
   assert.equal(entry.approved, false, 'QA art must remain unapproved');
   assert.equal(entry.isProductPhoto, false, 'QA art must not claim to be product photography');
   assert.equal(entry.kind, 'original_diagram');
@@ -47,6 +49,27 @@ for (const entry of manifest.entries) {
   } else {
     assert.ok(existsSync(destination) && lstatSync(destination).isFile(), 'Missing QA distribution art for ' + id);
   }
+}
+if (mode === '--stage') {
+  const records = inventory.products.map((source) => {
+    const row = overlayById.get(source.id);
+    assert.ok(row, 'Missing staged overlay: ' + source.id);
+    return {
+      sourceId: source.id,
+      slug: row.slug,
+      copy: row.copy,
+      specs: row.specs,
+      source: {
+        url: source.canonicalUrl,
+        sections: source.sourceCategoryIds,
+        status: source.sourceStatus,
+      },
+    };
+  });
+  // Deliberately replaces the EMPTY source-tree fixture only in the isolated
+  // Docker QA builder, after normal checks. Never commit generated research.
+  writeFileSync('src/qa/catalog-data.json',
+    JSON.stringify({ records, art: artForQa }) + '\n');
 }
 if (mode === '--verify') {
   for (const locale of ['en', 'ro']) {
