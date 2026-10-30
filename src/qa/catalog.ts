@@ -36,7 +36,13 @@ export function qaHref(locale: string, slug?: string): string {
   const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
   return base + '/' + locale + '/qa/' + (slug ? encodeURIComponent(slug) + '/' : '');
 }
-/** One generic, non-model-specific AI concept in the isolated full-content QA catalog. */
+/**
+ * One generic, non-model-specific AI concept in the isolated QA catalog.
+ * Keep path, EN/RO alt and captions in sync with independent expectations in:
+ * scripts/stage-qa-full.mjs, scripts/verify-qa-full-browser.mjs and
+ * .github/workflows/docker-full-qa.yml. Those checks intentionally do not
+ * import UI values, so regressions cannot pass by sharing wrong constants.
+ */
 export function qaImage(): string {
   const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
   return base + '/images/turbines/bodich-card-concept-01.webp';
@@ -51,8 +57,8 @@ export const qaImageDisclosure: Record<QaLocale, string> = {
 };
 export function qaImageAlt(locale: QaLocale): string {
   return locale === 'ro'
-    ? 'Concept BODICH de turbină generat cu IA; nu este o fotografie a modelului exact'
-    : 'AI-generated BODICH turbine concept art; not an exact model photograph';
+    ? 'Concept ilustrativ de turbină BODICH'
+    : 'BODICH turbine concept art';
 }
 if (qaFull) {
   if (qaDrafts.length !== 132 || new Set(qaDrafts.map((item) => item.slug)).size !== 132) throw new Error('QA draft manifest parity failed');

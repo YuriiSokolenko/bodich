@@ -42,7 +42,7 @@ const metric = (spec: QaDraft['specs'][number]) => [spec.kind, spec.metric, spec
             <p class="mt-5 text-lg leading-7 text-bodich-muted">{copy.summary}</p>
             <h2 class="mt-8 text-xl font-bold">{locale === 'ro' ? 'Descriere de cercetare' : 'Research description'}</h2>
             <p class="mt-3 leading-7 text-bodich-muted">{copy.description}</p>
-            <p class="mt-6 text-sm text-bodich-muted">{locale === 'ro' ? 'Sursă externă:' : 'External reference source:'} <a class="underline" href={draft.source.url} rel="noopener noreferrer" target="_blank">KingTech</a></p>
+            <p class="mt-6 text-sm text-bodich-muted">{locale === 'ro' ? 'Sursă externă:' : 'External reference source:'} <a data-qa-external-source class="underline" href={draft.source.url} rel="noopener noreferrer" target="_blank">KingTech</a></p>
           </div>
         </div>
         <section class="mt-12" aria-label={locale === 'ro' ? 'Specificații raportate de sursă' : 'Source-reported specifications'}>

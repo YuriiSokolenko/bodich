@@ -62,8 +62,8 @@ jobs:
           primary = concept + '.webp'
           srcset = f'{concept}-360.webp 360w, {concept}-600.webp 600w'
           alt = {
-              'en': 'AI-generated BODICH turbine concept art; not an exact model photograph',
-              'ro': 'Concept BODICH de turbină generat cu IA; nu este o fotografie a modelului exact',
+              'en': 'BODICH turbine concept art',
+              'ro': 'Concept ilustrativ de turbină BODICH',
           }
           captions = {
               'en': 'AI-generated illustrative concept art; not an exact model photograph.',
@@ -73,9 +73,13 @@ jobs:
               def __init__(self):
                   super().__init__()
                   self.images = []
+                  self.sources = []
               def handle_starttag(self, tag, attrs):
+                  values = dict(attrs)
                   if tag == 'img':
-                      self.images.append(dict(attrs))
+                      self.images.append(values)
+                  elif tag == 'a' and 'data-qa-external-source' in values:
+                      self.sources.append(values)
           def get(path):
               with urlopen(base + path, timeout=10) as r:
                   assert r.status == 200, (path, r.status)
@@ -94,7 +98,9 @@ jobs:
                   assert img.get('loading') in ('lazy', 'eager')
               return images
           records = json.load(open('docs/catalog/reference-overrides.json', encoding='utf8'))['records']
-          assert len(records) == 132
+          inventory = json.load(open('docs/catalog/source-inventory.json', encoding='utf8'))['products']
+          source_urls = {item['id']: item['canonicalUrl'] for item in inventory}
+          assert len(records) == len(source_urls) == 132
           for locale in ('en', 'ro'):
               landing = get(f'/{locale}/qa/')
               assert 'data-qa-catalog' in landing
@@ -106,7 +112,10 @@ jobs:
                   detail = get(f'/{locale}/qa/{record["slug"]}/')
                   assert 'data-qa-detail="' + record['sourceId'] + '"' in detail
                   assert 'noindex, nofollow' in detail
-                  assert 'KingTech' in detail
+                  parsed = ImageParser()
+                  parsed.feed(detail)
+                  assert len(parsed.sources) == 1, (locale, record['slug'], parsed.sources)
+                  assert parsed.sources[0].get('href') == source_urls[record['sourceId']], record['slug']
                   assert check_images(detail, locale, 1)[0]['loading'] == 'eager'
               home = get(f'/{locale}/')
               assert 'data-full-qa-notice' in home
@@ -131,12 +140,15 @@ jobs:
             test ! -d /app
             test ! -e /usr/share/nginx/html/docs/catalog
           '
+      # Both architectures run HTTP smoke; Chromium smoke only runs on amd64.
       - name: Install browser QA dependencies on the host runner
+        if: matrix.arch == 'amd64'
         uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
           cache: npm
       - name: Run real Chromium image-loading smoke for EN and RO QA routes
+        if: matrix.arch == 'amd64'
         run: |
           npm ci
           ./node_modules/.bin/playwright install --with-deps --only-shell chromium

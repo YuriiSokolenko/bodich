@@ -7,6 +7,8 @@ RUN npm ci
 
 FROM dependencies AS qa-build
 COPY . .
+# `media:stage-beta` must run first: it stages bodich-card-concept-01*.webp
+# into public/images/turbines/ for `stage-qa-full.mjs --stage`.
 RUN npm run check \
  && BODICH_MEDIA_PROFILE=beta_presentation npm run media:stage-beta \
  && BODICH_MEDIA_PROFILE=qa_full node scripts/stage-qa-full.mjs --stage \

@@ -14,8 +14,8 @@ const primary = concept + '.webp';
 const srcset = concept + '-360.webp 360w, ' + concept + '-600.webp 600w';
 const sources = [concept + '-360.webp', concept + '-600.webp'];
 const alt = {
-  en: 'AI-generated BODICH turbine concept art; not an exact model photograph',
-  ro: 'Concept BODICH de turbină generat cu IA; nu este o fotografie a modelului exact',
+  en: 'BODICH turbine concept art',
+  ro: 'Concept ilustrativ de turbină BODICH',
 };
 const caption = {
   en: 'AI-generated illustrative concept art; not an exact model photograph.',

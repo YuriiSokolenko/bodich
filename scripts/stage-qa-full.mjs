@@ -17,6 +17,7 @@ assert.equal(inventory.products.length, count, 'Inventory must contain 132 sourc
 assert.equal(overrides.records.length, count, 'Overrides must contain 132 draft records');
 const sourceIds = new Set(inventory.products.map((item) => item.id));
 const overlayById = new Map(overrides.records.map((item) => [item.sourceId, item]));
+const sourceById = new Map(inventory.products.map((item) => [item.id, item]));
 assert.equal(sourceIds.size, count);
 assert.equal(overlayById.size, count);
 assert.equal(new Set(overrides.records.map((item) => item.slug)).size, count);
@@ -35,8 +36,8 @@ const image = concept + '.webp';
 const srcset = concept + '-360.webp 360w, ' + concept + '-600.webp 600w';
 const variants = [image, concept + '-360.webp', concept + '-600.webp'];
 const alts = {
-  en: 'AI-generated BODICH turbine concept art; not an exact model photograph',
-  ro: 'Concept BODICH de turbină generat cu IA; nu este o fotografie a modelului exact',
+  en: 'BODICH turbine concept art',
+  ro: 'Concept ilustrativ de turbină BODICH',
 };
 const captions = {
   en: 'AI-generated illustrative concept art; not an exact model photograph.',
@@ -101,7 +102,12 @@ if (mode === '--verify') {
       assert.ok(html.includes('data-qa-detail="' + row.sourceId + '"'), 'Wrong QA detail identity: ' + row.sourceId);
       assert.match(html, /noindex, nofollow/, 'QA detail must not be indexable');
       assert.match(html, /TESTING ONLY|DOAR PENTRU TESTARE/, 'QA warning is missing');
-      assert.ok(html.includes('KingTech'), 'External research link missing: ' + row.slug);
+      const canonical = sourceById.get(row.sourceId)?.canonicalUrl;
+      assert.ok(canonical, 'Missing source URL: ' + row.sourceId);
+      const expectedHref = canonical.replaceAll('&', '&amp;').replaceAll('"', '&quot;');
+      assert.ok(html.includes('data-qa-external-source') &&
+        html.includes('href="' + expectedHref + '"'),
+        'Canonical external reference link missing: ' + row.slug);
       verifyImages(html, locale, 1, locale + '/' + row.slug);
     }
     const homepage = readFileSync(resolve('dist', locale, 'index.html'), 'utf8');
