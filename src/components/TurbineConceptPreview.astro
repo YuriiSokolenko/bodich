@@ -8,7 +8,7 @@ interface Props {
 
 const { locale } = Astro.props;
 const t = translations[locale];
-const presentationMedia = ['beta_presentation', 'private_review'].includes(import.meta.env.BODICH_MEDIA_PROFILE);
+const presentationMedia = ['beta_presentation', 'private_review', 'qa_full'].includes(import.meta.env.BODICH_MEDIA_PROFILE);
 ---
 
 <section data-turbine-concepts class="mt-10" aria-labelledby="turbine-concepts-heading">

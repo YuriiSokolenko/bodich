@@ -42,3 +42,6 @@ visual-qa/release-qa/
 
 # Stage 20D / Issue #87 automated Linux Firefox/WebKit audit output
 visual-qa/cross-browser-qa/
+
+# QA-only staging: do not commit source-reference diagrams to public assets
+/public/qa-art/

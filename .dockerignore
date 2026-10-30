@@ -23,3 +23,6 @@ visual-qa
 docs/catalog/draft-assets
 /public/images/turbines
 /public/favicon.svg
+
+# QA art must be reproducibly regenerated inside the isolated builder
+/public/qa-art/
