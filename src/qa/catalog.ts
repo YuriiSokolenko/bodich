@@ -15,7 +15,7 @@ import {
 
 export const qaFull = import.meta.env.BODICH_MEDIA_PROFILE === 'qa_full';
 export const qaDrafts: ReferenceDraft[] = qaFull
-  ? buildReferenceDrafts(inventory as SourceInventory, overrides as ReferenceOverrides)
+  ? buildReferenceDrafts(inventory as unknown as SourceInventory, overrides as unknown as ReferenceOverrides)
   : [];
 
 export const qaSections = ['g5', 'g4', 'tp', 'accessories', 'oil', 'batteries', 'warranty'] as const;
