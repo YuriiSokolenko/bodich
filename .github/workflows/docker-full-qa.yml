@@ -1,0 +1,135 @@
+name: Docker Full QA preview
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+# Never permit an older run to overwrite a later main image.
+concurrency:
+  group: full-qa-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    name: Full QA ${{ matrix.platform }}
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: linux/amd64
+            arch: amd64
+            runner: ubuntu-latest
+          - platform: linux/arm64
+            arch: arm64
+            runner: ubuntu-24.04-arm
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build full QA preview (source and approved-product gates unchanged)
+        env:
+          ARCH: ${{ matrix.arch }}
+          SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          docker build -f Dockerfile.qa-full --platform "linux/$ARCH" \
+            --build-arg "BODICH_GIT_SHA=$SHA" \
+            -t bodich-full-qa:local .
+      - name: Run isolated QA image and smoke bilingual content
+        shell: bash
+        run: |
+          docker run -d --name bodich-qa --read-only --cap-drop ALL \
+            --security-opt no-new-privileges --pids-limit 64 \
+            --memory 512m --cpus 1 \
+            --tmpfs /tmp:rw,noexec,nosuid,nodev,size=16m,mode=1777 \
+            -p 127.0.0.1:4321:8080 bodich-full-qa:local
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:4321/en/qa/ >/dev/null; then break; fi
+            sleep 1
+          done
+          python3 - <<'PY'
+          import json
+          import re
+          from urllib.request import urlopen
+          base = 'http://127.0.0.1:4321'
+          def get(path):
+              with urlopen(base + path, timeout=10) as r:
+                  assert r.status == 200, (path, r.status)
+                  return r.read().decode('utf8', errors='replace')
+          records = json.load(open('docs/catalog/reference-overrides.json', encoding='utf8'))['records']
+          assert len(records) == 132
+          for locale in ('en', 'ro'):
+              landing = get(f'/{locale}/qa/')
+              assert 'data-qa-catalog' in landing
+              assert 'data-media-profile="qa_full"' in landing
+              assert 'noindex, nofollow' in landing
+              assert len(re.findall(f'href="/{locale}/qa/[^"]+/"', landing)) == 132
+              for record in records:
+                  detail = get(f'/{locale}/qa/{record["slug"]}/')
+                  assert 'data-qa-detail="' + record['sourceId'] + '"' in detail
+                  assert 'noindex, nofollow' in detail
+                  assert 'qa-art/' + record['sourceId'] + '.webp' in detail
+              home = get(f'/{locale}/')
+              assert 'data-full-qa-notice' in home
+              assert '/images/turbines/bodich-hero-concept.webp' in home
+          for path in ['/qa-art/' + records[0]['sourceId'] + '.webp',
+                       '/images/turbines/bodich-hero-concept.webp']:
+              with urlopen(base + path, timeout=10) as r:
+                  assert r.status == 200 and r.headers.get_content_type() == 'image/webp'
+          assert 'Disallow: /' in get('/robots.txt')
+          print('Full-content QA HTTP smoke passed: 132 x 2 detail pages')
+          PY
+          test "$(docker image inspect --format '{{index .Config.Labels "org.bodich.profile"}}' bodich-full-qa:local)" = qa_full
+          docker run --rm --entrypoint sh bodich-full-qa:local -ec '
+            ! command -v node
+            ! command -v npm
+            test ! -d /app
+            test ! -e /usr/share/nginx/html/docs/catalog
+          '
+      - name: Log errors
+        if: failure()
+        run: docker logs bodich-qa || true
+      - name: Publish tested single-arch QA image on main only
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        env:
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SHA: ${{ github.sha }}
+          ARCH: ${{ matrix.arch }}
+        run: |
+          echo "$GHCR_TOKEN" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+          docker tag bodich-full-qa:local "ghcr.io/yuriisokolenko/bodich-full-qa-preview:sha-$SHA-$ARCH"
+          docker push "ghcr.io/yuriisokolenko/bodich-full-qa-preview:sha-$SHA-$ARCH"
+      - name: Stop QA
+        if: always()
+        run: docker rm -f bodich-qa || true
+    permissions:
+      contents: read
+      packages: write
+
+  publish-multiarch:
+    name: Publish tested multi-arch QA image
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: docker/setup-buildx-action@v3
+      - name: Login GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Assemble the exact tested architecture images
+        env:
+          SHA: ${{ github.sha }}
+        run: |
+          repo=ghcr.io/yuriisokolenko/bodich-full-qa-preview
+          docker buildx imagetools create -t "$repo:main" \
+            "$repo:sha-$SHA-amd64" "$repo:sha-$SHA-arm64"
+          docker buildx imagetools inspect "$repo:main"
