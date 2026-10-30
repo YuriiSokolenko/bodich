@@ -12,8 +12,12 @@ permissions:
 jobs:
   # Single source of truth for "may this run publish an image to GHCR?".
   # Publishing is allowed only for pushes to main and for pull requests whose
-  # head branch lives in this repository. Fork pull requests (and Dependabot,
-  # whose token is read-only) never publish and never export the image.
+  # head branch lives in this repository. Fork pull requests and Dependabot
+  # pull requests never publish and never export the image. Dependabot is
+  # rejected by PR author as well as by event actor: github.actor is whoever
+  # triggered the event (a human can synchronize or reopen a Dependabot PR),
+  # while its workflows only ever get a read-only token.
+  # scripts/ghcr-publish.test.mjs runs this exact script against its cases.
   gate:
     name: Decide GHCR publishing
     runs-on: ubuntu-latest
@@ -25,6 +29,7 @@ jobs:
           EVENT_NAME: ${{ github.event_name }}
           REF: ${{ github.ref }}
           ACTOR: ${{ github.actor }}
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
           REPO: ${{ github.repository }}
           HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
         shell: bash
@@ -32,11 +37,12 @@ jobs:
           publish=false
           if [ "$EVENT_NAME" = push ] && [ "$REF" = refs/heads/main ]; then
             publish=true
-          elif [ "$EVENT_NAME" = pull_request ] && [ "$HEAD_REPO" = "$REPO" ] && [ "$ACTOR" != 'dependabot[bot]' ]; then
+          elif [ "$EVENT_NAME" = pull_request ] && [ "$HEAD_REPO" = "$REPO" ] \
+            && [ "$ACTOR" != 'dependabot[bot]' ] && [ "$PR_AUTHOR" != 'dependabot[bot]' ]; then
             publish=true
           fi
           echo "publish=$publish" >> "$GITHUB_OUTPUT"
-          echo "GHCR publishing: $publish (event=$EVENT_NAME, head repo=${HEAD_REPO:-n/a})"
+          echo "GHCR publishing: $publish (event=$EVENT_NAME, head repo=${HEAD_REPO:-n/a}, actor=$ACTOR, PR author=${PR_AUTHOR:-n/a})"
 
   docker-preview:
     name: Docker preview ${{ matrix.platform }}
@@ -288,12 +294,13 @@ jobs:
       contents: read
       packages: write
       pull-requests: read
-    # Serialize tag moves per moving tag (main or pr-<number>).
+    # Serialize tag moves per moving tag (main or pr-<number>): two runs never
+    # write the same moving tag at the same time. A queued run that is
+    # superseded by a newer queued run is cancelled, which is fine: the newer
+    # run publishes the newer commit.
     concurrency:
       group: ghcr-publish-${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.pull_request.number) || 'main' }}
       cancel-in-progress: false
-    outputs:
-      verify_tag: ${{ steps.tags.outputs.verify_tag }}
     env:
       IMAGE: ghcr.io/yuriisokolenko/bodich-lan-preview
       SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
@@ -305,8 +312,17 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Create multi-arch image and move tags
-        id: tags
+      # Why main / pr-<number> cannot roll back: this job is serialized per
+      # moving tag (see concurrency above), and the branch head is read again
+      # immediately before the tag is written, after every slow registry step.
+      # A write therefore only happens while this commit is still the head. If
+      # a newer commit lands after that read, its run is queued behind this job
+      # and promotes the tag after it; it can never be overtaken by an older run.
+      # The sha-<SHA> tags are the only thing downstream jobs rely on.
+      # scripts/ghcr-publish.test.mjs runs this exact script against stubbed
+      # docker/gh, including the head advancing mid-publish.
+      - name: Create multi-arch image and promote the moving tag
+        id: promote
         env:
           EVENT_NAME: ${{ github.event_name }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
@@ -316,11 +332,16 @@ jobs:
           sha_tag="sha-${SOURCE_SHA}"
           if [ "$EVENT_NAME" = pull_request ]; then
             moving_tag="pr-${PR_NUMBER}"
-            current_sha="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" --jq .head.sha)"
+            head_endpoint="repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}"
+            head_jq=.head.sha
           else
             moving_tag=main
-            current_sha="$(gh api "repos/${GITHUB_REPOSITORY}/commits/main" --jq .sha)"
+            head_endpoint="repos/${GITHUB_REPOSITORY}/commits/main"
+            head_jq=.sha
           fi
+          latest_sha() { gh api "$head_endpoint" --jq "$head_jq"; }
+          sha256() { if command -v sha256sum > /dev/null; then sha256sum; else shasum -a 256; fi; }
+          manifest_digest() { docker buildx imagetools inspect "$1" --raw | sha256 | cut -d' ' -f1; }
 
           if docker buildx imagetools inspect "${IMAGE}:${sha_tag}" > /dev/null 2>&1; then
             echo "${sha_tag} already published; keeping it."
@@ -338,23 +359,40 @@ jobs:
           assert platforms == ['linux/amd64', 'linux/arm64'], platforms
           PY
 
-          # Never move main or pr-<number> backwards: only the newest commit may own it.
-          if [ "$current_sha" = "$SOURCE_SHA" ]; then
+          # Freshness is checked here, immediately before the write, not earlier.
+          promoted=false
+          newest="$(latest_sha)"
+          if [ "$newest" = "$SOURCE_SHA" ]; then
             docker buildx imagetools create --tag "${IMAGE}:${moving_tag}" "${IMAGE}:${sha_tag}"
-            echo "verify_tag=${moving_tag}" >> "$GITHUB_OUTPUT"
-            moved="\`${moving_tag}\` now points at this commit"
+            # The moving tag must now be exactly the manifest published above.
+            if [ "$(manifest_digest "${IMAGE}:${moving_tag}")" != "$(manifest_digest "${IMAGE}:${sha_tag}")" ]; then
+              echo "::error::${moving_tag} does not match ${sha_tag} after promotion."
+              exit 1
+            fi
+            promoted=true
+            after="$(latest_sha)"
+            if [ "$after" != "$SOURCE_SHA" ]; then
+              echo "::warning::${moving_tag} was promoted to ${SOURCE_SHA}, but ${after} landed during promotion. The run for ${after} is queued behind this job and promotes ${moving_tag} next."
+            fi
           else
-            echo "::notice::${moving_tag} not moved: a newer commit (${current_sha}) exists; ${sha_tag} was still published."
-            echo "verify_tag=${sha_tag}" >> "$GITHUB_OUTPUT"
-            moved="\`${moving_tag}\` not moved (a newer commit exists)"
+            echo "::notice::${moving_tag} not moved: ${newest} is newer than ${SOURCE_SHA}. ${sha_tag} was still published."
           fi
+
+          {
+            echo "promoted=${promoted}"
+            echo "moving_tag=${moving_tag}"
+          } >> "$GITHUB_OUTPUT"
           {
             echo "### Published GHCR preview image"
             echo
             echo "- Image: \`${IMAGE}\` (linux/amd64, linux/arm64)"
             echo "- Immutable tag: \`${sha_tag}\`"
-            echo "- ${moved}"
-            echo "- Run it: \`BODICH_IMAGE_TAG=${moving_tag} docker compose -f compose.yaml -f compose.ghcr.yaml pull && BODICH_IMAGE_TAG=${moving_tag} docker compose -f compose.yaml -f compose.ghcr.yaml up -d\`"
+            if [ "$promoted" = true ]; then
+              echo "- \`${moving_tag}\` now points at this commit"
+            else
+              echo "- \`${moving_tag}\` not moved (a newer commit exists)"
+            fi
+            echo "- Run it: \`export BODICH_IMAGE_TAG=${moving_tag} COMPOSE_FILE=compose.yaml:compose.ghcr.yaml && docker compose pull && docker compose up -d\`"
           } >> "$GITHUB_STEP_SUMMARY"
 
   verify-published:
@@ -376,7 +414,10 @@ jobs:
     env:
       BODICH_BIND_IP: 127.0.0.1
       BODICH_PORT: 4321
-      BODICH_IMAGE_TAG: ${{ needs.publish-manifest.outputs.verify_tag }}
+      # Verify through the immutable sha tag: a newer run may legitimately move
+      # main / pr-<number> while this job is still queued. The moving tag is
+      # checked against this exact manifest at promotion time instead.
+      BODICH_IMAGE_TAG: sha-${{ github.event.pull_request.head.sha || github.sha }}
       # The documented one-command flow: plain `docker compose pull` / `up -d`.
       COMPOSE_FILE: compose.yaml:compose.ghcr.yaml
       EXPECTED_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}

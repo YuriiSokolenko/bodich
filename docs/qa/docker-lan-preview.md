@@ -69,7 +69,7 @@ In a checkout the two files are already present; only the `export COMPOSE_FILE=.
 | `sha-<full commit SHA>` | Exactly that commit; never moved to another commit. Matches `BODICH_GIT_SHA` and the image's `org.opencontainers.image.revision` label | With every publish |
 | `pr-<number>` | The latest head commit of a same-repository pull request | Same-repository pull requests only |
 
-`sha-<SHA>-amd64` and `sha-<SHA>-arm64` also exist as the per-architecture images behind the multi-arch tags; use the tags above. A tag is only moved to the newest commit, so an older workflow run that finishes late never rolls `main` or `pr-<number>` back.
+`sha-<SHA>-amd64` and `sha-<SHA>-arm64` also exist as the per-architecture images behind the multi-arch tags; use the tags above. `main` and `pr-<number>` only ever move forward. Tag moves are serialized per tag, and the branch head is read again immediately before the tag is written (after every slow registry step); an older run that finishes late sees a newer head and leaves the tag alone, while its own `sha-<SHA>` tag is still published. If a newer commit lands while a tag is being written, that commit's run is queued behind it and promotes the tag next. Right after the move, CI checks that the moving tag is exactly the manifest behind its `sha-<SHA>` tag. For anything that must not change under you, use the `sha-` tag.
 
 Select a tag with `BODICH_IMAGE_TAG`, set for both commands (the easiest way is to export it):
 
@@ -90,8 +90,9 @@ Its `profile` is `release_safe`, `sourceState` is `clean`, and `sourceSha` equal
 
 - Publishing happens only after every Docker preview check (EN/RO smoke, browser smoke, context isolation, runtime isolation, provenance, fail-closed fixtures) passed on **both** architectures. The image pushed is the exact image those checks tested, not a rebuild.
 - It is always the release-safe build (`npm run build`). Unapproved concept media and supplier drafts stay withheld; the workflow asserts `profile: release_safe` again on the pulled image. No beta or presentation image is published under these tags.
-- Pull requests from forks, and Dependabot pull requests, run every check but never publish. `packages: write` is granted only to the publishing jobs; the checks themselves keep `contents: read`.
-- After publishing, CI pulls the image back through `compose.ghcr.yaml` on both architectures, serves `/en/` and `/ro/`, and verifies the provenance record matches the commit.
+- Pull requests from forks, and Dependabot-authored pull requests (whoever triggers the run, since a person can re-run or update one), run every check but never publish. `packages: write` is granted only to the publishing jobs; the checks themselves keep `contents: read`.
+- After publishing, CI pulls the immutable `sha-<SHA>` image back through `compose.ghcr.yaml` on both architectures, serves `/en/` and `/ro/`, and verifies the provenance record matches the commit. It verifies through the `sha-` tag rather than `main` / `pr-<number>` because a newer run may legitimately move those while the check is still queued.
+- The publish gate and the tag-promotion rules are covered by `npm run qa:ghcr:publish:test`, which executes the workflow's own scripts against stubbed `docker` and `gh`, including a branch head that advances mid-publish.
 
 ### Package visibility (decision)
 

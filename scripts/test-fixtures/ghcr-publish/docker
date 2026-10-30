@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+# Test stub for `docker buildx imagetools {inspect,create}` used by
+# scripts/ghcr-publish.test.mjs. The registry is a directory of files, one per
+# image reference. Every call is appended to $STUB_DIR/calls.log.
+#
+# Knobs (environment):
+#   STUB_ADVANCE_HEAD_ON_SHA_CREATE=<sha>     after the multi-arch sha-<SHA> manifest is
+#                                             created, the branch head becomes <sha>
+#   STUB_ADVANCE_HEAD_ON_MOVING_CREATE=<sha>  after main / pr-<n> is written, the head becomes <sha>
+#   STUB_DROP_TAG=<tag>                       `create --tag <tag>` silently writes nothing
+set -eu
+
+reg="$STUB_DIR/registry"
+mkdir -p "$reg"
+echo "docker $*" >> "$STUB_DIR/calls.log"
+
+if [ "${1:-}" != buildx ] || [ "${2:-}" != imagetools ]; then
+  echo "unexpected docker invocation: $*" >&2
+  exit 99
+fi
+sub="$3"
+shift 3
+
+ref_file() { printf '%s/%s' "$reg" "$(printf '%s' "$1" | tr '/:' '__')"; }
+
+case "$sub" in
+  inspect)
+    file="$(ref_file "$1")"
+    [ -f "$file" ] || exit 1
+    cat "$file"
+    ;;
+  create)
+    [ "$1" = --tag ] || { echo "unexpected create args: $*" >&2; exit 99; }
+    target="$2"
+    shift 2
+    tag="${target##*:}"
+    if [ -n "${STUB_DROP_TAG:-}" ] && [ "$tag" = "$STUB_DROP_TAG" ]; then
+      exit 0
+    fi
+    if [ "$#" -eq 1 ]; then
+      cp "$(ref_file "$1")" "$(ref_file "$target")"
+    else
+      printf '{"manifests":[{"platform":{"os":"linux","architecture":"amd64"}},{"platform":{"os":"linux","architecture":"arm64"}}]}' > "$(ref_file "$target")"
+    fi
+    case "$tag" in
+      sha-*-amd64 | sha-*-arm64) ;;
+      sha-*)
+        if [ -n "${STUB_ADVANCE_HEAD_ON_SHA_CREATE:-}" ]; then
+          printf '%s' "$STUB_ADVANCE_HEAD_ON_SHA_CREATE" > "$STUB_DIR/head"
+        fi
+        ;;
+      *)
+        if [ -n "${STUB_ADVANCE_HEAD_ON_MOVING_CREATE:-}" ]; then
+          printf '%s' "$STUB_ADVANCE_HEAD_ON_MOVING_CREATE" > "$STUB_DIR/head"
+        fi
+        ;;
+    esac
+    ;;
+  *)
+    echo "unexpected imagetools subcommand: $sub" >&2
+    exit 99
+    ;;
+esac
