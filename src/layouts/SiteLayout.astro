@@ -30,7 +30,7 @@ const pageSchema = indexable && site ? {
   isPartOf: { '@type': 'WebSite', name: 'BODICH', url: new URL(import.meta.env.BASE_URL, site).toString() },
 } : undefined;
 const canonical = site ? new URL(hrefFor(locale, page, subpath), site).toString() : undefined;
-const presentationMedia = ['beta_presentation', 'private_review'].includes(mediaProfile);
+const presentationMedia = ['beta_presentation', 'private_review', 'qa_full'].includes(mediaProfile);
 const faviconHref = `${import.meta.env.BASE_URL.replace(/\/+$/, '')}/favicon.svg`;
 ---
 
@@ -62,7 +62,7 @@ const faviconHref = `${import.meta.env.BASE_URL.replace(/\/+$/, '')}/favicon.svg
     </a>
     <div class="flex min-h-dvh flex-col">
       <SiteHeader locale={locale} page={page} subpath={subpath} />
-      <main id="main-content" class="flex-1">
+      {mediaProfile === "qa_full" && (\n        <aside data-full-qa-notice class="border-b border-bodich-accent bg-bodich-panel px-6 py-3 text-center text-sm font-semibold text-bodich-ink">\n          {locale === "ro" ? "PREVIZUALIZARE DE TEST — referințe externe neaprobate; nu sunt produse BODICH." : "FULL CONTENT QA — unapproved external research; not BODICH products."}\n          <a href={`${import.meta.env.BASE_URL.replace(/\/+$/, "")}/${locale}/qa/`} class="ml-3 text-bodich-accent-hover underline">{locale === "ro" ? "Catalog QA" : "Browse 132 draft references"}</a>\n        </aside>\n      )}\n      <main id="main-content" class="flex-1">
         <slot />
       </main>
       <SiteFooter locale={locale} page={page} />
