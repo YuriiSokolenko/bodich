@@ -1,0 +1,67 @@
+---
+import SiteLayout from '../../../layouts/SiteLayout.astro';
+import SiteContainer from '../../../components/ui/SiteContainer.astro';
+import { locales, type Locale } from '../../../i18n';
+import { qaDrafts, qaFull, qaHref, qaImage, qaImageAlt, qaSection, sectionCopy } from '../../../qa/catalog';
+import type { ReferenceDraft } from '../../../catalog/reference';
+
+export function getStaticPaths() {
+  if (process.env.BODICH_MEDIA_PROFILE !== 'qa_full') return [];
+  return locales.flatMap((locale) => qaDrafts.map((draft) => ({
+    params: { locale, slug: draft.slug },
+    props: { locale, draft },
+  })));
+}
+
+const { locale, draft } = Astro.props as { locale: Locale; draft: ReferenceDraft };
+const copy = draft.copy[locale];
+const section = qaSection(draft);
+const notice = locale === 'ro'
+  ? 'DOAR PENTRU TESTARE: referință externă KingTech, nu produs BODICH verificat. Ilustrația nu reprezintă fidel modelul. Nu se acceptă comenzi.'
+  : 'TESTING ONLY: external KingTech research reference, not a verified BODICH product. Illustration is not an exact model depiction. No orders accepted.';
+const metric = (spec: ReferenceDraft['specs'][number]) => [spec.kind, spec.metric, spec.scope].filter(Boolean).join(' · ');
+---
+{qaFull && copy && (
+  <SiteLayout locale={locale} page="products" title={copy.name} description={notice}>
+    <SiteContainer>
+      <article data-qa-detail={draft.sourceId} class="py-12 sm:py-20">
+        <nav aria-label="QA breadcrumbs" class="mb-8 flex flex-wrap gap-4 text-sm text-bodich-accent-hover">
+          <a href={qaHref(locale)}>{locale === 'ro' ? 'Catalog QA' : 'QA catalog'}</a>
+          <span>{sectionCopy[section][locale]}</span>
+          <a href={qaHref(locale === 'en' ? 'ro' : 'en', draft.slug)}>{locale === 'en' ? 'Română' : 'English'}</a>
+        </nav>
+        <p class="rounded-control border border-bodich-accent p-5 text-sm leading-7">{notice}</p>
+        <div class="mt-8 grid gap-10 lg:grid-cols-2">
+          <figure>
+            <img src={qaImage(draft.sourceId)} alt={qaImageAlt(draft.sourceId, locale)} width="600" height="450" class="w-full rounded-control border border-bodich-border"/>
+            <figcaption class="mt-2 text-sm text-bodich-muted">{locale === 'ro' ? 'Ilustrație generică, nu fotografie a produsului' : 'Generic illustration, not a product photograph'}</figcaption>
+          </figure>
+          <div>
+            <p class="text-sm text-bodich-accent">DRAFT · {draft.sourceId} · {draft.source.status}</p>
+            <h1 class="mt-4 font-display text-4xl font-black">{copy.name}</h1>
+            <p class="mt-5 text-lg leading-7 text-bodich-muted">{copy.summary}</p>
+            <h2 class="mt-8 text-xl font-bold">{locale === 'ro' ? 'Descriere de cercetare' : 'Research description'}</h2>
+            <p class="mt-3 leading-7 text-bodich-muted">{copy.description}</p>
+            <p class="mt-6 text-sm text-bodich-muted">{locale === 'ro' ? 'Sursă externă:' : 'External reference source:'} <a class="underline" href={draft.source.url} rel="noopener noreferrer" target="_blank">KingTech</a></p>
+          </div>
+        </div>
+        <section class="mt-12" aria-label={locale === 'ro' ? 'Specificații raportate de sursă' : 'Source-reported specifications'}>
+          <h2 class="text-2xl font-bold">{locale === 'ro' ? 'Specificații raportate de sursă' : 'Source-reported specifications'}</h2>
+          {draft.specs.length ? (
+            <dl class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {draft.specs.map((spec) => (
+                <div class="rounded-control border border-bodich-border bg-bodich-panel p-4">
+                  <dt class="text-sm text-bodich-muted">{metric(spec)}</dt>
+                  <dd class="mt-2 text-xl font-bold">{spec.value.toLocaleString(locale)} {spec.unit}</dd>
+                  <dd class="mt-2 text-xs text-bodich-muted">Source checked {spec.verifiedOn}</dd>
+                </div>
+              ))}
+            </dl>
+          ) : (
+            <p class="mt-4 text-bodich-muted">{locale === 'ro' ? 'Nu există specificații verificate pentru această referință.' : 'No source-checked numeric specifications for this reference.'}</p>
+          )}
+        </section>
+      </article>
+    </SiteContainer>
+  </SiteLayout>
+)}
