@@ -1,0 +1,36 @@
+# Explicit QA-only artifact. Not a production or release-safe Docker target.
+# Generated reference diagrams are copied into the disposable builder only.
+FROM node:24.22.2-alpine3.24@sha256:8a32c8cf649a49915a66e81e7a609223c708d0adabf288ee3f4077d765542f85 AS dependencies
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci
+
+FROM dependencies AS qa-build
+COPY . .
+RUN npm run check \
+ && npm run catalog:art:generate \
+ && npm run media:generated \
+ && BODICH_MEDIA_PROFILE=beta_presentation npm run media:stage-beta \
+ && BODICH_MEDIA_PROFILE=qa_full node scripts/stage-qa-full.mjs --stage \
+ && BODICH_MEDIA_PROFILE=qa_full npm run build \
+ && BODICH_MEDIA_PROFILE=qa_full node scripts/stage-qa-full.mjs --verify
+
+FROM nginx:1.31.8-alpine3.24@sha256:785835ea65db4bba6f021acc0f3be91b0fef76a53fe41f8588c6698d2aed0606 AS runtime
+ARG BODICH_GIT_SHA=UNKNOWN
+LABEL org.opencontainers.image.title="BODICH FULL CONTENT QA — unpublished supplier references" \
+      org.opencontainers.image.source="https://github.com/YuriiSokolenko/bodich" \
+      org.opencontainers.image.revision="${BODICH_GIT_SHA}" \
+      org.bodich.profile="qa_full"
+COPY --from=qa-build --chown=101:101 /app/dist/ /usr/share/nginx/html/
+COPY docker/nginx.conf /etc/nginx/nginx.conf
+COPY --chmod=0555 docker/entrypoint.sh /docker-entrypoint-local.sh
+RUN rm -f /etc/nginx/conf.d/default.conf \
+ && rm -f /usr/share/nginx/html/_headers \
+ && mkdir -p /tmp/client_body /tmp/proxy /tmp/fastcgi /tmp/uwsgi /tmp/scgi \
+ && nginx -t
+USER 101:101
+EXPOSE 8080
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD wget -q -O /dev/null http://127.0.0.1:8080/en/qa/ && wget -q -O /dev/null http://127.0.0.1:8080/ro/qa/ || exit 1
+ENTRYPOINT ["/docker-entrypoint-local.sh"]
+CMD ["nginx", "-g", "daemon off;"]
