@@ -1,0 +1,9 @@
+# Opt-in full-content QA GHCR image. Compose keeps its original hardened runtime.
+# This is a static preview of UNAPPROVED supplier research, not public BODICH inventory.
+# docker compose -f compose.yaml -f compose.qa-full.yaml pull
+# docker compose -f compose.yaml -f compose.qa-full.yaml up -d
+services:
+  bodich-preview:
+    image: ghcr.io/yuriisokolenko/bodich-full-qa-preview:${BODICH_QA_IMAGE_TAG:-main}
+    pull_policy: always
+    build: !reset null
