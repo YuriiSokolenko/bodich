@@ -10,16 +10,47 @@ permissions:
   contents: read
 
 jobs:
+  # Single source of truth for "may this run publish an image to GHCR?".
+  # Publishing is allowed only for pushes to main and for pull requests whose
+  # head branch lives in this repository. Fork pull requests (and Dependabot,
+  # whose token is read-only) never publish and never export the image.
+  gate:
+    name: Decide GHCR publishing
+    runs-on: ubuntu-latest
+    outputs:
+      publish: ${{ steps.decide.outputs.publish }}
+    steps:
+      - id: decide
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          REF: ${{ github.ref }}
+          ACTOR: ${{ github.actor }}
+          REPO: ${{ github.repository }}
+          HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+        shell: bash
+        run: |
+          publish=false
+          if [ "$EVENT_NAME" = push ] && [ "$REF" = refs/heads/main ]; then
+            publish=true
+          elif [ "$EVENT_NAME" = pull_request ] && [ "$HEAD_REPO" = "$REPO" ] && [ "$ACTOR" != 'dependabot[bot]' ]; then
+            publish=true
+          fi
+          echo "publish=$publish" >> "$GITHUB_OUTPUT"
+          echo "GHCR publishing: $publish (event=$EVENT_NAME, head repo=${HEAD_REPO:-n/a})"
+
   docker-preview:
     name: Docker preview ${{ matrix.platform }}
+    needs: gate
     runs-on: ${{ matrix.runner }}
     strategy:
       fail-fast: false
       matrix:
         include:
           - platform: linux/amd64
+            arch: amd64
             runner: ubuntu-latest
           - platform: linux/arm64
+            arch: arm64
             runner: ubuntu-24.04-arm
     env:
       BODICH_BIND_IP: 127.0.0.1
@@ -33,6 +64,28 @@ jobs:
       - uses: docker/setup-buildx-action@v3
       - name: Validate Compose configuration
         run: docker compose config --quiet
+      - name: Validate GHCR Compose override keeps runtime hardening
+        env:
+          BODICH_IMAGE_TAG: pr-1
+        run: |
+          docker compose -f compose.yaml -f compose.ghcr.yaml config --quiet
+          docker compose -f compose.yaml -f compose.ghcr.yaml config --format json > "$RUNNER_TEMP/ghcr-compose.json"
+          python3 - "$RUNNER_TEMP/ghcr-compose.json" <<'PY'
+          import json, sys
+          with open(sys.argv[1], encoding='utf-8') as f:
+              svc = json.load(f)['services']['bodich-preview']
+          assert svc['image'] == 'ghcr.io/yuriisokolenko/bodich-lan-preview:pr-1', svc['image']
+          assert 'build' not in svc, 'override must never fall back to a local build'
+          assert svc['pull_policy'] == 'always'
+          assert svc['read_only'] is True
+          assert svc['cap_drop'] == ['ALL']
+          assert 'no-new-privileges:true' in svc['security_opt']
+          assert svc['pids_limit'] == 64
+          assert int(svc['mem_limit']) == 512 * 1024 * 1024
+          assert float(svc['cpus']) == 1.0
+          assert any(t.startswith('/tmp:') and 'noexec' in t for t in svc['tmpfs'])
+          assert svc['ports'][0]['target'] == 8080
+          PY
       - name: Seed ignored host artifacts to verify context isolation
         run: |
           test -z "$(git status --porcelain --untracked-files=all)"
@@ -145,6 +198,230 @@ jobs:
             exit 1
           fi
           python3 scripts/docker-preview-smoke.py http://127.0.0.1:4321/
+      # Hand the exact image that passed every check above to the publishing
+      # jobs. Nothing is rebuilt for publishing, and this job never gets
+      # packages: write. Fork and Dependabot pull requests never export it
+      # (see the gate job).
+      - name: Export tested image for publishing
+        if: ${{ needs.gate.outputs.publish == 'true' }}
+        run: docker save --output "$RUNNER_TEMP/bodich-lan-preview-${{ matrix.arch }}.tar" bodich-lan-preview:local
+      - name: Upload tested image for publishing
+        if: ${{ needs.gate.outputs.publish == 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: bodich-lan-preview-image-${{ matrix.arch }}
+          path: ${{ runner.temp }}/bodich-lan-preview-${{ matrix.arch }}.tar
+          retention-days: 1
+          if-no-files-found: error
+      - name: Show preview logs after failure
+        if: failure()
+        run: docker compose logs --no-color || true
+      - name: Stop preview
+        if: always()
+        run: docker compose down --remove-orphans
+
+  # Publishing jobs. They run only after every Docker preview check passed on
+  # both architectures, and they push the exact image those checks tested (no
+  # rebuild). Only these jobs get packages: write.
+  publish-image:
+    name: Publish ${{ matrix.platform }} image to GHCR
+    needs: [gate, docker-preview]
+    if: ${{ needs.gate.outputs.publish == 'true' }}
+    runs-on: ${{ matrix.runner }}
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: linux/amd64
+            arch: amd64
+            runner: ubuntu-latest
+          - platform: linux/arm64
+            arch: arm64
+            runner: ubuntu-24.04-arm
+    env:
+      IMAGE: ghcr.io/yuriisokolenko/bodich-lan-preview
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      TARGET_PLATFORM: ${{ matrix.platform }}
+      ARCH: ${{ matrix.arch }}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: bodich-lan-preview-image-${{ matrix.arch }}
+          path: ${{ runner.temp }}/image
+      - name: Load and verify the tested image
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker load --input "$RUNNER_TEMP/image/bodich-lan-preview-${ARCH}.tar"
+          test "$(docker image inspect --format '{{.Os}}/{{.Architecture}}' bodich-lan-preview:local)" = "$TARGET_PLATFORM"
+          test "$(docker image inspect --format '{{index .Config.Labels "org.opencontainers.image.revision"}}' bodich-lan-preview:local)" = "$SOURCE_SHA"
+          test "$(docker image inspect --format '{{index .Config.Labels "org.bodich.source-state"}}' bodich-lan-preview:local)" = "clean"
+          test "$(docker image inspect --format '{{index .Config.Labels "org.opencontainers.image.source"}}' bodich-lan-preview:local)" = "https://github.com/${GITHUB_REPOSITORY}"
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Push per-architecture image
+        shell: bash
+        run: |
+          set -euo pipefail
+          target="${IMAGE}:sha-${SOURCE_SHA}-${ARCH}"
+          # A sha-* tag only ever points at the image built from that commit,
+          # so a re-run for the same commit keeps what is already published.
+          if docker buildx imagetools inspect "$target" > /dev/null 2>&1; then
+            echo "$target already exists; not overwriting."
+            exit 0
+          fi
+          docker tag bodich-lan-preview:local "$target"
+          docker push "$target"
+
+  publish-manifest:
+    name: Publish multi-arch tags to GHCR
+    needs: [gate, publish-image]
+    if: ${{ needs.gate.outputs.publish == 'true' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      pull-requests: read
+    # Serialize tag moves per moving tag (main or pr-<number>).
+    concurrency:
+      group: ghcr-publish-${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.pull_request.number) || 'main' }}
+      cancel-in-progress: false
+    outputs:
+      verify_tag: ${{ steps.tags.outputs.verify_tag }}
+    env:
+      IMAGE: ghcr.io/yuriisokolenko/bodich-lan-preview
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create multi-arch image and move tags
+        id: tags
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          sha_tag="sha-${SOURCE_SHA}"
+          if [ "$EVENT_NAME" = pull_request ]; then
+            moving_tag="pr-${PR_NUMBER}"
+            current_sha="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" --jq .head.sha)"
+          else
+            moving_tag=main
+            current_sha="$(gh api "repos/${GITHUB_REPOSITORY}/commits/main" --jq .sha)"
+          fi
+
+          if docker buildx imagetools inspect "${IMAGE}:${sha_tag}" > /dev/null 2>&1; then
+            echo "${sha_tag} already published; keeping it."
+          else
+            docker buildx imagetools create --tag "${IMAGE}:${sha_tag}" \
+              "${IMAGE}:${sha_tag}-amd64" "${IMAGE}:${sha_tag}-arm64"
+          fi
+
+          docker buildx imagetools inspect "${IMAGE}:${sha_tag}" --raw > "$RUNNER_TEMP/index.json"
+          python3 - "$RUNNER_TEMP/index.json" <<'PY'
+          import json, sys
+          with open(sys.argv[1], encoding='utf-8') as f:
+              index = json.load(f)
+          platforms = sorted(f"{m['platform']['os']}/{m['platform']['architecture']}" for m in index['manifests'])
+          assert platforms == ['linux/amd64', 'linux/arm64'], platforms
+          PY
+
+          # Never move main or pr-<number> backwards: only the newest commit may own it.
+          if [ "$current_sha" = "$SOURCE_SHA" ]; then
+            docker buildx imagetools create --tag "${IMAGE}:${moving_tag}" "${IMAGE}:${sha_tag}"
+            echo "verify_tag=${moving_tag}" >> "$GITHUB_OUTPUT"
+            moved="\`${moving_tag}\` now points at this commit"
+          else
+            echo "::notice::${moving_tag} not moved: a newer commit (${current_sha}) exists; ${sha_tag} was still published."
+            echo "verify_tag=${sha_tag}" >> "$GITHUB_OUTPUT"
+            moved="\`${moving_tag}\` not moved (a newer commit exists)"
+          fi
+          {
+            echo "### Published GHCR preview image"
+            echo
+            echo "- Image: \`${IMAGE}\` (linux/amd64, linux/arm64)"
+            echo "- Immutable tag: \`${sha_tag}\`"
+            echo "- ${moved}"
+            echo "- Run it: \`BODICH_IMAGE_TAG=${moving_tag} docker compose -f compose.yaml -f compose.ghcr.yaml pull && BODICH_IMAGE_TAG=${moving_tag} docker compose -f compose.yaml -f compose.ghcr.yaml up -d\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  verify-published:
+    name: Verify pulled ${{ matrix.platform }} image
+    needs: [gate, publish-manifest]
+    if: ${{ needs.gate.outputs.publish == 'true' }}
+    runs-on: ${{ matrix.runner }}
+    permissions:
+      contents: read
+      packages: read
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: linux/amd64
+            runner: ubuntu-latest
+          - platform: linux/arm64
+            runner: ubuntu-24.04-arm
+    env:
+      BODICH_BIND_IP: 127.0.0.1
+      BODICH_PORT: 4321
+      BODICH_IMAGE_TAG: ${{ needs.publish-manifest.outputs.verify_tag }}
+      # The documented one-command flow: plain `docker compose pull` / `up -d`.
+      COMPOSE_FILE: compose.yaml:compose.ghcr.yaml
+      EXPECTED_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      TARGET_PLATFORM: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Pull the published image and start it with Compose
+        run: |
+          docker compose pull
+          docker compose up --detach --no-build
+      - name: Check EN/RO routes, assets, and HTTP security
+        run: python3 scripts/docker-preview-smoke.py http://127.0.0.1:4321/
+      - name: Verify pulled image runtime and build provenance
+        shell: bash
+        run: |
+          set -euo pipefail
+          container="$(docker compose ps -q bodich-preview)"
+          test -n "$container"
+          image="ghcr.io/yuriisokolenko/bodich-lan-preview:${BODICH_IMAGE_TAG}"
+          test "$(docker inspect --format '{{.Config.Image}}' "$container")" = "$image"
+          test "$(docker inspect --format '{{.Config.User}}' "$container")" = "101:101"
+          test "$(docker inspect --format '{{.HostConfig.ReadonlyRootfs}}' "$container")" = "true"
+          docker inspect --format '{{json .HostConfig.CapDrop}}' "$container" | grep -q 'ALL'
+          docker inspect --format '{{json .HostConfig.SecurityOpt}}' "$container" | grep -q 'no-new-privileges'
+          test "$(docker image inspect --format '{{.Os}}/{{.Architecture}}' "$image")" = "$TARGET_PLATFORM"
+          test "$(docker image inspect --format '{{index .Config.Labels "org.opencontainers.image.revision"}}' "$image")" = "$EXPECTED_SOURCE_SHA"
+          docker compose exec --no-TTY bodich-preview cat /usr/share/bodich/build-provenance.json > "$RUNNER_TEMP/bodich-build-provenance.json"
+          python3 - "$RUNNER_TEMP/bodich-build-provenance.json" <<'PY'
+          import json, os, re, sys
+          with open(sys.argv[1], encoding='utf-8') as f:
+              p = json.load(f)
+          assert p['profile'] == 'release_safe', p['profile']
+          assert p['sourceSha'] == os.environ['EXPECTED_SOURCE_SHA'], p['sourceSha']
+          assert p['sourceState'] == 'clean', p['sourceState']
+          assert re.fullmatch(r'[0-9a-f]{64}', p['distManifestSha256'])
+          assert p['distFileCount'] > 0
+          print(json.dumps(p, sort_keys=True))
+          PY
       - name: Show preview logs after failure
         if: failure()
         run: docker compose logs --no-color || true
