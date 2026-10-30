@@ -69,7 +69,14 @@ In a checkout the two files are already present; only the `export COMPOSE_FILE=.
 | `sha-<full commit SHA>` | Exactly that commit; never moved to another commit. Matches `BODICH_GIT_SHA` and the image's `org.opencontainers.image.revision` label | With every publish |
 | `pr-<number>` | The latest head commit of a same-repository pull request | Same-repository pull requests only |
 
-`sha-<SHA>-amd64` and `sha-<SHA>-arm64` also exist as the per-architecture images behind the multi-arch tags; use the tags above. `main` and `pr-<number>` only ever move forward. Tag moves are serialized per tag, and the branch head is read again immediately before the tag is written (after every slow registry step); an older run that finishes late sees a newer head and leaves the tag alone, while its own `sha-<SHA>` tag is still published. If a newer commit lands while a tag is being written, that commit's run is queued behind it and promotes the tag next. Right after the move, CI checks that the moving tag is exactly the manifest behind its `sha-<SHA>` tag. For anything that must not change under you, use the `sha-` tag.
+`sha-<SHA>-amd64` and `sha-<SHA>-arm64` also exist as the per-architecture images behind the multi-arch tags; use the tags above. `main` and `pr-<number>` follow the newest commit whose image passed the checks, and never move to an older one:
+
+- Tag moves are serialized per tag in a queue that keeps every waiting publisher (`queue: max`). GitHub's default queue holds only one pending job and cancels it when another arrives, and publishers arrive in build-completion order, not commit order.
+- Every publisher reads the branch head from the GitHub API immediately before writing the tag, after all slow registry steps, and only ever writes the head. If the head is a newer commit whose image is already published, an older run promotes that newer commit. This also covers a newest run that was cancelled or failed while promoting.
+- After every write the head is read again, and the run reconciles if it moved. A head whose image is not published yet is left to its own run, which publishes it as soon as it can.
+- Right after every move, CI checks that the moving tag is exactly the manifest behind the corresponding `sha-<SHA>` tag.
+
+An older run that finishes late therefore never rolls a tag back, and its own `sha-<SHA>` tag is still published. For anything that must not change under you, use the `sha-` tag.
 
 Select a tag with `BODICH_IMAGE_TAG`, set for both commands (the easiest way is to export it):
 
@@ -92,7 +99,7 @@ Its `profile` is `release_safe`, `sourceState` is `clean`, and `sourceSha` equal
 - It is always the release-safe build (`npm run build`). Unapproved concept media and supplier drafts stay withheld; the workflow asserts `profile: release_safe` again on the pulled image. No beta or presentation image is published under these tags.
 - Pull requests from forks, and Dependabot-authored pull requests (whoever triggers the run, since a person can re-run or update one), run every check but never publish. `packages: write` is granted only to the publishing jobs; the checks themselves keep `contents: read`.
 - After publishing, CI pulls the immutable `sha-<SHA>` image back through `compose.ghcr.yaml` on both architectures, serves `/en/` and `/ro/`, and verifies the provenance record matches the commit. It verifies through the `sha-` tag rather than `main` / `pr-<number>` because a newer run may legitimately move those while the check is still queued.
-- The publish gate and the tag-promotion rules are covered by `npm run qa:ghcr:publish:test`, which executes the workflow's own scripts against stubbed `docker` and `gh`, including a branch head that advances mid-publish.
+- The publish gate and the tag-promotion rules are covered by `npm run qa:ghcr:publish:test`, which executes the workflow's own scripts against stubbed `docker` and `gh`: a branch head that advances mid-publish, and a newest publisher that never ran. It also pins the queue configuration the scheduling guarantee depends on. GitHub's scheduler itself cannot be run locally.
 
 ### Package visibility (decision)
 

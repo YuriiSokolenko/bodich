@@ -159,10 +159,22 @@ function promote({ eventName = 'push', prNumber = '', head = SHA, env = {}, pres
   }
 }
 
+const MULTI_ARCH = '{"manifests":[{"platform":{"os":"linux","architecture":"amd64"}},{"platform":{"os":"linux","architecture":"arm64"}}]}';
+// Registry entries for a newer commit whose Docker preview checks passed:
+// both per-arch images are pushed; the multi-arch sha tag only if its own
+// publish-manifest job got that far.
+function publishedNewer({ multiArch = false } = {}) {
+  return {
+    [`${IMAGE}:sha-${NEWER}-amd64`]: '{"layers":["newer"]}',
+    [`${IMAGE}:sha-${NEWER}-arm64`]: '{"layers":["newer"]}',
+    ...(multiArch ? { [`${IMAGE}:sha-${NEWER}`]: MULTI_ARCH.replace('}]}', '}],"commit":"newer"}') } : {}),
+  };
+}
+
 test('promotes main to the sha manifest when the commit is still the head', () => {
   const run = promote();
   assert.equal(run.result.status, 0, run.result.stderr);
-  assert.deepEqual(run.outputs, { promoted: 'true', moving_tag: 'main' });
+  assert.deepEqual(run.outputs, { promoted: 'true', moving_tag: 'main', points_at: SHA });
   const sha = run.registry(`${IMAGE}:sha-${run.sha}`);
   assert.ok(sha, 'multi-arch sha tag must exist');
   assert.equal(run.registry(`${IMAGE}:main`), sha, 'main must be exactly the sha manifest');
@@ -173,26 +185,58 @@ test('promotes main to the sha manifest when the commit is still the head', () =
 test('promotes pr-<number> using the pull request head', () => {
   const run = promote({ eventName: 'pull_request', prNumber: '7' });
   assert.equal(run.result.status, 0, run.result.stderr);
-  assert.deepEqual(run.outputs, { promoted: 'true', moving_tag: 'pr-7' });
+  assert.deepEqual(run.outputs, { promoted: 'true', moving_tag: 'pr-7', points_at: SHA });
   assert.equal(run.registry(`${IMAGE}:pr-7`), run.registry(`${IMAGE}:sha-${run.sha}`));
   assert.ok(run.calls.includes(`gh api repos/${REPO}/pulls/7 --jq .head.sha`));
   assert.equal(run.registry(`${IMAGE}:main`), null, 'a PR build must never touch main');
 });
 
-test('does not move main when a newer commit already is the head, but still publishes the sha tag', () => {
+test('leaves main alone when the newer head is not published yet, but still publishes the sha tag', () => {
   const previous = '{"previously":"published main"}';
   const run = promote({ head: NEWER, preseed: { [`${IMAGE}:main`]: previous } });
   assert.equal(run.result.status, 0, run.result.stderr);
-  assert.deepEqual(run.outputs, { promoted: 'false', moving_tag: 'main' });
+  assert.deepEqual(run.outputs, { promoted: 'false', moving_tag: 'main', points_at: '' });
   assert.equal(run.registry(`${IMAGE}:main`), previous, 'main must be left exactly as it was');
   assert.ok(run.registry(`${IMAGE}:sha-${run.sha}`), 'the immutable sha tag is still published');
-  assert.match(run.result.stdout, /::notice::main not moved/);
+  assert.match(run.result.stdout, new RegExp(`::notice::main left for ${NEWER}: its image is not published yet`));
+});
+
+test('does not treat a head with only one published architecture as published', () => {
+  const previous = '{"previously":"published main"}';
+  const run = promote({
+    head: NEWER,
+    preseed: { [`${IMAGE}:main`]: previous, [`${IMAGE}:sha-${NEWER}-amd64`]: '{"layers":["newer"]}' },
+  });
+  assert.equal(run.result.status, 0, run.result.stderr);
+  assert.equal(run.registry(`${IMAGE}:main`), previous);
+  assert.equal(run.registry(`${IMAGE}:sha-${NEWER}`), null, 'no multi-arch tag may be assembled from one architecture');
+});
+
+test('regression (review 5711381194): an older run reconciles main to the newest commit whose publisher was cancelled', () => {
+  // Commits SHA < NEWER. NEWER passed its checks and pushed both per-arch images,
+  // but its publish-manifest job never ran (cancelled as a replaced pending job,
+  // cancelled by hand, or failed). The older run for SHA reaches the group later.
+  // Previously it skipped its stale promotion and main stayed behind for good.
+  const previous = '{"previously":"published main"}';
+  const run = promote({ head: NEWER, preseed: { [`${IMAGE}:main`]: previous, ...publishedNewer() } });
+  assert.equal(run.result.status, 0, run.result.stderr);
+  assert.deepEqual(run.outputs, { promoted: 'false', moving_tag: 'main', points_at: NEWER });
+  const newer = run.registry(`${IMAGE}:sha-${NEWER}`);
+  assert.ok(newer, 'the newest commit gets its multi-arch sha tag');
+  assert.equal(run.registry(`${IMAGE}:main`), newer, 'main must end on the newest published commit');
+  assert.notEqual(run.registry(`${IMAGE}:main`), run.registry(`${IMAGE}:sha-${SHA}`), 'never on the older commit');
+  assert.match(run.summary, new RegExp(`promoted to newer commit \`${NEWER}\``));
+});
+
+test('promotes to a newer head whose multi-arch sha tag already exists without re-creating it', () => {
+  const run = promote({ head: NEWER, preseed: publishedNewer({ multiArch: true }) });
+  assert.equal(run.result.status, 0, run.result.stderr);
+  assert.equal(run.outputs.points_at, NEWER);
+  assert.equal(run.registry(`${IMAGE}:main`), run.registry(`${IMAGE}:sha-${NEWER}`));
+  assert.ok(!run.calls.some((c) => c.startsWith(`docker buildx imagetools create --tag ${IMAGE}:sha-${NEWER} `)));
 });
 
 test('regression: head advancing during the slow manifest step must not roll main back', () => {
-  // Head is SHA when the job starts; creating the multi-arch sha manifest is the
-  // slow registry step, during which a newer commit lands. A head read taken
-  // before that step (the original bug) would still promote main to SHA.
   const previous = '{"previously":"published main"}';
   const run = promote({
     head: SHA,
@@ -223,13 +267,21 @@ test('freshness is read after the sha manifest is created and immediately before
   );
 });
 
-test('a head change during promotion is reported and leaves the tag on a verified manifest', () => {
+test('a head change during promotion to an unpublished commit is reported and left to that commit', () => {
   const run = promote({ env: { STUB_ADVANCE_HEAD_ON_MOVING_CREATE: NEWER } });
   assert.equal(run.result.status, 0, run.result.stderr);
-  assert.equal(run.outputs.promoted, 'true');
+  assert.deepEqual(run.outputs, { promoted: 'true', moving_tag: 'main', points_at: SHA });
   assert.equal(run.registry(`${IMAGE}:main`), run.registry(`${IMAGE}:sha-${run.sha}`));
-  assert.match(run.result.stdout, new RegExp(`::warning::main was promoted to ${SHA}, but ${NEWER} landed during promotion`));
+  assert.match(run.result.stdout, new RegExp(`::warning::${NEWER} landed while main was being promoted to ${SHA}; reconciling`));
+  assert.match(run.result.stdout, new RegExp(`::notice::main left for ${NEWER}`));
   assert.equal(run.calls.filter((c) => c.startsWith('gh api ')).length, 2, 'the head is checked before and after the write');
+});
+
+test('a head change during promotion to an already published commit converges on that commit', () => {
+  const run = promote({ env: { STUB_ADVANCE_HEAD_ON_MOVING_CREATE: NEWER }, preseed: publishedNewer() });
+  assert.equal(run.result.status, 0, run.result.stderr);
+  assert.deepEqual(run.outputs, { promoted: 'false', moving_tag: 'main', points_at: NEWER });
+  assert.equal(run.registry(`${IMAGE}:main`), run.registry(`${IMAGE}:sha-${NEWER}`));
 });
 
 test('fails loudly when the moving tag does not match the sha manifest after promotion', () => {
@@ -240,7 +292,7 @@ test('fails loudly when the moving tag does not match the sha manifest after pro
 });
 
 test('keeps an already published sha tag instead of overwriting it', () => {
-  const existing = '{"manifests":[{"platform":{"os":"linux","architecture":"amd64"}},{"platform":{"os":"linux","architecture":"arm64"}}],"existing":true}';
+  const existing = MULTI_ARCH.replace('}]}', '}],"existing":true}');
   const run = promote({ preseed: { [`${IMAGE}:sha-${SHA}`]: existing } });
   assert.equal(run.result.status, 0, run.result.stderr);
   assert.equal(run.registry(`${IMAGE}:sha-${run.sha}`), existing);
@@ -256,4 +308,37 @@ test('refuses to promote when the sha manifest is missing an architecture', () =
   const run = promote({ preseed: { [`${IMAGE}:sha-${SHA}`]: partial } });
   assert.notEqual(run.result.status, 0);
   assert.equal(run.registry(`${IMAGE}:main`), null, 'main must not be written from an incomplete manifest');
+});
+
+// ------------------------------------------------- scheduling policy (static)
+// GitHub's queue itself cannot be run locally. These assertions pin the
+// workflow configuration that the scheduling guarantee depends on.
+
+function jobBlock(name) {
+  const start = workflow.indexOf(`\n  ${name}:\n`);
+  assert.ok(start >= 0, `job ${name} not found`);
+  const rest = workflow.slice(start + 1);
+  const next = rest.slice(1).search(/\n  [a-z][\w-]*:\n/);
+  return next >= 0 ? rest.slice(0, next + 1) : rest;
+}
+
+test('policy: the publisher queue keeps every waiting run instead of replacing the pending one', () => {
+  const job = jobBlock('publish-manifest');
+  const concurrency = job.match(/\n    concurrency:\n((?: {6}.*\n)+)/);
+  assert.ok(concurrency, 'publish-manifest must declare job-level concurrency');
+  const body = concurrency[1];
+  assert.match(body, /^ {6}queue: max$/m, 'queue: max is required; the default queue cancels a pending publisher');
+  assert.match(body, /^ {6}cancel-in-progress: false$/m, 'queue: max only applies with cancel-in-progress: false');
+  assert.match(body, /format\('pr-\{0\}', github\.event\.pull_request\.number\)/, 'one group per pull request');
+  assert.match(body, /\|\| 'main' \}\}$/m, 'one group for main');
+});
+
+test('policy: no workflow-level concurrency or other job can cancel or bypass publishing', () => {
+  assert.doesNotMatch(workflow.split('\njobs:\n')[0], /^concurrency:/m, 'workflow-level concurrency would replace pending runs');
+  for (const name of ['gate', 'docker-preview', 'publish-image', 'verify-published']) {
+    assert.doesNotMatch(jobBlock(name), /\n    concurrency:/, `${name} must not join a concurrency group`);
+  }
+  const writes = workflow.match(/imagetools create --tag "\$\{IMAGE\}:\$\{moving_tag\}"/g) ?? [];
+  assert.equal(writes.length, 1, 'only the promote step may write main / pr-<number>');
+  assert.ok(jobBlock('publish-manifest').includes('imagetools create --tag "${IMAGE}:${moving_tag}"'));
 });

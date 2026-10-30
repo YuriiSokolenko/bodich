@@ -40,7 +40,8 @@ case "$sub" in
     if [ "$#" -eq 1 ]; then
       cp "$(ref_file "$1")" "$(ref_file "$target")"
     else
-      printf '{"manifests":[{"platform":{"os":"linux","architecture":"amd64"}},{"platform":{"os":"linux","architecture":"arm64"}}]}' > "$(ref_file "$target")"
+      # Distinct content per commit, so digests differ like in a real registry.
+      printf '{"manifests":[{"platform":{"os":"linux","architecture":"amd64"}},{"platform":{"os":"linux","architecture":"arm64"}}],"tag":"%s"}' "$tag" > "$(ref_file "$target")"
     fi
     case "$tag" in
       sha-*-amd64 | sha-*-arm64) ;;
