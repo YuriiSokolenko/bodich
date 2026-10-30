@@ -43,6 +43,7 @@ FROM nginx:1.31.8-alpine3.24@sha256:785835ea65db4bba6f021acc0f3be91b0fef76a53fe4
 ARG BODICH_GIT_SHA=UNKNOWN
 ARG BODICH_SOURCE_STATE=UNKNOWN
 LABEL org.opencontainers.image.title="BODICH release-safe LAN QA preview" \
+      org.opencontainers.image.source="https://github.com/YuriiSokolenko/bodich" \
       org.opencontainers.image.revision="${BODICH_GIT_SHA}" \
       org.bodich.source-state="${BODICH_SOURCE_STATE}"
 COPY --from=build --chown=101:101 /app/dist/ /usr/share/nginx/html/

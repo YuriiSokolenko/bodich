@@ -48,6 +48,8 @@ jobs:
         run: npm ci
       - name: Test LAN preview bootstrap safety without binding a network interface
         run: npm run qa:lan:preview:test
+      - name: Test GHCR publish gate and tag-promotion policy against stubbed docker and gh
+        run: npm run qa:ghcr:publish:test
       - name: Validate Astro and TypeScript
         run: npm run check
       - name: Generate and validate all unpublished catalog illustrations

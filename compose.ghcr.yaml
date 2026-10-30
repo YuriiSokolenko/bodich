@@ -1,0 +1,20 @@
+# Opt-in override: run the PUBLISHED release-safe LAN QA preview image from GHCR
+# instead of building it locally. Use it together with compose.yaml, which keeps
+# owning the runtime hardening (read-only root, dropped capabilities, resource
+# limits, tmpfs) and the port mapping:
+#
+#   docker compose -f compose.yaml -f compose.ghcr.yaml pull
+#   docker compose -f compose.yaml -f compose.ghcr.yaml up -d
+#
+# Select the build with BODICH_IMAGE_TAG: `main` (default), `pr-<number>` for a
+# same-repo pull request, or the immutable `sha-<full commit SHA>`.
+#
+# This is for local/trusted-LAN QA only. It is not a production deployment and
+# does not change any release gate. The default `docker compose up --build`
+# path in compose.yaml is unchanged.
+services:
+  bodich-preview:
+    image: ghcr.io/yuriisokolenko/bodich-lan-preview:${BODICH_IMAGE_TAG:-main}
+    pull_policy: always
+    # Never fall back to a local build: this override must run the published image.
+    build: !reset null

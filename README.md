@@ -131,6 +131,15 @@ docker compose up --build -d
 
 Node.js 24 and `npm ci` run inside the multi-architecture Docker builder; the small Nginx runtime contains no Node/npm or project source. Open `http://localhost:4321/en/` or `/ro/` on the MacBook. For Android/iPad access and security details, follow the [Docker-first LAN QA guide](docs/qa/docker-lan-preview.md).
 
+To run the latest `main` (or a same-repository pull request) without a checkout or local build, pull the published release-safe image from GHCR with the `compose.ghcr.yaml` override:
+
+```bash
+export COMPOSE_FILE=compose.yaml:compose.ghcr.yaml   # BODICH_IMAGE_TAG=main (default) | pr-<number> | sha-<full SHA>
+docker compose pull && docker compose up -d
+```
+
+The package is private, so run `docker login ghcr.io` once. Tags, the PR flow, and the visibility decision are in the [Docker-first LAN QA guide](docs/qa/docker-lan-preview.md#run-a-published-image-no-checkout-no-build). This is for local/trusted-LAN QA only and changes no release gate.
+
 ### Optional host development
 
 Prerequisites: Node.js 24 and npm. `.nvmrc` contains the expected Node.js major version.
@@ -154,6 +163,7 @@ Astro prints the development URL (typically `http://localhost:4321`). Browse `/e
 | `npm run build` | Generate the static website into `dist/` |
 | `npm run preview` | Preview generated pages locally |
 | `docker compose up --build -d` | Build and serve the release-safe LAN QA preview (Node/npm run inside Docker) |
+| `docker compose pull && docker compose up -d` | With `COMPOSE_FILE=compose.yaml:compose.ghcr.yaml`, pull and serve the published release-safe preview image instead of building |
 
 Use `npm ci` for reproducible installation from the committed lockfile. GitHub Actions runs installation, type checking, production build and route checks on pull requests to `main` and pushes to `main` (plus a temporary bootstrap feature-branch trigger, pending CI cleanup).
 

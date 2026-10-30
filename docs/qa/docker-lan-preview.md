@@ -42,6 +42,79 @@ docker compose up --build -d
 
 The build logs and `/usr/share/bodich/build-provenance.json` inside the container record the release profile, source SHA/state, exact canonical `distManifestSha256`, and file count. This is build metadata, not a human release sign-off.
 
+## Run a published image (no checkout, no build)
+
+The `Docker LAN preview` workflow publishes the release-safe preview image to GitHub Container Registry as `ghcr.io/yuriisokolenko/bodich-lan-preview` (`linux/amd64` and `linux/arm64`), so a reviewer can run `main` or a pull request without a source checkout, host Node.js, or a local build. This is a convenience for local/trusted-LAN QA only: it is not a production deployment and changes no release gate. #69 and #71 stay NO-GO.
+
+### One command
+
+`compose.ghcr.yaml` is an opt-in override of [`compose.yaml`](../../compose.yaml). It swaps the locally built image for the published one and keeps all runtime hardening from `compose.yaml` (read-only root, dropped capabilities, `no-new-privileges`, resource limits, `/tmp` tmpfs). Without a checkout, download the two small files once, then pull and start:
+
+```sh
+mkdir bodich-preview && cd bodich-preview
+curl -fsSLO https://raw.githubusercontent.com/YuriiSokolenko/bodich/main/compose.yaml
+curl -fsSLO https://raw.githubusercontent.com/YuriiSokolenko/bodich/main/compose.ghcr.yaml
+export COMPOSE_FILE=compose.yaml:compose.ghcr.yaml
+
+docker compose pull && docker compose up -d
+```
+
+In a checkout the two files are already present; only the `export COMPOSE_FILE=...` line and the final command are needed. Without the export, pass the files explicitly: `docker compose -f compose.yaml -f compose.ghcr.yaml pull`, then the same with `up -d`. The override never builds: if the image cannot be pulled, Compose fails instead of building something else. `BODICH_BIND_IP` and `BODICH_PORT` work exactly as for the local build, for example `BODICH_BIND_IP=127.0.0.1 docker compose up -d` for MacBook-only access.
+
+### Tags
+
+| Tag | Points at | Published |
+| --- | --- | --- |
+| `main` (default) | The latest commit on `main` | After a push to `main` |
+| `sha-<full commit SHA>` | Exactly that commit; never moved to another commit. Matches `BODICH_GIT_SHA` and the image's `org.opencontainers.image.revision` label | With every publish |
+| `pr-<number>` | The latest head commit of a same-repository pull request | Same-repository pull requests only |
+
+`sha-<SHA>-amd64` and `sha-<SHA>-arm64` also exist as the per-architecture images behind the multi-arch tags; use the tags above. `main` and `pr-<number>` follow the newest commit whose image passed the checks, and never move to an older one:
+
+- Tag moves are serialized per tag in a queue that keeps every waiting publisher (`queue: max`). GitHub's default queue holds only one pending job and cancels it when another arrives, and publishers arrive in build-completion order, not commit order.
+- Every publisher reads the branch head from the GitHub API immediately before writing the tag, after all slow registry steps, and only ever writes the head. If the head is a newer commit whose image is already published, an older run promotes that newer commit. This also covers a newest run that was cancelled or failed while promoting.
+- After every write the head is read again, and the run reconciles if it moved. A head whose image is not published yet is left to its own run, which publishes it as soon as it can.
+- Right after every move, CI checks that the moving tag is exactly the manifest behind the corresponding `sha-<SHA>` tag.
+
+An older run that finishes late therefore never rolls a tag back, and its own `sha-<SHA>` tag is still published. For anything that must not change under you, use the `sha-` tag.
+
+Select a tag with `BODICH_IMAGE_TAG`, set for both commands (the easiest way is to export it):
+
+```sh
+export BODICH_IMAGE_TAG=pr-123      # or main, or sha-<full commit SHA>
+docker compose pull && docker compose up -d
+```
+
+To confirm what is running, compare the recorded source with the commit you expect:
+
+```sh
+docker compose exec bodich-preview cat /usr/share/bodich/build-provenance.json
+```
+
+Its `profile` is `release_safe`, `sourceState` is `clean`, and `sourceSha` equals the tag's commit. To go back to the default local build, run `docker compose down`, then `unset COMPOSE_FILE BODICH_IMAGE_TAG`, then `docker compose up --build -d`.
+
+### What gets published, and what never does
+
+- Publishing happens only after every Docker preview check (EN/RO smoke, browser smoke, context isolation, runtime isolation, provenance, fail-closed fixtures) passed on **both** architectures. The image pushed is the exact image those checks tested, not a rebuild.
+- It is always the release-safe build (`npm run build`). Unapproved concept media and supplier drafts stay withheld; the workflow asserts `profile: release_safe` again on the pulled image. No beta or presentation image is published under these tags.
+- Pull requests from forks, and Dependabot-authored pull requests (whoever triggers the run, since a person can re-run or update one), run every check but never publish. `packages: write` is granted only to the publishing jobs; the checks themselves keep `contents: read`.
+- After publishing, CI pulls the immutable `sha-<SHA>` image back through `compose.ghcr.yaml` on both architectures, serves `/en/` and `/ro/`, and verifies the provenance record matches the commit. It verifies through the `sha-` tag rather than `main` / `pr-<number>` because a newer run may legitimately move those while the check is still queued.
+- The publish gate and the tag-promotion rules are covered by `npm run qa:ghcr:publish:test`, which executes the workflow's own scripts against stubbed `docker` and `gh`: a branch head that advances mid-publish, and a newest publisher that never ran. It also pins the queue configuration the scheduling guarantee depends on. GitHub's scheduler itself cannot be run locally.
+
+### Package visibility (decision)
+
+The package is **private** (the GHCR default for a new package). A private package needs a one-time login on the machine that pulls it, using a classic personal access token with only the `read:packages` scope:
+
+```sh
+echo "$GHCR_TOKEN" | docker login ghcr.io -u YuriiSokolenko --password-stdin
+```
+
+Private was chosen because this is an internal QA convenience for pre-release builds, and `pr-<number>` tags can contain unmerged work; there is no reason to make them anonymously pullable. The image contains only the release-safe `dist` built from this repository at that commit plus Nginx and the provenance record, with no private source files (the context-isolation checks above enforce this), so making the package public later is a safe owner decision. It is a package-settings change and needs no workflow change. Note that the workflow hands the tested image between jobs as a one-day GitHub Actions artifact, and artifacts of a public repository are downloadable by any GitHub account; the content is derivable from the public source either way.
+
+### Retention
+
+Nothing deletes old versions yet, so `pr-*` and `sha-*` tags accumulate. Until a retention policy is added (for example scheduled cleanup of `pr-*` and old `sha-*` versions with `actions/delete-package-versions`), prune them occasionally in the package's settings on GitHub.
+
 ## Manual device checks
 
 For both `/en/` and `/ro/`, visit the home, products, accessories, support, about, and contact routes. On mobile, use portrait and landscape, open and close navigation, test touch and keyboard behavior, and inspect language switching, focus, image alternatives, zoom/reflow, and reduced motion. Record the real device, OS/browser version, test date, tester, and findings; do not infer a physical-device pass from Docker or CI.
