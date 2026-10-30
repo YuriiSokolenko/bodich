@@ -3,7 +3,7 @@ import SiteLayout from '../../../layouts/SiteLayout.astro';
 import SiteContainer from '../../../components/ui/SiteContainer.astro';
 import { locales, type Locale } from '../../../i18n';
 import { qaDrafts, qaFull, qaHref, qaImage, qaImageAlt, qaSection, sectionCopy } from '../../../qa/catalog';
-import type { ReferenceDraft } from '../../../catalog/reference';
+import type { QaDraft } from '../../../qa/catalog';
 
 export function getStaticPaths() {
   if (process.env.BODICH_MEDIA_PROFILE !== 'qa_full') return [];
@@ -13,13 +13,13 @@ export function getStaticPaths() {
   })));
 }
 
-const { locale, draft } = Astro.props as { locale: Locale; draft: ReferenceDraft };
+const { locale, draft } = Astro.props as { locale: Locale; draft: QaDraft };
 const copy = draft.copy[locale];
 const section = qaSection(draft);
 const notice = locale === 'ro'
   ? 'DOAR PENTRU TESTARE: referință externă KingTech, nu produs BODICH verificat. Ilustrația nu reprezintă fidel modelul. Nu se acceptă comenzi.'
   : 'TESTING ONLY: external KingTech research reference, not a verified BODICH product. Illustration is not an exact model depiction. No orders accepted.';
-const metric = (spec: ReferenceDraft['specs'][number]) => [spec.kind, spec.metric, spec.scope].filter(Boolean).join(' · ');
+const metric = (spec: QaDraft['specs'][number]) => [spec.kind, spec.metric, spec.scope].filter(Boolean).join(' · ');
 ---
 {qaFull && copy && (
   <SiteLayout locale={locale} page="products" title={copy.name} description={notice}>
