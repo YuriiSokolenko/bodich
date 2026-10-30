@@ -1,55 +1,70 @@
 /**
- * QA-only generated diagram staging and distribution audit.
- * Neither supplier references nor their diagrams become company-approved stock.
+ * Isolated QA-only reference staging / distribution audit.
+ * The 132 model-specific diagrams remain offline, never part of QA website output.
+ * QA displays one registered, rights-unverified BODICH AI turbine concept.
  */
 import assert from 'node:assert/strict';
-import { copyFileSync, existsSync, lstatSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { dirname, resolve } from 'node:path';
+import { existsSync, lstatSync, readFileSync, writeFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 
 assert.equal(process.env.BODICH_MEDIA_PROFILE, 'qa_full', 'QA staging/audit is opt-in only');
 const mode = process.argv[2];
 assert.ok(['--stage', '--verify'].includes(mode), 'Expected --stage or --verify');
 const inventory = JSON.parse(readFileSync('docs/catalog/source-inventory.json', 'utf8'));
 const overrides = JSON.parse(readFileSync('docs/catalog/reference-overrides.json', 'utf8'));
-const manifest = JSON.parse(readFileSync('docs/catalog/art-manifest.json', 'utf8'));
 const count = 132;
-for (const [name, rows] of [['inventory', inventory.products], ['overrides', overrides.records], ['artwork', manifest.entries]]) {
-  assert.equal(rows.length, count, name + ' must contain 132 reference records');
-}
+assert.equal(inventory.products.length, count, 'Inventory must contain 132 source records');
+assert.equal(overrides.records.length, count, 'Overrides must contain 132 draft records');
 const sourceIds = new Set(inventory.products.map((item) => item.id));
 const overlayById = new Map(overrides.records.map((item) => [item.sourceId, item]));
 assert.equal(sourceIds.size, count);
 assert.equal(overlayById.size, count);
 assert.equal(new Set(overrides.records.map((item) => item.slug)).size, count);
-const seen = new Set();
-const artForQa = [];
-for (const entry of manifest.entries) {
-  const id = entry.sourceId;
-  assert.match(id, /^kt-(?:[0-9]+|sq-[A-Z0-9]+)$/);
-  assert.ok(sourceIds.has(id) && !seen.has(id), 'Invalid or duplicate artwork source ID: ' + id);
-  seen.add(id);
-  artForQa.push({ sourceId: id, alt: entry.alt });
-  assert.equal(entry.approved, false, 'QA art must remain unapproved');
-  assert.equal(entry.isProductPhoto, false, 'QA art must not claim to be product photography');
-  assert.equal(entry.kind, 'original_diagram');
-  const sourcePath = 'docs/catalog/draft-assets/' + id + '/concept-600.webp';
-  assert.equal(entry.assets.webp600, sourcePath, 'Art path must match source ID');
-  const row = overlayById.get(id);
-  assert.equal(row?.approval, 'draft', 'QA must not promote reference records');
+for (const row of overrides.records) {
+  assert.ok(sourceIds.has(row.sourceId), 'Unknown source ID: ' + row.sourceId);
+  assert.match(row.slug, /^[a-z0-9]+(?:-[a-z0-9]+)*$/);
+  assert.equal(row.approval, 'draft', 'QA cannot approve references: ' + row.sourceId);
   for (const locale of ['en', 'ro']) {
     assert.ok(row.copy?.[locale]?.name && row.copy?.[locale]?.description,
-      'QA requires bilingual research copy for ' + id);
-  }
-  const source = resolve(sourcePath);
-  const destination = resolve(mode === '--stage' ? 'public/qa-art/' + id + '.webp' : 'dist/qa-art/' + id + '.webp');
-  if (mode === '--stage') {
-    assert.ok(existsSync(source) && lstatSync(source).isFile(), 'Missing generated diagram: ' + sourcePath);
-    mkdirSync(dirname(destination), { recursive: true });
-    copyFileSync(source, destination);
-  } else {
-    assert.ok(existsSync(destination) && lstatSync(destination).isFile(), 'Missing QA distribution art for ' + id);
+      'QA requires bilingual research copy for ' + row.sourceId);
   }
 }
+
+const concept = '/images/turbines/bodich-card-concept-01';
+const image = concept + '.webp';
+const srcset = concept + '-360.webp 360w, ' + concept + '-600.webp 600w';
+const variants = [image, concept + '-360.webp', concept + '-600.webp'];
+const alts = {
+  en: 'AI-generated BODICH turbine concept art; not an exact model photograph',
+  ro: 'Concept BODICH de turbină generat cu IA; nu este o fotografie a modelului exact',
+};
+const captions = {
+  en: 'AI-generated illustrative concept art; not an exact model photograph.',
+  ro: 'Imagine conceptuală ilustrativă generată cu IA; nu este o fotografie a modelului exact.',
+};
+function verifyImages(html, locale, expected, label) {
+  assert.doesNotMatch(html, /qa-art\//, 'Schematic art reference in ' + label);
+  assert.ok(html.includes(captions[locale]), 'Missing localized AI concept disclosure: ' + label);
+  const tags = [...html.matchAll(/<img\b[^>]*>/g)].map((match) => match[0]);
+  const selected = tags.filter((tag) => tag.includes('src="' + image + '"'));
+  assert.equal(selected.length, expected, 'Wrong AI concept image count: ' + label);
+  for (const tag of selected) {
+    assert.ok(tag.includes('srcset="' + srcset + '"'), 'Missing responsive concept sources: ' + label);
+    assert.ok(tag.includes('alt="' + alts[locale] + '"'), 'Wrong generic concept alt: ' + label);
+    assert.ok(tag.includes('width="600"') && tag.includes('height="450"'),
+      'Missing concept dimensions: ' + label);
+    assert.ok(tag.includes('sizes="'), 'Missing responsive sizes: ' + label);
+  }
+}
+const assetsRoot = mode === '--stage' ? 'public' : 'dist';
+for (const path of variants) {
+  const filename = resolve(assetsRoot + path);
+  assert.ok(existsSync(filename) && lstatSync(filename).isFile(), 'Missing staged QA concept asset: ' + filename);
+  const bytes = readFileSync(filename);
+  assert.ok(bytes.length > 12 && bytes.toString('ascii', 0, 4) === 'RIFF' &&
+    bytes.toString('ascii', 8, 12) === 'WEBP', 'Invalid WebP QA concept asset: ' + filename);
+}
+
 if (mode === '--stage') {
   const records = inventory.products.map((source) => {
     const row = overlayById.get(source.id);
@@ -66,32 +81,37 @@ if (mode === '--stage') {
       },
     };
   });
-  // Deliberately replaces the EMPTY source-tree fixture only in the isolated
-  // Docker QA builder, after normal checks. Never commit generated research.
-  writeFileSync('src/qa/catalog-data.json',
-    JSON.stringify({ records, art: artForQa }) + '\n');
+  // Replace the checked-in EMPTY fixture only inside the disposable QA builder.
+  writeFileSync('src/qa/catalog-data.json', JSON.stringify({ records }) + '\n');
 }
 if (mode === '--verify') {
+  assert.ok(!existsSync('dist/qa-art'), 'Offline schematic images leaked into QA output');
   for (const locale of ['en', 'ro']) {
     const index = readFileSync(resolve('dist', locale, 'qa', 'index.html'), 'utf8');
     assert.match(index, /data-qa-catalog/, 'QA catalog landing is missing');
     assert.match(index, /noindex, nofollow/, 'QA catalog must not be indexable');
     assert.match(index, /data-media-profile="qa_full"/, 'QA profile must be explicit');
+    verifyImages(index, locale, count, locale + ' QA catalog');
     for (const row of overrides.records) {
-      assert.match(row.slug, /^[a-z0-9]+(?:-[a-z0-9]+)*$/);
+      assert.ok(index.includes('href="/' + locale + '/qa/' + row.slug + '/"'),
+        'Catalog reference link missing: ' + row.slug);
       const filename = resolve('dist', locale, 'qa', row.slug, 'index.html');
       assert.ok(existsSync(filename), 'QA product page missing: ' + filename);
       const html = readFileSync(filename, 'utf8');
       assert.ok(html.includes('data-qa-detail="' + row.sourceId + '"'), 'Wrong QA detail identity: ' + row.sourceId);
       assert.match(html, /noindex, nofollow/, 'QA detail must not be indexable');
       assert.match(html, /TESTING ONLY|DOAR PENTRU TESTARE/, 'QA warning is missing');
+      assert.ok(html.includes('KingTech'), 'External research link missing: ' + row.slug);
+      verifyImages(html, locale, 1, locale + '/' + row.slug);
     }
     const homepage = readFileSync(resolve('dist', locale, 'index.html'), 'utf8');
     assert.match(homepage, /qa_full/, 'QA homepage must identify the profile');
     assert.match(homepage, /qa\//, 'QA catalog must be reachable from main site');
+    assert.ok(homepage.includes('/images/turbines/bodich-hero-concept.webp'),
+      'QA homepage hero visual must remain unchanged');
   }
   const robots = readFileSync('dist/robots.txt', 'utf8');
   assert.match(robots, /Disallow: \/\b|Disallow: \/$/m, 'QA robots must disallow crawling');
 }
-console.log('QA FULL ' + mode + ': ' + count + ' source-linked diagrams and ' +
-  (mode === '--verify' ? count * 2 + ' bilingual detail pages verified' : 'artifacts staged'));
+console.log('QA FULL ' + mode + ': ' + count + ' research references, one shared AI concept with ' +
+  variants.length + ' assets' + (mode === '--verify' ? ' and 264 bilingual detail pages verified' : ' staged'));

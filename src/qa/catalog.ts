@@ -13,8 +13,7 @@ export type QaDraft = {
   specs: { kind: string; metric?: string; scope?: string; value: number; unit: string; verifiedOn: string }[];
   source: { url: string; sections: string[]; status: string };
 };
-type QaArtwork = { sourceId: string; alt: Record<QaLocale, string> };
-const data = fixture as unknown as { records: QaDraft[]; art: QaArtwork[] };
+const data = fixture as unknown as { records: QaDraft[] };
 export const qaFull = import.meta.env.BODICH_MEDIA_PROFILE === 'qa_full';
 export const qaDrafts: QaDraft[] = qaFull ? data.records : [];
 export const qaSections = ['g5', 'g4', 'tp', 'accessories', 'oil', 'batteries', 'warranty'] as const;
@@ -37,18 +36,26 @@ export function qaHref(locale: string, slug?: string): string {
   const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
   return base + '/' + locale + '/qa/' + (slug ? encodeURIComponent(slug) + '/' : '');
 }
-export function qaImage(sourceId: string): string {
+/** One generic, non-model-specific AI concept in the isolated full-content QA catalog. */
+export function qaImage(): string {
   const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
-  return base + '/qa-art/' + sourceId + '.webp';
+  return base + '/images/turbines/bodich-card-concept-01.webp';
 }
-export function qaImageAlt(sourceId: string, locale: QaLocale): string {
-  const entry = data.art.find((item) => item.sourceId === sourceId);
-  if (!entry) throw new Error('Missing QA art entry: ' + sourceId);
-  return entry.alt[locale];
+export function qaImageSrcset(): string {
+  const stem = qaImage().replace(/\.webp$/, '');
+  return stem + '-360.webp 360w, ' + stem + '-600.webp 600w';
+}
+export const qaImageDisclosure: Record<QaLocale, string> = {
+  en: 'AI-generated illustrative concept art; not an exact model photograph.',
+  ro: 'Imagine conceptuală ilustrativă generată cu IA; nu este o fotografie a modelului exact.',
+};
+export function qaImageAlt(locale: QaLocale): string {
+  return locale === 'ro'
+    ? 'Concept BODICH de turbină generat cu IA; nu este o fotografie a modelului exact'
+    : 'AI-generated BODICH turbine concept art; not an exact model photograph';
 }
 if (qaFull) {
-  if (qaDrafts.length !== 132 || new Set(qaDrafts.map((item) => item.slug)).size !== 132 ||
-      data.art.length !== qaDrafts.length) throw new Error('QA draft/art manifest parity failed');
+  if (qaDrafts.length !== 132 || new Set(qaDrafts.map((item) => item.slug)).size !== 132) throw new Error('QA draft manifest parity failed');
   for (const draft of qaDrafts) {
     for (const locale of ['en', 'ro'] as const) {
       if (!draft.copy[locale]?.name || !draft.copy[locale]?.description) {

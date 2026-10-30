@@ -53,12 +53,46 @@ jobs:
           python3 - <<'PY'
           import json
           import re
+          from html.parser import HTMLParser
+          from urllib.error import HTTPError
           from urllib.request import urlopen
+
           base = 'http://127.0.0.1:4321'
+          concept = '/images/turbines/bodich-card-concept-01'
+          primary = concept + '.webp'
+          srcset = f'{concept}-360.webp 360w, {concept}-600.webp 600w'
+          alt = {
+              'en': 'AI-generated BODICH turbine concept art; not an exact model photograph',
+              'ro': 'Concept BODICH de turbină generat cu IA; nu este o fotografie a modelului exact',
+          }
+          captions = {
+              'en': 'AI-generated illustrative concept art; not an exact model photograph.',
+              'ro': 'Imagine conceptuală ilustrativă generată cu IA; nu este o fotografie a modelului exact.',
+          }
+          class ImageParser(HTMLParser):
+              def __init__(self):
+                  super().__init__()
+                  self.images = []
+              def handle_starttag(self, tag, attrs):
+                  if tag == 'img':
+                      self.images.append(dict(attrs))
           def get(path):
               with urlopen(base + path, timeout=10) as r:
                   assert r.status == 200, (path, r.status)
                   return r.read().decode('utf8', errors='replace')
+          def check_images(html, locale, count):
+              assert 'qa-art/' not in html
+              assert captions[locale] in html
+              parser = ImageParser()
+              parser.feed(html)
+              images = [img for img in parser.images if img.get('src') == primary]
+              assert len(images) == count, (locale, count, len(images))
+              for img in images:
+                  assert img.get('srcset') == srcset
+                  assert img.get('alt') == alt[locale]
+                  assert img.get('sizes') and img.get('width') == '600' and img.get('height') == '450'
+                  assert img.get('loading') in ('lazy', 'eager')
+              return images
           records = json.load(open('docs/catalog/reference-overrides.json', encoding='utf8'))['records']
           assert len(records) == 132
           for locale in ('en', 'ro'):
@@ -67,20 +101,28 @@ jobs:
               assert 'data-media-profile="qa_full"' in landing
               assert 'noindex, nofollow' in landing
               assert len(re.findall(f'href="/{locale}/qa/[^"]+/"', landing)) == 132
+              assert all(i.get('loading') == 'lazy' for i in check_images(landing, locale, 132))
               for record in records:
                   detail = get(f'/{locale}/qa/{record["slug"]}/')
                   assert 'data-qa-detail="' + record['sourceId'] + '"' in detail
                   assert 'noindex, nofollow' in detail
-                  assert 'qa-art/' + record['sourceId'] + '.webp' in detail
+                  assert 'KingTech' in detail
+                  assert check_images(detail, locale, 1)[0]['loading'] == 'eager'
               home = get(f'/{locale}/')
               assert 'data-full-qa-notice' in home
               assert '/images/turbines/bodich-hero-concept.webp' in home
-          for path in ['/qa-art/' + records[0]['sourceId'] + '.webp',
+          for path in [primary, concept + '-360.webp', concept + '-600.webp',
                        '/images/turbines/bodich-hero-concept.webp']:
               with urlopen(base + path, timeout=10) as r:
-                  assert r.status == 200 and r.headers.get_content_type() == 'image/webp'
+                  assert r.status == 200 and r.headers.get_content_type() == 'image/webp', path
+                  assert r.read(12)[8:12] == b'WEBP', path
+          try:
+              get('/qa-art/' + records[0]['sourceId'] + '.webp')
+              raise AssertionError('Offline schematic unexpectedly published')
+          except HTTPError as exc:
+              assert exc.code == 404
           assert 'Disallow: /' in get('/robots.txt')
-          print('Full-content QA HTTP smoke passed: 132 x 2 detail pages')
+          print('Full-content QA HTTP smoke passed: 132 x 2 details, one AI concept, 3 WebP variants')
           PY
           test "$(docker image inspect --format '{{index .Config.Labels "org.bodich.profile"}}' bodich-full-qa:local)" = qa_full
           docker run --rm --entrypoint sh bodich-full-qa:local -ec '
@@ -89,6 +131,16 @@ jobs:
             test ! -d /app
             test ! -e /usr/share/nginx/html/docs/catalog
           '
+      - name: Install browser QA dependencies on the host runner
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - name: Run real Chromium image-loading smoke for EN and RO QA routes
+        run: |
+          npm ci
+          ./node_modules/.bin/playwright install --with-deps --only-shell chromium
+          node scripts/verify-qa-full-browser.mjs
       - name: Log errors
         if: failure()
         run: docker logs bodich-qa || true

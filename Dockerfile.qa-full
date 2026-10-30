@@ -1,5 +1,5 @@
 # Explicit QA-only artifact. Not a production or release-safe Docker target.
-# Generated reference diagrams are copied into the disposable builder only.
+# Registered BODICH concept assets are staged only inside the disposable QA builder.
 FROM node:24.22.2-alpine3.24@sha256:8a32c8cf649a49915a66e81e7a609223c708d0adabf288ee3f4077d765542f85 AS dependencies
 WORKDIR /app
 COPY package.json package-lock.json ./
@@ -8,8 +8,6 @@ RUN npm ci
 FROM dependencies AS qa-build
 COPY . .
 RUN npm run check \
- && npm run catalog:art:generate \
- && npm run media:generated \
  && BODICH_MEDIA_PROFILE=beta_presentation npm run media:stage-beta \
  && BODICH_MEDIA_PROFILE=qa_full node scripts/stage-qa-full.mjs --stage \
  && BODICH_MEDIA_PROFILE=qa_full npm run build \
