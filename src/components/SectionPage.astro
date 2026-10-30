@@ -16,7 +16,7 @@ interface Props {
 
 const { locale, page } = Astro.props;
 const t = translations[locale];
-const presentationMedia = ['beta_presentation', 'private_review'].includes(import.meta.env.BODICH_MEDIA_PROFILE);
+const presentationMedia = ['beta_presentation', 'private_review', 'qa_full'].includes(import.meta.env.BODICH_MEDIA_PROFILE);
 const information = page === 'support' || page === 'about' || page === 'contact'
   ? t.sectionContent[page]
   : null;
