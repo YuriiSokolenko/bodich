@@ -92,27 +92,59 @@ jobs:
       - name: Log errors
         if: failure()
         run: docker logs bodich-qa || true
-      - name: Publish tested single-arch QA image on main only
+      - name: Export tested image for publishing
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-        env:
-          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SHA: ${{ github.sha }}
-          ARCH: ${{ matrix.arch }}
-        run: |
-          echo "$GHCR_TOKEN" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
-          docker tag bodich-full-qa:local "ghcr.io/yuriisokolenko/bodich-full-qa-preview:sha-$SHA-$ARCH"
-          docker push "ghcr.io/yuriisokolenko/bodich-full-qa-preview:sha-$SHA-$ARCH"
+        run: docker save -o "$RUNNER_TEMP/bodich-full-qa-${{ matrix.arch }}.tar" bodich-full-qa:local
+      - name: Upload tested image artifact
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: bodich-full-qa-image-${{ matrix.arch }}
+          path: ${{ runner.temp }}/bodich-full-qa-${{ matrix.arch }}.tar
+          retention-days: 1
+          if-no-files-found: error
       - name: Stop QA
         if: always()
         run: docker rm -f bodich-qa || true
     permissions:
       contents: read
+
+  publish-arch:
+    name: Push previously tested QA ${{ matrix.arch }} image
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [amd64, arm64]
+    permissions:
+      contents: read
       packages: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: bodich-full-qa-image-${{ matrix.arch }}
+          path: ${{ runner.temp }}
+      - name: Login GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Push tested image without rebuilding
+        env:
+          SHA: ${{ github.sha }}
+          ARCH: ${{ matrix.arch }}
+        run: |
+          docker load -i "$RUNNER_TEMP/bodich-full-qa-$ARCH.tar"
+          docker tag bodich-full-qa:local "ghcr.io/yuriisokolenko/bodich-full-qa-preview:sha-$SHA-$ARCH"
+          docker push "ghcr.io/yuriisokolenko/bodich-full-qa-preview:sha-$SHA-$ARCH"
 
   publish-multiarch:
     name: Publish tested multi-arch QA image
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-    needs: build-and-test
+    needs: publish-arch
     runs-on: ubuntu-latest
     permissions:
       contents: read
