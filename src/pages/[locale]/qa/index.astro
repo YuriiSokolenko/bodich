@@ -2,7 +2,7 @@
 import SiteLayout from '../../../layouts/SiteLayout.astro';
 import SiteContainer from '../../../components/ui/SiteContainer.astro';
 import { locales, type Locale } from '../../../i18n';
-import { qaDrafts, qaFull, qaSections, sectionCopy, qaSection, qaHref, qaImage, qaImageAlt } from '../../../qa/catalog';
+import { qaDrafts, qaFull, qaSections, sectionCopy, qaSection, qaHref, qaImage, qaImageSrcset, qaImageAlt, qaImageDisclosure } from '../../../qa/catalog';
 
 export function getStaticPaths() {
   return process.env.BODICH_MEDIA_PROFILE === 'qa_full'
@@ -41,12 +41,12 @@ const notice = locale === 'ro'
               {qaDrafts.filter((item) => qaSection(item) === section).map((item) => (
                 <li class="min-w-0 overflow-hidden rounded-control border border-bodich-border bg-bodich-panel">
                   <a class="block hover:text-bodich-accent-hover focus-visible:outline-2 focus-visible:outline-bodich-accent" href={qaHref(locale, item.slug)}>
-                    <img src={qaImage(item.sourceId)} alt={qaImageAlt(item.sourceId, locale)} loading="lazy" width="600" height="450" class="aspect-[4/3] w-full object-contain"/>
+                    <img src={qaImage()} srcset={qaImageSrcset()} sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw" alt={qaImageAlt(locale)} loading="lazy" decoding="async" width="600" height="450" class="aspect-[4/3] w-full object-contain"/>
                     <div class="p-5">
                       <p class="text-xs font-semibold uppercase tracking-wider text-bodich-accent">{item.sourceId} · DRAFT · {item.source.status}</p>
                       <h3 class="mt-3 text-lg font-bold">{item.copy[locale]?.name}</h3>
                       <p class="mt-3 text-sm leading-6 text-bodich-muted">{item.copy[locale]?.summary}</p>
-                      <p class="mt-3 text-xs text-bodich-muted">{locale === 'ro' ? 'Diagramă ilustrativă, nu fotografie' : 'Illustrative diagram, not a photograph'}</p>
+                      <p class="mt-3 text-xs text-bodich-muted">{qaImageDisclosure[locale]}</p>
                     </div>
                   </a>
                 </li>

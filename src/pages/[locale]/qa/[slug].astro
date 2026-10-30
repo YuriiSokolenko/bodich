@@ -2,7 +2,7 @@
 import SiteLayout from '../../../layouts/SiteLayout.astro';
 import SiteContainer from '../../../components/ui/SiteContainer.astro';
 import { locales, type Locale } from '../../../i18n';
-import { qaDrafts, qaFull, qaHref, qaImage, qaImageAlt, qaSection, sectionCopy } from '../../../qa/catalog';
+import { qaDrafts, qaFull, qaHref, qaImage, qaImageSrcset, qaImageAlt, qaImageDisclosure, qaSection, sectionCopy } from '../../../qa/catalog';
 import type { QaDraft } from '../../../qa/catalog';
 
 export function getStaticPaths() {
@@ -33,8 +33,8 @@ const metric = (spec: QaDraft['specs'][number]) => [spec.kind, spec.metric, spec
         <p class="rounded-control border border-bodich-accent p-5 text-sm leading-7">{notice}</p>
         <div class="mt-8 grid gap-10 lg:grid-cols-2">
           <figure>
-            <img src={qaImage(draft.sourceId)} alt={qaImageAlt(draft.sourceId, locale)} width="600" height="450" class="w-full rounded-control border border-bodich-border"/>
-            <figcaption class="mt-2 text-sm text-bodich-muted">{locale === 'ro' ? 'Ilustrație generică, nu fotografie a produsului' : 'Generic illustration, not a product photograph'}</figcaption>
+            <img src={qaImage()} srcset={qaImageSrcset()} sizes="(min-width: 1024px) 50vw, 100vw" alt={qaImageAlt(locale)} loading="eager" fetchpriority="high" decoding="async" width="600" height="450" class="w-full rounded-control border border-bodich-border"/>
+            <figcaption class="mt-2 text-sm text-bodich-muted">{qaImageDisclosure[locale]}</figcaption>
           </figure>
           <div>
             <p class="text-sm text-bodich-accent">DRAFT · {draft.sourceId} · {draft.source.status}</p>
@@ -42,7 +42,7 @@ const metric = (spec: QaDraft['specs'][number]) => [spec.kind, spec.metric, spec
             <p class="mt-5 text-lg leading-7 text-bodich-muted">{copy.summary}</p>
             <h2 class="mt-8 text-xl font-bold">{locale === 'ro' ? 'Descriere de cercetare' : 'Research description'}</h2>
             <p class="mt-3 leading-7 text-bodich-muted">{copy.description}</p>
-            <p class="mt-6 text-sm text-bodich-muted">{locale === 'ro' ? 'Sursă externă:' : 'External reference source:'} <a class="underline" href={draft.source.url} rel="noopener noreferrer" target="_blank">KingTech</a></p>
+            <p class="mt-6 text-sm text-bodich-muted">{locale === 'ro' ? 'Sursă externă:' : 'External reference source:'} <a data-qa-external-source class="underline" href={draft.source.url} rel="noopener noreferrer" target="_blank">KingTech</a></p>
           </div>
         </div>
         <section class="mt-12" aria-label={locale === 'ro' ? 'Specificații raportate de sursă' : 'Source-reported specifications'}>
